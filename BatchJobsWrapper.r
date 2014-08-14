@@ -41,6 +41,7 @@ library(modules)
 #'  ` fun`        : the function to call
 #'  ...           : arguments to vectorise over
 #'  more.args     : arguments not to vectorise over
+#'  export        : objects to export to computing nodes
 #'  name          : the name of the function call if more than one are submitted
 #'  run           : execute the function, don't just queue
 #'  get           : returns the result of the run; implies run=T
@@ -49,8 +50,9 @@ library(modules)
 #'  grid.sep      : separator to use when assembling names from expand.grid
 #'  seed          : random seed for the function to run
 #'  @return       : list of job results if get=T
-Q = function(` fun`, ..., more.args=list(), name=NULL, run=T, get=F, n.chunks=NULL, 
-             chunk.size=NULL, split.array.by=NA, expand.grid=F, grid.sep=":", seed=123) {
+Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, 
+             run=T, get=F, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, 
+             expand.grid=F, grid.sep=":", seed=123, fail.on.error=T) {
     # summarise arguments
     l. = list(...)
     fun = match.fun(` fun`)
@@ -103,6 +105,10 @@ Q = function(` fun`, ..., more.args=list(), name=NULL, run=T, get=F, n.chunks=NU
     tmpdir = tempdir()
     reg = makeRegistry(id=basename(tmpdir), file.dir=tmpdir, seed=seed)
 
+    # export objects to nodes if desired
+    if (length(export) > 0)
+        do.call(batchExport, c(list(reg), export))
+
     # fill the registry with function calls, save names as well
     if (expand.grid)
         do.call(batchExpandGrid, c(list(reg=reg, fun=fun, more.args=more.args), l.))
@@ -121,7 +127,7 @@ Q = function(` fun`, ..., more.args=list(), name=NULL, run=T, get=F, n.chunks=NU
     if (run)
         Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size)
     if (get)
-        Qget(regs=reg)[[1]]
+        Qget(regs=reg, fail.on.error=fail.on.error)[[1]]
 }
 
 #' Runs all registries in the current working directory
@@ -142,7 +148,7 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
             ids = chunk(ids, n.chunks=n.chunks, shuffle=shuffle)
         if (!is.null(chunk.size))
             ids = chunk(ids, chunk.size=chunk.size, shuffle=shuffle)
-        submitJobs(reg, ids)
+        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T)
     }
 }
 
@@ -150,13 +156,18 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
 #'  clean  : delete the registry when done
 #'  regs   : list of registries to include; default: all local
 #'  @return: a list of results of the function called with different arguments
-Qget = function(clean=T, regs=Qregs()) {
+Qget = function(clean=T, regs=Qregs(), fail.on.error=T) {
     if (class(regs) == 'Registry')
         regs = list(regs)
 
     getResult = function(reg) {
-        waitForJobs(reg)
-        result = reduceResultsList(reg, fun=function(job, res) res) #TODO: resubmit/all-or-error
+        waitForJobs(reg, ids=getJobIds(reg))
+        print(showStatus(reg, errors=100L))
+        if (fail.on.error)
+            result = reduceResultsList(reg, ids=getJobIds(reg),
+                                       fun=function(job, res) res)
+        else
+            result = reduceResultsList(reg, fun=function(job, res) res)
         load(file.path(reg$file.dir, 'names.RData')) # resultNames
         if (clean)
             Qclean(reg)
