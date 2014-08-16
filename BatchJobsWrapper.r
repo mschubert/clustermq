@@ -52,7 +52,8 @@ library(modules)
 #'  @return       : list of job results if get=T
 Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, 
              run=T, get=F, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, 
-             expand.grid=F, grid.sep=":", seed=123, fail.on.error=T) {
+             expand.grid=F, grid.sep=":", seed=123, fail.on.error=T,
+             set.names=fail.on.error) {
     # summarise arguments
     l. = list(...)
     fun = match.fun(` fun`)
@@ -98,9 +99,14 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
 
     # name every vector so we can identify them afterwards
     ln = lapply(l., names)
-    lnFull = lapply(1:length(ln), function(i) 
-                    if (is.null(ln[[i]])) 1:length(l.[[i]]) 
-                    else ln[[i]])
+    lnFull = lapply(1:length(ln), function(i)
+        if (is.character(l.[[i]]) && length(l.[[i]][1])==1 && is.null(ln[[i]]))
+            l.[[i]]
+        else if (is.null(ln[[i]]))
+            1:length(l.[[i]])
+        else
+            ln[[i]]
+    )
  
     tmpdir = tempdir()
     reg = makeRegistry(id=basename(tmpdir), file.dir=tmpdir, seed=seed)
@@ -119,7 +125,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
         resultNames = apply(expand.grid(lnFull), 1, function(x) paste(x,collapse=grid.sep))
     else
         resultNames = as.matrix(apply(do.call(cbind, ln), 1, unique))
-    save(resultNames, name, file=file.path(tmpdir, "names.RData"))
+    save(resultNames, name, set.names, file=file.path(tmpdir, "names.RData"))
 
     assign('.QLocalRegistries', c(.QLocalRegistries, setNames(list(reg), name)), 
            envir=parent.env(environment()))
@@ -171,7 +177,10 @@ Qget = function(clean=T, regs=Qregs(), fail.on.error=T) {
         load(file.path(reg$file.dir, 'names.RData')) # resultNames
         if (clean)
             Qclean(reg)
-        setNames(result, resultNames[as.integer(names(result))])
+        if (set.names)
+            setNames(result, resultNames[as.integer(names(result))])
+        else
+            result
     }
 
     setNames(lapply(regs, getResult), names(regs))
