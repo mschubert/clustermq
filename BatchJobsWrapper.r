@@ -154,7 +154,7 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
             ids = chunk(ids, n.chunks=n.chunks, shuffle=shuffle)
         if (!is.null(chunk.size))
             ids = chunk(ids, chunk.size=chunk.size, shuffle=shuffle)
-        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T)
+        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf)
     }
 }
 
