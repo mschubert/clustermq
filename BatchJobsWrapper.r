@@ -1,34 +1,32 @@
-#' BatchJobsWrapper.r
-#'
-#' Rationale
-#'  This script uses BatchJobs to run functions either locally, on multiple cores, or LSF,
-#'  depending on your BatchJobs configuration. It has a simpler interface, does more error
-#'  checking than the library itself, and is able to queue different function calls. The
-#'  function supplied *MUST* be self-sufficient, i.e. load libraries and scripts.
-#'  BatchJobs on the EBI cluster is already set up when using the gentoo prefix.
-#'
-#' Usage
-#'  * Q()     : create a new registry with that vectorises a function call and optionally runs it
-#'  * Qrun()  : run all registries in the current working directory
-#'  * Qget()  : extract the results from the registry and returns them
-#'  * Qclean(): delete all registries in the current working directory
-#'  * Qregs() : list all registries in the current working directory
-#'
-#' Examples
-#'  > s = function(x) x
-#'  > Q(s, x=c(1:3), get=T)
-#'  returns list(1,2,3)
-#'
-#'  > t = function(x) sum(x)
-#'  > a = matrix(3:6, nrow=2)
-#'  > Q(t, a)
-#'  > Qget()
-#'  splits a by columns, sums each column, and returns list(7, 11)
-#'
-#' TODO list
-#'  * handle failed jobs? (e.g.: save layout to registry dir to rerun failed jobs) [rerun option?]
-#'  * Qget(): warn when not all jobs are returned
-#'  * Qregs(): possible that creation time does not follow call time?
+# BatchJobsWrapper.r
+#
+# Rationale
+#  This script uses BatchJobs to run functions either locally, on multiple cores, or LSF,
+#  depending on your BatchJobs configuration. It has a simpler interface, does more error
+#  checking than the library itself, and is able to queue different function calls. The
+#  function supplied *MUST* be self-sufficient, i.e. load libraries and scripts.
+#  BatchJobs on the EBI cluster is already set up when using the gentoo prefix.
+#
+# Usage
+#  * Q()     : create a new registry with that vectorises a function call and optionally runs it
+#  * Qrun()  : run all registries in the current working directory
+#  * Qget()  : extract the results from the registry and returns them
+#  * Qclean(): delete all registries in the current working directory
+#  * Qregs() : list all registries in the current working directory
+#
+# Examples
+#  > s = function(x) x
+#  > Q(s, x=c(1:3), get=T)
+#  returns list(1,2,3)
+#
+#  > t = function(x) sum(x)
+#  > a = matrix(3:6, nrow=2)
+#  > Q(t, a)
+#  > Qget()
+#  splits a by columns, sums each column, and returns list(7, 11)
+#
+# TODO list
+#  * handle failed jobs? (e.g.: save layout to registry dir to rerun failed jobs) [rerun option?]
 
 library(stringr)
 library(BatchJobs)
@@ -37,19 +35,31 @@ library(modules)
 
 .QLocalRegistries = list()
 
-#' Creates a new registry with that vectorises a function call and optionally runs it
-#'  ` fun`        : the function to call
-#'  ...           : arguments to vectorise over
-#'  more.args     : arguments not to vectorise over
-#'  export        : objects to export to computing nodes
-#'  name          : the name of the function call if more than one are submitted
-#'  run           : execute the function, don't just queue
-#'  get           : returns the result of the run; implies run=T
-#'  split.array.by: how to split matrices/arrays in ... (default: last dimension)
-#'  expand.grid   : do every combination of arguments to vectorise over
-#'  grid.sep      : separator to use when assembling names from expand.grid
-#'  seed          : random seed for the function to run
-#'  @return       : list of job results if get=T
+#' Submit function calls as cluster jobs
+#'
+#' This function takes the function \code{` fun`} and calls it with each element of the iterable
+#' \code{...}, either in order or as grid. Depending on how \emph{BatchJobs} is set up, these
+#' function calls are processed either sequentially, on multicore, or as LSF/SGE/etc. jobs.
+#'
+#' For normal usage, this is the only function necessary to call explicitly (set \code{get=T} to
+#' get the function results returned).
+#'
+#' @param ` fun`          the function to call
+#' @param ...             arguments to vectorise over
+#' @param more.args       arguments not to vectorise over
+#' @param export          objects to export to computing nodes
+#' @param name            the name of the function call if more than one are submitted
+#' @param run             submit the function on the queuing system
+#' @param get             returns the result of the run; implies run=T
+#' @param split.array.by  how to split matrices/arrays in \code{...} (default: last dimension)
+#' @param expand.grid     do every combination of arguments to vectorise over
+#' @param grid.sep        separator to use when assembling names from expand.grid
+#' @param seed            random seed for the function to run
+#' @param n.chunks        how much jobs to split functions calls into (default: number of calls)
+#' @param chunk.size      how many function calls in one job (default: 1)
+#' @param fail.on.error   if jobs fail, return all successful or throw overall error?
+#' @param set.names       try to name result or keep numbers? (default: \code{fail.on.error})
+#' @return                list of job results if get=T
 Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, 
              run=T, get=F, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, 
              expand.grid=F, grid.sep=":", seed=123, fail.on.error=T,
@@ -136,11 +146,12 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
         Qget(regs=reg, fail.on.error=fail.on.error)[[1]]
 }
 
-#' Runs all registries in the current working directory
-#'  n.chunks  : number of chunks (cores, LSF jobs) to split each registry into
-#'  chunk.size: number of calls to put into one core/LSF job (do not use with n.chunks)
-#'  shuffle   : if chunking, shuffle the order of calls
-#'  regs      : list of registries to include; default: all local
+#' Run all registries if \code{run=F} in \code{Q()}
+#'
+#' @param n.chunks    number of chunks (cores, LSF jobs) to split each registry into
+#' @param chunk.size  number of calls to put into one core/LSF job (do not use with n.chunks)
+#' @param shuffle     if chunking, shuffle the order of calls
+#' @param regs        list of registries to include; default: all local
 Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
     if (!is.null(n.chunks) && !is.null(chunk.size))
         stop("Can not take both n.chunks and chunk.size")
@@ -158,10 +169,12 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
     }
 }
 
-#' Extracts the results from the registry and returns them
-#'  clean  : delete the registry when done
-#'  regs   : list of registries to include; default: all local
-#'  @return: a list of results of the function called with different arguments
+#' Get all results if \code{get=F} in \code{Q()}
+#'
+#' @param clean           delete the registry when done
+#' @param regs            list of registries to include; default: all local
+#' @param fail.on.errors  whether to get only successful results or throw overall error
+#' @return                a list of results of the function called with different arguments
 Qget = function(clean=T, regs=Qregs(), fail.on.error=T) {
     if (class(regs) == 'Registry')
         regs = list(regs)
@@ -186,8 +199,9 @@ Qget = function(clean=T, regs=Qregs(), fail.on.error=T) {
     setNames(lapply(regs, getResult), names(regs))
 }
 
-#' Deletes all registries in the current working directory
-#'  regs: list of registries to include; default: all local
+#' Delete all registries if \code{clean=F} in \code{Qget()}
+#'
+#' @param regs  list of registries to include; default: all local
 Qclean = function(regs=Qregs()) {
     if (class(regs) == 'Registry')
         regs = list(regs)
@@ -197,10 +211,11 @@ Qclean = function(regs=Qregs()) {
 }
 
 #' Lists all registries in the current working directory
-#'  name     : regular expression specifying the registry name
-#'  directory: regular expression specifying the directories to look for registries
-#'  local    : only return registries created in this R session
-#'  @return  : a list of registry objects
+#'
+#' @param name       regular expression specifying the registry name
+#' @param directory  regular expression specifying the directories to look for registries
+#' @param local      only return registries created in this R session
+#' @return           a list of registry objects
 Qregs = function(name=".*", directory="Rtmp[0-9a-zA-Z]+", local=T) {
     if (local)
         return(.QLocalRegistries)
