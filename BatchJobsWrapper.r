@@ -49,8 +49,8 @@ library(modules)
 #' @param more.args       arguments not to vectorise over
 #' @param export          objects to export to computing nodes
 #' @param name            the name of the function call if more than one are submitted
-#' @param run             submit the function on the queuing system
-#' @param get             returns the result of the run; implies run=T
+#' @param run             submit the function on the queuing system (default:T)
+#' @param get             returns the result of the run (default:T)
 #' @param split.array.by  how to split matrices/arrays in \code{...} (default: last dimension)
 #' @param expand.grid     do every combination of arguments to vectorise over
 #' @param grid.sep        separator to use when assembling names from expand.grid
@@ -61,7 +61,7 @@ library(modules)
 #' @param set.names       try to name result or keep numbers? (default: \code{fail.on.error})
 #' @return                list of job results if get=T
 Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, 
-             run=T, get=F, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, 
+             run=T, get=T, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, 
              expand.grid=F, grid.sep=":", seed=123, fail.on.error=T,
              set.names=fail.on.error) {
     # summarise arguments
@@ -142,7 +142,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
 
     if (run)
         Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size)
-    if (get)
+    if (run && get)
         Qget(regs=reg, fail.on.error=fail.on.error)[[1]]
 }
 
