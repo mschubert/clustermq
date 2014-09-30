@@ -80,8 +80,8 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
         stop("Can not expand.grid on one vector")
 
     if (length(provided) > 1) {
-        if (any(nchar(provided) == 0))
-            stop("All arguments that will be provided to function must be named")
+        if (sum(nchar(provided) == 0) > 1) #TODO: check if potential issues
+            stop("At most one arugment can be unnamed in the function call")
 
         sdiff = unlist(setdiff(required, provided))
         if (length(sdiff) > 0 && sdiff != '...')
