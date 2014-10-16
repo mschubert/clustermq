@@ -30,8 +30,6 @@
 
 library(stringr)
 library(BatchJobs)
-library(plyr)
-library(modules)
 
 .QLocalRegistries = list()
 
@@ -99,9 +97,9 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
     split_mat = function(X) {
         if (is.array(X) && length(dim(X)) > 1) {
             if (is.na(split.array.by))
-                setNames(alply(X, length(dim(X))), dimnames(X)[[length(dim(X))]])
+                setNames(plyr::alply(X, length(dim(X))), dimnames(X)[[length(dim(X))]])
             else
-                setNames(alply(X, split.array.by), dimnames(X)[[split.array.by]])
+                setNames(plyr::alply(X, split.array.by), dimnames(X)[[split.array.by]])
         } else
             X
     }
