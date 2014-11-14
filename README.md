@@ -32,4 +32,4 @@ hpc$Q(t, a) # splits a by columns
 hpc$Qget() # list(7, 11)
 ```
 
-bj: https://github.com/tudo-r/BatchJobs
+[bj]: https://github.com/tudo-r/BatchJobs
