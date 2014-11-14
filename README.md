@@ -17,13 +17,15 @@ function supplied **must** be self-sufficient, i.e. load libraries and scripts.
 ### Examples
 
 ```r
+library(modules)
+hpc = import('hpc')
 s = function(x) x
-Q(s, x=c(1:3)) # list(1,2,3)
+hpc$Q(s, x=c(1:3)) # list(1,2,3)
 ```
 
 ```r
 t = function(x) sum(x)
 a = matrix(3:6, nrow=2)
-Q(t, a) # splits a by columns
-Qget() # list(7, 11)
+hpc$Q(t, a) # splits a by columns
+hpc$Qget() # list(7, 11)
 ```
