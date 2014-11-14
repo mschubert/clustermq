@@ -49,6 +49,7 @@ library(BatchJobs)
 #' @param name            the name of the function call if more than one are submitted
 #' @param run             submit the function on the queuing system (default:T)
 #' @param get             returns the result of the run (default:T)
+#' @param memory          how many Mb of memory should be reserved to run the job
 #' @param split.array.by  how to split matrices/arrays in \code{...} (default: last dimension)
 #' @param expand.grid     do every combination of arguments to vectorise over
 #' @param grid.sep        separator to use when assembling names from expand.grid
@@ -58,8 +59,8 @@ library(BatchJobs)
 #' @param fail.on.error   if jobs fail, return all successful or throw overall error?
 #' @param set.names       try to name result or keep numbers? (default: \code{fail.on.error})
 #' @return                list of job results if get=T
-Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, 
-             run=T, get=T, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, 
+Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, run=T, get=T,
+             memory=NULL, n.chunks=NULL, chunk.size=NULL, split.array.by=NA,
              expand.grid=F, grid.sep=":", seed=123, fail.on.error=T,
              set.names=fail.on.error) {
     # summarise arguments
@@ -88,7 +89,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
 
     sdiff = unlist(setdiff(provided, names(funargs)))
     if (length(sdiff) > 0 && ! '...' %in% names(funargs))
-        stop(paste("Argument provided by not accepted by function:", paste(sdiff, collapse=" ")))
+        stop(paste("Argument provided but not accepted by function:", paste(sdiff, collapse=" ")))
     dups = duplicated(provided)
     if (any(dups))
         stop(paste("Argument duplicated:", paste(provided[[dups]], collapse=" ")))
@@ -139,7 +140,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
            envir=parent.env(environment()))
 
     if (run)
-        Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size)
+        Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size, memory=memory)
     if (run && get)
         Qget(regs=reg, fail.on.error=fail.on.error)[[1]]
 }
@@ -148,9 +149,10 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL,
 #'
 #' @param n.chunks    number of chunks (cores, LSF jobs) to split each registry into
 #' @param chunk.size  number of calls to put into one core/LSF job (do not use with n.chunks)
+#' @param memory      how many Mb of memory should be reserved to run the job
 #' @param shuffle     if chunking, shuffle the order of calls
 #' @param regs        list of registries to include; default: all local
-Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
+Qrun = function(n.chunks=NULL, chunk.size=NULL, memory=NULL, shuffle=T, regs=Qregs()) {
     if (!is.null(n.chunks) && !is.null(chunk.size))
         stop("Can not take both n.chunks and chunk.size")
 
@@ -163,7 +165,12 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, shuffle=T, regs=Qregs()) {
             ids = chunk(ids, n.chunks=n.chunks, shuffle=shuffle)
         if (!is.null(chunk.size))
             ids = chunk(ids, chunk.size=chunk.size, shuffle=shuffle)
-        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf)
+
+        if (is.null(memory))
+            submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf)
+        else
+            submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf,
+                       resources=list(memory=memory))
     }
 }
 
