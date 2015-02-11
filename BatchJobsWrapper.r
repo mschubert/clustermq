@@ -91,7 +91,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
         stop(paste("Argument duplicated:", paste(provided[[dups]], collapse=" ")))
 
     # convert matrices to lists so they can be vectorised over
-    split_mat = function(X) { #TODO: move this to array (with: -1=last dim)
+    split_mat = function(X) { #TODO: move this to array (with: -1=last dim)?
         if (is.array(X) && length(dim(X)) > 1) {
             if (is.na(split.array.by))
                 setNames(plyr::alply(X, length(dim(X))), dimnames(X)[[length(dim(X))]])
