@@ -31,7 +31,8 @@
 library(stringr)
 library(BatchJobs)
 
-.QLocalRegistries = list()
+#' Registry object the module is working on
+.Qreg = NULL
 
 #' Submit function calls as cluster jobs
 #'
@@ -46,8 +47,6 @@ library(BatchJobs)
 #' @param ...             arguments to vectorise over
 #' @param more.args       arguments not to vectorise over
 #' @param export          objects to export to computing nodes
-#' @param name            the name of the function call if more than one are submitted
-#' @param run             submit the function on the queuing system (default:T)
 #' @param get             returns the result of the run (default:T)
 #' @param memory          how many Mb of memory should be reserved to run the job
 #' @param split.array.by  how to split matrices/arrays in \code{...} (default: last dimension)
@@ -122,7 +121,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, run=T, get
 
     # export objects to nodes if desired
     if (length(export) > 0)
-        do.call(batchExport, c(list(reg), export))
+        do.call(batchExport, c(list(reg=reg), export))
 
     # fill the registry with function calls, save names as well
     if (expand.grid)
@@ -136,12 +135,10 @@ Q = function(` fun`, ..., more.args=list(), export=list(), name=NULL, run=T, get
         resultNames = as.matrix(apply(do.call(cbind, ln), 1, unique))
     save(resultNames, name, set.names, file=file.path(tmpdir, "names.RData"))
 
-    assign('.QLocalRegistries', c(.QLocalRegistries, setNames(list(reg), name)), 
-           envir=parent.env(environment()))
+    assign('Qreg', reg, envir=parent.env(environment()))
 
-    if (run)
-        Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size, memory=memory)
-    if (run && get)
+    Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size, memory=memory)
+    if (get)
         Qget(regs=reg, fail.on.error=fail.on.error)[[1]]
 }
 
@@ -156,22 +153,19 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, memory=NULL, shuffle=T, regs=Qre
     if (!is.null(n.chunks) && !is.null(chunk.size))
         stop("Can not take both n.chunks and chunk.size")
 
-    if (class(regs) == 'Registry')
-        regs = list(regs)
+    reg = get('Qreg', envir=parent.env(environment()))
 
-    for (reg in regs) {
-        ids = getJobIds(reg)
-        if (!is.null(n.chunks))
-            ids = chunk(ids, n.chunks=n.chunks, shuffle=shuffle)
-        if (!is.null(chunk.size))
-            ids = chunk(ids, chunk.size=chunk.size, shuffle=shuffle)
+    ids = getJobIds(reg)
+    if (!is.null(n.chunks))
+        ids = chunk(ids, n.chunks=n.chunks, shuffle=shuffle)
+    if (!is.null(chunk.size))
+        ids = chunk(ids, chunk.size=chunk.size, shuffle=shuffle)
 
-        if (is.null(memory))
-            submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf)
-        else
-            submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf,
-                       resources=list(memory=memory))
-    }
+    if (is.null(memory))
+        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf)
+    else
+        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf,
+                   resources=list(memory=memory))
 }
 
 #' Get all results if \code{get=F} in \code{Q()}
@@ -204,40 +198,8 @@ Qget = function(clean=T, regs=Qregs(), fail.on.error=T) {
     setNames(lapply(regs, getResult), names(regs))
 }
 
-#' Delete all registries if \code{clean=F} in \code{Qget()}
-#'
-#' @param regs  list of registries to include; default: all local
-Qclean = function(regs=Qregs()) {
-    if (class(regs) == 'Registry')
-        regs = list(regs)
-
-    for (reg in regs)
-        unlink(reg$file.dir, recursive=T)
+#' Delete the registry the module is working on
+Qclean = function() {
+    reg = get('Qreg', envir=parent.env(environment()))
+    unlink(reg$file.dir, recursive=T)
 }
-
-#' Lists all registries in the current working directory
-#'
-#' @param name       regular expression specifying the registry name
-#' @param directory  regular expression specifying the directories to look for registries
-#' @param local      only return registries created in this R session
-#' @return           a list of registry objects
-Qregs = function(name=".*", directory="Rtmp[0-9a-zA-Z]+", local=T) {
-    if (local)
-        return(.QLocalRegistries)
-    
-    regdirs = list.files(pattern=directory, include.dirs=T)
-    if (length(regdirs) == 0) return(list())
-    regfun = function(path) list.files(path=path, pattern="^registry.RData$", full.names=T)
-    details = file.info(sapply(regdirs, regfun))
-    regfiles = rownames(details[with(details, order(as.POSIXct(mtime))),])
-    
-    getRegistry = function(rdir) {
-        load(file.path(rdir, 'registry.RData'))
-        load(file.path(rdir, 'names.RData'))
-        list(name, reg)
-    }
-    regs = lapply(regdirs, getRegistry)
-    regs = setNames(lapply(regs, function(x) x[[2]]), sapply(regs, function(x) x[[1]]))
-    regs[grepl(name, names(regs))]
-}   
-
