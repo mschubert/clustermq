@@ -34,7 +34,7 @@ library(dplyr)
 .b = import('../base')
 
 #' Registry object the module is working on
-.Qreg = NULL
+Qreg = NULL
 
 #' Submit function calls as cluster jobs
 #'
