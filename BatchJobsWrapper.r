@@ -65,7 +65,11 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
     fun = match.fun(` fun`)
     funargs = formals(fun)
     required = names(funargs)[unlist(lapply(funargs, function(f) class(f)=='name'))]
-    provided= names(c(l., more.args))
+
+    if (length(l.) == 1 && length(required) == 1)
+        names(l.) = required
+
+    provided = names(c(l., more.args))
 
     # perform checks that BatchJobs doesn't do
     if ('reg' %in% provided || 'fun' %in% provided)
@@ -75,14 +79,9 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
     if (expand.grid && length(l.) == 1)
         stop("Can not expand.grid on one vector")
 
-    if (length(provided) > 1) {
-        if (sum(nchar(provided) == 0) > 1) #TODO: check if potential issues
-            stop("At most one arugment can be unnamed in the function call")
-
-        sdiff = unlist(setdiff(required, provided))
-        if (length(sdiff) > 0 && sdiff != '...')
-            stop(paste("Argument required but not provided:", paste(sdiff, collapse=" ")))
-    }
+    sdiff = unlist(setdiff(required, provided))
+    if (length(sdiff) > 0 && sdiff != '...')
+        stop(paste("Argument required but not provided:", paste(sdiff, collapse=" ")))
 
     sdiff = unlist(setdiff(provided, names(funargs)))
     if (length(sdiff) > 0 && ! '...' %in% names(funargs))
@@ -111,7 +110,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
         do.call(batchExport, c(list(reg=reg), export))
 
     # fill the registry with function calls, save names as well
-    if (expand.grid) { #TODO: name columns in layout df properly (formals if no names)
+    if (expand.grid) {
         layout = expand.grid(lapply(l., .b$descriptive_index))
         do.call(batchExpandGrid, c(list(reg=reg, fun=fun, more.args=more.args), l.))
     } else {
