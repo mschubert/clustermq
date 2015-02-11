@@ -111,7 +111,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
 
     # fill the registry with function calls, save names as well
     if (expand.grid) {
-        layout = expand.grid(lapply(l., .b$descriptive_index))
+        layout = do.call(expand.grid, lapply(l., .b$descriptive_index))
         do.call(batchExpandGrid, c(list(reg=reg, fun=fun, more.args=more.args), l.))
     } else {
         layout = as.data.frame(lapply(l., .b$descriptive_index))
