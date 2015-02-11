@@ -30,6 +30,7 @@
 
 library(stringr)
 library(BatchJobs)
+library(dplyr)
 .b = import('../base')
 
 #' Registry object the module is working on
@@ -110,7 +111,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
         do.call(batchExport, c(list(reg=reg), export))
 
     # fill the registry with function calls, save names as well
-    if (expand.grid) {
+    if (expand.grid) { #TODO: name columns in layout df properly (formals if no names)
         layout = expand.grid(lapply(l., .b$descriptive_index))
         do.call(batchExpandGrid, c(list(reg=reg, fun=fun, more.args=more.args), l.))
     } else {
@@ -120,12 +121,14 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
 
     assign('Qreg', reg, envir=parent.env(environment()))
 
-    Qrun(regs=reg, n.chunks=n.chunks, chunk.size=chunk.size, memory=memory)
+    Qrun(n.chunks=n.chunks, chunk.size=chunk.size, memory=memory)
     
-    if (get) # merge layout+results list
-        Qget(regs=reg, fail.on.error=fail.on.error)[[1]]
-    else
-        layout
+    if (get) {
+        layout$result = setNames(rep(list(NA),nrow(layout)), 1:nrow(layout))
+        result = Qget(fail.on.error=fail.on.error)
+        layout$result[names(result)] = result
+    }
+    layout
 }
 
 #' Run all registries if \code{run=F} in \code{Q()}
@@ -134,8 +137,7 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
 #' @param chunk.size  number of calls to put into one core/LSF job (do not use with n.chunks)
 #' @param memory      how many Mb of memory should be reserved to run the job
 #' @param shuffle     if chunking, shuffle the order of calls
-#' @param regs        list of registries to include; default: all local
-Qrun = function(n.chunks=NULL, chunk.size=NULL, memory=NULL, shuffle=T, regs=Qregs()) {
+Qrun = function(n.chunks=NULL, chunk.size=NULL, memory=NULL, shuffle=T) {
     if (!is.null(n.chunks) && !is.null(chunk.size))
         stop("Can not take both n.chunks and chunk.size")
 
@@ -157,19 +159,17 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, memory=NULL, shuffle=T, regs=Qre
 #' Get all results if \code{get=F} in \code{Q()}
 #'
 #' @param clean           delete the registry when done
-#' @param regs            list of registries to include; default: all local
 #' @param fail.on.errors  whether to get only successful results or throw overall error
 #' @return                a list of results of the function called with different arguments
-Qget = function(clean=TRUE, regs=Qregs(), fail.on.error=TRUE) {
+Qget = function(clean=TRUE, fail.on.error=TRUE) {
     reg = get('Qreg', envir=parent.env(environment()))
 
     waitForJobs(reg, ids=getJobIds(reg))
     print(showStatus(reg, errors=100L))
-    retrieve = function(job, res) setNames(res, job)
     if (fail.on.error)
-        result = reduceResultsList(reg, ids=getJobIds(reg), fun=retrieve)
+        result = reduceResultsList(reg, ids=getJobIds(reg), fun=function(job, res) res)
     else
-        result = reduceResultsList(reg, fun=retrieve)
+        result = reduceResultsList(reg, fun=function(job, res) res)
 
     if (clean)
         Qclean()
