@@ -58,8 +58,8 @@ Qreg = NULL
 #' @param chunk.size      how many function calls in one job (default: 1)
 #' @param fail.on.error   if jobs fail, return all successful or throw overall error?
 #' @return                list of job results if get=T
-Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FALSE,
-        memory=NULL, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, seed=123, fail.on.error=TRUE) {
+Q = function(` fun`, ..., more.args=list(), export=list(), get=TRUE, expand.grid=FALSE, seed=123,
+        memory=NULL, n.chunks=NULL, chunk.size=NULL, split.array.by=NA, fail.on.error=TRUE) {
     # summarise arguments
     l. = list(...)
     fun = match.fun(` fun`)
@@ -110,24 +110,17 @@ Q = function(` fun`, ..., more.args=list(), export=list(), get=T, expand.grid=FA
         do.call(batchExport, c(list(reg=reg), export))
 
     # fill the registry with function calls, save names as well
-    if (expand.grid) {
-        layout = do.call(.b$expand_grid, lapply(l., .b$descriptive_index))
+    if (expand.grid)
         do.call(batchExpandGrid, c(list(reg=reg, fun=fun, more.args=more.args), l.))
-    } else {
-        layout = as.data.frame(lapply(l., .b$descriptive_index))
+    else
         do.call(batchMap, c(list(reg=reg, fun=fun, more.args=more.args), l.))
-    }
 
     assign('Qreg', reg, envir=parent.env(environment()))
 
     Qrun(n.chunks=n.chunks, chunk.size=chunk.size, memory=memory)
     
-    if (get) {
-        layout$result = setNames(rep(list(NA),nrow(layout)), 1:nrow(layout))
-        result = Qget(fail.on.error=fail.on.error)
-        layout$result[names(result)] = result
-    }
-    layout
+    if (get)
+        Qget(fail.on.error=fail.on.error)
 }
 
 #' Run all registries if \code{run=F} in \code{Q()}
