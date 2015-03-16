@@ -16,8 +16,8 @@ if (!file.exists("~/.BatchJobs.R")) {
             memory = "4096"
         )
 
-        db.driver = "SQLite"
-        db.options = list(synchronous=2) #, cache_size=-102400)
+        # https://github.com/tudo-r/BatchJobs/issues/58#issuecomment-81569527
+        db.options = list(pragmas = c("busy_timeout=5000", "journal_mode=WAL"))
 
         #debug = TRUE
         #staged.queries = FALSE

@@ -7,13 +7,7 @@ interface, does more error checking than the library itself, and is able to
 queue different function calls before waiting for the results. The function
 supplied **must be self-sufficient**, i.e. load libraries and scripts.
 
-**Note: there are some issues with RSQLite>=1.0, use the following:**
-
-```bash
-wget http://cran.r-project.org/src/contrib/Archive/RSQLite/RSQLite_0.11.4.tar.gz
-wget http://cran.r-project.org/src/contrib/Archive/BatchJobs/BatchJobs_1.4.tar.gz
-R CMD INSTALL RSQLite_0.11.4.tar.gz BatchJobs_1.4.tar.gz
-```
+**Note:** There were some issues with concurrent database access, use BatchJobs>=1.6
 
 ### `Q()`
 
