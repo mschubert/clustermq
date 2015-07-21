@@ -5,7 +5,7 @@ if (!file.exists("~/.BatchJobs.R")) {
         cluster.functions = makeClusterFunctionsLSF(file.path(module_file(), 'LSF.tmpl'))
         mail.start = "none"
         mail.done = "none"
-        mail.error = "first"
+        mail.error = "none"
         mail.from = "<lsf@ebi.ac.uk>"
         mail.to = paste0("<", Sys.info()[["user"]], "@ebi.ac.uk>")
         mail.control = list(smtpServer="mx1.ebi.ac.uk")

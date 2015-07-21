@@ -8,7 +8,7 @@
 #BSUB-W <%= resources$walltime %>                   # Walltime in minutes
 #BSUB-M <%= resources$memory %>                     # Memory requirements in Kbytes
 #BSUB-R rusage[mem=<%= resources$memory %>]         # Memory requirements in Kbytes
-#BSUB-R select[gpfs]
+#BSUB-R select[panfs_nobackup_research]
 
 # we merge R output with stdout from LSF, which gets then logged via -o option
 R CMD BATCH --no-save --no-restore "<%= rscript %>" /dev/stdout
