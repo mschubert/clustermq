@@ -142,9 +142,9 @@ Qrun = function(n.chunks=NULL, chunk.size=NULL, memory=NULL, shuffle=T) {
         ids = chunk(ids, chunk.size=chunk.size, shuffle=shuffle)
 
     if (is.null(memory))
-        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf)
+        submitJobs(reg, ids, chunks.as.arrayjobs=FALSE, job.delay=FALSE, max.retries=Inf)
     else
-        submitJobs(reg, ids, chunks.as.arrayjobs=F, job.delay=T, max.retries=Inf,
+        submitJobs(reg, ids, chunks.as.arrayjobs=FALSE, job.delay=FALSE, max.retries=Inf,
                    resources=list(memory=memory))
 }
 
