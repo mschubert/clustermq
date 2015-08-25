@@ -1,15 +1,10 @@
-## Default resources can be set in your .BatchJobs.R by defining the variable 
-## 'default.resources' as a named list.
-
-## remove everthing in [] if your cluster does not support arrayjobs
-#BSUB-J <%= job.name %> #[1-<%= arrayjobs %>]         # name of the job / array jobs
-#BSUB-o <%= log.file %>                             # output is sent to logfile, stdout + stderr by default
-#BSUB-P <%= resources$queue %>                      # Job queue
-#BSUB-W <%= resources$walltime %>                   # Walltime in minutes
-#BSUB-M <%= resources$memory %>                     # Memory requirements in Kbytes
-#BSUB-R rusage[mem=<%= resources$memory %>]         # Memory requirements in Kbytes
+#BSUB-J {{ job_name }}                    # name of the job / array jobs
+#BSUB-o {{ log_file | /dev/null }}        # output is sent to logfile, stdout + stderr by default
+#BSUB-P {{ queue }}                       # Job queue
+#BSUB-W {{ walltime }}                    # Walltime in minutes
+#BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes
+#BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes
 #BSUB-R select[panfs_nobackup_research]
 
-# we merge R output with stdout from LSF, which gets then logged via -o option
-R CMD BATCH --no-save --no-restore "<%= rscript %>" /dev/stdout
+R --no-save --no-restore --args "{{ args }}" < "{{ rscript }}"
 
