@@ -34,6 +34,7 @@
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL,
              n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE) {
     worker_file = module_file("worker.r") #BUG: in modules, could do this directly otherwise
+    lsf_file = module_file("LSF.tmpl") #BUG: same as above
     infuser = import_package('infuser')
     import_package('rzmq', attach=TRUE)
 
@@ -62,7 +63,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     for (j in 1:n_jobs) {
         values$job_name = paste0("rzmq-", j)
         values$log_file = paste0(values$job_name, ".log")
-        system("bsub", input=infuser$infuse("LSF.tmpl", values))
+        system("bsub", input=infuser$infuse(lsf_file, values))
     }
 
     job_result = list()
