@@ -49,7 +49,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     values = list(
         queue = "research-rh6",
         walltime = 10080,
-        memory = 1024,
+        memory = memory,
         rscript = worker_file,
         args = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
     )

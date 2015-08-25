@@ -10,9 +10,11 @@ socket = init.socket(context, "ZMQ_REQ")
 connect.socket(socket, master)
 send.socket(socket, data=list(id=0))
 msg = receive.socket(socket)
-print(msg)
 fun = msg$fun
 const = msg$const
+
+print(fun)
+print(names(const))
 
 while(TRUE) {
     msg = receive.socket(socket)
@@ -22,4 +24,6 @@ while(TRUE) {
     result = try(do.call(fun, c(const, msg$iter)))
 
     send.socket(socket, data=list(id = msg$id, result=result))
+
+    print(pryr::mem_used())
 }
