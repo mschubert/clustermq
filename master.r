@@ -66,7 +66,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
         system("bsub", input=infuser$infuse(lsf_file, values))
     }
 
-    job_result = list()
+    job_result = rep(list(NULL), length(job_data))
     job_status = factor(rep("queued", length(job_data)),
                         levels=c("queued", "running", "done", "error"))
 
