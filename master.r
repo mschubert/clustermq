@@ -47,12 +47,14 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     # bind socket
     zmq.context = init.context()
     socket = init.socket(zmq.context, "ZMQ_REP")
+    sink('/dev/null')
     for (i in 1:100) {
         exec_socket = sample(6000:8000, size=1)
         port_found = bind.socket(socket, paste0("tcp://*:", exec_socket))
         if (port_found)
             break
     }
+    sink()
     if (!port_found)
         stop("Could not bind to a port in range (6000,8000) after 100 tries")
 
@@ -66,15 +68,22 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     )
 
     # do the submissions
+    message("Submitting worker jobs ...")
+    pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
-        values$job_name = paste0("rzmq-", j)
+        values$job_name = paste0("rzmq", exec_socket, "-", j)
         values$log_file = paste0(values$job_name, ".log")
-        system("bsub", input=infuser$infuse(lsf_file, values))
+        system("bsub", input=infuser$infuse(lsf_file, values), ignore.stdout=TRUE)
+        setTxtProgressBar(pb, j)
     }
+    close(pb)
 
     job_result = rep(list(NULL), length(job_data))
     submit_index = 1
     jobs_running = c()
+
+    message("Running calculations ...")
+    pb = txtProgressBar(min=1, max=length(job_data)+1, style=3)
 
     while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
@@ -92,8 +101,10 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
         } else
             send.socket(socket, data=list(id=0))
 
+        setTxtProgressBar(pb, submit_index)
         Sys.sleep(0.001)
     }
 
+    close(pb)
     job_result
 }
