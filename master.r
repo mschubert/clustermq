@@ -39,11 +39,22 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     import_package('rzmq', attach=TRUE)
 
     fun = match.fun(fun)
-    exec_socket = 6124
     job_data = .p$process_args(fun, iter=list(...), const=const,
                                expand_grid=expand_grid,
                                split_array_by=split_array_by)
     names(job_data) = 1:length(job_data)
+
+    # bind socket
+    zmq.context = init.context()
+    socket = init.socket(zmq.context, "ZMQ_REP")
+    for (i in 1:100) {
+        exec_socket = sample(6000:8000, size=1)
+        port_found = bind.socket(socket, paste0("tcp://*:", exec_socket))
+        if (port_found)
+            break
+    }
+    if (!port_found)
+        stop("Could not bind to a port in range (6000,8000) after 100 tries")
 
     # use the template & submit
     values = list(
@@ -53,11 +64,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
         rscript = worker_file,
         args = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
     )
-
-    # bind socket
-    zmq.context = init.context()
-    socket = init.socket(zmq.context, "ZMQ_REP")
-    bind.socket(socket, paste0("tcp://*:", exec_socket))
 
     # do the submissions
     for (j in 1:n_jobs) {
