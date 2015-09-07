@@ -67,22 +67,22 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     }
 
     job_result = rep(list(NULL), length(job_data))
-    job_status = factor(rep("queued", length(job_data)),
-                        levels=c("queued", "running", "done", "error"))
+    submit_index = 1
+    jobs_running = c()
 
-    while(any(job_status %in% c("queued", "running"))) {
+    while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
         if (msg$id == 0)
             send.socket(socket, data=list(fun=fun, const=const), send.more=TRUE)
         else {
-            job_status[msg$id] = "done"
+            jobs_running = setdiff(jobs_running, msg$id)
             job_result[[msg$id]] = msg$result
         }
 
-        id = which(job_status == "queued")[1]
-        if (!is.na(id)) {
-            send.socket(socket, data=list(id=id, iter=as.list(job_data[[id]])))
-            job_status[id] = "running"
+        if (submit_index <= length(job_data)) {
+            send.socket(socket, data=list(id=submit_index, iter=as.list(job_data[[submit_index]])))
+            jobs_running = c(jobs_running, submit_index)
+            submit_index = submit_index + 1
         } else
             send.socket(socket, data=list(id=0))
 
