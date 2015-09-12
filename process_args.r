@@ -17,7 +17,6 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
     # summarise arguments
     fun = match.fun(fun)
     funargs = formals(fun)
-    iter = .ll$transpose(iter)
     required = names(funargs)[unlist(lapply(funargs, function(f) class(f)=='name'))]
 
     if (length(iter) == 1 && length(required) == 1)
@@ -54,5 +53,5 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
         } else
             X
     }
-    lapply(iter, split_mat)
+    .ll$transpose(lapply(iter, split_mat))
 }

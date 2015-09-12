@@ -33,6 +33,9 @@
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL,
              n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE) {
+    if (is.null(n_jobs) && is.null(job_size))
+        stop("n_jobs or job_size is required")
+
     worker_file = module_file("worker.r") #BUG: in modules, could do this directly otherwise
     lsf_file = module_file("LSF.tmpl") #BUG: same as above
     infuser = import_package('infuser')
