@@ -86,7 +86,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
     jobs_running = c()
 
     message("Running calculations ...")
-    pb = txtProgressBar(min=1, max=length(job_data)+1, style=3)
+    pb = txtProgressBar(min=0, max=length(job_data), style=3)
 
     while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
@@ -104,7 +104,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
         } else
             send.socket(socket, data=list(id=0))
 
-        setTxtProgressBar(pb, submit_index)
+        setTxtProgressBar(pb, submit_index - length(jobs_running))
         Sys.sleep(0.001)
     }
 
