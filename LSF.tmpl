@@ -6,5 +6,5 @@
 #BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes
 #BSUB-R select[panfs_nobackup_research]
 
-R --no-save --no-restore --args "{{ args }}" < "{{ rscript }}"
+R --no-save --no-restore --args {{ args }} < "{{ rscript }}"
 

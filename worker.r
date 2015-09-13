@@ -1,8 +1,11 @@
 # this should be submitted by bsub
 # and get the server as argument
+
 master = commandArgs(TRUE)[1]
-#master = "tcp://ebi-002.ebi.ac.uk:6124"
+memlimit = as.integer(commandArgs(TRUE)[2])
+ulimit::memory_limit(memlimit)
 print(master)
+print(memlimit)
 
 library(rzmq)
 context = init.context()

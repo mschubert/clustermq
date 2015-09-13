@@ -21,6 +21,11 @@
 #  * handle failed jobs? (e.g.: save layout to registry dir to rerun failed jobs) [rerun option?]
 .p = import('./process_args')
 
+# Check for `pryr` package that is required for workers
+stopifnot("pryr" %in% rownames(installed.packages()))
+# Check for `ulimit` package that is required for workers
+stopifnot("ulimit" %in% rownames(installed.packages()))
+
 #' @param fun             A function to call
 #' @param ...             Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
@@ -31,10 +36,12 @@
 #' @param job_size        The number of function calls per job; if n_jobs is given,
 #'                        this will have priority
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
-Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL,
+Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096,
              n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE) {
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
+    if (memory < 500)
+        stop("Worker needs about 230 MB overhead, set memory>=500")
 
     worker_file = module_file("worker.r") #BUG: in modules, could do this directly otherwise
     lsf_file = module_file("LSF.tmpl") #BUG: same as above
@@ -67,7 +74,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
         walltime = 10080,
         memory = memory,
         rscript = worker_file,
-        args = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+        args = sprintf("tcp://%s:%i %i", Sys.info()[['nodename']], exec_socket, memory)
     )
 
     # do the submissions
@@ -110,4 +117,15 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=NULL
 
     close(pb)
     job_result
+}
+
+if (is.null(module_name())) {
+    # test if memory limits raise and error instead of crashing r
+    # note that the worker has about 225 MB overhead
+    fx = function(x) {
+        test = rep(1,x)
+        TRUE
+    }
+    re = Q(fx, (20:50)*1e6, memory=500, n_jobs=1)
+    testthat::expect_equal(unique(sapply(re, class)), c("logical", "try-error"))
 }
