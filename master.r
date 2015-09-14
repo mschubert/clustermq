@@ -21,10 +21,11 @@
 #  * handle failed jobs? (e.g.: save layout to registry dir to rerun failed jobs) [rerun option?]
 .p = import('./process_args')
 
-# Check for `pryr` package that is required for workers
-stopifnot("pryr" %in% rownames(installed.packages()))
-# Check for `ulimit` package that is required for workers
-stopifnot("ulimit" %in% rownames(installed.packages()))
+# Check that all the required packags (master and worker) are installed
+.req_pkg = c("rzmq", "infuser", "pryr", "ulimit")
+.pkg_missing = setdiff(.req_pkg, rownames(installed.packages()))
+if (any(.pkg_missing))
+    stop("The following packages need to be installed: ", paste(.pkg_missing, sep=", "))
 
 #' @param fun             A function to call
 #' @param ...             Objects to be iterated in each function call
