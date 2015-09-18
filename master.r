@@ -37,8 +37,11 @@ if (any(.pkg_missing))
 #' @param job_size        The number of function calls per job; if n_jobs is given,
 #'                        this will have priority
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
-Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096,
-             n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE) {
+#' @param fail_on_error   If an error occurs on the workers, continue or fail?
+#' @param log_worker      Write a log file for each worker
+#' @return                A list of whatever `fun` returned
+Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096, n_jobs=NULL,
+             job_size=NULL, split_array_by=NA, fail_on_error=TRUE, log_worker=FALSE) {
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
     if (memory < 500)
@@ -83,7 +86,10 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
         values$job_name = paste0("rzmq", exec_socket, "-", j)
-        values$log_file = paste0(values$job_name, ".log")
+        if (log_worker)
+            values$log_file = paste0(values$job_name, ".log")
+        else
+            values$log_file = "/dev/null"
         system("bsub", input=infuser$infuse(lsf_file, values), ignore.stdout=TRUE)
         setTxtProgressBar(pb, j)
     }
