@@ -98,7 +98,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     job_result = rep(list(NULL), length(job_data))
     submit_index = 1
     jobs_running = c()
-    common_data = serialize(list(fun=fun, const=const))
+    common_data = serialize(list(fun=fun, const=const, seed=seed))
 
     message("Running calculations ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)

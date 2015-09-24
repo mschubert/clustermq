@@ -15,6 +15,7 @@ send.socket(socket, data=list(id=0))
 msg = receive.socket(socket)
 fun = msg$fun
 const = msg$const
+seed = msg$seed
 
 print(fun)
 print(names(const))
@@ -24,6 +25,7 @@ while(TRUE) {
     if (msg$id == 0)
         break
 
+    set.seed(seed + msg$id)
     result = try(do.call(fun, c(const, msg$iter)))
 
     send.socket(socket, data=list(id = msg$id, result=result))
