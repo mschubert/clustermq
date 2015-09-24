@@ -98,6 +98,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     job_result = rep(list(NULL), length(job_data))
     submit_index = 1
     jobs_running = c()
+    common_data = serialize(list(fun=fun, const=const))
 
     message("Running calculations ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)
@@ -105,7 +106,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
         if (msg$id == 0)
-            send.socket(socket, data=list(fun=fun, const=const), send.more=TRUE)
+            send.socket(socket, data=common_data, serialize=FALSE, send.more=TRUE)
         else {
             jobs_running = setdiff(jobs_running, msg$id)
             job_result[[msg$id]] = msg$result
