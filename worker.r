@@ -6,7 +6,7 @@ memlimit = as.integer(commandArgs(TRUE)[2])
 ulimit::memory_limit(memlimit)
 print(master)
 print(memlimit)
-has_pryr = requireNamespace("pryr")
+has_pryr = requireNamespace("pryr", quietly=TRUE)
 
 library(rzmq)
 context = init.context()

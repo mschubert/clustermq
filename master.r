@@ -119,7 +119,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
         } else
             send.socket(socket, data=list(id=0))
 
-        setTxtProgressBar(pb, submit_index - length(jobs_running))
+        setTxtProgressBar(pb, submit_index - length(jobs_running) - 1)
         Sys.sleep(0.001)
     }
 
