@@ -22,7 +22,7 @@
 .p = import('./process_args')
 
 # Check that all the required packags (master and worker) are installed
-.req_pkg = c("rzmq", "infuser", "pryr", "ulimit")
+.req_pkg = c("rzmq", "infuser", "ulimit")
 .pkg_missing = setdiff(.req_pkg, rownames(installed.packages()))
 if (any(.pkg_missing))
     stop("The following packages need to be installed: ", paste(.pkg_missing, sep=", "))

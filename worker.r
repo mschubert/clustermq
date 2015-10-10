@@ -6,6 +6,7 @@ memlimit = as.integer(commandArgs(TRUE)[2])
 ulimit::memory_limit(memlimit)
 print(master)
 print(memlimit)
+has_pryr = requireNamespace("pryr")
 
 library(rzmq)
 context = init.context()
@@ -30,5 +31,6 @@ while(TRUE) {
 
     send.socket(socket, data=list(id = msg$id, result=result))
 
-    print(pryr::mem_used())
+    if (has_pryr)
+        print(pryr::mem_used())
 }
