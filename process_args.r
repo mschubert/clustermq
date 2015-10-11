@@ -1,4 +1,5 @@
-.ll = import('base/list')
+.split = import('../array/split')
+.ll = import('../base/list')
 
 #' @param fun             the function to call
 #' @param ...             arguments to vectorise over
@@ -44,14 +45,7 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
         stop(paste("Argument duplicated:", paste(provided[[dups]], collapse=" ")))
 
     # convert matrices to lists so they can be vectorised over
-    split_mat = function(X) { #TODO: move this to array (with: -1=last dim)?
-        if (is.array(X) && length(dim(X)) > 1) {
-            if (is.na(split_array_by))
-                setNames(plyr::alply(X, length(dim(X))), dimnames(X)[[length(dim(X))]])
-            else
-                setNames(plyr::alply(X, split_array_by), dimnames(X)[[split_array_by]])
-        } else
-            X
-    }
-    .ll$transpose(lapply(iter, split_mat))
+    if (is.na(split_array_by))
+        split_array_by = -1
+    .ll$transpose(lapply(iter, function(x) .split$split(x, along=split_array_by)))
 }
