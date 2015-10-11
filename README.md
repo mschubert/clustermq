@@ -1,16 +1,22 @@
 High performance computing / LSF jobs
 =====================================
 
-This script uses the [rzmq package](https://github.com/armstrtw/rzmq) to run
-function calls as LSF jobs. This is using the same library ([ZeroMQ](http://zeromq.org/))
-that is also used for workers in IPython.
+Perform function calls in LSF jobs. The module will start `n_jobs` LSF jobs (workers) with the
+memory requirements specified, and then send `<i>` function calls to those workers.
+
+This is done entirely on the network and without temporary files (unless `log_worker=TRUE`),
+so there is no strain on the file system apart from starting up R once per LSF job.
+
+The module also performs load-balancing, i.e. workers that get their jobs done faster will also
+receive more function calls to work on. This is especially useful if not all calls
+return after the same time, or one worker has a high load. For long running jobs use `n_jobs=<i>`.
+
+It is based upon the [rzmq package](https://github.com/armstrtw/rzmq) and the
+[ZeroMQ library](http://zeromq.org/) that is also used for workers in IPython.
 
 The function supplied **must be self-sufficient**, i.e. load libraries and scripts.
 
 ### `Q()`
-
-Creates a new registry with that vectorises a function call and returns 
-results if `get=T` (default).
 
 ```r
 hpc = import('hpc')
