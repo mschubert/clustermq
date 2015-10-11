@@ -125,6 +125,12 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     }
 
     close(pb)
+
+    failed = sapply(job_result, class) == "try-error"
+    warning(job_result[failed])
+    if (fail_on_error && any(failed))
+        stop("errors occurred, stopping")
+
     job_result
 }
 
