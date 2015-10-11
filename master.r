@@ -141,6 +141,6 @@ if (is.null(module_name())) {
         test = rep(1,x)
         TRUE
     }
-    re = Q(fx, (20:50)*1e6, memory=500, n_jobs=1)
+    re = Q(fx, (20:50)*1e6, memory=500, n_jobs=1, fail_on_error=FALSE)
     testthat::expect_equal(unique(sapply(re, class)), c("logical", "try-error"))
 }
