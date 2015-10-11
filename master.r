@@ -47,8 +47,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
-    worker_file = module_file("worker.r") #BUG: in modules, could do this directly otherwise
-    lsf_file = module_file("LSF.tmpl") #BUG: same as above
+    worker_file = module_file("worker.r") #BUG: modules#66, could do directly otherwise
+    lsf_file = module_file("LSF.tmpl") #BUG: modules#66
     infuser = import_package('infuser')
     import_package('rzmq', attach=TRUE)
 
