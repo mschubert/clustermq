@@ -99,6 +99,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     submit_index = 1
     jobs_running = c()
     common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
+    wait_time = max(0.001, 1/sqrt(length(job_data)))
 
     message("Running calculations ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)
@@ -120,7 +121,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
             send.socket(socket, data=list(id=0))
 
         setTxtProgressBar(pb, submit_index - length(jobs_running) - 1)
-        Sys.sleep(0.001)
+        Sys.sleep(wait_time)
     }
 
     close(pb)
