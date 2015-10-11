@@ -1,24 +1,22 @@
 # Rationale
 #  This script uses rzmq to run function calls as LSF jobs.
 #  The function supplied *MUST* be self-sufficient, i.e. load libraries and scripts.
-#  BatchJobs on the EBI cluster is already set up when using the gentoo prefix.
 #
 # Usage
-#  * Q()     : create a new registry with that vectorises a function call
+#  * Q(...)     : general queuing function
 #
 # Examples
 #  > s = function(x) x
-#  > Q(s, x=c(1:3))
+#  > Q(s, x=c(1:3), n_jobs=1)
 #  returns list(1,2,3)
 #
 #  > t = function(x) sum(x)
 #  > a = matrix(3:6, nrow=2)
-#  > Q(t, a)
-#  > Qget()
+#  > Q(t, a, n_jobs=1)
 #  splits a by columns, sums each column, and returns list(7, 11)
 #
 # TODO list
-#  * handle failed jobs? (e.g.: save layout to registry dir to rerun failed jobs) [rerun option?]
+#  * rerun failed jobs?
 .p = import('./process_args')
 
 # Check that all the required packags (master and worker) are installed
@@ -127,9 +125,11 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     close(pb)
 
     failed = sapply(job_result, class) == "try-error"
-    warning(job_result[failed])
-    if (fail_on_error && any(failed))
-        stop("errors occurred, stopping")
+    if (any(failed)) {
+        warning(job_result[failed])
+        if (fail_on_error)
+            stop("errors occurred, stopping")
+    }
 
     job_result
 }
