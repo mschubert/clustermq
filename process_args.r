@@ -45,7 +45,12 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
         stop(paste("Argument duplicated:", paste(provided[[dups]], collapse=" ")))
 
     # convert matrices to lists so they can be vectorised over
-    if (is.na(split_array_by))
-        split_array_by = -1
-    .ll$transpose(lapply(iter, function(x) .split$split(x, along=split_array_by)))
+    split_arrays = function(x) {
+        if (is.array(x))
+            .split$split(x, along=ifelse(is.na(split_array_by), -1, split_array_by))
+        else
+            x
+    }
+    iter_split = lapply(iter, split_arrays)
+    .ll$transpose(iter_split)
 }
