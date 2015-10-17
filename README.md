@@ -16,6 +16,14 @@ It is based upon the [rzmq package](https://github.com/armstrtw/rzmq) and the
 
 The function supplied **must be self-sufficient**, i.e. load libraries and scripts.
 
+### Custom setup
+
+Currently, only LSF is supported as a scheduler. Adding others should be simple, but will
+only be implemented if there is a need for it.
+
+If not at EBI, you may need to adjust the `LSF.tmpl` file according to your needs,
+especially for the queue and custom resources.
+
 ### `Q()`
 
 ```r

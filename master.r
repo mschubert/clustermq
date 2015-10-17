@@ -72,8 +72,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
 
     # use the template & submit
     values = list(
-        queue = "research-rh6",
-        walltime = 10080,
         memory = memory,
         rscript = worker_file,
         args = sprintf("tcp://%s:%i %i", Sys.info()[['nodename']], exec_socket, memory)
