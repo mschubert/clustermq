@@ -37,10 +37,12 @@ if (any(.pkg_missing))
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param log_worker      Write a log file for each worker
+#' @param wait_time       Time to wait between messages; set 0 for short cals
+#'                        defaults to 1/sqrt(number_of_functon_calls)
 #' @return                A list of whatever `fun` returned
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA,
-        fail_on_error=TRUE, log_worker=FALSE) {
+        fail_on_error=TRUE, log_worker=FALSE, wait_time=NA) {
 
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
@@ -98,18 +100,24 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     job_result = rep(list(NULL), length(job_data))
     submit_index = 1
     jobs_running = c()
-    common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
-    wait_time = max(0.001, 1/sqrt(length(job_data)))
+    common_data = serialize(list(fun=fun, const=const, seed=seed),
+                            NULL, xdr=FALSE)
+    worker_stats = list()
+    if (is.na(wait_time))
+        wait_time = max(0.001, 1/sqrt(length(job_data)))
 
     message("Running calculations ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)
 
+    start_time = proc.time()
     while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
-        if (msg$id == 0)
+        if (msg$id == 0) # worker ready
             send.socket(socket, data=common_data,
                         serialize=FALSE, send.more=TRUE)
-        else {
+        else if (msg$id == -1) # worker done, shutting down
+            worker_stats = c(worker_stats, list(msg$time))
+        else { # worker sending result
             jobs_running = setdiff(jobs_running, msg$id)
             job_result[[msg$id]] = msg$result
         }
@@ -126,6 +134,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         Sys.sleep(wait_time)
     }
 
+    rt = proc.time() - start_time
     close(pb)
 
     failed = sapply(job_result, class) == "try-error"
@@ -134,6 +143,12 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         if (fail_on_error)
             stop("errors occurred, stopping")
     }
+
+    wt = Reduce(`+`, worker_stats) / length(worker_stats)
+    message(sprintf("\nmaster summary: %.1fs %.1f%% CPU", rt[[3]],
+                    100*(rt[[1]]+rt[[2]])/rt[[3]]))
+    message(sprintf("worker summary: %.1f%% CPU\n",
+                    100*(wt[[1]]+wt[[2]])/wt[[3]]))
 
     job_result
 }

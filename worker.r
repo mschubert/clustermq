@@ -21,11 +21,15 @@ seed = msg$seed
 print(fun)
 print(names(const))
 
+start_time = proc.time()
+counter = 0
+
 while(TRUE) {
     msg = receive.socket(socket)
     if (msg$id == 0)
         break
 
+    counter = counter + 1
     set.seed(seed + msg$id)
     result = try(do.call(fun, c(const, msg$iter)))
 
@@ -34,3 +38,9 @@ while(TRUE) {
     if (has_pryr)
         print(pryr::mem_used())
 }
+
+run_time = proc.time() - start_time
+
+send.socket(socket, data=list(id=-1, time=run_time, calls=counter))
+
+print(run_time)
