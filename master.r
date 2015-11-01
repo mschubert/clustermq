@@ -38,15 +38,17 @@ if (any(.pkg_missing))
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param log_worker      Write a log file for each worker
 #' @return                A list of whatever `fun` returned
-Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096, n_jobs=NULL,
-             job_size=NULL, split_array_by=NA, fail_on_error=TRUE, log_worker=FALSE) {
+Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
+        memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA,
+        fail_on_error=TRUE, log_worker=FALSE) {
+
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
-    worker_file = module_file("worker.r") #BUG: modules#66, could do directly otherwise
-    lsf_file = module_file("LSF.tmpl") #BUG: modules#66
+    worker_file = module_file("worker.r") #BUG: modules#66
+    lsf_file = module_file("LSF.tmpl") #BUG: modules#66, direct otherwise
     infuser = import_package('infuser')
     import_package('rzmq', attach=TRUE)
 
@@ -68,13 +70,14 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     }
     sink()
     if (!port_found)
-        stop("Could not bind to a port in range (6000,8000) after 100 tries")
+        stop("Could not bind to port range (6000,8000) after 100 tries")
 
     # use the template & submit
     values = list(
         memory = memory,
         rscript = worker_file,
-        args = sprintf("tcp://%s:%i %i", Sys.info()[['nodename']], exec_socket, memory)
+        args = sprintf("tcp://%s:%i %i", Sys.info()[['nodename']],
+                       exec_socket, memory)
     )
 
     # do the submissions
@@ -86,7 +89,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
             values$log_file = paste0(values$job_name, ".log")
         else
             values$log_file = "/dev/null"
-        system("bsub", input=infuser$infuse(lsf_file, values), ignore.stdout=TRUE)
+        system("bsub", input=infuser$infuse(lsf_file, values),
+                ignore.stdout=TRUE)
         setTxtProgressBar(pb, j)
     }
     close(pb)
@@ -103,14 +107,16 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965, memory=4096
     while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
         if (msg$id == 0)
-            send.socket(socket, data=common_data, serialize=FALSE, send.more=TRUE)
+            send.socket(socket, data=common_data,
+                        serialize=FALSE, send.more=TRUE)
         else {
             jobs_running = setdiff(jobs_running, msg$id)
             job_result[[msg$id]] = msg$result
         }
 
         if (submit_index <= length(job_data)) {
-            send.socket(socket, data=list(id=submit_index, iter=as.list(job_data[[submit_index]])))
+            send.socket(socket, data=list(id=submit_index,
+                        iter=as.list(job_data[[submit_index]])))
             jobs_running = c(jobs_running, submit_index)
             submit_index = submit_index + 1
         } else
@@ -140,5 +146,6 @@ if (is.null(module_name())) {
         TRUE
     }
     re = Q(fx, (20:50)*1e6, memory=500, n_jobs=1, fail_on_error=FALSE)
-    testthat::expect_equal(unique(sapply(re, class)), c("logical", "try-error"))
+    testthat::expect_equal(unique(sapply(re, class)),
+                           c("logical", "try-error"))
 }
