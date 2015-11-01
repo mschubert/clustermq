@@ -99,10 +99,10 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
     job_result = rep(list(NULL), length(job_data))
     submit_index = 1
-    jobs_running = c()
+    jobs_running = list()
+    worker_stats = list()
     common_data = serialize(list(fun=fun, const=const, seed=seed),
                             NULL, xdr=FALSE)
-    worker_stats = list()
     if (is.na(wait_time))
         wait_time = max(0.001, 1/sqrt(length(job_data)))
 
@@ -118,14 +118,14 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         else if (msg$id == -1) # worker done, shutting down
             worker_stats = c(worker_stats, list(msg$time))
         else { # worker sending result
-            jobs_running = setdiff(jobs_running, msg$id)
+            jobs_running[[as.character(msg$id)]] = NULL
             job_result[[msg$id]] = msg$result
         }
 
         if (submit_index <= length(job_data)) {
             send.socket(socket, data=list(id=submit_index,
                         iter=as.list(job_data[[submit_index]])))
-            jobs_running = c(jobs_running, submit_index)
+            jobs_running[[as.character(submit_index)]] = TRUE
             submit_index = submit_index + 1
         } else
             send.socket(socket, data=list(id=0))
@@ -145,9 +145,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     }
 
     wt = Reduce(`+`, worker_stats) / length(worker_stats)
-    message(sprintf("\nmaster summary: %.1fs %.1f%% CPU", rt[[3]],
-                    100*(rt[[1]]+rt[[2]])/rt[[3]]))
-    message(sprintf("worker summary: %.1f%% CPU\n",
+    message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
+                    rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))
 
     job_result
