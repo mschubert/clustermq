@@ -102,7 +102,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     jobs_running = list()
     worker_stats = list()
     common_data = serialize(list(fun=fun, const=const, seed=seed),
-                            NULL, xdr=FALSE)
+                            NULL, xdr=.Platform$endian=="big")
     if (is.na(wait_time))
         wait_time = max(0.001, 1/sqrt(length(job_data)))
 
@@ -123,8 +123,12 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         }
 
         if (submit_index <= length(job_data)) {
-            send.socket(socket, data=list(id=submit_index,
-                        iter=as.list(job_data[[submit_index]])))
+            # possible big endian performance issue:
+            # https://github.com/armstrtw/rzmq/issues/19
+            # serialize ourseles until then
+            send.socket(socket, data=serialize(list(id=submit_index,
+                        iter=as.list(job_data[[submit_index]])), NULL,
+                        xdr=.Platform$endian=="big"), serialize=FALSE)
             jobs_running[[as.character(submit_index)]] = TRUE
             submit_index = submit_index + 1
         } else
