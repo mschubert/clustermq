@@ -29,7 +29,7 @@ if (any(.pkg_missing))
 #' @param ...             Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
 #' @param expand_grid     Use all combinations of arguments in `...`
-#' @param seed            A seed to select seeds for each function call
+#' @param seed            A seed to set for each function call
 #' @param memory          The amount of Mb to request from LSF; default: 1 Gb
 #' @param n_jobs          The number of LSF jobs to submit
 #' @param job_size        The number of function calls per job; if n_jobs is given,
@@ -39,19 +39,21 @@ if (any(.pkg_missing))
 #' @param log_worker      Write a log file for each worker
 #' @param wait_time       Time to wait between messages; set 0 for short cals
 #'                        defaults to 1/sqrt(number_of_functon_calls)
+#' @param template        Template file to use; will be "template_<template>.r" in this dir
 #' @return                A list of whatever `fun` returned
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA,
-        fail_on_error=TRUE, log_worker=FALSE, wait_time=NA) {
+        fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, template="LSF") {
+
+    qsys = import(paste0('./template_', template))
+    stopifnot(c("submit_job", "cleanup") %in% ls(qsys))
+    on.exit(qsys$cleanup)
 
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
-    worker_file = module_file("worker.r") #BUG: modules#66
-    lsf_file = module_file("LSF.tmpl") #BUG: modules#66, direct otherwise
-    infuser = import_package('infuser')
     import_package('rzmq', attach=TRUE)
 
     fun = match.fun(fun)
@@ -73,26 +75,13 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     sink()
     if (!port_found)
         stop("Could not bind to port range (6000,8000) after 100 tries")
-
-    # use the template & submit
-    values = list(
-        memory = memory,
-        rscript = worker_file,
-        args = sprintf("tcp://%s:%i %i", Sys.info()[['nodename']],
-                       exec_socket, memory)
-    )
+    master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
 
     # do the submissions
     message("Submitting worker jobs ...")
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
-        values$job_name = paste0("rzmq", exec_socket, "-", j)
-        if (log_worker)
-            values$log_file = paste0(values$job_name, ".log")
-        else
-            values$log_file = "/dev/null"
-        system("bsub", input=infuser$infuse(lsf_file, values),
-                ignore.stdout=TRUE)
+        qsys$submit_job(address=master, memory=memory, log_worker=log_worker)
         setTxtProgressBar(pb, j)
     }
     close(pb)
