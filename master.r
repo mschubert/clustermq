@@ -138,7 +138,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     #TODO: make sure we get the worker stats for
     # - only one job running
     # - all jobs finishing at the same time
-    import('../base/operators')
     wt = Reduce(`+`, worker_stats) / length(worker_stats)
     if (length(wt) == 0) # if we can't get anything - should fix above
         wt = list(NA, NA, NA)
