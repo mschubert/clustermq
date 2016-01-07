@@ -25,6 +25,9 @@
 if (any(.pkg_missing))
     stop("The following packages need to be installed: ", paste(.pkg_missing, sep=", "))
 
+if (grepl("^0\\.[0-8]", packageVersion("modules")))
+    stop("Needs modules >= 0.9; see: https://github.com/klmr/modules/issues/66")
+
 #' @param fun             A function to call
 #' @param ...             Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
@@ -132,7 +135,13 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
             stop("errors occurred, stopping")
     }
 
+    #TODO: make sure we get the worker stats for
+    # - only one job running
+    # - all jobs finishing at the same time
+    import('../base/operators')
     wt = Reduce(`+`, worker_stats) / length(worker_stats)
+    if (length(wt) == 0) # if we can't get anything - should fix above
+        wt = list(NA, NA, NA)
     message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
                     rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))

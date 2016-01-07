@@ -21,12 +21,12 @@ job_num = 1
 #' @param memory      The amount of memory (megabytes) to request
 #' @param log_worker  Create a log file for each worker
 submit_job = function(address, memory, log_worker=FALSE) {
-    group_id = grep("[0-9]+$", address, value=TRUE)
+    group_id = rev(strsplit(address, ":")[[1]])[1]
 
     values = list(
-        job_name = paste0("rzmq", group_id, "-", job_num)
-        group = paste("rzmq", group_id, sep="/")
-        rscript = module_file("worker.r")
+        job_name = paste0("rzmq", group_id, "-", job_num),
+        job_group = paste("/rzmq", group_id, sep="/"),
+        rscript = module_file("worker.r"),
         args = paste(address, memory)
     )
 
