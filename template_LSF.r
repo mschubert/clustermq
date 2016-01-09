@@ -2,7 +2,7 @@ infuser = import_package('infuser')
 
 #' A template string used to submit jobs
 template = "#BSUB-J {{ job_name }}        # name of the job / array jobs
-#BSUB-g {{ job_group | rzmq }}            # group the job belongs to
+#BSUB-g {{ job_group | /rzmq }}           # group the job belongs to
 #BSUB-o {{ log_file | /dev/null }}        # output is sent to logfile, stdout + stderr by default
 #BSUB-P research-rh6                      # Job queue
 #BSUB-W 10080                             # Walltime in minutes
@@ -15,13 +15,17 @@ R --no-save --no-restore --args {{ args }} < '{{ rscript }}'
 
 #' Number submitted jobs consecutively
 job_num = 1
+group_id = NULL
 
 #' Submits one job to the queuing system
 #' @param address     An rzmq-compatible address to connect the worker to
 #' @param memory      The amount of memory (megabytes) to request
 #' @param log_worker  Create a log file for each worker
 submit_job = function(address, memory, log_worker=FALSE) {
+    if (!is.null(get("group_id", envir=parent.env())))
+        stop("group_id already set")
     group_id = rev(strsplit(address, ":")[[1]])[1]
+    assign("group_id", group_id, envir=parent.env())
 
     values = list(
         job_name = paste0("rzmq", group_id, "-", job_num),
@@ -40,4 +44,6 @@ submit_job = function(address, memory, log_worker=FALSE) {
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
+    group_id = get("group_id", envir=parent.env())
+    system(paste("bkill -g", group_id, "0"), ignore.stdout=TRUE)
 }
