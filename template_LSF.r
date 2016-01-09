@@ -15,17 +15,16 @@ R --no-save --no-restore --args {{ args }} < '{{ rscript }}'
 
 #' Number submitted jobs consecutively
 job_num = 1
-group_id = NULL
+job_group = NULL
 
 #' Submits one job to the queuing system
 #' @param address     An rzmq-compatible address to connect the worker to
 #' @param memory      The amount of memory (megabytes) to request
 #' @param log_worker  Create a log file for each worker
 submit_job = function(address, memory, log_worker=FALSE) {
-    if (!is.null(get("group_id", envir=parent.env())))
-        stop("group_id already set")
+    if (!is.null(get("job_group", envir=parent.env())))
+        stop("job_group already set")
     group_id = rev(strsplit(address, ":")[[1]])[1]
-    assign("group_id", group_id, envir=parent.env())
 
     values = list(
         job_name = paste0("rzmq", group_id, "-", job_num),
@@ -33,6 +32,8 @@ submit_job = function(address, memory, log_worker=FALSE) {
         rscript = module_file("worker.r"),
         args = paste(address, memory)
     )
+
+    assign("job_group", values$job_group, envir=parent.env())
 
     if (log_worker)
         values$log_file = paste0(values$job_name, ".log")
@@ -44,6 +45,6 @@ submit_job = function(address, memory, log_worker=FALSE) {
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
-    group_id = get("group_id", envir=parent.env())
-    system(paste("bkill -g", group_id, "0"), ignore.stdout=TRUE)
+    job_group = get("job_group", envir=parent.env())
+    system(paste("bkill -g", job_group, "0"), ignore.stdout=TRUE)
 }
