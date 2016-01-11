@@ -22,7 +22,7 @@ job_group = NULL
 #' @param memory      The amount of memory (megabytes) to request
 #' @param log_worker  Create a log file for each worker
 submit_job = function(address, memory, log_worker=FALSE) {
-    if (!is.null(get("job_group", envir=parent.env())))
+    if (!is.null(get("job_group", envir=parent.env(environment()))))
         stop("job_group already set")
     group_id = rev(strsplit(address, ":")[[1]])[1]
 
@@ -33,7 +33,7 @@ submit_job = function(address, memory, log_worker=FALSE) {
         args = paste(address, memory)
     )
 
-    assign("job_group", values$job_group, envir=parent.env())
+    assign("job_group", values$job_group, envir=parent.env(environment()))
 
     if (log_worker)
         values$log_file = paste0(values$job_name, ".log")
@@ -45,6 +45,6 @@ submit_job = function(address, memory, log_worker=FALSE) {
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
-    job_group = get("job_group", envir=parent.env())
+    job_group = get("job_group", envir=parent.env(environment()))
     system(paste("bkill -g", job_group, "0"), ignore.stdout=TRUE)
 }
