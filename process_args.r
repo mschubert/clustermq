@@ -1,5 +1,5 @@
-.split = import('../array/split')
-.ll = import('../base/list')
+.split = import_('../array/split')
+.ll = import_('../base/list')
 
 #' @param fun             the function to call
 #' @param ...             arguments to vectorise over

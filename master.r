@@ -17,7 +17,7 @@
 #
 # TODO list
 #  * rerun failed jobs?
-.p = import('./process_args')
+.p = import_('./process_args')
 
 # Check that all the required packags (master and worker) are installed
 .req_pkg = c("rzmq", "infuser", "ulimit")
@@ -48,7 +48,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, template="LSF") {
 
-    qsys = import(paste0('./template_', template))
+    qsys = import_(paste0('./template_', template))
     stopifnot(c("submit_job", "cleanup") %in% ls(qsys))
     on.exit(qsys$cleanup)
 
@@ -57,7 +57,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
-    import_package('rzmq', attach=TRUE)
+    import_package_('rzmq', attach=TRUE)
 
     fun = match.fun(fun)
     job_data = .p$process_args(fun, iter=list(...), const=const,

@@ -1,4 +1,4 @@
-infuser = import_package('infuser')
+infuser = import_package_('infuser')
 
 #' A template string used to submit jobs
 template = "#BSUB-J {{ job_name }}        # name of the job / array jobs
@@ -22,8 +22,6 @@ job_group = NULL
 #' @param memory      The amount of memory (megabytes) to request
 #' @param log_worker  Create a log file for each worker
 submit_job = function(address, memory, log_worker=FALSE) {
-    if (!is.null(get("job_group", envir=parent.env(environment()))))
-        stop("job_group already set")
     group_id = rev(strsplit(address, ":")[[1]])[1]
 
     values = list(
@@ -46,5 +44,7 @@ submit_job = function(address, memory, log_worker=FALSE) {
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
     job_group = get("job_group", envir=parent.env(environment()))
-    system(paste("bkill -g", job_group, "0"), ignore.stdout=TRUE)
+    print(job_group)
+    print(paste("bkill -g", job_group, "0"))
+    system(paste("bkill -g", job_group, "0"), ignore.stdout=FALSE)
 }
