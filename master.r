@@ -149,6 +149,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 }
 
 if (is.null(module_name())) {
+    library(testthat)
+
     # test if memory limits raise and error instead of crashing r
     # note that the worker has about 225 MB overhead
     fx = function(x) {
@@ -156,6 +158,6 @@ if (is.null(module_name())) {
         TRUE
     }
     re = Q(fx, (20:50)*1e6, memory=500, n_jobs=1, fail_on_error=FALSE)
-    testthat::expect_equal(unique(sapply(re, class)),
-                           c("logical", "try-error"))
+    expect_equal(unique(sapply(re, class)),
+                 c("logical", "try-error"))
 }
