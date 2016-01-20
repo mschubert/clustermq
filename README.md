@@ -13,7 +13,8 @@ return after the same time, or one worker has a high load. For long running jobs
 
 It is based upon the [rzmq package](https://github.com/armstrtw/rzmq) and the
 [ZeroMQ library](http://zeromq.org/) that is also used for workers in IPython.
-It is also using [ulimit package](https://github.com/krlmlr/ulimit).
+
+It also uses the [ulimit package](https://github.com/krlmlr/ulimit).
 
 The function supplied **must be self-sufficient**, i.e. load libraries and scripts.
 
