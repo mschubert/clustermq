@@ -50,7 +50,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
     qsys = import_(paste0('./template_', template))
     stopifnot(c("submit_job", "cleanup") %in% ls(qsys))
-    on.exit(qsys$cleanup)
+    on.exit(qsys$cleanup())
 
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")

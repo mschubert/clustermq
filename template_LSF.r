@@ -32,19 +32,19 @@ submit_job = function(address, memory, log_worker=FALSE) {
     )
 
     assign("job_group", values$job_group, envir=parent.env(environment()))
+    assign("job_num", job_num + 1, envir=parent.env(environment()))
 
     if (log_worker)
         values$log_file = paste0(values$job_name, ".log")
 
     job_input = infuser$infuse(template, values)
     system("bsub", input=job_input, ignore.stdout=TRUE)
-    job_num = job_num + 1
 }
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
-    job_group = get("job_group", envir=parent.env(environment()))
-    print(job_group)
-    print(paste("bkill -g", job_group, "0"))
+#    job_group = get("job_group", envir=parent.env(environment()))
+#    print(job_group)
+#    print(paste("bkill -g", job_group, "0"))
     system(paste("bkill -g", job_group, "0"), ignore.stdout=FALSE)
 }
