@@ -100,6 +100,15 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     message("Running calculations ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)
 
+    # exchanging messages between the master and workers works the following way:
+    #  * we have submitted a job where we don't know when it will start up
+    #  * it starts, sends is a message list(id=0) indicating it is ready
+    #  * we send it the function definition and common data
+    #    * we also send it the first data set to work on
+    #  * when we get any id > 0, it is a result that we store
+    #    * and send the next data set/index to work on
+    #  * when computatons are complete, we send id=0 to the worker
+    #    * it responds with id=-1 (and usage stats) and shuts down
     start_time = proc.time()
     while(submit_index <= length(job_data) || length(jobs_running) > 0) {
         msg = receive.socket(socket)
