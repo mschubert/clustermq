@@ -92,6 +92,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     job_result = rep(list(NULL), length(job_data))
     submit_index = 1
     jobs_running = list()
+    workers_running = list()
     worker_stats = list()
     common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
     if (is.na(wait_time))
@@ -110,14 +111,16 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     #  * when computatons are complete, we send id=0 to the worker
     #    * it responds with id=-1 (and usage stats) and shuts down
     start_time = proc.time()
-    while(submit_index <= length(job_data) || length(jobs_running) > 0) {
+    while(submit_index <= length(job_data) || length(workers_running) > 0) {
         msg = receive.socket(socket)
-        if (msg$id == 0) # worker ready
+        if (msg$id == 0) { # worker ready
             send.socket(socket, data=common_data,
                         serialize=FALSE, send.more=TRUE)
-        else if (msg$id == -1) # worker done, shutting down
-            worker_stats = c(worker_stats, list(msg$time))
-        else { # worker sending result
+            workers_running[[msg$worker_id]] = TRUE
+        } else if (msg$id == -1) { # worker done, shutting down
+            worker_stats[[msg$worker_id]] = msg$time
+            workers_running[[msg$worker_id]] = NULL
+        } else { # worker sending result
             jobs_running[[as.character(msg$id)]] = NULL
             job_result[[msg$id]] = msg$result
         }
@@ -136,6 +139,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
     rt = proc.time() - start_time
     close(pb)
+
+    # all our jobs are terminated here, no need to clean up anymore
+    on.exit(NULL)
 
     failed = sapply(job_result, class) == "try-error"
     if (any(failed)) {

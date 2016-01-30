@@ -1,8 +1,8 @@
 # this should be submitted by bsub
 # and get the server as argument
-
-master = commandArgs(TRUE)[1]
-memlimit = as.integer(commandArgs(TRUE)[2])
+worker_id = commandArgs(TRUE)[1]
+master = commandArgs(TRUE)[2]
+memlimit = as.integer(commandArgs(TRUE)[3])
 ulimit::memory_limit(memlimit)
 print(master)
 print(memlimit)
@@ -12,7 +12,7 @@ library(rzmq)
 context = init.context()
 socket = init.socket(context, "ZMQ_REQ")
 connect.socket(socket, master)
-send.socket(socket, data=list(id=0))
+send.socket(socket, data=list(id=0, worker_id=worker_id))
 msg = receive.socket(socket)
 fun = msg$fun
 const = msg$const
@@ -41,6 +41,6 @@ while(TRUE) {
 
 run_time = proc.time() - start_time
 
-send.socket(socket, data=list(id=-1, time=run_time, calls=counter))
+send.socket(socket, data=list(id=-1, worker_id=worker_id, time=run_time, calls=counter))
 
 print(run_time)

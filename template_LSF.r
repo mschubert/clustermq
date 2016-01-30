@@ -23,12 +23,13 @@ job_group = NULL
 #' @param log_worker  Create a log file for each worker
 submit_job = function(address, memory, log_worker=FALSE) {
     group_id = rev(strsplit(address, ":")[[1]])[1]
+    job_name = paste0("rzmq", group_id, "-", job_num)
 
     values = list(
-        job_name = paste0("rzmq", group_id, "-", job_num),
+        job_name = job_name,
         job_group = paste("/rzmq", group_id, sep="/"),
         rscript = module_file("worker.r"),
-        args = paste(address, memory)
+        args = paste(job_name, address, memory)
     )
 
     assign("job_group", values$job_group, envir=parent.env(environment()))
@@ -43,8 +44,5 @@ submit_job = function(address, memory, log_worker=FALSE) {
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
-#    job_group = get("job_group", envir=parent.env(environment()))
-#    print(job_group)
-#    print(paste("bkill -g", job_group, "0"))
     system(paste("bkill -g", job_group, "0"), ignore.stdout=FALSE)
 }
