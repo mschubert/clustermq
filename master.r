@@ -123,6 +123,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         } else { # worker sending result
             jobs_running[[as.character(msg$id)]] = NULL
             job_result[[msg$id]] = msg$result
+            setTxtProgressBar(pb, submit_index - length(jobs_running) - 1)
         }
 
         if (submit_index <= length(job_data)) {
@@ -133,7 +134,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         } else
             send.socket(socket, data=list(id=0))
 
-        setTxtProgressBar(pb, submit_index - length(jobs_running) - 1)
         Sys.sleep(wait_time)
     }
 
@@ -150,12 +150,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
             stop("errors occurred, stopping")
     }
 
-    #TODO: make sure we get the worker stats for
-    # - only one job running
-    # - all jobs finishing at the same time
     wt = Reduce(`+`, worker_stats) / length(worker_stats)
-    if (length(wt) == 0) # if we can't get anything - should fix above
-        wt = list(NA, NA, NA)
     message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
                     rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))
