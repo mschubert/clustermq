@@ -57,34 +57,19 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
-    import_package_('rzmq', attach=TRUE)
-
     fun = match.fun(fun)
     job_data = .p$process_args(fun, iter=list(...), const=const,
                                expand_grid=expand_grid,
                                split_array_by=split_array_by)
     names(job_data) = 1:length(job_data)
 
-    # bind socket
-    zmq.context = init.context()
-    socket = init.socket(zmq.context, "ZMQ_REP")
-    sink('/dev/null')
-    for (i in 1:100) {
-        exec_socket = sample(6000:8000, size=1)
-        port_found = bind.socket(socket, paste0("tcp://*:", exec_socket))
-        if (port_found)
-            break
-    }
-    sink()
-    if (!port_found)
-        stop("Could not bind to port range (6000,8000) after 100 tries")
-    master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+    qsys$init()
 
     # do the submissions
     message("Submitting worker jobs ...")
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
-        qsys$submit_job(address=master, memory=memory, log_worker=log_worker)
+        qsys$submit_job(memory=memory, log_worker=log_worker)
         setTxtProgressBar(pb, j)
     }
     close(pb)
@@ -94,7 +79,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     jobs_running = list()
     workers_running = list()
     worker_stats = list()
-    common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
     if (is.na(wait_time))
         wait_time = ifelse(length(job_data) < 5e5, 1/sqrt(length(job_data)), 0)
 
@@ -112,10 +96,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     #    * it responds with id=-1 (and usage stats) and shuts down
     start_time = proc.time()
     while(submit_index <= length(job_data) || length(workers_running) > 0) {
-        msg = receive.socket(socket)
-        if (msg$id == 0) { # worker ready
-            send.socket(socket, data=common_data,
-                        serialize=FALSE, send.more=TRUE)
+        msg = qsys$receive_data()
+        if (msg$id == 0) { # worker ready, send common data
+            qsys$send_common_data(fun=fun, const=const, seed=seed)
             workers_running[[msg$worker_id]] = TRUE
         } else if (msg$id == -1) { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
@@ -126,13 +109,12 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
             setTxtProgressBar(pb, submit_index - length(jobs_running) - 1)
         }
 
-        if (submit_index <= length(job_data)) {
-            send.socket(socket, data=list(id=submit_index,
-                        iter=as.list(job_data[[submit_index]])))
+        if (submit_index <= length(job_data)) { # send iterated data to worker
+            qsys$send_job_data(id=submit_index, iter=as.list(job_data[[submit_index]]))
             jobs_running[[as.character(submit_index)]] = TRUE
             submit_index = submit_index + 1
-        } else
-            send.socket(socket, data=list(id=0))
+        } else # send shutdown signal to worker
+            qsys$send_job_data(id=0)
 
         Sys.sleep(wait_time)
     }
@@ -141,7 +123,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     close(pb)
 
     # all our jobs are terminated here, no need to clean up anymore
-    on.exit(NULL)
+#FIXME: this is needed if a worker doesn't start up before all jobs are done
+#  let's do cleanup by default until this is fixed
+#    on.exit(NULL)
 
     failed = sapply(job_result, class) == "try-error"
     if (any(failed)) {
