@@ -102,5 +102,5 @@ send_job_data = function(...) {
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
-    system(paste("bkill -g", job_group, "0"), ignore.stdout=FALSE)
+    system(paste("bkill -g", job_group, "0"), ignore.stdout=TRUE)
 }

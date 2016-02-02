@@ -122,11 +122,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     rt = proc.time() - start_time
     close(pb)
 
-    # all our jobs are terminated here, no need to clean up anymore
-#FIXME: this is needed if a worker doesn't start up before all jobs are done
-#  let's do cleanup by default until this is fixed
-#    on.exit(NULL)
-
     failed = sapply(job_result, class) == "try-error"
     if (any(failed)) {
         warning(job_result[failed])
