@@ -28,6 +28,8 @@ if (length(.pkg_missing))
 if (grepl("^0\\.[0-8]", packageVersion("modules")))
     stop("Needs modules >= 0.9; see: https://github.com/klmr/modules/issues/66")
 
+#' Function to queue calls
+#'
 #' @param fun             A function to call
 #' @param ...             Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
@@ -121,6 +123,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
     rt = proc.time() - start_time
     close(pb)
+
+    on.exit(NULL)
 
     failed = sapply(job_result, class) == "try-error"
     if (any(failed)) {

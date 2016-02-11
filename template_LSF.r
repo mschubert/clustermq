@@ -29,6 +29,13 @@ master = NULL
 #' The serialized common data
 common_data = NULL
 
+#' The ZerMQ context object
+#'
+#' Having this on the module level and not inside the init() function
+#' is absolutely crucial, otherwise the object is garbage collected
+#' at some point and everything breaks
+zmq.context = NULL
+
 #' Initialize the rZMQ context and bind the port
 init = function() {
     # be sure our variables are set right to start out with
@@ -37,9 +44,9 @@ init = function() {
     assign("socket", NULL, envir=parent.env(environment()))
     assign("master", NULL, envir=parent.env(environment()))
     assign("common_data", NULL, envir=parent.env(environment()))
+    assign("zmq.context", rzmq$init.context(), envir=parent.env(environment()))
 
     # bind socket
-    zmq.context = rzmq$init.context()
     assign("socket", rzmq$init.socket(zmq.context, "ZMQ_REP"), envir=parent.env(environment()))
     sink('/dev/null')
     for (i in 1:100) {
@@ -102,5 +109,5 @@ send_job_data = function(...) {
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
 cleanup = function() {
-    system(paste("bkill -g", job_group, "0"), ignore.stdout=TRUE)
+    system(paste("bkill -g", job_group, "0"), ignore.stdout=FALSE)
 }
