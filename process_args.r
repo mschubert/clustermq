@@ -1,6 +1,8 @@
 .split = import_('../array/split')
 .ll = import_('../base/list')
 
+#' Argument checks and arrange them as list item per job
+#'
 #' @param fun             the function to call
 #' @param ...             arguments to vectorise over
 #' @param const           arguments not to vectorise over
@@ -52,5 +54,10 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
             x
     }
     iter_split = lapply(iter, split_arrays)
+
+    if (expand_grid)
+        iter_split = as.list(do.call(expand.grid, c(iter_split,
+                list(KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE))))
+
     .ll$transpose(iter_split)
 }

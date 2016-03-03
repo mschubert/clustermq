@@ -65,6 +65,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
                                split_array_by=split_array_by)
     names(job_data) = 1:length(job_data)
 
+    if (is.null(n_jobs))
+        n_jobs = ceiling(length(job_data) / job_size)
+
     qsys$init()
 
     # do the submissions
