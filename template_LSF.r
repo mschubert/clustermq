@@ -47,7 +47,9 @@ init = function() {
     assign("zmq.context", rzmq$init.context(), envir=parent.env(environment()))
 
     # bind socket
-    assign("socket", rzmq$init.socket(zmq.context, "ZMQ_REP"), envir=parent.env(environment()))
+    assign("socket", rzmq$init.socket(zmq.context, "ZMQ_REP"),
+           envir=parent.env(environment()))
+
     sink('/dev/null')
     for (i in 1:100) {
         exec_socket = sample(6000:8000, size=1)
@@ -56,8 +58,10 @@ init = function() {
             break
     }
     sink()
+
     if (!port_found)
         stop("Could not bind to port range (6000,8000) after 100 tries")
+
     assign("master", sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket),
            envir=parent.env(environment()))
 }
@@ -98,7 +102,9 @@ receive_data = function() {
 #' Send the data common to all workers, only serialize once
 send_common_data = function(...) {
 	if (is.null(common_data))
-		assign("common_data", serialize(list(...), NULL), envir=parent.env(environment()))
+		assign("common_data", serialize(list(...), NULL),
+               envir=parent.env(environment()))
+
 	rzmq$send.socket(socket, data=common_data, serialize=FALSE, send.more=TRUE)
 }
 
