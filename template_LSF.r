@@ -80,6 +80,7 @@ submit_job = function(memory, log_worker=FALSE) {
     values = list(
         job_name = job_name,
         job_group = paste("/rzmq", group_id, sep="/"),
+        memory = memory,
         rscript = module_file("worker.r"),
         args = paste(job_name, master, memory)
     )
