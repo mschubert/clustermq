@@ -5,11 +5,10 @@ infuser = import_package_('infuser')
 template = "#BSUB-J {{ job_name }}        # name of the job / array jobs
 #BSUB-g {{ job_group | /rzmq }}           # group the job belongs to
 #BSUB-o {{ log_file | /dev/null }}        # output is sent to logfile, stdout + stderr by default
-#BSUB-P research-rh6                      # Job queue
+#BSUB-P research-rh7                      # Job queue
 #BSUB-W 10080                             # Walltime in minutes
 #BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes
 #BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes
-#BSUB-R select[panfs_nobackup_research]
 
 R --no-save --no-restore --args {{ args }} < '{{ rscript }}'
 "
@@ -109,7 +108,7 @@ send_common_data = function(...) {
 	rzmq$send.socket(socket, data=common_data, serialize=FALSE, send.more=TRUE)
 }
 
-#' Send interated data to one worker
+#' Send iterated data to one worker
 send_job_data = function(...) {
 	rzmq$send.socket(socket, data=list(...))
 }

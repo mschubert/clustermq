@@ -1,10 +1,8 @@
 .split = import_('../array/split')
-.ll = import_('../base/list')
 
 #' Argument checks and arrange them as list item per job
 #'
 #' @param fun             the function to call
-#' @param ...             arguments to vectorise over
 #' @param const           arguments not to vectorise over
 #' @param export          objects to export to computing nodes
 #' @param get             returns the result of the run (default:T)
@@ -14,7 +12,6 @@
 #' @param seed            random seed for the function to run
 #' @param n.chunks        how much jobs to split functions calls into (default: number of calls)
 #' @param chunk.size      how many function calls in one job (default: 1)
-#' @param faiiteron.error   if jobs fail, return all successful or throw overall error?
 #' @return                list of job results if get=T
 process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_by=NA) {
     # summarise arguments
@@ -59,5 +56,7 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
         iter_split = as.list(do.call(expand.grid, c(iter_split,
                 list(KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE))))
 
-    .ll$transpose(iter_split)
+    # transpose the list
+#    as.list(data.frame(do.call(rbind, lapply(iter_split, as.list)), check.names=FALSE))
+    do.call(cbind, lapply(iter_split, as.list))
 }
