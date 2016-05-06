@@ -57,6 +57,5 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
                 list(KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE))))
 
     # transpose the list
-#    as.list(data.frame(do.call(rbind, lapply(iter_split, as.list)), check.names=FALSE))
-    do.call(cbind, lapply(iter_split, as.list))
+    as.list(data.frame(do.call(rbind, lapply(iter_split, as.list)), check.names=FALSE))
 }

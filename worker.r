@@ -26,12 +26,15 @@ counter = 0
 
 while(TRUE) {
     msg = receive.socket(socket)
-    if (msg$id == 0)
+    if (identical(msg$id, 0))
         break
 
-    counter = counter + 1
-    set.seed(seed + msg$id)
-    result = try(do.call(fun, c(const, msg$iter)))
+    one_id = function(seq_num) {
+        set.seed(seed + msg$id)
+        result = try(do.call(fun, c(const, msg$iter[[seq_num]])))
+    }
+    result = lapply(seq_along(msg$id), one_id)
+    counter = counter + length(msg$id)
 
     send.socket(socket, data=list(id = msg$id, result=result))
 
