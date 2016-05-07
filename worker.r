@@ -30,7 +30,7 @@ while(TRUE) {
         break
 
     one_id = function(seq_num) {
-        set.seed(seed + msg$id)
+        set.seed(seed + msg$id[seq_num])
         result = try(do.call(fun, c(const, msg$iter[[seq_num]])))
     }
     result = lapply(seq_along(msg$id), one_id)
