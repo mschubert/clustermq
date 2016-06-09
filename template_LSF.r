@@ -36,6 +36,8 @@ common_data = NULL
 zmq.context = NULL
 
 #' Initialize the rZMQ context and bind the port
+#'
+#' @return  ID of the job group
 init = function() {
     # be sure our variables are set right to start out with
     assign("job_num", 1, envir=parent.env(environment()))
@@ -63,6 +65,8 @@ init = function() {
 
     assign("master", sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket),
            envir=parent.env(environment()))
+
+    exec_socket
 }
 
 #' Submits one job to the queuing system
