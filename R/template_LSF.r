@@ -11,26 +11,26 @@ template = "#BSUB-J {{ job_name }}        # name of the job / array jobs
 R --no-save --no-restore --args {{ args }} < '{{ rscript }}'
 "
 
-#' Number submitted jobs consecutively
+# Number submitted jobs consecutively
 job_num = 1
 
-#' Job group that all jobs belong to
+# Job group that all jobs belong to
 job_group = NULL
 
-#' The rZMQ socket object
+# The rZMQ socket object
 socket = NULL
 
-#' An rzmq-compatible address to connect the worker to
+# An rzmq-compatible address to connect the worker to
 master = NULL
 
-#' The serialized common data
+# The serialized common data
 common_data = NULL
 
-#' The ZerMQ context object
-#'
-#' Having this on the module level and not inside the init() function
-#' is absolutely crucial, otherwise the object is garbage collected
-#' at some point and everything breaks
+# The ZerMQ context object
+#
+# Having this on the module level and not inside the init() function
+# is absolutely crucial, otherwise the object is garbage collected
+# at some point and everything breaks
 zmq.context = NULL
 
 #' Initialize the rZMQ context and bind the port
