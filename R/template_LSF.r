@@ -1,6 +1,3 @@
-rzmq = import_package_('rzmq')
-infuser = import_package_('infuser')
-
 #' A template string used to submit jobs
 template = "#BSUB-J {{ job_name }}        # name of the job / array jobs
 #BSUB-g {{ job_group | /rzmq }}           # group the job belongs to
@@ -8,7 +5,8 @@ template = "#BSUB-J {{ job_name }}        # name of the job / array jobs
 #BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes
 #BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes
 
-R --no-save --no-restore --args {{ args }} < '{{ rscript }}'
+R --no-save --no-restore -e \
+    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory }})'
 "
 
 # Number submitted jobs consecutively
@@ -43,16 +41,16 @@ init = function() {
     assign("socket", NULL, envir=parent.env(environment()))
     assign("master", NULL, envir=parent.env(environment()))
     assign("common_data", NULL, envir=parent.env(environment()))
-    assign("zmq.context", rzmq$init.context(), envir=parent.env(environment()))
+    assign("zmq.context", rzmq::init.context(), envir=parent.env(environment()))
 
     # bind socket
-    assign("socket", rzmq$init.socket(zmq.context, "ZMQ_REP"),
+    assign("socket", rzmq::init.socket(zmq.context, "ZMQ_REP"),
            envir=parent.env(environment()))
 
     sink('/dev/null')
     for (i in 1:100) {
         exec_socket = sample(6000:8000, size=1)
-        port_found = rzmq$bind.socket(socket, paste0("tcp://*:", exec_socket))
+        port_found = rzmq::bind.socket(socket, paste0("tcp://*:", exec_socket))
         if (port_found)
             break
     }
@@ -81,9 +79,8 @@ submit_job = function(memory, log_worker=FALSE) {
     values = list(
         job_name = job_name,
         job_group = paste("/rzmq", group_id, sep="/"),
-        memory = memory,
-        rscript = module_file("worker.r"),
-        args = paste(job_name, master, memory)
+        master = master,
+        memory = memory
     )
 
     assign("job_group", values$job_group, envir=parent.env(environment()))
@@ -92,13 +89,13 @@ submit_job = function(memory, log_worker=FALSE) {
     if (log_worker)
         values$log_file = paste0(values$job_name, ".log")
 
-    job_input = infuser$infuse(template, values)
+    job_input = infuser::infuse(template, values)
     system("bsub", input=job_input, ignore.stdout=TRUE)
 }
 
 #' Read data from the socket
 receive_data = function() {
-	rzmq$receive.socket(socket)
+	rzmq::receive.socket(socket)
 }
 
 #' Send the data common to all workers, only serialize once
@@ -107,12 +104,12 @@ send_common_data = function(...) {
 		assign("common_data", serialize(list(...), NULL),
                envir=parent.env(environment()))
 
-	rzmq$send.socket(socket, data=common_data, serialize=FALSE, send.more=TRUE)
+	rzmq::send.socket(socket, data=common_data, serialize=FALSE, send.more=TRUE)
 }
 
 #' Send iterated data to one worker
 send_job_data = function(...) {
-	rzmq$send.socket(socket, data=list(...))
+	rzmq::send.socket(socket, data=list(...))
 }
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
