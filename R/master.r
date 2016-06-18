@@ -1,4 +1,14 @@
-#' Function to queue calls
+#' Queue function calls on the cluster
+#'
+#' exchanging messages between the master and workers works the following way:
+#'  * we have submitted a job where we don't know when it will start up
+#'  * it starts, sends is a message list(id=0) indicating it is ready
+#'  * we send it the function definition and common data
+#'    * we also send it the first data set to work on
+#'  * when we get any id > 0, it is a result that we store
+#'    * and send the next data set/index to work on
+#'  * when computatons are complete, we send id=0 to the worker
+#'    * it responds with id=-1 (and usage stats) and shuts down
 #'
 #' @param fun             A function to call
 #' @param ...             Objects to be iterated in each function call
@@ -21,8 +31,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA, template="LSF") {
 
-    qsys = import_(paste0('./template_', template))
-    stopifnot(c("submit_job", "cleanup") %in% ls(qsys))
+#    qsys = import_(paste0('./template_', template))
+#    stopifnot(c("submit_job", "cleanup") %in% ls(qsys))
 
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
@@ -42,14 +52,14 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (is.na(chunk_size))
         chunk_size = ceiling(length(job_data) / n_jobs / 100)
 
-    on.exit(qsys$cleanup())
-    id = qsys$init()
+    on.exit(cleanup())
+    id = init()
 
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs (ID: ", id, ") ...")
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
-        qsys$submit_job(memory=memory, log_worker=log_worker)
+        submit_job(memory=memory, log_worker=log_worker)
         setTxtProgressBar(pb, j)
     }
     close(pb)
@@ -63,20 +73,11 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     message("Running calculations ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)
 
-    # exchanging messages between the master and workers works the following way:
-    #  * we have submitted a job where we don't know when it will start up
-    #  * it starts, sends is a message list(id=0) indicating it is ready
-    #  * we send it the function definition and common data
-    #    * we also send it the first data set to work on
-    #  * when we get any id > 0, it is a result that we store
-    #    * and send the next data set/index to work on
-    #  * when computatons are complete, we send id=0 to the worker
-    #    * it responds with id=-1 (and usage stats) and shuts down
     start_time = proc.time()
     while(submit_index[1] <= length(job_data) || length(workers_running) > 0) {
-        msg = qsys$receive_data()
+        msg = receive_data()
         if (msg$id[1] == 0) { # worker ready, send common data
-            qsys$send_common_data(fun=fun, const=const, seed=seed)
+            send_common_data(fun=fun, const=const, seed=seed)
             workers_running[[msg$worker_id]] = TRUE
         } else if (msg$id[1] == -1) { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
@@ -89,11 +90,11 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
         if (submit_index[1] <= length(job_data)) { # send iterated data to worker
             submit_index = submit_index[submit_index <= length(job_data)]
-            qsys$send_job_data(id=submit_index, iter=as.list(job_data[submit_index]))
+            send_job_data(id=submit_index, iter=as.list(job_data[submit_index]))
             jobs_running[as.character(submit_index)] = TRUE
             submit_index = submit_index + chunk_size
         } else # send shutdown signal to worker
-            qsys$send_job_data(id=0)
+            send_job_data(id=0)
 
         Sys.sleep(wait_time)
     }

@@ -20,6 +20,6 @@ split = function(X, along, subsets=c(1:dim(X)[along]), drop=FALSE) {
     if (length(usubsets)!=dim(X)[along] || !is.numeric(subsets))
         lnames = usubsets
     else
-        lnames = base::dimnames(X)[[along]]
+        lnames = dimnames(X)[[along]]
     setNames(lapply(idxList, function(ll) array_subset(X, ll, drop=drop)), lnames)
 }

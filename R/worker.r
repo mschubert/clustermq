@@ -5,7 +5,7 @@
 #' @param worker_id  The ID of the worker (usually just numbered)
 #' @param master     The master address (tcp://ip:port)
 #' @param memlimit   Maximum memory before throwing an error
-run_worker = function(worker_id, master, memlimit) {
+worker = function(worker_id, master, memlimit) {
 #    worker_id = commandArgs(TRUE)[1]
 #    master = commandArgs(TRUE)[2]
 #    memlimit = as.integer(commandArgs(TRUE)[3])
