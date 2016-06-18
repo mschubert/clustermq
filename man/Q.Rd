@@ -2,7 +2,7 @@
 % Please edit documentation in R/master.r
 \name{Q}
 \alias{Q}
-\title{Function to queue calls}
+\title{Queue function calls on the cluster}
 \usage{
 Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
   memory = 4096, n_jobs = NULL, job_size = NULL, split_array_by = NA,
@@ -42,6 +42,14 @@ defaults to 1/sqrt(number_of_functon_calls)}
 A list of whatever `fun` returned
 }
 \description{
-Function to queue calls
+exchanging messages between the master and workers works the following way:
+ * we have submitted a job where we don't know when it will start up
+ * it starts, sends is a message list(id=0) indicating it is ready
+ * we send it the function definition and common data
+   * we also send it the first data set to work on
+ * when we get any id > 0, it is a result that we store
+   * and send the next data set/index to work on
+ * when computatons are complete, we send id=0 to the worker
+   * it responds with id=-1 (and usage stats) and shuts down
 }
 
