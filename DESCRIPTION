@@ -1,0 +1,20 @@
+Package: clustermq
+Title: ZeroMQ-powered cluster jobs
+Version: 0.0.1
+Author: Michael Schubert <mschu.dev@gmail.com>
+Maintainer: Michael Schubert <mschu.dev@gmail.com>
+Description: Transparent evaluation of function calls on workers that are
+    submitted as LSF jobs without using network-mounted storage
+Depends:
+    R (>= 3.0.2)
+Imports:
+    tools,
+    roxygen2
+License: Apache License (== 2.0) | file LICENSE
+LazyData: true
+Encoding: UTF-8
+Suggests:
+    knitr,
+    testthat
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1

@@ -36,6 +36,7 @@
 #'                        defaults to 1/sqrt(number_of_functon_calls)
 #' @param template        Template file to use; will be "template_<template>.r" in this dir
 #' @return                A list of whatever `fun` returned
+#' @export
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA, template="LSF") {
