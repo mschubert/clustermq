@@ -8,6 +8,8 @@ Description: Transparent evaluation of function calls on workers that are
 Depends:
     R (>= 3.0.2)
 Imports:
+    rzmq,
+    infuser,
     tools,
     roxygen2
 License: Apache License (== 2.0) | file LICENSE
