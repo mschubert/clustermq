@@ -17,16 +17,6 @@
 #
 # TODO list
 #  * rerun failed jobs?
-.p = import_('./process_args')
-
-# Check that all the required packags (master and worker) are installed
-.req_pkg = c("rzmq", "infuser", "ulimit")
-.pkg_missing = setdiff(.req_pkg, rownames(installed.packages()))
-if (length(.pkg_missing))
-    stop("The following packages need to be installed: ", paste(.pkg_missing, sep=", "))
-
-if (grepl("^0\\.[0-8]", packageVersion("modules")))
-    stop("Needs modules >= 0.9; see: https://github.com/klmr/modules/issues/66")
 
 #' Function to queue calls
 #'
@@ -59,9 +49,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
     fun = match.fun(fun)
-    job_data = .p$process_args(fun, iter=list(...), const=const,
-                               expand_grid=expand_grid,
-                               split_array_by=split_array_by)
+    job_data = process_args(fun, iter=list(...), const=const,
+                            expand_grid=expand_grid,
+                            split_array_by=split_array_by)
     names(job_data) = 1:length(job_data)
 
     if (is.null(n_jobs))
@@ -145,18 +135,4 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))
 
     job_result
-}
-
-if (is.null(module_name())) {
-    library(testthat)
-
-    # test if memory limits raise and error instead of crashing r
-    # note that the worker has about 225 MB overhead
-    fx = function(x) {
-        test = rep(1,x)
-        TRUE
-    }
-    re = Q(fx, (20:50)*1e6, memory=500, n_jobs=1, fail_on_error=FALSE)
-    expect_equal(unique(sapply(re, class)),
-                 c("logical", "try-error"))
 }

@@ -1,5 +1,3 @@
-.split = import_('../array/split')
-
 #' Argument checks and arrange them as list item per job
 #'
 #' @param fun             the function to call
@@ -46,7 +44,7 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
     # convert matrices to lists so they can be vectorised over
     split_arrays = function(x) {
         if (is.array(x))
-            .split$split(x, along=ifelse(is.na(split_array_by), -1, split_array_by))
+            array_split(x, along=ifelse(is.na(split_array_by), -1, split_array_by))
         else
             x
     }
