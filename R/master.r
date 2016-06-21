@@ -24,15 +24,15 @@
 #' @param log_worker      Write a log file for each worker
 #' @param wait_time       Time to wait between messages; set 0 for short cals
 #'                        defaults to 1/sqrt(number_of_functon_calls)
-#' @param template        Template file to use; will be "template_<template>.r" in this dir
+#' @param qsys            Queueing system to use (only "lsf" for now)
 #' @return                A list of whatever `fun` returned
 #' @export
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE,
-        log_worker=FALSE, wait_time=NA, chunk_size=NA, template="LSF") {
+        log_worker=FALSE, wait_time=NA, chunk_size=NA, qsys="lsf") {
 
-#    qsys = import_(paste0('./template_', template))
-#    stopifnot(c("submit_job", "cleanup") %in% ls(qsys))
+    qsys = get(qsys)
+    stopifnot(c("submit_job", "cleanup") %in% ls(qsys)) # extend this?
 
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
@@ -52,14 +52,14 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (is.na(chunk_size))
         chunk_size = ceiling(length(job_data) / n_jobs / 100)
 
-    on.exit(cleanup())
-    id = init()
+    on.exit(qsys$cleanup())
+    id = qsys$init()
 
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs (ID: ", id, ") ...")
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
-        submit_job(memory=memory, log_worker=log_worker)
+        qsys$submit_job(memory=memory, log_worker=log_worker)
         setTxtProgressBar(pb, j)
     }
     close(pb)
@@ -75,9 +75,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
     start_time = proc.time()
     while(submit_index[1] <= length(job_data) || length(workers_running) > 0) {
-        msg = receive_data()
+        msg = qsys$receive_data()
         if (msg$id[1] == 0) { # worker ready, send common data
-            send_common_data(fun=fun, const=const, seed=seed)
+            qsys$send_common_data(fun=fun, const=const, seed=seed)
             workers_running[[msg$worker_id]] = TRUE
         } else if (msg$id[1] == -1) { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
@@ -90,11 +90,11 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
         if (submit_index[1] <= length(job_data)) { # send iterated data to worker
             submit_index = submit_index[submit_index <= length(job_data)]
-            send_job_data(id=submit_index, iter=as.list(job_data[submit_index]))
+            qsys$send_job_data(id=submit_index, iter=as.list(job_data[submit_index]))
             jobs_running[as.character(submit_index)] = TRUE
             submit_index = submit_index + chunk_size
         } else # send shutdown signal to worker
-            send_job_data(id=0)
+            qsys$send_job_data(id=0)
 
         Sys.sleep(wait_time)
     }
