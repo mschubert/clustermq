@@ -71,23 +71,25 @@ lsf$submit_job = function(memory, log_worker=FALSE) {
 
 #' Read data from the socket
 lsf$receive_data = function() {
-	rzmq::receive.socket(lsf$socket)
+    rzmq::receive.socket(lsf$socket)
 }
 
 #' Send the data common to all workers, only serialize once
 lsf$send_common_data = function(...) {
-	if (is.null(lsf$common_data))
+    if (is.null(lsf$common_data))
         lsf$common_data = serialize(list(...), NULL)
 
-	rzmq::send.socket(socket = lsf$socket,
+    rzmq::send.socket(socket = lsf$socket,
                       data = lsf$common_data,
                       serialize = FALSE,
                       send.more = TRUE)
+
+    gc() # why you leak so much memory?
 }
 
 #' Send iterated data to one worker
 lsf$send_job_data = function(...) {
-	rzmq::send.socket(socket = lsf$socket, data = list(...))
+    rzmq::send.socket(socket = lsf$socket, data = list(...))
 }
 
 #' Will be called when exiting the `hpc` module's main loop, use to cleanup
