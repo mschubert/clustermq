@@ -56,7 +56,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     id = qsys$init()
 
     # do the submissions
-    message("Submitting ", n_jobs, " worker jobs (ID: ", id, ") ...")
+    message("Submitting ", n_jobs, " worker jobs for ", length(job_data),
+            " function calls (ID: ", id, ") ...")
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
         qsys$submit_job(memory=memory, log_worker=log_worker)
@@ -70,7 +71,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     workers_running = list()
     worker_stats = list()
 
-    message("Running calculations ...")
+    message("Running calculations (", chunk_size, " calls/chunk) ...")
     pb = txtProgressBar(min=0, max=length(job_data), style=3)
 
     start_time = proc.time()
