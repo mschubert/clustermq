@@ -16,9 +16,9 @@
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
 #' @param memory          The amount of Mb to request from LSF; default: 1 Gb
-#' @param n_jobs          The number of LSF jobs to submit
-#' @param job_size        The number of function calls per job; if n_jobs is given,
-#'                        this will have priority
+#' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
+#'                        if job_size is given as well
+#' @param job_size        The number of function calls per job
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param log_worker      Write a log file for each worker
@@ -45,8 +45,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
                             split_array_by=split_array_by)
     names(job_data) = 1:length(job_data)
 
-    if (is.null(n_jobs))
-        n_jobs = ceiling(length(job_data) / job_size)
+    n_jobs = min(ceiling(length(job_data) / job_size), n_jobs)
+
     if (is.na(wait_time))
         wait_time = ifelse(length(job_data) < 5e5, 1/sqrt(length(job_data)), 0)
     if (is.na(chunk_size))
