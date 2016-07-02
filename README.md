@@ -1,11 +1,14 @@
 ClusterMQ: send R function calls as LSF jobs
 ============================================
 
-Rationale
----------
-
 This package will allow you to send function calls as LSF jobs using a minimal
-interface.
+interface provided by the `Q` function:
+
+```r
+library(clustermq)
+fx = function(x) x * 2
+Q(fx, x=c(1:3), n_jobs=1) # list(1,2,3)
+```
 
 Computations are done entirely on the network and without any temporary files
 on network-mounted storage, so there is no strain on the file system apart from
@@ -31,12 +34,6 @@ will be protected from crashing by running out of memory.
 
 Usage
 -----
-
-```r
-library(clustermq)
-fx = function(x) x * 2
-Q(fx, x=c(1:3), n_jobs=1) # list(1,2,3)
-```
 
 The following arguments are supported by `Q`:
 
