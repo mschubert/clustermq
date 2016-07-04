@@ -68,8 +68,8 @@ Performance
 -----------
 
 It's a lot faster than `BatchJobs` for short function calls because it doesn't
-start a new instance of R with every call. I've successfully used it with 10^8
-function calls where the former did not process 10^6.
+start a new instance of R with every call. I've successfully used it with 10<sup>
+8</sup> function calls where the former did not process 10<sup>6</sup>.
 
 It also bypasses network-mounted storage entirely by sendign all data directly
 via TCP and performs load balancing that is useful if calls take different
