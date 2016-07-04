@@ -5,15 +5,25 @@ This package will allow you to send function calls as LSF jobs using a minimal
 interface provided by the `Q` function:
 
 ```r
+# load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
-Q(fx, x=c(1:3), n_jobs=1) # list(1,2,3)
+
+# queue the function call 
+Q(fx, x=1:3, n_jobs=1)
+
+# this will submit an LSF job that connects to the master via TCP
+# the master will then send the function and argument chunks to the worker
+# and the worker will return the results to the master
+# until everything is done and you get back your result
+
+# list(2,4,6)
 ```
 
 Computations are done entirely on the network and without any temporary files
 on network-mounted storage, so there is no strain on the file system apart from
 starting up R once per job. This removes the biggest bottleneck in distributed
-computing, making it much faster.
+computing.
 
 Using this approach, we can easily do load-balancing, i.e. workers that get
 their jobs done faster will also receive more function calls to work on. This
@@ -58,7 +68,8 @@ Performance
 -----------
 
 It's a lot faster than `BatchJobs` for short function calls because it doesn't
-start a new instance of R with every call.
+start a new instance of R with every call. I've successfully used it with 10^8
+function calls where the former did not process 10^6.
 
 It also bypasses network-mounted storage entirely by sendign all data directly
 via TCP and performs load balancing that is useful if calls take different
