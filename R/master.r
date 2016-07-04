@@ -22,7 +22,7 @@
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param log_worker      Write a log file for each worker
-#' @param wait_time       Time to wait between messages; set 0 for short cals
+#' @param wait_time       Time to wait between messages; set 0 for short calls
 #'                        defaults to 1/sqrt(number_of_functon_calls)
 #' @param qsys            Queueing system to use (only "lsf" for now)
 #' @return                A list of whatever `fun` returned
