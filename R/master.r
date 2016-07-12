@@ -51,7 +51,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         chunk_size = ceiling(length(job_data) / n_jobs / 100)
 
     on.exit(qsys$cleanup())
-    id = qsys$init()
+    id = qsys$init(fun=fun, const=const, seed=seed)
 
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs for ", length(job_data),
@@ -76,7 +76,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     while(submit_index[1] <= length(job_data) || length(workers_running) > 0) {
         msg = qsys$receive_data()
         if (msg$id[1] == 0) { # worker ready, send common data
-            qsys$send_common_data(fun=fun, const=const, seed=seed)
+            qsys$send_common_data()
             workers_running[[msg$worker_id]] = TRUE
         } else if (msg$id[1] == -1) { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time

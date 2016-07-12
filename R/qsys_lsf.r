@@ -14,12 +14,16 @@ R --no-save --no-restore -e \\
 
 #' Initialize the rZMQ context and bind the port
 #'
-#' @return  ID of the job group
-lsf$init = function() {
+#' @param fun    The function to be called
+#' @param const  Constant arguments to the function call
+#' @param seed   Common seed (to be used w/ job ID)
+#' @return       ID of the job group
+lsf$init = function(fun, const, seed) {
     # be sure our variables are set right to start out with
 #    do.call(rm, c(as.list(ls(lsf)), list(envir=lsf)))
     lsf$job_num = 1
     lsf$zmq.context = rzmq::init.context()
+    lsf$common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
 
     # bind socket
     lsf$socket = rzmq::init.socket(lsf$zmq.context, "ZMQ_REP")
@@ -27,8 +31,8 @@ lsf$init = function() {
     sink('/dev/null')
     for (i in 1:100) {
         exec_socket = sample(6000:8000, size=1)
-        port_found = rzmq::bind.socket(lsf$socket,
-                                       paste0("tcp://*:", exec_socket))
+        addr = paste0("tcp://*:", exec_socket)
+        port_found = rzmq::bind.socket(lsf$socket, addr)
         if (port_found)
             break
     }
@@ -75,16 +79,14 @@ lsf$receive_data = function() {
 }
 
 #' Send the data common to all workers, only serialize once
-lsf$send_common_data = function(...) {
+lsf$send_common_data = function() {
     if (is.null(lsf$common_data))
-        lsf$common_data = serialize(list(...), NULL)
+        stop("Need to call init() first")
 
     rzmq::send.socket(socket = lsf$socket,
                       data = lsf$common_data,
                       serialize = FALSE,
                       send.more = TRUE)
-
-    gc() # why you leak so much memory?
 }
 
 #' Send iterated data to one worker
