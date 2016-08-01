@@ -62,7 +62,6 @@ The following arguments are supported by `Q`:
  * `chunk_size` - How many calls a worker should process before reporting back
         to the master. Default: every worker will report back 100 times total
  * `wait_time` - How long the master should wait between checking for results
- * `qsys` - The queuing system use. Currently only `"lsf"` is supported
 
 The scheduler options are set by using two R options, `clustermq.scheduler`,
 where only `"lsf"` is supported right now, and `clustermq.template.lsf`
