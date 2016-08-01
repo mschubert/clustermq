@@ -74,6 +74,7 @@ pointing to a template file that looks like the one below:
 #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr
 #BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
 #BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes
+#BSUB-q default                         # name of the queue
 
 R --no-save --no-restore -e \
     'clustermq:::worker("{{ job_name }}", "{{ master }}", {{ memory }})'
