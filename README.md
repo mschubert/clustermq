@@ -45,6 +45,10 @@ will be protected from crashing by running out of memory.
 Usage
 -----
 
+Set up your scheduler according to [the
+Wiki](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler), or
+else the package will warn you and continue with default values (using LSF).
+
 The following arguments are supported by `Q`:
 
  * `fun` - The function to call. This needs to be self-sufficient (because it
@@ -62,25 +66,6 @@ The following arguments are supported by `Q`:
  * `chunk_size` - How many calls a worker should process before reporting back
         to the master. Default: every worker will report back 100 times total
  * `wait_time` - How long the master should wait between checking for results
-
-The scheduler options are set by using two R options, `clustermq.scheduler`,
-where only `"lsf"` is supported right now, and `clustermq.template.lsf`
-pointing to a template file that looks like the one below:
-
-```bash
-#BSUB-J {{ job_name }}                  # name of the job / array jobs
-#BSUB-g {{ job_group | /rzmq }}         # group the job belongs to
-#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr
-#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
-#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes
-#BSUB-q default                         # name of the queue
-
-R --no-save --no-restore -e \
-    'clustermq:::worker("{{ job_name }}", "{{ master }}", {{ memory }})'
-```
-
-The package will warn you if you don't supply those options and continue with
-default values.
 
 Performance
 -----------
