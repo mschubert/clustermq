@@ -57,6 +57,9 @@ The following arguments are supported by `Q`:
         one, all of them need to be named
  * `const` - A named list of non-iterated arguments passed to `fun`
  * `expand_grid` - Whether to use every combination of `...`
+
+Behavior can further be fine-tuned using the options below:
+
  * `fail_on_error` - Whether to stop if one of the calls returns an error
  * `seed` - A common seed that is combined with job number for reproducible results
  * `memory` - Amount of memory to request for the job (`bsub -M`)
