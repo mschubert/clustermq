@@ -20,8 +20,9 @@ Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
 
-Computations are done entirely on the network and without any temporary files
-on network-mounted storage, so there is no strain on the file system apart from
+Computations are done [entirely on the
+network](https://github.com/armstrtw/rzmq) and without any temporary files on
+network-mounted storage, so there is no strain on the file system apart from
 starting up R once per job. This removes the biggest bottleneck in distributed
 computing.
 
@@ -30,24 +31,21 @@ their jobs done faster will also receive more function calls to work on. This
 is especially useful if not all calls return after the same time, or one worker
 has a high load.
 
-Requirements
+Installation
 ------------
 
-Currently, only LSF is supported as a scheduler. Adding others should be
-simple, but will only be implemented if there is a need for it.
+```r
+# install.packages('devtools')
+devtools::install_github('mschubert/clustermq')
+devtools::install_github('krlmlr/ulimit') # protect workers from memory overflow
+```
 
-The infrastructure is provided by [ZeroMQ](http://zeromq.org/) library,
-provided by the [rzmq package](https://github.com/armstrtw/rzmq).
-
-If the [ulimit package](https://github.com/krlmlr/ulimit) is available, workers
-will be protected from crashing by running out of memory.
+Then [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
+(currently only LSF), or else the package will warn you and continue with
+default values.
 
 Usage
 -----
-
-Set up your scheduler according to [the
-Wiki](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler), or
-else the package will warn you and continue with default values (using LSF).
 
 The following arguments are supported by `Q`:
 
