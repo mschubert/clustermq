@@ -7,7 +7,7 @@
 Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
   memory = 4096, n_jobs = NULL, job_size = NULL, split_array_by = NA,
   fail_on_error = TRUE, log_worker = FALSE, wait_time = NA,
-  chunk_size = NA, template = "LSF")
+  chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -22,10 +22,10 @@ Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
 
 \item{memory}{The amount of Mb to request from LSF; default: 1 Gb}
 
-\item{n_jobs}{The number of LSF jobs to submit}
+\item{n_jobs}{The number of LSF jobs to submit; upper limit of jobs
+if job_size is given as well}
 
-\item{job_size}{The number of function calls per job; if n_jobs is given,
-this will have priority}
+\item{job_size}{The number of function calls per job}
 
 \item{split_array_by}{The dimension number to split any arrays in `...`; default: last}
 
@@ -33,10 +33,8 @@ this will have priority}
 
 \item{log_worker}{Write a log file for each worker}
 
-\item{wait_time}{Time to wait between messages; set 0 for short cals
+\item{wait_time}{Time to wait between messages; set 0 for short calls
 defaults to 1/sqrt(number_of_functon_calls)}
-
-\item{template}{Template file to use; will be "template_<template>.r" in this dir}
 }
 \value{
 A list of whatever `fun` returned

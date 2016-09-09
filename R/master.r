@@ -30,7 +30,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
-    stopifnot(c("submit_job", "cleanup") %in% ls(qsys)) # extend this?
+#    stopifnot(c("submit_job", "cleanup") %in% ls(qsys)) # extend this?
 
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
@@ -50,8 +50,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (is.na(chunk_size))
         chunk_size = ceiling(length(job_data) / n_jobs / 100)
 
+    qsys = qsys$new(fun=fun, const=const, seed=seed)
     on.exit(qsys$cleanup())
-    id = qsys$init(fun=fun, const=const, seed=seed)
 
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs for ", length(job_data),

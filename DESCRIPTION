@@ -11,7 +11,8 @@ Imports:
     rzmq,
     infuser,
     tools,
-    roxygen2
+    roxygen2,
+    R6
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8

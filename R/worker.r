@@ -13,10 +13,13 @@ worker = function(worker_id, master, memlimit) {
     print(master)
     print(memlimit)
 
+    # connect to master
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
     rzmq::connect.socket(socket, master)
     rzmq::send.socket(socket, data=list(id=0, worker_id=worker_id))
+
+    # receive common data
     msg = rzmq::receive.socket(socket)
     fun = msg$fun
     const = msg$const
