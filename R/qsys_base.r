@@ -7,7 +7,7 @@ QSys = R6::R6Class("QSys",
     public = list(
         initialize = function() {
             private$job_num = 1
-            private$zmq.context = rzmq::init.context()
+            private$zmq_context = rzmq::init.context()
         },
 
         # Submits one job to the queuing system
@@ -46,7 +46,7 @@ QSys = R6::R6Class("QSys",
 
     private = list(
         job_num = NULL,
-        zmq.context = NULL,
+        zmq_context = NULL,
         socket = NULL,
         port = NULL,
         master = NULL,
@@ -62,8 +62,9 @@ QSys = R6::R6Class("QSys",
         # @param seed   Common seed (to be used w/ job ID)
         # @return       Sets "port" and "master" attributes
         listen_socket = function(min_port, max_port=min_port, n_tries=100) {
-            private$socket = rzmq::init.socket(private$zmq.context, "ZMQ_REP")
+            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
 
+            on.exit(sink())
             sink('/dev/null')
             for (i in 1:n_tries) {
                 exec_socket = sample(min_port:max_port, size=1)
@@ -73,6 +74,7 @@ QSys = R6::R6Class("QSys",
                     break
             }
             sink()
+            on.exit()
 
             if (!port_found)
                 stop("Could not bind to port range (6000,8000) after 100 tries")
