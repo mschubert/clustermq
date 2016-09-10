@@ -5,6 +5,8 @@
 #' implementations can rely on the higher level functionality
 QSys = R6::R6Class("QSys",
     public = list(
+        id = NA,
+
         initialize = function() {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
@@ -14,7 +16,7 @@ QSys = R6::R6Class("QSys",
         #
         # @param memory      The amount of memory (megabytes) to request
         # @param log_worker  Create a log file for each worker
-        submit_job = function(...) {
+        submit_job = function(memory=NULL, log_worker=FALSE) {
             stop("Derived class needs to overwrite submit_job()")
         },
 
@@ -45,11 +47,12 @@ QSys = R6::R6Class("QSys",
     ),
 
     private = list(
-        job_num = NULL,
         zmq_context = NULL,
         socket = NULL,
         port = NULL,
         master = NULL,
+        job_num = NULL,
+        common_data = NULL,
 
         set_common_data = function(fun, const, seed) {
             private$common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
@@ -62,6 +65,9 @@ QSys = R6::R6Class("QSys",
         # @param seed   Common seed (to be used w/ job ID)
         # @return       Sets "port" and "master" attributes
         listen_socket = function(min_port, max_port=min_port, n_tries=100) {
+            if (is.null(private$zmq_context))
+                stop("QSys base class not initialized")
+
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
 
             on.exit(sink())
@@ -79,6 +85,7 @@ QSys = R6::R6Class("QSys",
             if (!port_found)
                 stop("Could not bind to port range (6000,8000) after 100 tries")
 
+            self$id = exec_socket
             private$port = exec_socket
             private$master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
         }

@@ -55,7 +55,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs for ", length(job_data),
-            " function calls (ID: ", id, ") ...")
+            " function calls (ID: ", qsys$id, ") ...")
     pb = txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
         qsys$submit_job(memory=memory, log_worker=log_worker)

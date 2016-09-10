@@ -2,15 +2,16 @@
 #'
 #' Derives from QSys to provide LSF-specific functions
 LSF = R6::R6Class("LSF",
-    inherit = "QSys",
+    inherit = QSys,
 
     public = list(
         initialize = function(fun, const, seed) {
+            super$initialize()
             private$set_common_data(fun, const, seed)
             private$listen_socket(6000, 8000) # provides port, master
         },
 
-        submit_job = function() {
+        submit_job = function(memory=NULL, log_worker=FALSE) {
             if (is.null(private$master))
                 stop("Need to call listen_socket() first")
 
@@ -34,6 +35,10 @@ LSF = R6::R6Class("LSF",
         cleanup = function() {
             system(paste("bkill -g", private$job_group, "0"), ignore.stdout=FALSE)
         }
+    ),
+
+    private = list(
+        job_group = NULL
     ),
 
     cloneable=FALSE
