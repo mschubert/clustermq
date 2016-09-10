@@ -5,8 +5,6 @@
 #' implementations can rely on the higher level functionality
 QSys = R6::R6Class("QSys",
     public = list(
-        id = NA,
-
         initialize = function() {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
@@ -46,10 +44,15 @@ QSys = R6::R6Class("QSys",
         }
     ),
 
+    active = list(
+        # We use the listening port as scheduler ID
+        id = function() private$port
+    ),
+
     private = list(
         zmq_context = NULL,
         socket = NULL,
-        port = NULL,
+        port = NA,
         master = NULL,
         job_num = NULL,
         common_data = NULL,
@@ -85,7 +88,6 @@ QSys = R6::R6Class("QSys",
             if (!port_found)
                 stop("Could not bind to port range (6000,8000) after 100 tries")
 
-            self$id = exec_socket
             private$port = exec_socket
             private$master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
         }
