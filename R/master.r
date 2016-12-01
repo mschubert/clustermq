@@ -24,6 +24,8 @@
 #' @param log_worker      Write a log file for each worker
 #' @param wait_time       Time to wait between messages; set 0 for short calls
 #'                        defaults to 1/sqrt(number_of_functon_calls)
+#' @param chunk_size      Number of function calls to chunk together
+#'                        defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return                A list of whatever `fun` returned
 #' @export
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
@@ -48,7 +50,10 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (is.na(wait_time))
         wait_time = ifelse(length(job_data) < 5e5, 1/sqrt(length(job_data)), 0)
     if (is.na(chunk_size))
-        chunk_size = ceiling(length(job_data) / n_jobs / 100)
+        chunk_size = ceiling(min(
+            length(job_data) / n_jobs / 100,
+            5e5 * length(job_data) / object.size(job_data)[[1]]
+        ))
 
     qsys = qsys$new(fun=fun, const=const, seed=seed)
     on.exit(qsys$cleanup())
