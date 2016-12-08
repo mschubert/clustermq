@@ -41,6 +41,8 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
     if (any(dups))
         stop(paste("Argument duplicated:", paste(provided[[dups]], collapse=" ")))
 
+    return(NULL) #TODO: adjust processing below
+
     # convert matrices to lists so they can be vectorised over
     split_arrays = function(x) {
         if (is.array(x))
