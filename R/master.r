@@ -1,4 +1,4 @@
-#' Queue function calls on the cluster
+#' Master controlling the workers
 #'
 #' exchanging messages between the master and workers works the following way:
 #'  * we have submitted a job where we don't know when it will start up
@@ -11,15 +11,12 @@
 #'    * it responds with id=-1 (and usage stats) and shuts down
 #'
 #' @param fun             A function to call
-#' @param ...             Objects to be iterated in each function call
+#' @param job_data        Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
 #' @param memory          The amount of Mb to request from LSF; default: 1 Gb
-#' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
-#'                        if job_size is given as well
-#' @param job_size        The number of function calls per job
-#' @param split_array_by  The dimension number to split any arrays in `...`; default: last
+#' @param n_jobs          The number of LSF jobs to submit
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param log_worker      Write a log file for each worker
 #' @param wait_time       Time to wait between messages; set 0 for short calls
@@ -27,39 +24,12 @@
 #' @param chunk_size      Number of function calls to chunk together
 #'                        defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return                A list of whatever `fun` returned
-#' @export
-Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
-        memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE,
-        log_worker=FALSE, wait_time=NA, chunk_size=NA) {
-
-#    stopifnot(c("submit_job", "cleanup") %in% ls(qsys)) # extend this?
-
-    if (is.null(n_jobs) && is.null(job_size))
-        stop("n_jobs or job_size is required")
-    if (memory < 500)
-        stop("Worker needs about 230 MB overhead, set memory>=500")
-
-    # set up function to call, data, and index
-    fun = match.fun(fun)
-    process_args(fun, iter=list(...), const=const,
-                 expand_grid=expand_grid,
-                 split_array_by=split_array_by)
-    job_data = do.call(data.frame, c(list(...), stringsAsFactors=FALSE, check.names=FALSE))
-    n_calls = nrow(job_data)
-    rownames(job_data) = 1:n_calls
-    n_jobs = min(ceiling(n_calls / job_size), n_jobs)
-
-    # use heuristic for wait and chunk size
-    if (is.na(wait_time))
-        wait_time = ifelse(n_calls < 5e5, 1/sqrt(n_calls), 0)
-    if (is.na(chunk_size))
-        chunk_size = ceiling(min(
-            n_calls / n_jobs / 100,
-            5e5 * n_calls / object.size(job_data)[[1]]
-        ))
+master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL,
+        fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     qsys = qsys$new(fun=fun, const=const, seed=seed)
     on.exit(qsys$cleanup())
+    n_calls = nrow(iter)
 
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs for ", n_calls,
@@ -99,8 +69,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
 
         if (submit_index[1] <= n_calls) { # send iterated data to worker
             submit_index = submit_index[submit_index <= n_calls]
-            iter = job_data[submit_index, , drop=FALSE]
-            qsys$send_job_data(id=submit_index, iter=iter)
+            cur = iter[submit_index, , drop=FALSE]
+            qsys$send_job_data(id=submit_index, iter=cur)
             jobs_running[as.character(submit_index)] = TRUE
             submit_index = submit_index + chunk_size
         } else # send shutdown signal to worker
