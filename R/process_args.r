@@ -46,7 +46,7 @@ process_args = function(fun, iter, const=list(), expand_grid=FALSE, split_array_
     # convert matrices to lists so they can be vectorised over
     split_arrays = function(x) {
         if (is.array(x))
-            array_split(x, along=ifelse(is.na(split_array_by), -1, split_array_by))
+            narray::split(x, along=ifelse(is.na(split_array_by), -1, split_array_by))
         else
             x
     }

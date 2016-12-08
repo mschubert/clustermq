@@ -8,11 +8,12 @@ Description: Transparent evaluation of function calls on workers that are
 Depends:
     R (>= 3.0.2)
 Imports:
-    rzmq,
     infuser,
-    tools,
+    narray,
+    R6,
     roxygen2,
-    R6
+    rzmq,
+    tools
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
