@@ -1,6 +1,6 @@
 Package: clustermq
 Title: ZeroMQ-powered cluster jobs
-Version: 0.0.1
+Version: 0.0.2
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Transparent evaluation of function calls on workers that are
@@ -13,6 +13,7 @@ Imports:
     R6,
     roxygen2,
     rzmq,
+    tibble,
     tools
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true

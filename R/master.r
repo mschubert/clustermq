@@ -11,7 +11,7 @@
 #'    * it responds with id=-1 (and usage stats) and shuts down
 #'
 #' @param fun             A function to call
-#' @param job_data        Objects to be iterated in each function call
+#' @param iter            Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call

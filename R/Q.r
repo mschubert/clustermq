@@ -71,9 +71,8 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
                 list(KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)))
 
     # prepare data and other args
-    job_data = do.call(data.frame, c(iter_split, stringsAsFactors=FALSE, check.names=FALSE))
+    job_data = do.call(tibble::data_frame, iter_split)
     n_calls = nrow(job_data)
-    rownames(job_data) = 1:n_calls
     n_jobs = min(ceiling(n_calls / job_size), n_jobs)
 
     # use heuristic for wait and chunk size

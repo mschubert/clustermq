@@ -37,7 +37,7 @@ if job_size is given as well}
 defaults to 1/sqrt(number_of_functon_calls)}
 
 \item{chunk_size}{Number of function calls to chunk together
-defaults to 100 chunks per worker or max. 500 kb per chunk}
+defaults to 100 chunks per worker or max. 10 kb per chunk}
 }
 \value{
 A list of whatever `fun` returned
