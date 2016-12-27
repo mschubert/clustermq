@@ -55,6 +55,13 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     start_time = proc.time()
     while(submit_index[1] <= n_calls || length(workers_running) > 0) {
         msg = qsys$receive_data()
+
+        if (is.null(msg)) {
+            # if ssh we are out of sync, so close the other side
+            qsys$send_raw(quote(q("no")))
+            next
+        }
+
         if (msg$id[1] == 0) { # worker ready, send common data
             qsys$send_common_data()
             workers_running[[msg$worker_id]] = TRUE

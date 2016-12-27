@@ -3,7 +3,9 @@
 #' Do not call this manually, the SSH qsys will do that
 #'
 #' @param master     The master address (tcp://ip:port)
-ssh = function(master) {
+ssh = function(master_port) {
+    master = sprintf("tcp://localhost:%i", master_port)
+
     # connect to master
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
@@ -17,9 +19,9 @@ ssh = function(master) {
 
     while(TRUE) {
         msg = rzmq::receive.socket(socket)
-        stopifnot(msg[[1]] %in% c("submit_job", "send_common_data", "cleanup"))
+#        stopifnot(msg[[1]] %in% c("submit_job", "send_common_data", "cleanup"))
 
-        reply = try(eval(msg, envir=qsys))
+        reply = try(eval(msg))
         rzmq::send.socket(socket, data=reply)
 
         if (msg[[1]] == "cleanup")

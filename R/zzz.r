@@ -14,6 +14,10 @@ setup = list(
             LSF$template = readChar(user_template, file.info(user_template)$size)
         }
         LSF
+    },
+
+    ssh = function() {
+        SSH
     }
 )
 
