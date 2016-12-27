@@ -8,12 +8,11 @@ SSH = R6::R6Class("SSH",
         initialize = function(fun, const, seed) {
             super$initialize()
 
-            ssh_host = "ebi"
+            ssh_host = "ebi" #TODO: option
 
             private$listen_socket(6000, 8000) # provides port, master
-
             local_port = private$port
-            remote_port = 10067
+            remote_port = sample(50000:55000, 1)
 
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)

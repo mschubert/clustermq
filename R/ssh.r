@@ -4,7 +4,10 @@
 #'
 #' @param master     The master address (tcp://ip:port)
 ssh = function(master_port) {
-    master = sprintf("tcp://localhost:%i", master_port)
+    # network forwarding most likely disabled, so set up local SSH forward
+    net_port = sample(8000:9999, 1)
+    system(sprintf("ssh -g -N -f -L %i:localhost:%i localhost", net_port, master_port))
+    master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], net_port)
 
     # connect to master
     context = rzmq::init.context()
@@ -14,7 +17,7 @@ ssh = function(master_port) {
 
     # receive common data
     msg = rzmq::receive.socket(socket)
-    qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed)
+    qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed, master=master)
     rzmq::send.socket(socket, data="ok")
 
     while(TRUE) {
