@@ -19,14 +19,16 @@ SSH = R6::R6Class("SSH",
 
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", restricted_port, local_port)
-            remote_net = sprintf("%i:localhost:%i", remote_port, restricted_port)
-            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", remote_port)
-            ssh_cmd = sprintf('ssh -R %s %s "ssh -g -N -L %s localhost %s"',
-                               rev_tunnel, ssh_host, remote_net, rcmd)
+#            remote_net = sprintf("%i:localhost:%i", remote_port, restricted_port)
+#            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", remote_port)
+#            ssh_cmd = sprintf('ssh -f -R %s %s "ssh -g -N -L %s localhost %s"',
+#                               rev_tunnel, ssh_host, remote_net, rcmd)
+            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", restricted_port)
+            ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, ssh_host, rcmd)
 
             # wait for ssh to connect
             message("Waiting for SSH to connect ...")
-#            system(ssh_cmd, wait=FALSE)
+            system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
             message(ssh_cmd)
             msg = rzmq::receive.socket(private$socket)
             if (msg != "ok")
@@ -62,6 +64,10 @@ SSH = R6::R6Class("SSH",
             msg = rzmq::receive.socket(private$socket)
             if (class(msg) == "try-error")
                 stop(msg)
+
+            # workaround for REP socket out of sync
+            # will need to fix this to distribute common_data
+            rzmq::send.socket(private$socket, data = quote(q("no")))
         },
 
         cleanup = function() {
