@@ -27,6 +27,7 @@
 master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
+    engine = qsys$classname
     qsys = qsys$new(fun=fun, const=const, seed=seed)
     on.exit(qsys$cleanup())
     n_calls = nrow(iter)
@@ -40,6 +41,9 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
         setTxtProgressBar(pb, j)
     }
     close(pb)
+
+    if (engine == "SSH") #TODO: solve this better?
+        qsys$send_null_msg()
 
     # prepare empty variables for managing results
     job_result = rep(list(NULL), n_calls)
@@ -55,6 +59,13 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     start_time = proc.time()
     while(submit_index[1] <= n_calls || length(workers_running) > 0) {
         msg = qsys$receive_data()
+
+        if (is.null(msg$id)) { # ssh heartbeating
+            if (class(msg) == "try-error")
+                stop(msg)
+            else
+                qsys$send_null_msg()
+        }
 
         if (msg$id[1] == 0) { # worker ready, send common data
             qsys$send_common_data()

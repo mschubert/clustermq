@@ -12,24 +12,17 @@ SSH = R6::R6Class("SSH",
 
             private$listen_socket(6000, 8000) # provides port, master
 
-# ssh -A -R 10080:localhost_or_machine_from:80 user@remote.tld "ssh -g -N -L 80:localhost:10080 localhost"
             local_port = private$port
-            restricted_port = 10067
-            remote_port = 10068
+            remote_port = 10067
 
             # set forward and run ssh.r (send port, master)
-            rev_tunnel = sprintf("%i:localhost:%i", restricted_port, local_port)
-#            remote_net = sprintf("%i:localhost:%i", remote_port, restricted_port)
-#            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", remote_port)
-#            ssh_cmd = sprintf('ssh -f -R %s %s "ssh -g -N -L %s localhost %s"',
-#                               rev_tunnel, ssh_host, remote_net, rcmd)
-            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", restricted_port)
+            rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
+            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", remote_port)
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, ssh_host, rcmd)
 
             # wait for ssh to connect
             message("Waiting for SSH to connect ...")
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
-            message(ssh_cmd)
             msg = rzmq::receive.socket(private$socket)
             if (msg != "ok")
                 stop("Establishing connection failed")
@@ -64,10 +57,6 @@ SSH = R6::R6Class("SSH",
             msg = rzmq::receive.socket(private$socket)
             if (class(msg) == "try-error")
                 stop(msg)
-
-            # workaround for REP socket out of sync
-            # will need to fix this to distribute common_data
-            rzmq::send.socket(private$socket, data = quote(q("no")))
         },
 
         cleanup = function() {

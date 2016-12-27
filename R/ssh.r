@@ -21,6 +21,10 @@ ssh = function(master_port) {
         msg = rzmq::receive.socket(socket)
 #        stopifnot(msg[[1]] %in% c("submit_job", "send_common_data", "cleanup"))
 
+        # if the master checks if we are alive, delay next msg
+        if (is.null(msg))
+            Sys.sleep(1)
+
         reply = try(eval(msg))
         rzmq::send.socket(socket, data=reply)
 
