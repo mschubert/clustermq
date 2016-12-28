@@ -6,6 +6,9 @@ SSH = R6::R6Class("SSH",
 
     public = list(
         initialize = function(fun, const, seed) {
+            if (is.null(SSH$host))
+                stop("SSH host not set")
+
             super$initialize()
 
             private$listen_socket(6000, 8000) # provides port, master
