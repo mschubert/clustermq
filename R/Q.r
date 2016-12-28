@@ -43,8 +43,6 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         stop("'reg' and 'fun' are reserved and thus not allowed as argument to ` fun`")
     if (any(grepl("^ ", provided)))
         stop("Arguments starting with space are not allowed")
-    if (expand_grid && length(iter) == 1)
-        stop("Can not expand_grid on one vector")
 
     sdiff = unlist(setdiff(required, provided))
     if (length(sdiff) > 1 && sdiff != '...')
@@ -74,6 +72,12 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     job_data = do.call(tibble::data_frame, iter_split)
     n_calls = nrow(job_data)
     n_jobs = min(ceiling(n_calls / job_size), n_jobs)
+
+    # if for whatever reason the query data is empty
+    if (n_calls == 0) {
+        warning("No input data for function calls, returning empty result")
+        return(list())
+    }
 
     # use heuristic for wait and chunk size
     if (is.na(wait_time))
