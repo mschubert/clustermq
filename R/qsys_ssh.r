@@ -21,7 +21,7 @@ SSH = R6::R6Class("SSH",
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
 
             # wait for ssh to connect
-            message("Waiting for SSH to connect ...")
+            message("Connecting %s via SSH ...", SSH$host)
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
             msg = rzmq::receive.socket(private$socket)
             if (msg != "ok")
