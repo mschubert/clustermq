@@ -82,7 +82,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
         if (submit_index[1] <= n_calls) { # send iterated data to worker
             submit_index = submit_index[submit_index <= n_calls]
             cur = iter[submit_index, , drop=FALSE]
-            qsys$send_job_data(id=submit_index, iter=cur)
+            qsys$send_job_data(id=as.character(submit_index), iter=cur)
             jobs_running[as.character(submit_index)] = TRUE
             submit_index = submit_index + chunk_size
         } else # send shutdown signal to worker
