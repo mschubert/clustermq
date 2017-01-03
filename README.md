@@ -68,13 +68,29 @@ Behavior can further be fine-tuned using the options below:
         to the master. Default: every worker will report back 100 times total
  * `wait_time` - How long the master should wait between checking for results
 
-Performance
------------
+Comparison to other packages
+----------------------------
 
-It's a lot faster than `BatchJobs` for short function calls because it doesn't
-start a new instance of R with every call. I've successfully used it with 10<sup>
-8</sup> function calls where the former did not process 10<sup>6</sup>.
+There are some packages that provide high-level parallelization of R function calls
+on a computing cluster. A thorough comparison of features and performance is available
+[on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages).
 
-It also bypasses network-mounted storage entirely by sendign all data directly
-via TCP and performs load balancing that is useful if calls take different
-amounts of time or some workers are slower than others.
+In short, use `ClusterMQ` if you want:
+
+* a one-line solution to run cluster jobs with minimal setup
+* access cluster functions from your local Rstudio
+* network storage I/O is a problem for you(r cluster)
+* your function calls or some workers are (much) slower than others
+
+Use [`batchtools`](https://github.com/mllg/batchtools) if:
+
+* a mature and well-tested package
+* don't mind a few extra lines to register and schedule your jobs
+
+Use [`flowr`](https://github.com/sahilseth/flowr) or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if you want:
+
+* to design and run a pipeline of different tools
+
+Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
+(last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
+(issues with SQLite on network-mounted storage).
