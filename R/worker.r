@@ -37,8 +37,10 @@ worker = function(worker_id, master, memlimit) {
             break
 
         one_id = function(seq_num) {
-            set.seed(seed + msg$id[seq_num])
-            result = try(do.call(fun, c(const, msg$iter[as.character(seq_num),])))
+            cur_id = msg$id[seq_num]
+            set.seed(seed + cur_id)
+            iter = setNames(msg$iter[cur_id,], colnames(msg$iter))
+            result = try(do.call(fun, c(const, iter)))
         }
         result = lapply(seq_along(msg$id), one_id)
         counter = counter + length(msg$id)
