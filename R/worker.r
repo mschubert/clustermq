@@ -36,17 +36,10 @@ worker = function(worker_id, master, memlimit) {
         if (identical(msg$id, 0))
             break
 
-        one_id = function(seq_num) {
-            cur_id = msg$id[seq_num]
-            set.seed(seed + cur_id)
-            iter = setNames(msg$iter[cur_id,], colnames(msg$iter))
-            result = try(do.call(fun, c(const, iter)))
-        }
-        result = lapply(seq_along(msg$id), one_id)
-        counter = counter + length(msg$id)
-
+        result = process_chunk(msg$iter, fun, const, seed)
         rzmq::send.socket(socket, data=list(id = msg$id, result=result))
 
+        counter = counter + length(msg$id)
         print(pryr::mem_used())
     }
 
