@@ -9,6 +9,8 @@ Q_check(fun, iter, const, n_jobs, job_size, memory)
 \arguments{
 \item{fun}{A function to call}
 
+\item{iter}{Objects to be iterated in each function call}
+
 \item{const}{A list of constant arguments passed to each function call}
 
 \item{n_jobs}{The number of LSF jobs to submit; upper limit of jobs
@@ -17,12 +19,6 @@ if job_size is given as well}
 \item{job_size}{The number of function calls per job}
 
 \item{memory}{The amount of Mb to request from LSF; default: 1 Gb}
-
-\item{...}{Objects to be iterated in each function call}
-
-\item{expand_grid}{Use all combinations of arguments in `...`}
-
-\item{seed}{A seed to set for each function call}
 }
 \description{
 Function to check arguments with which Q() is called

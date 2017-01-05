@@ -1,9 +1,10 @@
 #' Queue function calls on the cluster
 #'
-#' @param iter         Objects to be iterated in each function call
-#' @param expand_grid  Use all combinations of arguments in `...`
-#' @return             A data.frame that holds all call arguments
-Q_call_index = function(iter, expand_grid) {
+#' @param iter            Objects to be iterated in each function call
+#' @param expand_grid     Use all combinations of arguments in `...`
+#' @param split_array_by  The dimension number to split any arrays in `...`; default: last
+#' @return                A data.frame that holds all call arguments
+Q_call_index = function(iter, expand_grid, split_array_by) {
     # convert matrices to lists so they can be vectorised over
     split_arrays = function(x) {
         if (is.array(x))

@@ -2,8 +2,8 @@
 #'
 #' Do not call this manually, the SSH qsys will do that
 #'
-#' @param master     The master address (tcp://ip:port)
-ssh = function(master_port) {
+#' @param master_port  The master address (tcp://ip:port)
+ssh_proxy = function(master_port) {
     # network forwarding most likely disabled, so set up local SSH forward
     net_port = sample(8000:9999, 1)
     system(sprintf("ssh -g -N -f -L %i:localhost:%i localhost", net_port, master_port))

@@ -4,12 +4,14 @@
 \alias{Q_call_index}
 \title{Queue function calls on the cluster}
 \usage{
-Q_call_index(iter, expand_grid)
+Q_call_index(iter, expand_grid, split_array_by)
 }
 \arguments{
 \item{iter}{Objects to be iterated in each function call}
 
 \item{expand_grid}{Use all combinations of arguments in `...`}
+
+\item{split_array_by}{The dimension number to split any arrays in `...`; default: last}
 }
 \value{
 A data.frame that holds all call arguments

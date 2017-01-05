@@ -2,8 +2,7 @@
 #'
 #' If there are any option(...)s handle them here
 #'
-#' @param qsys  A QSys-derived class
-#' @return      A modified class
+#' @return  A modified class
 setup = list(
     lsf = function() {
         user_template = getOption("clustermq.template.lsf")

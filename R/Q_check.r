@@ -1,14 +1,12 @@
 #' Function to check arguments with which Q() is called
 #'
-#' @param fun             A function to call
-#' @param ...             Objects to be iterated in each function call
-#' @param const           A list of constant arguments passed to each function call
-#' @param expand_grid     Use all combinations of arguments in `...`
-#' @param seed            A seed to set for each function call
-#' @param memory          The amount of Mb to request from LSF; default: 1 Gb
-#' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
-#'                        if job_size is given as well
-#' @param job_size        The number of function calls per job
+#' @param fun       A function to call
+#' @param iter      Objects to be iterated in each function call
+#' @param const     A list of constant arguments passed to each function call
+#' @param n_jobs    The number of LSF jobs to submit; upper limit of jobs
+#'                  if job_size is given as well
+#' @param job_size  The number of function calls per job
+#' @param memory    The amount of Mb to request from LSF; default: 1 Gb
 Q_check = function(fun, iter, const, n_jobs, job_size, memory) {
     # check function and arguments provided
     funargs = formals(fun)

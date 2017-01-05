@@ -17,7 +17,7 @@ SSH = R6::R6Class("SSH",
 
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
-            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh(%i)\'", remote_port)
+            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh_proxy(%i)\'", remote_port)
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
 
             # wait for ssh to connect

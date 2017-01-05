@@ -8,9 +8,6 @@
 \usage{
 setup
 }
-\arguments{
-\item{qsys}{A QSys-derived class}
-}
 \value{
 A modified class
 }

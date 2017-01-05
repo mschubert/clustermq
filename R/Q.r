@@ -43,7 +43,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (is.na(chunk_size))
         chunk_size = ceiling(min(
             n_calls / n_jobs / 100,
-            1e4 * n_calls / object.size(call_index)[[1]]
+            1e4 * n_calls / utils::object.size(call_index)[[1]]
         ))
 
     master(fun=fun, iter=call_index, const=const,

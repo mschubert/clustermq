@@ -9,6 +9,10 @@ work_chunk(df, fun, const_args, common_seed)
 \arguments{
 \item{df}{A data.frame with call IDs as rownames and arguments as columns}
 
+\item{fun}{The function to call}
+
+\item{const_args}{Constant arguments passed to each call}
+
 \item{common_seed}{A seed offset common to all function calls}
 }
 \value{

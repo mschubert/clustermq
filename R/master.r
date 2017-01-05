@@ -13,7 +13,6 @@
 #' @param fun             A function to call
 #' @param iter            Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
-#' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
 #' @param memory          The amount of Mb to request from LSF; default: 1 Gb
 #' @param n_jobs          The number of LSF jobs to submit
@@ -35,10 +34,10 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     # do the submissions
     message("Submitting ", n_jobs, " worker jobs for ", n_calls,
             " function calls (ID: ", qsys$id, ") ...")
-    pb = txtProgressBar(min=0, max=n_jobs, style=3)
+    pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
         qsys$submit_job(memory=memory, log_worker=log_worker)
-        setTxtProgressBar(pb, j)
+        utils::setTxtProgressBar(pb, j)
     }
     close(pb)
 
@@ -53,7 +52,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     worker_stats = list()
 
     message("Running calculations (", chunk_size, " calls/chunk) ...")
-    pb = txtProgressBar(min=0, max=n_calls, style=3)
+    pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
 
     # main event loop
     start_time = proc.time()
@@ -76,7 +75,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
         } else { # worker sending result
             jobs_running[as.character(msg$id)] = NULL
             job_result[msg$id] = msg$result
-            setTxtProgressBar(pb, submit_index[1] - length(jobs_running) - 1)
+            utils::setTxtProgressBar(pb, submit_index[1] - length(jobs_running) - 1)
         }
 
         if (submit_index[1] <= n_calls) { # send iterated data to worker
