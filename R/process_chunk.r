@@ -8,7 +8,7 @@
 process_chunk = function(df, fun, const_args, common_seed) {
     process_id = function(id) {
         set.seed(common_seed + as.integer(id))
-        iter = setNames(df[id,], colnames(df))
+        iter = setNames(unlist(df[id,], recursive=FALSE), colnames(df))
         result = try(do.call(fun, c(iter, const_args)))
     }
     lapply(rownames(df), process_id)
