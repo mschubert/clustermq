@@ -1,3 +1,5 @@
+before_install: sudo apt-get install libzmq3-dev
+
 language: r
 
 warnings_are_errors: false
