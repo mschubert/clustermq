@@ -22,62 +22,20 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=4096, n_jobs=NULL, job_size=NULL, split_array_by=NA, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
+    iter = list(...)
+    fun = match.fun(fun)
+    Q_check(fun, iter, const)
+
+    # check job number and memory
     if (is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
-    # check function and arguments provided
-    iter = list(...)
-    fun = match.fun(fun)
-    funargs = formals(fun)
-    required = names(funargs)[unlist(lapply(funargs, function(f) class(f)=='name'))]
-
-    if (length(iter) == 1 && length(required) == 1)
-        names(iter) = required
-
-    provided = names(c(iter, const))
-
-    # perform checks that BatchJobs doesn't do
-    if ('reg' %in% provided || 'fun' %in% provided)
-        stop("'reg' and 'fun' are reserved and thus not allowed as argument to ` fun`")
-    if (any(grepl("^ ", provided)))
-        stop("Arguments starting with space are not allowed")
-
-    sdiff = unlist(setdiff(required, provided))
-    if (length(sdiff) > 1 && sdiff != '...')
-        stop(paste("If more than one argument, all must be named:", paste(sdiff, collapse=" ")))
-
-    sdiff = unlist(setdiff(provided, names(funargs)))
-#    if (length(sdiff) > 1 && ! '...' %in% names(funargs))
-#        stop(paste("Argument provided but not accepted by function:", paste(sdiff, collapse=" ")))
-    dups = duplicated(provided)
-    if (any(dups))
-        stop(paste("Argument duplicated:", paste(provided[[dups]], collapse=" ")))
-
-    # convert matrices to lists so they can be vectorised over
-    split_arrays = function(x) {
-        if (is.array(x))
-            narray::split(x, along=ifelse(is.na(split_array_by), -1, split_array_by))
-        else
-            x
-    }
-    iter_split = lapply(iter, split_arrays)
-
-    if (expand_grid)
-        iter_split = do.call(expand.grid, c(iter_split,
-                list(KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)))
-
-    # prepare data and other args
-    job_data = as.data.frame(do.call(tibble::data_frame, iter_split))
-    n_calls = nrow(job_data)
+    # create call index
+    call_index = Q_call_index(iter, expand_grid)
+    n_calls = nrow(call_index)
     n_jobs = min(ceiling(n_calls / job_size), n_jobs)
-
-    # if for whatever reason the query data is empty
-    if (n_calls == 0) {
-        warning("No input data for function calls, returning empty result")
-        return(list())
-    }
 
     # use heuristic for wait and chunk size
     if (is.na(wait_time))
@@ -85,10 +43,10 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (is.na(chunk_size))
         chunk_size = ceiling(min(
             n_calls / n_jobs / 100,
-            1e4 * n_calls / object.size(job_data)[[1]]
+            1e4 * n_calls / object.size(call_index)[[1]]
         ))
 
-    master(fun=fun, iter=job_data, const=const,
+    master(fun=fun, iter=call_index, const=const,
            seed=seed, memory=memory, n_jobs=n_jobs,
            fail_on_error=fail_on_error, log_worker=log_worker,
            wait_time=wait_time, chunk_size=chunk_size)

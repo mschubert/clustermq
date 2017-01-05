@@ -36,7 +36,7 @@ worker = function(worker_id, master, memlimit) {
         if (identical(msg$id, 0))
             break
 
-        result = process_chunk(msg$iter, fun, const, seed)
+        result = work_chunk(msg$iter, fun, const, seed)
         rzmq::send.socket(socket, data=list(id = msg$id, result=result))
 
         counter = counter + length(msg$id)
