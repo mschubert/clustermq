@@ -4,7 +4,7 @@
 \alias{Q_call_index}
 \title{Queue function calls on the cluster}
 \usage{
-Q_call_index(iter, expand_grid, split_array_by)
+Q_call_index(iter, expand_grid = FALSE, split_array_by = NA)
 }
 \arguments{
 \item{iter}{Objects to be iterated in each function call}

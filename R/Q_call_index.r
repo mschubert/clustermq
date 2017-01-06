@@ -4,7 +4,7 @@
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @return                A data.frame that holds all call arguments
-Q_call_index = function(iter, expand_grid, split_array_by) {
+Q_call_index = function(iter, expand_grid=FALSE, split_array_by=NA) {
     # convert matrices to lists so they can be vectorised over
     split_arrays = function(x) {
         if (is.array(x))

@@ -33,7 +33,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
     # create call index
-    call_index = Q_call_index(iter, expand_grid)
+    call_index = Q_call_index(iter, expand_grid, split_array_by)
     n_calls = nrow(call_index)
     n_jobs = min(ceiling(n_calls / job_size), n_jobs)
 
