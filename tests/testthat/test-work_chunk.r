@@ -11,6 +11,15 @@ test_that("data types and arg names", {
     expect_equal(work_chunk(df, fx), as.list(rep(4,3)))
 })
 
+test_that("matrix; check call classes", {
+    df2 = df
+    df2$a = list(matrix(1:4, nrow=2))
+    fx = function(...) sapply(list(...), class)
+
+    re = setNames(c("matrix", "character", "integer"), c("a", "b", "c"))
+    expect_equal(work_chunk(df2, fx), rep(list(re), 3))
+})
+
 test_that("try-error", {
     fx = function(a, ...) {
         if (a %% 2 == 0)
