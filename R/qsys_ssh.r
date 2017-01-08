@@ -59,7 +59,7 @@ SSH = R6::R6Class("SSH",
                 stop(msg)
         },
 
-        cleanup = function() {
+        cleanup = function(dirty=FALSE) {
             # leave empty for now
         }
     ),

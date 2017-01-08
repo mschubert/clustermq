@@ -28,7 +28,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
 
     engine = qsys$classname
     qsys = qsys$new(fun=fun, const=const, seed=seed)
-    on.exit(qsys$cleanup())
+    on.exit(qsys$cleanup(dirty=TRUE))
     n_calls = nrow(iter)
 
     # do the submissions
@@ -93,6 +93,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     rt = proc.time() - start_time
     close(pb)
 
+    qsys$cleanup(dirty=FALSE)
     on.exit(NULL)
 
     # check for failed jobs

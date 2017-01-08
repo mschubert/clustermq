@@ -44,7 +44,7 @@ QSys = R6::R6Class("QSys",
         },
 
         # Make sure all resources are closed properly
-        cleanup = function() {
+        cleanup = function(dirty=FALSE) {
         }
     ),
 
