@@ -11,13 +11,22 @@ test_that("data types and arg names", {
     expect_equal(work_chunk(df, fx), as.list(rep(4,3)))
 })
 
-test_that("matrix; check call classes", {
+test_that("check call classes", {
     df2 = df
     df2$a = list(matrix(1:4, nrow=2))
     fx = function(...) sapply(list(...), class)
 
     re = setNames(c("matrix", "character", "integer"), c("a", "b", "c"))
     expect_equal(work_chunk(df2, fx), rep(list(re), 3))
+})
+
+test_that("do not unlist matrix in data.frame", {
+    elm = structure(1:4, .Dim = c(2,2), .Dimnames=list(c("r1","r2"), c("c1","c2")))
+	df2 = structure(list(expr = structure(list(expr = elm))),
+	.Names = "expr", row.names = c(NA, -1L), class = "data.frame")
+
+	fx = function(...) list(...)
+	expect_equal(work_chunk(df2, fx)[[1]], list(expr=elm))
 })
 
 test_that("try-error", {

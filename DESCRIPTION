@@ -1,6 +1,6 @@
 Package: clustermq
 Title: ZeroMQ-Powered Cluster Jobs
-Version: 0.1.5
+Version: 0.1.6
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Transparent evaluation of function calls on workers that are

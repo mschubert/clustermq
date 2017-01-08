@@ -12,7 +12,14 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
         if (!is.null(common_seed))
             set.seed(common_seed + as.integer(id))
 
-        iter = stats::setNames(unlist(df[id,], recursive=FALSE), colnames(df))
+        # workaround for unlist(x, recursive=FALSE) that unlists matrices in lists
+        iter = lapply(df[id,], function(x) {
+            if (is.list(x) && length(x) == 1)
+                x[[1]]
+            else
+                x
+        })
+        names(iter) = colnames(df)
         result = try(do.call(fun, c(iter, const_args)))
     }
     lapply(rownames(df), process_id)
