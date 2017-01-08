@@ -57,3 +57,14 @@ test_that("seed reproducibility", {
     expect_equal(work_chunk(df[1:2,], fx, common_seed=123)[2],
                  work_chunk(df[2:3,], fx, common_seed=123)[1])
 })
+
+test_that("env separation", {
+    seed = 123
+    fx = function(x, common_seed=seed) {
+        fun = function(x) stop("overwrite function")
+        df = data.frame()
+        common_seed
+    }
+    df2 = Q_call_index(iter=list(x=1:5))
+    expect_equal(work_chunk(df2, fx), rep(list(seed), 5))
+})
