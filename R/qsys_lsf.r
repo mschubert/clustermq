@@ -39,7 +39,8 @@ LSF = R6::R6Class("LSF",
         },
 
         cleanup = function(dirty=FALSE) {
-            system(paste("bkill -g", private$job_group, "0"), ignore.stdout=!dirty)
+            system(paste("bkill -g", private$job_group, "0"),
+                   ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
 
