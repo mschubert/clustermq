@@ -16,7 +16,7 @@ worker = function(worker_id, master, memlimit) {
     # connect to master
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
-    set.send.timeout(socket, 10000) # milliseconds
+    rzmq::set.send.timeout(socket, 10000) # milliseconds
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
