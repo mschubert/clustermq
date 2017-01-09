@@ -35,7 +35,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     # create call index
     call_index = Q_call_index(iter, expand_grid, split_array_by)
     n_calls = nrow(call_index)
-    n_jobs = min(ceiling(n_calls / job_size), n_jobs)
+    n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
 
     # use heuristic for wait and chunk size
     if (is.na(wait_time))

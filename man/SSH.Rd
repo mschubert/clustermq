@@ -4,7 +4,7 @@
 \name{SSH}
 \alias{SSH}
 \title{LSF scheduler functions}
-\format{An object of class \code{R6ClassGenerator} of length 25.}
+\format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 SSH
 }
