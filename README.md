@@ -87,12 +87,12 @@ In short, use `ClusterMQ` if you want:
 
 Use [`batchtools`](https://github.com/mllg/batchtools) if:
 
-* a mature and well-tested package
+* you want more control over how your jobs are run
 * don't mind a few extra lines to register and schedule your jobs
 
-Use [`flowr`](https://github.com/sahilseth/flowr) or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if you want:
+Use [`flowr`](https://github.com/sahilseth/flowr) or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
 
-* to design and run a pipeline of different tools
+* you want to design and run a pipeline of different tools
 
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
