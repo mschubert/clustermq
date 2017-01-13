@@ -96,12 +96,12 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     qsys$cleanup(dirty=FALSE)
     on.exit(NULL)
 
-    # check for failed jobs
-    failed = sapply(job_result, class) == "try-error"
+    # check for failed jobs, report which and how many failed
+    failed = which(sapply(job_result, class) == "try-error")
     if (any(failed)) {
-        warning(job_result[failed])
+        warning(lapply(failed, function(x) paste0("(#", x, ") ", job_result[[x]])))
         if (fail_on_error)
-            stop("errors occurred, stopping")
+            stop(length(failed), "/", length(job_result), " jobs failed. Stopping.")
     }
 
     # compute summary statistics for workers
