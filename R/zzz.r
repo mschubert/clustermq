@@ -4,6 +4,8 @@
 #'
 #' @return  A modified class
 setup = list(
+    local = function() {},
+
     lsf = function() {
         user_template = getOption("clustermq.template.lsf")
         if (length(user_template) == 0) {
@@ -34,8 +36,8 @@ setup = list(
     qsys_id = tolower(getOption('clustermq.scheduler'))
     if (length(qsys_id) == 0) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
-                "defaulting to 'lsf'")
-        qsys_id = "lsf"
+                "defaulting to 'local'")
+        qsys_id = "local"
         packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
     }
 

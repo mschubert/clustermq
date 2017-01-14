@@ -27,7 +27,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     Q_check(fun, iter, const)
 
     # check job number and memory
-    if (is.null(n_jobs) && is.null(job_size))
+    if (qsys_id != "local" && is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
     if (memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
