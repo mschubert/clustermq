@@ -39,5 +39,6 @@ setup = list(
         packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
     }
 
+    assign("qsys_id", qsys_id, envir=parent.env(environment()))
     assign("qsys", setup[[qsys_id]](), envir=parent.env(environment()))
 }

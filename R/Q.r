@@ -46,8 +46,11 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
             1e4 * n_calls / utils::object.size(call_index)[[1]]
         ))
 
-    master(fun=fun, iter=call_index, const=const,
-           seed=seed, memory=memory, n_jobs=n_jobs,
-           fail_on_error=fail_on_error, log_worker=log_worker,
-           wait_time=wait_time, chunk_size=chunk_size)
+    if (n_jobs == 0 || qsys_id == "local")
+        work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
+    else
+        master(fun=fun, iter=call_index, const=const,
+               seed=seed, memory=memory, n_jobs=n_jobs,
+               fail_on_error=fail_on_error, log_worker=log_worker,
+               wait_time=wait_time, chunk_size=chunk_size)
 }
