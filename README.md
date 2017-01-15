@@ -90,7 +90,9 @@ Use [`batchtools`](https://github.com/mllg/batchtools) if:
 * you want more control over how your jobs are run
 * don't mind a few extra lines to register and schedule your jobs
 
-Use [`flowr`](https://github.com/sahilseth/flowr) or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
+Use [`flowr`](https://github.com/sahilseth/flowr),
+[`remake`](https://github.com/richfitz/remake)
+or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
 
 * you want to design and run a pipeline of different tools
 
