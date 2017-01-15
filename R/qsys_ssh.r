@@ -5,7 +5,7 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed) {
+        initialize = function(fun, const, seed, log="/dev/null") {
             if (is.null(SSH$host))
                 stop("SSH host not set")
 
@@ -17,7 +17,9 @@ SSH = R6::R6Class("SSH",
 
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
-            rcmd = sprintf("R --no-save --no-restore -e \'clustermq:::ssh_proxy(%i)\'", remote_port)
+            rcmd = sprintf("R --no-save --no-restore -e \\
+                           \'clustermq:::ssh_proxy(%i)\' >> %s 2>&1",
+                           remote_port, log)
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
 
             # wait for ssh to connect
@@ -29,7 +31,8 @@ SSH = R6::R6Class("SSH",
 
             # send common data to ssh
             message("Sending common data ...")
-            rzmq::send.socket(private$socket, data = list(fun=fun, const=const, seed=seed))
+            rzmq::send.socket(private$socket,
+                              data = list(fun=fun, const=const, seed=seed))
             msg = rzmq::receive.socket(private$socket)
             if (msg != "ok")
                 stop("Sending failed")
@@ -60,6 +63,9 @@ SSH = R6::R6Class("SSH",
         },
 
         cleanup = function(dirty=FALSE) {
+            # what if we still get data in here?
+            rzmq::receive.socket(private$socket)
+            rzmq::send.socket(private$socket, data=list("cleanup"))
             # leave empty for now
         }
     ),
