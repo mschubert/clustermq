@@ -26,7 +26,6 @@
 master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
-    engine = qsys$classname
     qsys = qsys$new(fun=fun, const=const, seed=seed)
     on.exit(qsys$cleanup(dirty=TRUE))
     n_calls = nrow(iter)
@@ -41,7 +40,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     }
     close(pb)
 
-    if (engine == "SSH") #TODO: solve this better?
+    if (qsys_id == "ssh") #TODO: solve this better?
         qsys$send_null_msg()
 
     # prepare empty variables for managing results

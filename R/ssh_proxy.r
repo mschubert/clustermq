@@ -8,6 +8,8 @@ ssh_proxy = function(master_port) {
     net_port = sample(8000:9999, 1)
     cmd = sprintf("ssh -g -N -f -L %i:localhost:%i localhost", net_port, master_port)
     system(cmd, wait=TRUE)
+    on.exit(system(sprintf("kill $(pgrep -f '%s')", cmd)))
+
     master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], net_port)
 
     # connect to master
@@ -32,7 +34,7 @@ ssh_proxy = function(master_port) {
         reply = try(eval(msg))
         rzmq::send.socket(socket, data=reply)
 
-        if (msg[[1]] == "cleanup")
+        if (msg[[1]] == "cleanup") # this is never reached (just killed on disc)
             break
     }
 }
