@@ -5,6 +5,8 @@ Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Transparent evaluation of function calls on workers that are
     submitted as LSF jobs without using network-mounted storage.
+URL: https://github.com/mschubert/clustermq
+BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
     R (>= 3.0.2)
 Imports:
