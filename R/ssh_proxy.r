@@ -30,7 +30,6 @@ ssh_proxy = function(master_port) {
     while(TRUE) {
         msg = rzmq::receive.socket(socket)
         message("received:", msg)
-#        stopifnot(msg[[1]] %in% c("submit_job", "send_common_data", "cleanup"))
 
         # if the master checks if we are alive, delay next msg
         if (length(msg) == 0) {
@@ -42,7 +41,7 @@ ssh_proxy = function(master_port) {
         reply = try(eval(msg))
         rzmq::send.socket(socket, data=reply)
 
-        if (msg[[1]] == "cleanup") # this is never reached (just killed on disc)
+        if (msg[[1]] == "cleanup")
             break
     }
 }
