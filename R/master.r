@@ -41,7 +41,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     close(pb)
 
     if (qsys_id == "ssh") #TODO: solve this better?
-        qsys$send_empty_msg()
+        qsys$send_job_data()
 
     # prepare empty variables for managing results
     job_result = rep(list(NULL), n_calls)
