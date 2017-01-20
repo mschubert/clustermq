@@ -62,7 +62,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
             if (class(msg) == "try-error")
                 stop(msg)
             else
-                qsys$send_empty_msg()
+                qsys$send_job_data()
             next
         }
 
