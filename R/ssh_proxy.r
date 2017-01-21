@@ -31,20 +31,20 @@ ssh_proxy = function(master_port) {
         msg = rzmq::receive.socket(socket)
         message("received: ", msg)
 
-        # if the master checks if we are alive, delay next msg
-        if (msg$id == "SSH_NOOP") {
-            Sys.sleep(1)
-            rzmq::send.socket(socket, data=list(id="SSH_NOOP"))
-            next
-        }
-
-        if (msg$id == "SSH_CMD") {
-            reply = try(eval(msg$cmd))
-            rzmq::send.socket(socket, data=list(id="SSH_EXEC", cmd=reply))
-        }
-
-        if (msg$id == "SSH_STOP")
-            break
+        switch(msg$id,
+            "SSH_NOOP" = {
+                Sys.sleep(1)
+                rzmq::send.socket(socket, data=list(id="SSH_NOOP"))
+                next
+            },
+            "SSH_CMD" = {
+                reply = try(eval(msg$cmd))
+                rzmq::send.socket(socket, data=list(id="SSH_EXEC", cmd=reply))
+            },
+            "SSH_STOP" = {
+                break
+            }
+        )
     }
 
     message("shutting down and cleaning up")

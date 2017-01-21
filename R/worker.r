@@ -38,18 +38,20 @@ worker = function(worker_id, master, memlimit) {
         msg = rzmq::receive.socket(socket)
         message("received: ", msg$id)
 
-        if (msg$id == "WORKER_STOP")
-            break
+        switch(msg$id,
+            "DO_CHUNK" = {
+                result = work_chunk(msg$chunk, fun, const, seed)
+                message("completed: ", paste(rownames(msg$chunk), collapse=", "))
+                names(result) = rownames(msg$chunk)
+                rzmq::send.socket(socket, data=list(id="DONE_CHUNK", result=result))
 
-        if (msg$id == "DO_CHUNK") {
-            result = work_chunk(msg$chunk, fun, const, seed)
-            message("completed: ", paste(rownames(msg$chunk), collapse=", "))
-            names(result) = rownames(msg$chunk)
-            rzmq::send.socket(socket, data=list(id="DONE_CHUNK", result=result))
-
-            counter = counter + length(result)
-            print(pryr::mem_used())
-        }
+                counter = counter + length(result)
+                print(pryr::mem_used())
+            },
+            "WORKER_STOP" = {
+                break
+            }
+        )
     }
 
     run_time = proc.time() - start_time
