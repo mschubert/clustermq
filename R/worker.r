@@ -16,7 +16,7 @@ worker = function(worker_id, master, memlimit) {
     # connect to master
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
-    rzmq::set.send.timeout(socket, 10000) # milliseconds
+    #rzmq::set.send.timeout(socket, 10000) # milliseconds
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
@@ -39,18 +39,20 @@ worker = function(worker_id, master, memlimit) {
         if (msg$id[1] == "WORKER_STOP")
             break
 
-        #TODO: check if id=="DO_CHUNK"
-        result = work_chunk(msg$chunk, fun, const, seed)
-        message("completed: ", paste(rownames(msg$chunk), collapse=", "))
-        names(result) = rownames(msg$chunk) #TODO: reorganize?
-        rzmq::send.socket(socket, data=list(id="DONE_CHUNK", result=result))
+        if (msg$id[1] == "DO_CHUNK") {
+            result = work_chunk(msg$chunk, fun, const, seed)
+            message("completed: ", paste(rownames(msg$chunk), collapse=", "))
+            names(result) = rownames(msg$chunk)
+            rzmq::send.socket(socket, data=list(id="DONE_CHUNK", result=result))
 
-        counter = counter + length(result)
-        print(pryr::mem_used())
+            counter = counter + length(result)
+            print(pryr::mem_used())
+        }
     }
 
     run_time = proc.time() - start_time
 
+    message("shutting down worker")
     data = list(id="WORKER_DONE", worker_id=worker_id, time=run_time, calls=counter)
     rzmq::send.socket(socket, data)
 
