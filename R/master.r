@@ -70,6 +70,8 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
         } else if (msg$id == "WORKER_DONE") { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
             workers_running[[msg$worker_id]] = NULL
+            qsys$send_job_data() # close REQ/REP
+            next
         } else if (msg$id == "DONE_CHUNK") { # worker sending result
             call_id = names(msg$result)
             jobs_running[call_id] = NULL
