@@ -25,8 +25,7 @@ QSys = R6::R6Class("QSys",
 
             rzmq::send.socket(socket = private$socket,
                               data = private$common_data,
-                              serialize = FALSE,
-                              send.more = TRUE)
+                              serialize = FALSE)
         },
 
         # Send iterated data to one worker

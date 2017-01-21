@@ -67,12 +67,25 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
                 qsys$send_common_data()
                 workers_running[[msg$worker_id]] = TRUE
             },
-            "DONE_CHUNK" = {
-                call_id = names(msg$result)
-                jobs_running[call_id] = NULL
-                job_result[as.integer(call_id)] = unname(msg$result)
-                utils::setTxtProgressBar(pb, submit_index[1] -
-                                         length(jobs_running) - 1)
+            "WORKER_READY" = {
+                # process the result data if we got some
+                if (!is.null(msg$result)) {
+                    call_id = names(msg$result)
+                    jobs_running[call_id] = NULL
+                    job_result[as.integer(call_id)] = unname(msg$result)
+                    utils::setTxtProgressBar(pb, submit_index[1] -
+                                             length(jobs_running) - 1)
+                }
+
+                # if we have work, send it to the worker
+                if (submit_index[1] <= n_calls) {
+                    submit_index = submit_index[submit_index <= n_calls]
+                    cur = iter[submit_index, , drop=FALSE]
+                    qsys$send_job_data(id="DO_CHUNK", chunk=cur)
+                    jobs_running[as.character(submit_index)] = TRUE
+                    submit_index = submit_index + chunk_size
+                } else # or else shut it down
+                    qsys$send_job_data(id="WORKER_STOP")
             },
             "WORKER_DONE" = {
                 worker_stats[[msg$worker_id]] = msg$time
@@ -80,18 +93,6 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
                 qsys$send_job_data() # close REQ/REP
             }
         )
-
-        if (msg$id %in% c("WORKER_UP", "DONE_CHUNK")) {
-            # executed with any of above options
-            if (submit_index[1] <= n_calls) { # send iterated data to worker
-                submit_index = submit_index[submit_index <= n_calls]
-                cur = iter[submit_index, , drop=FALSE]
-                qsys$send_job_data(id="DO_CHUNK", chunk=cur)
-                jobs_running[as.character(submit_index)] = TRUE
-                submit_index = submit_index + chunk_size
-            } else # send shutdown signal to worker
-                qsys$send_job_data(id="WORKER_STOP")
-        }
 
         Sys.sleep(wait_time)
     }
