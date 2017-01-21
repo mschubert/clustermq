@@ -40,6 +40,12 @@ QSys = R6::R6Class("QSys",
 
         # Make sure all resources are closed properly
         cleanup = function(dirty=FALSE) {
+        },
+
+        # Set a remote controller instead of the local socket
+        set_master = function(master) {
+            private$port = sub("^tcp://[^:]+:", "", master)
+            private$master = master
         }
     ),
 
@@ -52,6 +58,7 @@ QSys = R6::R6Class("QSys",
         zmq_context = NULL,
         socket = NULL,
         port = NA,
+        listen = NULL,
         master = NULL,
         job_num = NULL,
         common_data = NULL,
@@ -88,7 +95,8 @@ QSys = R6::R6Class("QSys",
                 stop("Could not bind to port range (6000,8000) after 100 tries")
 
             private$port = exec_socket
-            private$master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+            private$master = private$listen
         }
     ),
 

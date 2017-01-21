@@ -5,16 +5,10 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed, master=NULL) {
+        initialize = function(fun, const, seed) {
             super$initialize()
             private$set_common_data(fun, const, seed)
-
-            if (is.null(master))
-                private$listen_socket(6000, 8000) # provides port, master
-            else {
-                private$port = sub("^tcp://[^:]+:", "", master)
-                private$master = master
-            }
+            private$listen_socket(6000, 8000) # provides port, master
         },
 
         submit_job = function(memory=NULL, log_worker=FALSE) {
