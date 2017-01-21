@@ -58,7 +58,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     while(submit_index[1] <= n_calls || length(workers_running) > 0) {
         msg = qsys$receive_data()
 
-        if (is.null(msg$id)) { # ssh heartbeating
+        if (is.null(msg$id)) { # ssh heartbeating AND SOMETHING ELSE???
             if (class(msg) == "try-error")
                 stop(msg)
             else
@@ -72,16 +72,17 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
         } else if (msg$id[1] == "WORKER_DONE") { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
             workers_running[[msg$worker_id]] = NULL
-        } else { # worker sending result
-            jobs_running[as.character(msg$id)] = NULL
-            job_result[msg$id] = msg$result
+        } else if (msg$id[1] == "DONE_CHUNK") { # worker sending result
+            call_id = names(msg$result)
+            jobs_running[call_id] = NULL
+            job_result[as.integer(call_id)] = unname(msg$result)
             utils::setTxtProgressBar(pb, submit_index[1] - length(jobs_running) - 1)
         }
 
         if (submit_index[1] <= n_calls) { # send iterated data to worker
             submit_index = submit_index[submit_index <= n_calls]
             cur = iter[submit_index, , drop=FALSE]
-            qsys$send_job_data(id=submit_index, iter=cur)
+            qsys$send_job_data(id="DO_CHUNK", chunk=cur)
             jobs_running[as.character(submit_index)] = TRUE
             submit_index = submit_index + chunk_size
         } else # send shutdown signal to worker

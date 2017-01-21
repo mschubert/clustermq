@@ -39,10 +39,13 @@ worker = function(worker_id, master, memlimit) {
         if (msg$id[1] == "WORKER_STOP")
             break
 
-        result = work_chunk(msg$iter, fun, const, seed)
-        rzmq::send.socket(socket, data=list(id = msg$id, result=result))
+        #TODO: check if id=="DO_CHUNK"
+        result = work_chunk(msg$chunk, fun, const, seed)
+        message("completed: ", paste(rownames(msg$chunk), collapse=", "))
+        names(result) = rownames(msg$chunk) #TODO: reorganize?
+        rzmq::send.socket(socket, data=list(id="DONE_CHUNK", result=result))
 
-        counter = counter + length(msg$id)
+        counter = counter + length(result)
         print(pryr::mem_used())
     }
 
