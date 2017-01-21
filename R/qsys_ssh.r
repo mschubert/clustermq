@@ -5,7 +5,7 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed, log="/dev/null") {
+        initialize = function(fun, const, seed) {
             if (is.null(SSH$host))
                 stop("SSH host not set")
 
@@ -18,8 +18,8 @@ SSH = R6::R6Class("SSH",
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
             rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::ssh_proxy(%i)' >> %s 2>&1",
-                           remote_port, log)
+                           'clustermq:::ssh_proxy(%i)' > %s 2>&1", remote_port,
+                           getOption("clustermq.ssh.log", default="/dev/null"))
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
 
             # wait for ssh to connect
@@ -63,10 +63,10 @@ SSH = R6::R6Class("SSH",
         },
 
         cleanup = function(dirty=FALSE) {
-            # what if we still get data in here?
+            #FIXME: this may still get worker results when dirty=TRUE
+            # need to loop over results until we get ssh_proxy
             rzmq::receive.socket(private$socket)
-            rzmq::send.socket(private$socket, data=list("cleanup"))
-            # leave empty for now
+            rzmq::send.socket(private$socket, data=list(id="SSH_STOP"))
         }
     ),
 

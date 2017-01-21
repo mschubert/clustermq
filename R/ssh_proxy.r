@@ -43,7 +43,9 @@ ssh_proxy = function(master_port) {
             rzmq::send.socket(socket, data=list(id="SSH_EXEC", cmd=reply))
         }
 
-        if (msg[[1]] == "cleanup")
+        if (msg$id == "SSH_STOP")
             break
     }
+
+    message("shutting down and cleaning up")
 }
