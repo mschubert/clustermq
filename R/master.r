@@ -64,8 +64,11 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
                 qsys$send_job_data(id="SSH_NOOP")
             },
             "WORKER_UP" = {
-                qsys$send_common_data()
                 workers_running[[msg$worker_id]] = TRUE
+                qsys$send_job_data(id="WORKER_UP")
+            },
+            "REQ_DATA" = {
+                qsys$send_common_data()
             },
             "WORKER_READY" = {
                 # process the result data if we got some
