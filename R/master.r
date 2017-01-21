@@ -66,10 +66,10 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
             next
         }
 
-        if (msg$id[1] == 0) { # worker ready, send common data
+        if (msg$id[1] == "WORKER_UP") { # worker ready, send common data
             qsys$send_common_data()
             workers_running[[msg$worker_id]] = TRUE
-        } else if (msg$id[1] == -1) { # worker done, shutting down
+        } else if (msg$id[1] == "WORKER_DONE") { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
             workers_running[[msg$worker_id]] = NULL
         } else { # worker sending result
@@ -85,7 +85,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
             jobs_running[as.character(submit_index)] = TRUE
             submit_index = submit_index + chunk_size
         } else # send shutdown signal to worker
-            qsys$send_job_data(id=0)
+            qsys$send_job_data(id="WORKER_STOP")
 
         Sys.sleep(wait_time)
     }

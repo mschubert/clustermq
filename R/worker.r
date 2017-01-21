@@ -20,7 +20,7 @@ worker = function(worker_id, master, memlimit) {
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id=0, worker_id=worker_id))
+    rzmq::send.socket(socket, data=list(id="WORKER_UP", worker_id=worker_id))
 
     # receive common data
     msg = rzmq::receive.socket(socket)
@@ -36,7 +36,7 @@ worker = function(worker_id, master, memlimit) {
 
     while(TRUE) {
         msg = rzmq::receive.socket(socket)
-        if (identical(msg$id, 0))
+        if (msg$id[1] == "WORKER_STOP")
             break
 
         result = work_chunk(msg$iter, fun, const, seed)
@@ -48,7 +48,7 @@ worker = function(worker_id, master, memlimit) {
 
     run_time = proc.time() - start_time
 
-    data = list(id=-1, worker_id=worker_id, time=run_time, calls=counter)
+    data = list(id="WORKER_DONE", worker_id=worker_id, time=run_time, calls=counter)
     rzmq::send.socket(socket, data)
 
     print(run_time)

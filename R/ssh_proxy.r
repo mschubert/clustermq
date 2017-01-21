@@ -17,14 +17,14 @@ ssh_proxy = function(master_port) {
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data="ok")
+    rzmq::send.socket(socket, data=list(id="SSH_UP"))
     message("socket init & sent first data")
 
     # receive common data
     msg = rzmq::receive.socket(socket)
     message("received common data:", head(msg$fun), names(msg$const), msg$seed)
     qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed, master=master)
-    rzmq::send.socket(socket, data="ok")
+    rzmq::send.socket(socket, data=list(id="SSH_READY"))
     message("sent ready to accept jobs")
 
     while(TRUE) {
@@ -38,8 +38,10 @@ ssh_proxy = function(master_port) {
             next
         }
 
-        reply = try(eval(msg))
-        rzmq::send.socket(socket, data=reply)
+        if (msg$id == "SSH_CMD") {
+            reply = try(eval(msg$cmd))
+            rzmq::send.socket(socket, data=list(id="SSH_EXEC", cmd=reply))
+        }
 
         if (msg[[1]] == "cleanup")
             break

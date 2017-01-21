@@ -26,7 +26,7 @@ SSH = R6::R6Class("SSH",
             message(sprintf("Connecting %s via SSH ...", SSH$host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
             msg = rzmq::receive.socket(private$socket)
-            if (msg != "ok")
+            if (msg$id != "SSH_UP")
                 stop("Establishing connection failed")
 
             # send common data to ssh
@@ -34,7 +34,7 @@ SSH = R6::R6Class("SSH",
             rzmq::send.socket(private$socket,
                               data = list(fun=fun, const=const, seed=seed))
             msg = rzmq::receive.socket(private$socket)
-            if (msg != "ok")
+            if (msg$id != "SSH_READY")
                 stop("Sending failed")
 
             private$set_common_data(fun, const, seed) # later set: url=ssh_master
@@ -55,10 +55,10 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$socket, data = call)
+            rzmq::send.socket(private$socket, data = list(id="SSH_CMD", cmd=call))
 
             msg = rzmq::receive.socket(private$socket)
-            if (class(msg) == "try-error")
+            if (msg$id != "SSH_EXEC" || class(msg$cmd) == "try-error")
                 stop(msg)
         },
 
