@@ -2,6 +2,8 @@
 WORKER_UP = -13L
 
 #' Message ID indicating worker is accepting jobs
+#'
+#' It may optionally contain the field 'result' with a finished chunk
 WORKER_READY = 0L
 
 #' Message ID indicating worker is shutting down
@@ -12,9 +14,6 @@ REQ_DATA = -2L
 
 #' Message ID telling worker to stop
 WORKER_STOP = 0L
-
-##' Message ID to sync send/receive cycle (ignored by proxy)
-#SSH_INIT = -8L # replaced by SSH_NOOP
 
 #' Message ID indicating SSH proxy is up
 SSH_UP = -5L
@@ -36,6 +35,3 @@ SSH_EXEC = -11L
 
 #' Chunk of iterated arguments for the worker (fields: chunk)
 DO_CHUNK = -12L
-
-##' Worker results for a chunk (fields: result)
-#DONE_CHUNK = -13L # replaced by WORKER_READY (result is optional in msg)
