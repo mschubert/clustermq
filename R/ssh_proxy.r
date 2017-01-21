@@ -32,9 +32,9 @@ ssh_proxy = function(master_port) {
         message("received:", msg)
 
         # if the master checks if we are alive, delay next msg
-        if (length(msg) == 0) {
+        if (msg$id == "SSH_NOOP") {
             Sys.sleep(1)
-            rzmq::send.socket(socket, data=list())
+            rzmq::send.socket(socket, data=list(id="SSH_NOOP"))
             next
         }
 

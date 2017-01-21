@@ -40,8 +40,9 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     }
     close(pb)
 
-    if (qsys_id == "ssh") #TODO: solve this better?
-        qsys$send_job_data()
+    # sync send/receive cycles with the ssh_proxy
+    if (qsys_id == "ssh")
+        qsys$send_job_data(id="SSH_NOOP")
 
     # prepare empty variables for managing results
     job_result = rep(list(NULL), n_calls)
@@ -58,21 +59,18 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     while(submit_index[1] <= n_calls || length(workers_running) > 0) {
         msg = qsys$receive_data()
 
-        if (is.null(msg$id)) { # ssh heartbeating AND SOMETHING ELSE???
-            if (class(msg) == "try-error")
-                stop(msg)
-            else
-                qsys$send_job_data()
-            next
+        if (msg$id == "SSH_NOOP") { # ssh heartbeating
+            qsys$send_job_data(id="SSH_NOOP")
+            next #TODO: can get rid of next if switching msg$id
         }
 
-        if (msg$id[1] == "WORKER_UP") { # worker ready, send common data
+        if (msg$id == "WORKER_UP") { # worker ready, send common data
             qsys$send_common_data()
             workers_running[[msg$worker_id]] = TRUE
-        } else if (msg$id[1] == "WORKER_DONE") { # worker done, shutting down
+        } else if (msg$id == "WORKER_DONE") { # worker done, shutting down
             worker_stats[[msg$worker_id]] = msg$time
             workers_running[[msg$worker_id]] = NULL
-        } else if (msg$id[1] == "DONE_CHUNK") { # worker sending result
+        } else if (msg$id == "DONE_CHUNK") { # worker sending result
             call_id = names(msg$result)
             jobs_running[call_id] = NULL
             job_result[as.integer(call_id)] = unname(msg$result)
