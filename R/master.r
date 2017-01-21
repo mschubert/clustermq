@@ -77,6 +77,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
             utils::setTxtProgressBar(pb, submit_index[1] - length(jobs_running) - 1)
         }
 
+        # executed with any of above options
         if (submit_index[1] <= n_calls) { # send iterated data to worker
             submit_index = submit_index[submit_index <= n_calls]
             cur = iter[submit_index, , drop=FALSE]

@@ -36,10 +36,12 @@ worker = function(worker_id, master, memlimit) {
 
     while(TRUE) {
         msg = rzmq::receive.socket(socket)
-        if (msg$id[1] == "WORKER_STOP")
+        message("received: ", msg$id)
+
+        if (msg$id == "WORKER_STOP")
             break
 
-        if (msg$id[1] == "DO_CHUNK") {
+        if (msg$id == "DO_CHUNK") {
             result = work_chunk(msg$chunk, fun, const, seed)
             message("completed: ", paste(rownames(msg$chunk), collapse=", "))
             names(result) = rownames(msg$chunk)

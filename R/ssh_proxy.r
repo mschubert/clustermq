@@ -29,7 +29,7 @@ ssh_proxy = function(master_port) {
 
     while(TRUE) {
         msg = rzmq::receive.socket(socket)
-        message("received:", msg)
+        message("received: ", msg)
 
         # if the master checks if we are alive, delay next msg
         if (msg$id == "SSH_NOOP") {
