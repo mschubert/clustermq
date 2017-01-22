@@ -59,7 +59,7 @@ SSH = R6::R6Class("SSH",
             rzmq::send.socket(private$socket, data = list(id="SSH_CMD", exec=call))
 
             msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "SSH_CMD" || class(msg$cmd) == "try-error")
+            if (msg$id != "SSH_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
         },
 
