@@ -37,7 +37,8 @@ SSH = R6::R6Class("SSH",
             if (msg$id != "SSH_READY")
                 stop("Sending failed")
 
-            private$set_common_data(fun, const, seed) # later set: url=ssh_master
+            private$set_common_data(fun=fun, const=const, seed=seed)
+            # private$set_common_data(redirect=msg$proxy)
         },
 
         submit_job = function(memory=NULL, log_worker=FALSE) {

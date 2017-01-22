@@ -63,8 +63,8 @@ QSys = R6::R6Class("QSys",
         job_num = NULL,
         common_data = NULL,
 
-        set_common_data = function(fun, const, seed) {
-            private$common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
+        set_common_data = function(...) {
+            private$common_data = serialize(list(...), NULL)
         },
 
         # Create a socket and listen on a port in range
