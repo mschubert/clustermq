@@ -21,12 +21,8 @@ worker = function(worker_id, master, memlimit) {
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
     rzmq::send.socket(socket, data=list(id="WORKER_UP", worker_id=worker_id))
-    msg = rzmq::receive.socket(socket)
-    if (msg$id != "WORKER_UP")
-        stop("Received invalid reply for WORKER_UP")
 
     # receive common data
-    rzmq::send.socket(socket, data=list(id="REQ_DATA"))
     msg = rzmq::receive.socket(socket)
     fun = msg$fun
     const = msg$const

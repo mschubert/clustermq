@@ -9,9 +9,6 @@ WORKER_READY = 0L
 #' Message ID indicating worker is shutting down
 WORKER_DONE = -1L
 
-#' Message ID indicating worker is requesting data
-REQ_DATA = -2L
-
 #' Message ID telling worker to stop
 WORKER_STOP = 0L
 
