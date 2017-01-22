@@ -25,10 +25,9 @@ SSH_STOP = -7L
 SSH_NOOP = -9L
 
 #' Message is an SSH command
+#'
+#' field is either exec (command to run) or reply (how it went)
 SSH_CMD = -10L
-
-#' Message is answer of try(command)
-SSH_EXEC = -11L
 
 #' Chunk of iterated arguments for the worker (fields: chunk)
 DO_CHUNK = -12L

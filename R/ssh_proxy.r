@@ -39,8 +39,8 @@ ssh_proxy = function(master_port) {
                 next
             },
             "SSH_CMD" = {
-                reply = try(eval(msg$cmd))
-                rzmq::send.socket(socket, data=list(id="SSH_EXEC", cmd=reply))
+                reply = try(eval(msg$exec))
+                rzmq::send.socket(socket, data=list(id="SSH_CMD", reply=reply))
             },
             "SSH_STOP" = {
                 break

@@ -55,10 +55,10 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$socket, data = list(id="SSH_CMD", cmd=call))
+            rzmq::send.socket(private$socket, data = list(id="SSH_CMD", exec=call))
 
             msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "SSH_EXEC" || class(msg$cmd) == "try-error")
+            if (msg$id != "SSH_CMD" || class(msg$cmd) == "try-error")
                 stop(msg)
         },
 
