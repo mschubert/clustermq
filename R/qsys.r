@@ -51,7 +51,9 @@ QSys = R6::R6Class("QSys",
 
     active = list(
         # We use the listening port as scheduler ID
-        id = function() private$port
+        id = function() private$port,
+        url = function() private$listen,
+        poll = function() private$socket
     ),
 
     private = list(

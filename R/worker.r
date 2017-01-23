@@ -21,9 +21,17 @@ worker = function(worker_id, master, memlimit) {
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
     rzmq::send.socket(socket, data=list(id="WORKER_UP", worker_id=worker_id))
+	message("WORKER_UP to: ", master)
 
     # receive common data
     msg = rzmq::receive.socket(socket)
+    if (!is.null(msg$redirect)) {
+        data_socket = rzmq::init.socket(context, "ZMQ_REQ")
+        rzmq::connect.socket(data_socket, msg$redirect)
+        rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
+        message("WORKER_UP to redirect: ", msg$redirect)
+        msg = rzmq::receive.socket(data_socket)
+    }
     fun = msg$fun
     const = msg$const
     seed = msg$seed
