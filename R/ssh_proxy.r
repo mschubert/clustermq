@@ -22,7 +22,7 @@ ssh_proxy = function(master_port) {
 
     # receive common data
     msg = rzmq::receive.socket(socket)
-    message("received common data:", head(msg$fun), names(msg$const), msg$seed)
+    message("received common data:", utils::head(msg$fun), names(msg$const), msg$seed)
     qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed)
     qsys$set_master(master)
     rzmq::send.socket(socket, data=list(id="SSH_READY", proxy=qsys$url))
