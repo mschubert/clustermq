@@ -52,9 +52,11 @@ test_that("do work", {
     p = start_worker()
     send_common()
 
-    rzmq::send.socket(socket, list(id="DO_CHUNK", x=5))
+    #TODO: should probably test for error when DO_CHUNK but no chunk provided
+    rzmq::send.socket(socket, list(id="DO_CHUNK", chunk=data.frame(x=5)))
     msg = rzmq::receive.socket(socket)
-    print(msg)
+    testthat::expect_equal(msg$id, "WORKER_READY")
+    testthat::expect_equal(msg$result, list(`1`=5))
 
     shutdown_worker(p)
 })
