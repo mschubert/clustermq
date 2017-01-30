@@ -23,6 +23,7 @@ Q(fx, x=1:3, n_jobs=1)
 # until everything is done and you get back your result
 
 # we can also use dplyr's mutate to modify data frames
+library(dplyr)
 iris %>%
     mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1))
 ```
