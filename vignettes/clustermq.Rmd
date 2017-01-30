@@ -121,6 +121,6 @@ or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
 
 * you want to design and run a pipeline of different tools
 
-Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
+Don't use [`batch`](https://cran.r-project.org/package=batch)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).
