@@ -1,5 +1,5 @@
 .PHONY: all
-all: documentation #vignettes
+all: documentation vignettes
 
 .PHONY: vignettes
 # Additionally build the *.md file, and copy all files

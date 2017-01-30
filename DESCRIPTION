@@ -1,6 +1,6 @@
 Package: clustermq
 Title: ZeroMQ-Powered Cluster Jobs
-Version: 0.4.1
+Version: 0.4.2
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Transparent evaluation of function calls on workers that are
@@ -24,6 +24,7 @@ License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
 Suggests:
+    dplyr,
     knitr,
     testthat
 VignetteBuilder: knitr
