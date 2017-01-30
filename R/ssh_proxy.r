@@ -17,7 +17,7 @@ ssh_proxy = function(master_port) {
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id="SSH_UP"))
+    rzmq::send.socket(socket, data=list(id=SSH_UP))
     message("socket init & sent first data")
 
     # receive common data
@@ -25,7 +25,7 @@ ssh_proxy = function(master_port) {
     message("received common data:", utils::head(msg$fun), names(msg$const), msg$seed)
     qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed)
     qsys$set_master(master)
-    rzmq::send.socket(socket, data=list(id="SSH_READY", proxy=qsys$url))
+    rzmq::send.socket(socket, data=list(id=SSH_READY, proxy=qsys$url))
     message("sent SSH_READY to master")
 
     while(TRUE) {
@@ -37,16 +37,16 @@ ssh_proxy = function(master_port) {
             msg = rzmq::receive.socket(socket)
             message("received: ", msg)
             switch(msg$id,
-                "SSH_NOOP" = {
+                SSH_NOOP = {
                     Sys.sleep(1)
                     rzmq::send.socket(socket, data=list(id="SSH_NOOP"))
                     next
                 },
-                "SSH_CMD" = {
+                SSH_CMD = {
                     reply = try(eval(msg$exec))
                     rzmq::send.socket(socket, data=list(id="SSH_CMD", reply=reply))
                 },
-                "SSH_STOP" = {
+                SSH_STOP = {
                     break
                 }
             )
@@ -56,7 +56,7 @@ ssh_proxy = function(master_port) {
             msg = qsys$receive_data()
             message("received: ", msg)
             switch(msg$id,
-                "WORKER_UP" = {
+                WORKER_UP = {
                     qsys$send_common_data()
                 }
             )

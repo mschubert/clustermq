@@ -20,7 +20,7 @@ worker = function(worker_id, master, memlimit) {
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id="WORKER_UP", worker_id=worker_id))
+    rzmq::send.socket(socket, data=list(id=WORKER_UP, worker_id=worker_id))
 	message("WORKER_UP to: ", master)
 
     # receive common data
@@ -28,7 +28,7 @@ worker = function(worker_id, master, memlimit) {
     if (!is.null(msg$redirect)) {
         data_socket = rzmq::init.socket(context, "ZMQ_REQ")
         rzmq::connect.socket(data_socket, msg$redirect)
-        rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
+        rzmq::send.socket(data_socket, data=list(id=WORKER_UP))
         message("WORKER_UP to redirect: ", msg$redirect)
         msg = rzmq::receive.socket(data_socket)
     }
@@ -39,7 +39,7 @@ worker = function(worker_id, master, memlimit) {
     print(fun)
     print(names(const))
 
-    rzmq::send.socket(socket, data=list(id="WORKER_READY"))
+    rzmq::send.socket(socket, data=list(id=WORKER_READY))
     start_time = proc.time()
     counter = 0
 
@@ -48,16 +48,16 @@ worker = function(worker_id, master, memlimit) {
         message("received: ", msg$id)
 
         switch(msg$id,
-            "DO_CHUNK" = {
+            DO_CHUNK = {
                 result = work_chunk(msg$chunk, fun, const, seed)
                 message("completed: ", paste(rownames(msg$chunk), collapse=", "))
                 names(result) = rownames(msg$chunk)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY", result=result))
+                rzmq::send.socket(socket, data=list(id=WORKER_READY, result=result))
 
                 counter = counter + length(result)
                 print(pryr::mem_used())
             },
-            "WORKER_STOP" = {
+            WORKER_STOP = {
                 break
             }
         )
@@ -66,7 +66,7 @@ worker = function(worker_id, master, memlimit) {
     run_time = proc.time() - start_time
 
     message("shutting down worker")
-    data = list(id="WORKER_DONE", worker_id=worker_id, time=run_time, calls=counter)
+    data = list(id=WORKER_DONE, worker_id=worker_id, time=run_time, calls=counter)
     rzmq::send.socket(socket, data)
 
     print(run_time)
