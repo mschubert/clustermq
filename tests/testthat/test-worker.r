@@ -32,12 +32,18 @@ shutdown_worker = function(p, id="1") {
 }
 
 test_that("control flow", {
+    if (Sys.info()[['sysname']] == "Windows")
+        skip("Forking not available on Windows")
+
     p = start_worker()
     send_common()
     shutdown_worker(p)
 })
 
 test_that("common data redirect", {
+    if (Sys.info()[['sysname']] == "Windows")
+        skip("Forking not available on Windows")
+
     p = start_worker()
 
     rzmq::send.socket(socket, list(redirect="tcp://localhost:55443"))
@@ -49,6 +55,9 @@ test_that("common data redirect", {
 })
 
 test_that("do work", {
+    if (Sys.info()[['sysname']] == "Windows")
+        skip("Forking not available on Windows")
+
     p = start_worker()
     send_common()
 
