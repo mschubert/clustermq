@@ -42,7 +42,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
 
     # sync send/receive cycles with the ssh_proxy
     if (qsys_id == "ssh")
-        qsys$send_job_data(id=SSH_NOOP)
+        qsys$send_job_data(id="SSH_NOOP")
 
     # prepare empty variables for managing results
     job_result = rep(list(NULL), n_calls)
@@ -60,14 +60,14 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
         msg = qsys$receive_data()
 
         switch(msg$id,
-            SSH_NOOP = {
-                qsys$send_job_data(id=SSH_NOOP)
+            "SSH_NOOP" = {
+                qsys$send_job_data(id="SSH_NOOP")
             },
-            WORKER_UP = {
+            "WORKER_UP" = {
                 workers_running[[msg$worker_id]] = TRUE
                 qsys$send_common_data()
             },
-            WORKER_READY = {
+            "WORKER_READY" = {
                 # process the result data if we got some
                 if (!is.null(msg$result)) {
                     call_id = names(msg$result)
@@ -81,13 +81,13 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
                 if (submit_index[1] <= n_calls) {
                     submit_index = submit_index[submit_index <= n_calls]
                     cur = iter[submit_index, , drop=FALSE]
-                    qsys$send_job_data(id=DO_CHUNK, chunk=cur)
+                    qsys$send_job_data(id="DO_CHUNK", chunk=cur)
                     jobs_running[as.character(submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
                 } else # or else shut it down
-                    qsys$send_job_data(id=WORKER_STOP)
+                    qsys$send_job_data(id="WORKER_STOP")
             },
-            WORKER_DONE = {
+            "WORKER_DONE" = {
                 worker_stats[[msg$worker_id]] = msg$time
                 workers_running[[msg$worker_id]] = NULL
                 qsys$send_job_data() # close REQ/REP
