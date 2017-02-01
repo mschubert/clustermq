@@ -59,6 +59,12 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     while(submit_index[1] <= n_calls || length(workers_running) > 0) {
         msg = qsys$receive_data()
 
+        if (is.null(msg$id)) {
+            warning("message w/o ID: ", msg)
+            qsys$send_job_data()
+            next
+        }
+
         switch(msg$id,
             "SSH_NOOP" = {
                 qsys$send_job_data(id="SSH_NOOP")
