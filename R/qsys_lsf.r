@@ -23,6 +23,19 @@ LSF = R6::R6Class("LSF",
     ),
 )
 
+# Static method, process scheduler options and return updated object
+LSF$setup = function() {
+    user_template = getOption("clustermq.template.lsf")
+    if (length(user_template) == 0) {
+        packageStartupMessage("* Option 'clustermq.template.lsf' not set, ",
+                "defaulting to package template")
+        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/LSF")
+    } else {
+        LSF$template = readChar(user_template, file.info(user_template)$size)
+    }
+    LSF
+}
+
 # Static method, overwritten in qsys w/ user option
 LSF$template = paste(sep="\n",
     "#BSUB-J {{ job_name }}                    # name of the job / array jobs",

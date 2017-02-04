@@ -67,9 +67,17 @@ SSH = R6::R6Class("SSH",
             rzmq::send.socket(private$socket, data=list(id="SSH_STOP"))
         }
     ),
-
-    private = list(
-    ),
-
-    cloneable=FALSE
 )
+
+# Static method, process scheduler options and return updated object
+SSH$setup = function() {
+    host = getOption("clustermq.ssh.host")
+    if (length(host) == 0) {
+        packageStartupMessage("* Option 'clustermq.ssh.host' not set, ",
+                "trying to use it will fail")
+        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/SSH")
+    } else {
+        SSH$host = host
+    }
+    SSH
+}
