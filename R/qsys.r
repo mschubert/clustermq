@@ -5,21 +5,30 @@
 #' implementations can rely on the higher level functionality
 QSys = R6::R6Class("QSys",
     public = list(
-        initialize = function() {
+        initialize = function(min_port=6000, max_port=8000) {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
+            private$listen_socket(min_port, max_port)
         },
 
-        # Submits one job to the queuing system
+        # Provides values for job submission template
+        #
+        # Overwrite this in each derived class
         #
         # @param memory      The amount of memory (megabytes) to request
         # @param log_worker  Create a log file for each worker
+        # @return  A list with values:
+        #   job_name  : An identifier for the current job
+        #   job_group : An common identifier for all jobs handled by this qsys
+        #   master    : The rzmq address of the qsys instance we listen on
+        #   memory    : Memory limit
+        #   log_file  : File name to log workers to
         submit_job = function(memory=NULL, log_worker=FALSE) {
             # if not called from derived
             # stop("Derived class needs to overwrite submit_job()")
 
             if (is.null(private$master))
-                stop("Need to call listen_socket() first")
+                stop("Need to initialize QSys first")
 
             values = list(
                 job_name = paste0("rzmq", private$port, "-", private$job_num),
@@ -80,6 +89,7 @@ QSys = R6::R6Class("QSys",
         port = NA,
         listen = NULL,
         master = NULL,
+        job_group = NULL,
         job_num = NULL,
         common_data = NULL,
 

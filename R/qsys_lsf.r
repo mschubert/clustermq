@@ -8,7 +8,6 @@ LSF = R6::R6Class("LSF",
         initialize = function(fun, const, seed) {
             super$initialize()
             private$set_common_data(fun=fun, const=const, seed=seed)
-            private$listen_socket(6000, 8000) # provides port, master
         },
 
         submit_job = function(memory=NULL, log_worker=FALSE) {
@@ -22,12 +21,6 @@ LSF = R6::R6Class("LSF",
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
-
-    private = list(
-        job_group = NULL
-    ),
-
-    cloneable=FALSE
 )
 
 # Static method, overwritten in qsys w/ user option
