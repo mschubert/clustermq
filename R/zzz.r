@@ -9,11 +9,11 @@
     assign("qsys_id", qsys_id, envir=parent.env(environment()))
 
     if (length(qsys_id) == 0) {
-        packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
-                "defaulting to 'local'")
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
-
         qsys_id = "LOCAL"
+
+        packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
+                "defaulting to ", sQuote(qsys_id))
+        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
     } else {
         qsys = tryCatch(parent.env(environment())[[qsys_id]],
             error = function(e) stop("QSys not found: ", sQuote(qsys_id)))

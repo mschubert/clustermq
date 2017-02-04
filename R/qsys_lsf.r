@@ -27,9 +27,9 @@ LSF = R6::R6Class("LSF",
 LSF$setup = function() {
     user_template = getOption("clustermq.template.lsf")
     if (length(user_template) == 0) {
-        packageStartupMessage("* Option 'clustermq.template.lsf' not set, ",
+        message("* Option 'clustermq.template.lsf' not set, ",
                 "defaulting to package template")
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/LSF")
+        message("--- see: https://github.com/mschubert/clustermq/wiki/LSF")
     } else {
         LSF$template = readChar(user_template, file.info(user_template)$size)
     }
