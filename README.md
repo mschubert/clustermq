@@ -1,11 +1,14 @@
-ClusterMQ: send R function calls as LSF jobs
-============================================
+ClusterMQ: send R function calls as cluster jobs
+================================================
 
 [![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
 
-This package will allow you to send function calls as LSF jobs using a minimal
-interface provided by the `Q` function:
+This package will allow you to send function calls as cluster jobs (using
+[LSF](https://github.com/mschubert/clustermq/wiki/LSF),
+[SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
+[SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
+using a minimal interface provided by the `Q` function:
 
 ```r
 # load the library and create a simple function
@@ -17,7 +20,7 @@ Q(fx, x=1:3, n_jobs=1)
 
 # list(2,4,6)
 
-# this will submit an LSF job that connects to the master via TCP
+# this will submit a cluster job that connects to the master via TCP
 # the master will then send the function and argument chunks to the worker
 # and the worker will return the results to the master
 # until everything is done and you get back your result
@@ -48,9 +51,8 @@ devtools::install_github('mschubert/clustermq')
 devtools::install_github('krlmlr/ulimit') # protect workers from memory overflow
 ```
 
-Then [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
-(currently only LSF), or else the package will warn you and continue with
-default values.
+Then [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
+or else the package will warn you and continue with default values.
 
 Usage
 -----
@@ -92,6 +94,7 @@ In short, use `ClusterMQ` if you want:
 
 Use [`batchtools`](https://github.com/mllg/batchtools) if:
 
+* need a scheduler that we don't (yet) support
 * you want more control over how your jobs are run
 * don't mind a few extra lines to register and schedule your jobs
 
