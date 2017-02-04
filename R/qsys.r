@@ -15,7 +15,25 @@ QSys = R6::R6Class("QSys",
         # @param memory      The amount of memory (megabytes) to request
         # @param log_worker  Create a log file for each worker
         submit_job = function(memory=NULL, log_worker=FALSE) {
-            stop("Derived class needs to overwrite submit_job()")
+            # if not called from derived
+            # stop("Derived class needs to overwrite submit_job()")
+
+            if (is.null(private$master))
+                stop("Need to call listen_socket() first")
+
+            values = list(
+                job_name = paste0("rzmq", private$port, "-", private$job_num),
+                job_group = paste("/rzmq", private$port, sep="/"),
+                master = private$master,
+                memory = memory
+            )
+            if (log_worker)
+                values$log_file = paste0(values$job_name, ".log")
+
+            private$job_group = values$job_group
+            private$job_num = private$job_num + 1
+
+            values
         },
 
         # Send the data common to all workers, only serialize once

@@ -12,22 +12,7 @@ LSF = R6::R6Class("LSF",
         },
 
         submit_job = function(memory=NULL, log_worker=FALSE) {
-            if (is.null(private$master))
-                stop("Need to call listen_socket() first")
-
-            values = list(
-                job_name = paste0("rzmq", private$port, "-", private$job_num),
-                job_group = paste("/rzmq", private$port, sep="/"),
-                master = private$master,
-                memory = memory
-            )
-
-            private$job_group = values$job_group
-            private$job_num = private$job_num + 1
-
-            if (log_worker)
-                values$log_file = paste0(values$job_name, ".log")
-
+            values = super$submit_job(memory=memory, log_worker=log_worker)
             job_input = infuser::infuse(LSF$template, values)
             system("bsub", input=job_input, ignore.stdout=TRUE)
         },
