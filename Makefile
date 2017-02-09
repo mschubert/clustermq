@@ -1,6 +1,9 @@
 .PHONY: all
 all: documentation vignettes
 
+test:
+	cd tests; Rscript testthat.R; cd -
+
 .PHONY: vignettes
 # Additionally build the *.md file, and copy all files
 vignettes: knit_all
