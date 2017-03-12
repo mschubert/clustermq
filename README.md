@@ -88,7 +88,7 @@ on a computing cluster. A thorough comparison of features and performance is ava
 In short, use `ClusterMQ` if you want:
 
 * a one-line solution to run cluster jobs with minimal setup
-* access cluster functions from your local Rstudio
+* access cluster functions from your local Rstudio via SSH
 * network storage I/O is a problem for you(r cluster)
 * your function calls or some workers are (much) slower than others
 
