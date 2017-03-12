@@ -1,46 +1,26 @@
-#' Setup routines for queueing systems
+#' Select the queueing system on package loading
 #'
-#' If there are any option(...)s handle them here
-#'
-#' @return  A modified class
-setup = list(
-    local = function() {},
-
-    lsf = function() {
-        user_template = getOption("clustermq.template.lsf")
-        if (length(user_template) == 0) {
-            packageStartupMessage("* Option 'clustermq.template.lsf' not set, ",
-                    "defaulting to package template")
-            packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/LSF")
-        } else {
-            LSF$template = readChar(user_template, file.info(user_template)$size)
-        }
-        LSF
-    },
-
-    ssh = function() {
-        host = getOption("clustermq.ssh.host")
-        if (length(host) == 0) {
-            packageStartupMessage("* Option 'clustermq.ssh.host' not set, ",
-                    "trying to use it will fail")
-            packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/SSH")
-        } else {
-            SSH$host = host
-        }
-        SSH
-    }
-)
-
-#' Select the queueing system on package startup with user options
-.onLoad = function(...) {
-    qsys_id = tolower(getOption('clustermq.scheduler'))
-    if (length(qsys_id) == 0) {
-        packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
-                "defaulting to 'local'")
-        qsys_id = "local"
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
-    }
-
+#' This is done by setting the variable 'qsys' in the package environment
+#' to the object that contains the desired queueing system. We further call
+#' its setup() function if it exists, and set the variable 'qsys_id' to
+#' the scheduler we use
+.onLoad = function(libname, pkgname) {
+    qsys_id = toupper(getOption('clustermq.scheduler'))
     assign("qsys_id", qsys_id, envir=parent.env(environment()))
-    assign("qsys", setup[[qsys_id]](), envir=parent.env(environment()))
+
+    if (length(qsys_id) == 0) {
+        qsys_id = "LOCAL"
+
+        packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
+                "defaulting to ", sQuote(qsys_id))
+        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
+    } else {
+        qsys = tryCatch(parent.env(environment())[[qsys_id]],
+            error = function(e) stop("QSys not found: ", sQuote(qsys_id)))
+
+        if ("setup" %in% ls(qsys))
+            qsys = qsys$setup()
+
+        assign("qsys", qsys, envir=parent.env(environment()))
+    }
 }

@@ -5,17 +5,44 @@
 #' implementations can rely on the higher level functionality
 QSys = R6::R6Class("QSys",
     public = list(
-        initialize = function() {
+        initialize = function(min_port=6000, max_port=8000) {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
+            private$listen_socket(min_port, max_port)
         },
 
-        # Submits one job to the queuing system
+        # Provides values for job submission template
+        #
+        # Overwrite this in each derived class
         #
         # @param memory      The amount of memory (megabytes) to request
         # @param log_worker  Create a log file for each worker
+        # @return  A list with values:
+        #   job_name  : An identifier for the current job
+        #   job_group : An common identifier for all jobs handled by this qsys
+        #   master    : The rzmq address of the qsys instance we listen on
+        #   memory    : Memory limit
+        #   log_file  : File name to log workers to
         submit_job = function(memory=NULL, log_worker=FALSE) {
-            stop("Derived class needs to overwrite submit_job()")
+            # if not called from derived
+            # stop("Derived class needs to overwrite submit_job()")
+
+            if (is.null(private$master))
+                stop("Need to initialize QSys first")
+
+            values = list(
+                job_name = paste0("rzmq", private$port, "-", private$job_num),
+                job_group = paste("/rzmq", private$port, sep="/"),
+                master = private$master,
+                memory = memory
+            )
+            if (log_worker)
+                values$log_file = paste0(values$job_name, ".log")
+
+            private$job_group = values$job_group
+            private$job_num = private$job_num + 1
+
+            values
         },
 
         # Send the data common to all workers, only serialize once
@@ -25,8 +52,7 @@ QSys = R6::R6Class("QSys",
 
             rzmq::send.socket(socket = private$socket,
                               data = private$common_data,
-                              serialize = FALSE,
-                              send.more = TRUE)
+                              serialize = FALSE)
         },
 
         # Send iterated data to one worker
@@ -41,24 +67,34 @@ QSys = R6::R6Class("QSys",
 
         # Make sure all resources are closed properly
         cleanup = function(dirty=FALSE) {
+        },
+
+        # Set a remote controller instead of the local socket
+        set_master = function(master) {
+            private$port = sub("^tcp://[^:]+:", "", master)
+            private$master = master
         }
     ),
 
     active = list(
         # We use the listening port as scheduler ID
-        id = function() private$port
+        id = function() private$port,
+        url = function() private$listen,
+        poll = function() private$socket
     ),
 
     private = list(
         zmq_context = NULL,
         socket = NULL,
         port = NA,
+        listen = NULL,
         master = NULL,
+        job_group = NULL,
         job_num = NULL,
         common_data = NULL,
 
-        set_common_data = function(fun, const, seed) {
-            private$common_data = serialize(list(fun=fun, const=const, seed=seed), NULL)
+        set_common_data = function(...) {
+            private$common_data = serialize(list(...), NULL)
         },
 
         # Create a socket and listen on a port in range
@@ -89,7 +125,8 @@ QSys = R6::R6Class("QSys",
                 stop("Could not bind to port range (6000,8000) after 100 tries")
 
             private$port = exec_socket
-            private$master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+            private$master = private$listen
         }
     ),
 

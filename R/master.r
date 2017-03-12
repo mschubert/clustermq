@@ -40,8 +40,9 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     }
     close(pb)
 
-    if (qsys_id == "ssh") #TODO: solve this better?
-        qsys$send_job_data()
+    # sync send/receive cycles with the ssh_proxy
+    if (qsys_id == "ssh")
+        qsys$send_job_data(id="SSH_NOOP")
 
     # prepare empty variables for managing results
     job_result = rep(list(NULL), n_calls)
@@ -58,34 +59,46 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     while(submit_index[1] <= n_calls || length(workers_running) > 0) {
         msg = qsys$receive_data()
 
-        if (is.null(msg$id)) { # ssh heartbeating
-            if (class(msg) == "try-error")
-                stop(msg)
-            else
-                qsys$send_job_data()
+        # for some reason we receive empty messages
+        # not sure where they come from, maybe worker shutdown?
+        # anyway, results are all there if we just drop those
+        if (is.null(msg$id))
             next
-        }
 
-        if (msg$id[1] == 0) { # worker ready, send common data
-            qsys$send_common_data()
-            workers_running[[msg$worker_id]] = TRUE
-        } else if (msg$id[1] == -1) { # worker done, shutting down
-            worker_stats[[msg$worker_id]] = msg$time
-            workers_running[[msg$worker_id]] = NULL
-        } else { # worker sending result
-            jobs_running[as.character(msg$id)] = NULL
-            job_result[msg$id] = msg$result
-            utils::setTxtProgressBar(pb, submit_index[1] - length(jobs_running) - 1)
-        }
+        switch(msg$id,
+            "SSH_NOOP" = {
+                qsys$send_job_data(id="SSH_NOOP")
+            },
+            "WORKER_UP" = {
+                workers_running[[msg$worker_id]] = TRUE
+                qsys$send_common_data()
+            },
+            "WORKER_READY" = {
+                # process the result data if we got some
+                if (!is.null(msg$result)) {
+                    call_id = names(msg$result)
+                    jobs_running[call_id] = NULL
+                    job_result[as.integer(call_id)] = unname(msg$result)
+                    utils::setTxtProgressBar(pb, submit_index[1] -
+                                             length(jobs_running) - 1)
+                }
 
-        if (submit_index[1] <= n_calls) { # send iterated data to worker
-            submit_index = submit_index[submit_index <= n_calls]
-            cur = iter[submit_index, , drop=FALSE]
-            qsys$send_job_data(id=submit_index, iter=cur)
-            jobs_running[as.character(submit_index)] = TRUE
-            submit_index = submit_index + chunk_size
-        } else # send shutdown signal to worker
-            qsys$send_job_data(id=0)
+                # if we have work, send it to the worker
+                if (submit_index[1] <= n_calls) {
+                    submit_index = submit_index[submit_index <= n_calls]
+                    cur = iter[submit_index, , drop=FALSE]
+                    qsys$send_job_data(id="DO_CHUNK", chunk=cur)
+                    jobs_running[as.character(submit_index)] = TRUE
+                    submit_index = submit_index + chunk_size
+                } else # or else shut it down
+                    qsys$send_job_data(id="WORKER_STOP")
+            },
+            "WORKER_DONE" = {
+                worker_stats[[msg$worker_id]] = msg$time
+                workers_running[[msg$worker_id]] = NULL
+                qsys$send_job_data() # close REQ/REP
+            }
+        )
 
         Sys.sleep(wait_time)
     }

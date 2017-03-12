@@ -5,35 +5,13 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed, master=NULL) {
+        initialize = function(fun, const, seed) {
             super$initialize()
-            private$set_common_data(fun, const, seed)
-
-            if (is.null(master))
-                private$listen_socket(6000, 8000) # provides port, master
-            else {
-                private$port = sub("^tcp://[^:]+:", "", master)
-                private$master = master
-            }
+            private$set_common_data(fun=fun, const=const, seed=seed)
         },
 
         submit_job = function(memory=NULL, log_worker=FALSE) {
-            if (is.null(private$master))
-                stop("Need to call listen_socket() first")
-
-            values = list(
-                job_name = paste0("rzmq", private$port, "-", private$job_num),
-                job_group = paste("/rzmq", private$port, sep="/"),
-                master = private$master,
-                memory = memory
-            )
-
-            private$job_group = values$job_group
-            private$job_num = private$job_num + 1
-
-            if (log_worker)
-                values$log_file = paste0(values$job_name, ".log")
-
+            values = super$submit_job(memory=memory, log_worker=log_worker)
             job_input = infuser::infuse(LSF$template, values)
             system("bsub", input=job_input, ignore.stdout=TRUE)
         },
@@ -43,13 +21,20 @@ LSF = R6::R6Class("LSF",
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
-
-    private = list(
-        job_group = NULL
-    ),
-
-    cloneable=FALSE
 )
+
+# Static method, process scheduler options and return updated object
+LSF$setup = function() {
+    user_template = getOption("clustermq.template.lsf")
+    if (length(user_template) == 0) {
+        message("* Option 'clustermq.template.lsf' not set, ",
+                "defaulting to package template")
+        message("--- see: https://github.com/mschubert/clustermq/wiki/LSF")
+    } else {
+        LSF$template = readChar(user_template, file.info(user_template)$size)
+    }
+    LSF
+}
 
 # Static method, overwritten in qsys w/ user option
 LSF$template = paste(sep="\n",

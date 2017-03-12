@@ -1,4 +1,8 @@
-before_install: sudo apt-get install libzmq3-dev
+before_install: 
+- sudo apt-get install libzmq3-dev
+- sudo wget -P /usr/local/bin
+  https://bitbucket.org/dalloliogm/fake-qsub/raw/default/{b,q}sub
+- sudo chmod a+x /usr/local/bin/{b,q}sub
 
 language: r
 

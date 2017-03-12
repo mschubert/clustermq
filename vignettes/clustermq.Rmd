@@ -1,8 +1,18 @@
-ClusterMQ: send R function calls as cluster jobs
-================================================
+---
+title: "ClusterMQ: send R function calls as cluster jobs"
+author: "Michael Schubert"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{narray Usage Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
-[![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
-[![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
+```{r include=FALSE}
+options(clustermq.scheduler = 'local')
+```
 
 This package will allow you to send function calls as cluster jobs (using
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
@@ -10,7 +20,7 @@ This package will allow you to send function calls as cluster jobs (using
 [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
 using a minimal interface provided by the `Q` function:
 
-```r
+```{r eval=FALSE}
 # load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
@@ -42,20 +52,34 @@ their jobs done faster will also receive more function calls to work on. This
 is especially useful if not all calls return after the same time, or one worker
 has a high load.
 
-Installation
-------------
+## Installation
 
-```r
+The package on CRAN should be relatively up-to-date.
+
+Alternatively, you can get the latest version from
+[Github](https://github.com/mschubert/clustermq):
+
+```{r eval=FALSE}
 # install.packages('devtools')
 devtools::install_github('mschubert/clustermq')
 devtools::install_github('krlmlr/ulimit') # protect workers from memory overflow
 ```
 
-Then [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
-or else the package will warn you and continue with default values.
+## Setting up the scheduler
 
-Usage
------
+An HPC cluster's scheduler ensures that computing jobs are distributed to
+available worker nodes. Hence, this is what `clustermq` interfaces with in
+order to do computations. See the links below to set up the respective
+schedulers.
+
+* [LSF](https://github.com/mschubert/clustermq/wiki/LSF)
+* [SGE](https://github.com/mschubert/clustermq/wiki/SGE)
+* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM)
+* if you want another scheduler, [open an issue](https://github.com/mschubert/clustermq/issues/new)
+
+You can also use the schedulers above [from your local machine via SSH](SSH).
+
+## Usage
 
 The following arguments are supported by `Q`:
 
@@ -78,8 +102,7 @@ Behavior can further be fine-tuned using the options below:
         to the master. Default: every worker will report back 100 times total
  * `wait_time` - How long the master should wait between checking for results
 
-Comparison to other packages
-----------------------------
+## Comparison to other packages
 
 There are some packages that provide high-level parallelization of R function calls
 on a computing cluster. A thorough comparison of features and performance is available
@@ -94,7 +117,6 @@ In short, use `ClusterMQ` if you want:
 
 Use [`batchtools`](https://github.com/mllg/batchtools) if:
 
-* need a scheduler that we don't (yet) support
 * you want more control over how your jobs are run
 * don't mind a few extra lines to register and schedule your jobs
 
@@ -104,6 +126,6 @@ or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
 
 * you want to design and run a pipeline of different tools
 
-Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
+Don't use [`batch`](https://cran.r-project.org/package=batch)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).

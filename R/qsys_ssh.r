@@ -5,28 +5,26 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed, log="/dev/null") {
+        initialize = function(fun, const, seed) {
             if (is.null(SSH$host))
                 stop("SSH host not set")
 
             super$initialize()
-
-            private$listen_socket(6000, 8000) # provides port, master
             local_port = private$port
             remote_port = sample(50000:55000, 1)
 
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
             rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::ssh_proxy(%i)' >> %s 2>&1",
-                           remote_port, log)
+                           'clustermq:::ssh_proxy(%i)' > %s 2>&1", remote_port,
+                           getOption("clustermq.ssh.log", default="/dev/null"))
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
 
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", SSH$host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
             msg = rzmq::receive.socket(private$socket)
-            if (msg != "ok")
+            if (msg$id != "SSH_UP")
                 stop("Establishing connection failed")
 
             # send common data to ssh
@@ -34,10 +32,10 @@ SSH = R6::R6Class("SSH",
             rzmq::send.socket(private$socket,
                               data = list(fun=fun, const=const, seed=seed))
             msg = rzmq::receive.socket(private$socket)
-            if (msg != "ok")
+            if (msg$id != "SSH_READY")
                 stop("Sending failed")
 
-            private$set_common_data(fun, const, seed) # later set: url=ssh_master
+            private$set_common_data(redirect=msg$proxy)
         },
 
         submit_job = function(memory=NULL, log_worker=FALSE) {
@@ -55,23 +53,31 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$socket, data = call)
+            rzmq::send.socket(private$socket, data = list(id="SSH_CMD", exec=call))
 
             msg = rzmq::receive.socket(private$socket)
-            if (class(msg) == "try-error")
+            if (msg$id != "SSH_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
         },
 
         cleanup = function(dirty=FALSE) {
-            # what if we still get data in here?
+            #FIXME: this may still get worker results when dirty=TRUE
+            # need to loop over results until we get ssh_proxy
             rzmq::receive.socket(private$socket)
-            rzmq::send.socket(private$socket, data=list("cleanup"))
-            # leave empty for now
+            rzmq::send.socket(private$socket, data=list(id="SSH_STOP"))
         }
     ),
-
-    private = list(
-    ),
-
-    cloneable=FALSE
 )
+
+# Static method, process scheduler options and return updated object
+SSH$setup = function() {
+    host = getOption("clustermq.ssh.host")
+    if (length(host) == 0) {
+        packageStartupMessage("* Option 'clustermq.ssh.host' not set, ",
+                "trying to use it will fail")
+        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/SSH")
+    } else {
+        SSH$host = host
+    }
+    SSH
+}
