@@ -27,12 +27,12 @@ QSys = R6::R6Class("QSys",
             # if not called from derived
             # stop("Derived class needs to overwrite submit_job()")
 
-            if (is.null(private$master))
+            if (!identical(grepl("://[^:]+:[0-9]+", private$master), TRUE))
                 stop("Need to initialize QSys first")
 
             values = list(
                 job_name = paste0("rzmq", private$port, "-", private$job_num),
-                job_group = paste("/rzmq", private$port, sep="/"),
+                job_group = paste("/rzmq", private$node, private$port, sep="/"),
                 master = private$master,
                 memory = memory
             )
@@ -87,6 +87,7 @@ QSys = R6::R6Class("QSys",
         zmq_context = NULL,
         socket = NULL,
         port = NA,
+        node = NULL,
         listen = NULL,
         master = NULL,
         job_group = NULL,
@@ -124,8 +125,9 @@ QSys = R6::R6Class("QSys",
             if (!port_found)
                 stop("Could not bind to port range (6000,8000) after 100 tries")
 
+            private$node = Sys.info()[['nodename']]
             private$port = exec_socket
-            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], exec_socket)
+            private$listen = sprintf("tcp://%s:%i", private$node, exec_socket)
             private$master = private$listen
         }
     ),
