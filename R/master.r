@@ -41,7 +41,7 @@ master = function(fun, iter, const=list(), seed=128965, memory=4096, n_jobs=NULL
     close(pb)
 
     # sync send/receive cycles with the ssh_proxy
-    if (qsys_id == "ssh")
+    if (qsys_id == "SSH")
         qsys$send_job_data(id="SSH_NOOP")
 
     # prepare empty variables for managing results
