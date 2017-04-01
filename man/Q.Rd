@@ -5,9 +5,9 @@
 \title{Queue function calls on the cluster}
 \usage{
 Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
-  memory = 4096, n_jobs = NULL, job_size = NULL, split_array_by = NA,
-  fail_on_error = TRUE, log_worker = FALSE, wait_time = NA,
-  chunk_size = NA)
+  memory = 4096, walltime = NA, n_jobs = NULL, job_size = NULL,
+  split_array_by = NA, fail_on_error = TRUE, log_worker = FALSE,
+  wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -21,6 +21,8 @@ Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
 \item{seed}{A seed to set for each function call}
 
 \item{memory}{The amount of Mb to request from LSF; default: 1 Gb}
+
+\item{walltime}{The amount of time a job has to complete; default: no value}
 
 \item{n_jobs}{The number of LSF jobs to submit; upper limit of jobs
 if job_size is given as well}

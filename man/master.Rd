@@ -5,8 +5,8 @@
 \title{Master controlling the workers}
 \usage{
 master(fun, iter, const = list(), seed = 128965, memory = 4096,
-  n_jobs = NULL, fail_on_error = TRUE, log_worker = FALSE,
-  wait_time = NA, chunk_size = NA)
+  n_jobs = NULL, walltime = NA, fail_on_error = TRUE,
+  log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -20,6 +20,8 @@ master(fun, iter, const = list(), seed = 128965, memory = 4096,
 \item{memory}{The amount of Mb to request from LSF; default: 1 Gb}
 
 \item{n_jobs}{The number of LSF jobs to submit}
+
+\item{walltime}{The amount of time a job has to complete; default: no value}
 
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
 
