@@ -10,8 +10,8 @@ LSF = R6::R6Class("LSF",
             private$set_common_data(fun=fun, const=const, seed=seed)
         },
 
-        submit_job = function(memory=NULL, log_worker=FALSE) {
-            values = super$submit_job(memory=memory, log_worker=log_worker)
+        submit_job = function(memory=NULL, walltime=NA, log_worker=FALSE) {
+            values = super$submit_job(memory=memory,walltime=walltime, log_worker=log_worker)
             job_input = infuser::infuse(LSF$template, values)
             system("bsub", input=job_input, ignore.stdout=TRUE)
         },
