@@ -10,8 +10,8 @@ SGE = R6::R6Class("SGE",
             private$set_common_data(fun=fun, const=const, seed=seed)
         },
 
-        submit_job = function(memory=NULL, log_worker=FALSE) {
-            values = super$submit_job(memory=memory, log_worker=log_worker)
+        submit_job = function(memory=NULL, walltime=NA, log_worker=FALSE) {
+            values = super$submit_job(memory=memory, walltime=NA, log_worker=log_worker)
             job_input = infuser::infuse(SGE$template, values)
             system("qsub", input=job_input, ignore.stdout=TRUE)
         },
