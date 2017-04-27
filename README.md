@@ -92,10 +92,11 @@ In short, use `ClusterMQ` if you want:
 * network storage I/O is a problem for you(r cluster)
 * your function calls or some workers are (much) slower than others
 
-Use [`batchtools`](https://github.com/mllg/batchtools) if:
+Use [`batchtools`](https://github.com/mllg/batchtools) if you:
 
+* want to use a mature and well-tested package
 * need a scheduler that we don't (yet) support
-* you want more control over how your jobs are run
+* want more control over how your jobs are run
 * don't mind a few extra lines to register and schedule your jobs
 
 Use [`flowr`](https://github.com/sahilseth/flowr),
