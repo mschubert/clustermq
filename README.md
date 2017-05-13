@@ -70,7 +70,8 @@ Behavior can further be fine-tuned using the options below:
 
  * `fail_on_error` - Whether to stop if one of the calls returns an error
  * `seed` - A common seed that is combined with job number for reproducible results
- * `memory` - Amount of memory to request for the job (`bsub -M`)
+ * `scheduler_args` - Named list of template values to fill
+ * `memory` - Shorthand for `scheduler_args=list(memory=...)`
  * `n_jobs` - Number of jobs to submit for all the function calls
  * `job_size` - Number of function calls per job. If used in combination with
         `n_jobs` the latter will be overall limit
