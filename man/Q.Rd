@@ -6,7 +6,7 @@
 \usage{
 Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
   memory = NULL, scheduler_args = list(), n_jobs = NULL,
-  job_size = NULL, split_array_by = NA, fail_on_error = TRUE,
+  job_size = NULL, split_array_by = -1, fail_on_error = TRUE,
   log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
 \arguments{

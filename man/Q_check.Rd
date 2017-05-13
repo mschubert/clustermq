@@ -4,7 +4,7 @@
 \alias{Q_check}
 \title{Function to check arguments with which Q() is called}
 \usage{
-Q_check(fun, iter, const = list())
+Q_check(fun, iter, const = list(), split_array_by = -1)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -12,6 +12,11 @@ Q_check(fun, iter, const = list())
 \item{iter}{Objects to be iterated in each function call}
 
 \item{const}{A list of constant arguments passed to each function call}
+
+\item{split_array_by}{The dimension number to split any arrays in `...`; default: last}
+}
+\value{
+Processed iterated argument list
 }
 \description{
 Function to check arguments with which Q() is called

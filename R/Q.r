@@ -21,12 +21,14 @@
 #' @export
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         memory=NULL, scheduler_args=list(), n_jobs=NULL, job_size=NULL,
-        split_array_by=NA, fail_on_error=TRUE,
+        split_array_by=-1, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
-    iter = list(...)
     fun = match.fun(fun)
-    Q_check(fun, iter, const)
+    iter = Q_check(fun, list(...), const, split_array_by)
+    if (expand_grid)
+        iter = do.call(expand.grid, c(iter, list(KEEP.OUT.ATTRS=FALSE,
+                       stringsAsFactors=FALSE)))
 
     # check job number and memory
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
@@ -37,7 +39,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
     # create call index
-    call_index = Q_call_index(iter, expand_grid, split_array_by)
+    call_index = as.data.frame(do.call(tibble::data_frame, iter))
     n_calls = nrow(call_index)
     n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
 

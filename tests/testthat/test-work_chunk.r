@@ -1,6 +1,6 @@
 context("work_chunk")
 
-df = Q_call_index(iter = list(
+df = as.data.frame(tibble::data_frame(
     a = 1:3,
     b = as.list(letters[1:3]),
     c = setNames(as.list(3:1), letters[1:3])
@@ -65,6 +65,6 @@ test_that("env separation", {
         df = data.frame()
         common_seed
     }
-    df2 = Q_call_index(iter=list(x=1:5))
+    df2 = data.frame(x=1:5)
     expect_equal(work_chunk(df2, fx), rep(list(seed), 5))
 })
