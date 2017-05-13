@@ -14,7 +14,7 @@
 #' @param iter            Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
 #' @param seed            A seed to set for each function call
-#' @param memory          The amount of Mb to request from LSF; default: 1 Gb
+#' @param scheduler_args  Named list of values to fill in template
 #' @param walltime        The amount of time a job has to complete; default: no value
 #' @param n_jobs          The number of LSF jobs to submit
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
@@ -25,7 +25,7 @@
 #'                        defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return                A list of whatever `fun` returned
 master = function(fun, iter, const=list(), seed=128965,
-        memory=4096, n_jobs=NULL, walltime=NA,
+        scheduler_args=list(), n_jobs=NULL, walltime=NA,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     qsys = qsys$new(fun=fun, const=const, seed=seed)
@@ -37,7 +37,7 @@ master = function(fun, iter, const=list(), seed=128965,
             " function calls (ID: ", qsys$id, ") ...")
     pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
-        qsys$submit_job(memory=memory, walltime=walltime, log_worker=log_worker)
+        qsys$submit_job(scheduler_args=scheduler_args, log_worker=log_worker)
         utils::setTxtProgressBar(pb, j)
     }
     close(pb)

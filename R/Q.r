@@ -5,8 +5,8 @@
 #' @param const           A list of constant arguments passed to each function call
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
-#' @param memory          The amount of Mb to request from LSF; default: 1 Gb
-#' @param walltime        The amount of time a job has to complete; default: no value
+#' @param memory          Short for scheduler_args=list(memory=value)
+#' @param scheduler_args  A named list of values to fill in template
 #' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
 #'                        if job_size is given as well
 #' @param job_size        The number of function calls per job
@@ -20,7 +20,7 @@
 #' @return                A list of whatever `fun` returned
 #' @export
 Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
-        memory=4096, walltime=NA, n_jobs=NULL, job_size=NULL,
+        memory=NULL, scheduler_args=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=NA, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
@@ -31,7 +31,9 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     # check job number and memory
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
-    if (memory < 500)
+    if (!is.null(memory))
+        scheduler_args$memory = memory
+    if (!is.null(scheduler_args$memory) && scheduler_args$memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
 
     # create call index
@@ -52,7 +54,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
         work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
     else
         master(fun=fun, iter=call_index, const=const, seed=seed,
-               memory=memory, walltime=walltime, n_jobs=n_jobs,
+               scheduler_args=scheduler_args, n_jobs=n_jobs,
                fail_on_error=fail_on_error, log_worker=log_worker,
                wait_time=wait_time, chunk_size=chunk_size)
 }

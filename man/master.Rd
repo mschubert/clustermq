@@ -4,7 +4,7 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(fun, iter, const = list(), seed = 128965, memory = 4096,
+master(fun, iter, const = list(), seed = 128965, scheduler_args = list(),
   n_jobs = NULL, walltime = NA, fail_on_error = TRUE,
   log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
@@ -17,7 +17,7 @@ master(fun, iter, const = list(), seed = 128965, memory = 4096,
 
 \item{seed}{A seed to set for each function call}
 
-\item{memory}{The amount of Mb to request from LSF; default: 1 Gb}
+\item{scheduler_args}{Named list of values to fill in template}
 
 \item{n_jobs}{The number of LSF jobs to submit}
 

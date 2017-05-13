@@ -21,9 +21,9 @@ QSys = R6::R6Class("QSys",
         #   job_name  : An identifier for the current job
         #   job_group : An common identifier for all jobs handled by this qsys
         #   master    : The rzmq address of the qsys instance we listen on
-        #   memory    : Memory limit
+        #   scheduler_args : Named list of template values
         #   log_file  : File name to log workers to
-        submit_job = function(memory=NULL, walltime=NA, log_worker=FALSE) {
+        submit_job = function(scheduler_args=list(), log_worker=FALSE) {
             # if not called from derived
             # stop("Derived class needs to overwrite submit_job()")
 
@@ -33,9 +33,7 @@ QSys = R6::R6Class("QSys",
             values = list(
                 job_name = paste0("rzmq", private$port, "-", private$job_num),
                 job_group = paste("/rzmq", private$node, private$port, sep="/"),
-                master = private$master,
-                memory = memory,
-                walltime = walltime
+                master = private$master
             )
             if (log_worker)
                 values$log_file = paste0(values$job_name, ".log")
@@ -43,7 +41,7 @@ QSys = R6::R6Class("QSys",
             private$job_group = values$job_group
             private$job_num = private$job_num + 1
 
-            values
+            utils::modifyList(scheduler_args, values)
         },
 
         # Send the data common to all workers, only serialize once

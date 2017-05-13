@@ -10,8 +10,8 @@ LSF = R6::R6Class("LSF",
             private$set_common_data(fun=fun, const=const, seed=seed)
         },
 
-        submit_job = function(memory=NULL, walltime=NA, log_worker=FALSE) {
-            values = super$submit_job(memory=memory, walltime=walltime, log_worker=log_worker)
+        submit_job = function(scheduler_args=list(), log_worker=FALSE) {
+            values = super$submit_job(scheduler_args=scheduler_args, log_worker=log_worker)
             job_input = infuser::infuse(LSF$template, values)
             system("bsub", input=job_input, ignore.stdout=TRUE)
         },
@@ -45,4 +45,4 @@ LSF$template = paste(sep="\n",
     "#BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes",
     "",
     "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory }})'")
+    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")

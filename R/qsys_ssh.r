@@ -38,7 +38,7 @@ SSH = R6::R6Class("SSH",
             private$set_common_data(redirect=msg$proxy)
         },
 
-        submit_job = function(memory=NULL, walltime=NA, log_worker=FALSE) {
+        submit_job = function(scheduler_args=list(), log_worker=FALSE) {
             if (is.null(private$master))
                 stop("Need to call listen_socket() first")
 
