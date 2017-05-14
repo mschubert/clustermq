@@ -107,26 +107,10 @@ QSys = R6::R6Class("QSys",
             if (is.null(private$zmq_context))
                 stop("QSys base class not initialized")
 
-            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
-
-            on.exit(sink())
-            sink('/dev/null')
-            for (i in 1:n_tries) {
-                exec_socket = sample(min_port:max_port, size=1)
-                addr = paste0("tcp://*:", exec_socket)
-                port_found = rzmq::bind.socket(private$socket, addr)
-                if (port_found)
-                    break
-            }
-            sink()
-            on.exit()
-
-            if (!port_found)
-                stop("Could not bind to port range (6000,8000) after 100 tries")
-
             private$node = Sys.info()[['nodename']]
-            private$port = exec_socket
-            private$listen = sprintf("tcp://%s:%i", private$node, exec_socket)
+            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
+            private$port = bind_avail(private$socket, min_port:max_port)
+            private$listen = sprintf("tcp://%s:%i", private$node, private$port)
             private$master = private$listen
         }
     ),
