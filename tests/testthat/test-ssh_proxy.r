@@ -8,35 +8,43 @@ if (Sys.info()[['sysname']] == "Windows")
     skip("Forking not available on Windows")
 p = parallel::mcparallel(ssh_proxy(port))
 
-test_that("startup", {
+common_data = list(fun = function(x) x*2, const=list(), seed=1)
+
+test_that("control flow", {
+    # startup
     msg = rzmq::receive.socket(socket)
     expect_equal(msg$id, "SSH_UP")
 
-    msg = list(fun = function(x) x*2, const=list(), seed=1)
-    rzmq::send.socket(socket, msg)
+    rzmq::send.socket(socket, common_data)
     msg = rzmq::receive.socket(socket)
     expect_equal(msg$id, "SSH_READY")
     expect_true("proxy" %in% names(msg))
-})
+    proxy = msg$proxy
 
-test_that("heartbeating", {
+    # heartbeating
     rzmq::send.socket(socket, list(id="SSH_NOOP"))
     msg = rzmq::receive.socket(socket)
     expect_equal(msg$id, "SSH_NOOP")
-})
 
-test_that("command execution", {
+    # command execution
     cmd = methods::Quote(Sys.getpid())
     rzmq::send.socket(socket, list(id="SSH_CMD", exec=cmd))
     msg = rzmq::receive.socket(socket)
     expect_equal(msg$id, "SSH_CMD")
     expect_equal(msg$reply, p$pid)
-})
 
-#test_that("port forwarding", {
-#})
+    # common data
+    worker = rzmq::init.socket(context, "ZMQ_REQ")
+    rzmq::connect.socket(worker, proxy)
 
-test_that("shutdown", {
+    rzmq::send.socket(worker, list(id="WORKER_UP"))
+    msg = rzmq::receive.socket(worker)
+    testthat::expect_equal(msg, common_data)
+
+    # port forwarding
+    # ???
+
+    # shutdown
     msg = list(id = "SSH_STOP")
     rzmq::send.socket(socket, msg)
     Sys.sleep(0.5)
