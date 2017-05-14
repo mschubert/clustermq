@@ -2,38 +2,53 @@
 #'
 #' Do not call this manually, the SSH qsys will do that
 #'
-#' @param master_port  The master address (tcp://ip:port)
+#' @param master_port  The port for SSH reverse tunnel to master
 ssh_proxy = function(master_port) {
-    # network forwarding most likely disabled, so set up local SSH forward
-    net_port = sample(8000:9999, 1)
-    cmd = sprintf("ssh -g -N -f -L %i:localhost:%i localhost", net_port, master_port)
-    system(cmd, wait=TRUE)
-    on.exit(system(sprintf("kill $(pgrep -f '%s')", cmd)))
+    context = rzmq::init.context()
 
-    master = sprintf("tcp://%s:%i", Sys.info()[['nodename']], net_port)
-    message("master set up:", master)
+    # get address of SSH tunnel
+    ssh_tunnel = sprintf("tcp://localhost:%i", master_port)
+    message("SSH tunnel listening at: ", ssh_tunnel)
+    fwd_out = rzmq::init.socket(context, "ZMQ_XREQ")
+    re = rzmq::connect.socket(fwd_out, ssh_tunnel)
+    if (!re)
+        stop("failed to connect to SSH tunnel")
+
+    # set up local network forward to SSH tunnel
+    # this could be done with ssh -R -g, but is disabled by default
+    fwd_in = rzmq::init.socket(context, "ZMQ_XREP")
+    net_port = bind_avail(fwd_in, 8000:9999)
+    net_fwd = sprintf("tcp://%s:%i", Sys.info()[['nodename']], net_port)
+    message("forwarding local network from: ", net_fwd)
 
     # connect to master
-    context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REQ")
-    rzmq::connect.socket(socket, master)
+    rzmq::connect.socket(socket, ssh_tunnel)
     rzmq::send.socket(socket, data=list(id="SSH_UP"))
-    message("socket init & sent first data")
+    message("sent SSH_UP to master via tunnel")
 
     # receive common data
     msg = rzmq::receive.socket(socket)
-    message("received common data:", utils::head(msg$fun), names(msg$const), msg$seed)
+    message("received common data:",
+            utils::head(msg$fun), names(msg$const), msg$seed)
     qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed)
-    qsys$set_master(master)
+    qsys$set_master(net_fwd)
     rzmq::send.socket(socket, data=list(id="SSH_READY", proxy=qsys$url))
-    message("sent SSH_READY to master")
+    message("sent SSH_READY to master via tunnel")
 
     while(TRUE) {
-        events = rzmq::poll.socket(list(socket, qsys$poll),
-                                   list("read", "read"),
+        events = rzmq::poll.socket(list(fwd_in, fwd_out, socket, qsys$poll),
+                                   rep(list("read"), 4),
                                    timeout=-1L)
 
-        if (events[[1]]$read) {
+        # forwarding messages between workers and master
+        if (events[[1]]$read)
+            rzmq::send.multipart(fwd_out, rzmq::receive.multipart(fwd_in))
+        if (events[[2]]$read)
+            rzmq::send.multipart(fwd_in, rzmq::receive.multipart(fwd_out))
+
+        # socket connecting ssh_proxy to master
+        if (events[[3]]$read) {
             msg = rzmq::receive.socket(socket)
             message("received: ", msg)
             switch(msg$id,
@@ -52,7 +67,8 @@ ssh_proxy = function(master_port) {
             )
         }
 
-        if (events[[2]]$read) {
+        # socket connecting ssh_proxy to workers
+        if (events[[4]]$read) {
             msg = qsys$receive_data()
             message("received: ", msg)
             switch(msg$id,
