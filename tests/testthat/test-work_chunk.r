@@ -37,6 +37,7 @@ test_that("try-error", {
             a
     }
 
+    message("ignore next error message")
     re = work_chunk(df, fx)
     expect_equal(class(re[[2]]), "try-error")
     expect_equal(re[[1]], 1)
