@@ -20,6 +20,8 @@ Imports:
     tibble,
     tools,
     utils
+Remotes:
+    ropensci/rzmq # XREQ/XREP sockets
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
