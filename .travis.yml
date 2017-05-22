@@ -8,6 +8,4 @@ language: r
 
 warnings_are_errors: false
 
-r_github_packages: ropensci/rzmq
-
 cache: packages
