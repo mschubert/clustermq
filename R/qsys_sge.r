@@ -45,4 +45,4 @@ SGE$template = paste(sep="\n",
     "#$ -V                              # use environment variable",
     "",
     "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory }})'")
+    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")

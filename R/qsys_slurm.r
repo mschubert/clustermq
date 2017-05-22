@@ -44,4 +44,4 @@ SLURM$template = paste(sep="\n",
 	"#SBATCH --mem-per-cpu={{ memory | 4096 }}",
     "",
     "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory }})'")
+    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")
