@@ -85,7 +85,8 @@ master = function(fun, iter, const=list(), seed=128965,
                     utils::setTxtProgressBar(pb, submit_index[1] -
                                              length(jobs_running) - 1)
 
-                    if (class(msg$result) == "try-error" && fail_on_error==TRUE)
+                    errors = sapply(msg$result, class) == "try-error"
+                    if (any(errors) && fail_on_error==TRUE)
                         shutdown = TRUE
                 }
 
