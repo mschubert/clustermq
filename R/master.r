@@ -121,7 +121,7 @@ master = function(fun, iter, const=list(), seed=128965,
     if (any(failed)) {
         warning(lapply(failed, function(x) paste0("(#", x, ") ", job_result[[x]])))
         if (fail_on_error)
-            stop(length(failed), "/", length(job_result), " jobs failed. Stopping.")
+            stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
     }
 
     # compute summary statistics for workers
