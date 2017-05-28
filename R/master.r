@@ -52,13 +52,14 @@ master = function(fun, iter, const=list(), seed=128965,
     jobs_running = list()
     workers_running = list()
     worker_stats = list()
+    shutdown = FALSE
 
     message("Running calculations (", chunk_size, " calls/chunk) ...")
     pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
 
     # main event loop
     start_time = proc.time()
-    while(submit_index[1] <= n_calls || length(workers_running) > 0) {
+    while((!shutdown && submit_index[1] <= n_calls) || length(workers_running) > 0) {
         msg = qsys$receive_data()
 
         # for some reason we receive empty messages
@@ -83,10 +84,13 @@ master = function(fun, iter, const=list(), seed=128965,
                     job_result[as.integer(call_id)] = unname(msg$result)
                     utils::setTxtProgressBar(pb, submit_index[1] -
                                              length(jobs_running) - 1)
+
+                    if (class(msg$result) == "try-error" && fail_on_error==TRUE)
+                        shutdown = TRUE
                 }
 
                 # if we have work, send it to the worker
-                if (submit_index[1] <= n_calls) {
+                if (!shutdown && submit_index[1] <= n_calls) {
                     submit_index = submit_index[submit_index <= n_calls]
                     cur = iter[submit_index, , drop=FALSE]
                     qsys$send_job_data(id="DO_CHUNK", chunk=cur)

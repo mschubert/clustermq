@@ -7,7 +7,7 @@
 ssh_proxy(master_port)
 }
 \arguments{
-\item{master_port}{The master address (tcp://ip:port)}
+\item{master_port}{The port for SSH reverse tunnel to master}
 }
 \description{
 Do not call this manually, the SSH qsys will do that
