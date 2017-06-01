@@ -13,6 +13,7 @@
 #' @param fun             A function to call
 #' @param iter            Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
+#' @param export          List of objects to be exported to the worker
 #' @param seed            A seed to set for each function call
 #' @param scheduler_args  Named list of values to fill in template
 #' @param walltime        The amount of time a job has to complete; default: no value
@@ -24,11 +25,11 @@
 #' @param chunk_size      Number of function calls to chunk together
 #'                        defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return                A list of whatever `fun` returned
-master = function(fun, iter, const=list(), seed=128965,
+master = function(fun, iter, const=list(), export=list(), seed=128965,
         scheduler_args=list(), n_jobs=NULL, walltime=NA,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
-    qsys = qsys$new(fun=fun, const=const, seed=seed)
+    qsys = qsys$new(fun=fun, const=const, export=export, seed=seed)
     on.exit(qsys$cleanup(dirty=TRUE))
     n_calls = nrow(iter)
 

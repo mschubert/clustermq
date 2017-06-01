@@ -5,9 +5,9 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed) {
+        initialize = function(fun, const, export, seed) {
             super$initialize()
-            private$set_common_data(fun=fun, const=const, seed=seed)
+            private$set_common_data(fun=fun, const=const, export=export, seed=seed)
         },
 
         submit_job = function(scheduler_args=list(), log_worker=FALSE) {

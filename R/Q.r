@@ -3,6 +3,7 @@
 #' @param fun             A function to call
 #' @param ...             Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
+#' @param export          List of objects to be exported to the worker
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
 #' @param memory          Short for scheduler_args=list(memory=value)
@@ -19,7 +20,7 @@
 #'                        defaults to 100 chunks per worker or max. 10 kb per chunk
 #' @return                A list of whatever `fun` returned
 #' @export
-Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
+Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=128965,
         memory=NULL, scheduler_args=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=-1, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
@@ -55,7 +56,7 @@ Q = function(fun, ..., const=list(), expand_grid=FALSE, seed=128965,
     if (n_jobs == 0 || qsys_id == "LOCAL")
         work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
     else
-        master(fun=fun, iter=call_index, const=const, seed=seed,
+        master(fun=fun, iter=call_index, const=const, export=export, seed=seed,
                scheduler_args=scheduler_args, n_jobs=n_jobs,
                fail_on_error=fail_on_error, log_worker=log_worker,
                wait_time=wait_time, chunk_size=chunk_size)

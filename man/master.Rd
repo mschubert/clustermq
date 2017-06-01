@@ -4,9 +4,10 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(fun, iter, const = list(), seed = 128965, scheduler_args = list(),
-  n_jobs = NULL, walltime = NA, fail_on_error = TRUE,
-  log_worker = FALSE, wait_time = NA, chunk_size = NA)
+master(fun, iter, const = list(), export = list(), seed = 128965,
+  scheduler_args = list(), n_jobs = NULL, walltime = NA,
+  fail_on_error = TRUE, log_worker = FALSE, wait_time = NA,
+  chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -14,6 +15,8 @@ master(fun, iter, const = list(), seed = 128965, scheduler_args = list(),
 \item{iter}{Objects to be iterated in each function call}
 
 \item{const}{A list of constant arguments passed to each function call}
+
+\item{export}{List of objects to be exported to the worker}
 
 \item{seed}{A seed to set for each function call}
 

@@ -35,6 +35,7 @@ worker = function(worker_id, master, memlimit) {
     fun = msg$fun
     const = msg$const
     seed = msg$seed
+    list2env(msg$export, envir=.GlobalEnv)
 
     print(fun)
     print(names(const))

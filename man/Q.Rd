@@ -4,8 +4,8 @@
 \alias{Q}
 \title{Queue function calls on the cluster}
 \usage{
-Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
-  memory = NULL, scheduler_args = list(), n_jobs = NULL,
+Q(fun, ..., const = list(), export = list(), expand_grid = FALSE,
+  seed = 128965, memory = NULL, scheduler_args = list(), n_jobs = NULL,
   job_size = NULL, split_array_by = -1, fail_on_error = TRUE,
   log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
@@ -15,6 +15,8 @@ Q(fun, ..., const = list(), expand_grid = FALSE, seed = 128965,
 \item{...}{Objects to be iterated in each function call}
 
 \item{const}{A list of constant arguments passed to each function call}
+
+\item{export}{List of objects to be exported to the worker}
 
 \item{expand_grid}{Use all combinations of arguments in `...`}
 
