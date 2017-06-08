@@ -16,7 +16,8 @@ start_worker = function(id="1", url="tcp://localhost:55443") {
 }
 
 send_common = function() {
-    rzmq::send.socket(socket, list(fun=function(x) x, const=list(), seed=1))
+    rzmq::send.socket(socket, list(fun=function(x) x,
+                      const=list(), export=list(), seed=1))
     msg = rzmq::receive.socket(socket)
     testthat::expect_equal(msg$id, "WORKER_READY")
 }
