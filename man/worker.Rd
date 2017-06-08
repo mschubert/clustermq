@@ -16,4 +16,3 @@ worker(worker_id, master, memlimit)
 \description{
 Do not call this manually, the master will do that
 }
-

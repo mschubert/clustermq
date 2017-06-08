@@ -50,4 +50,3 @@ exchanging messages between the master and workers works the following way:
  * when computatons are complete, we send id=0 to the worker
    * it responds with id=-1 (and usage stats) and shuts down
 }
-

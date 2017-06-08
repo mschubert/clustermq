@@ -12,4 +12,3 @@ ssh_proxy(master_port)
 \description{
 Do not call this manually, the SSH qsys will do that
 }
-

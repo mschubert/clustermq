@@ -12,4 +12,3 @@ SLURM
 Derives from QSys to provide SLURM-specific functions
 }
 \keyword{datasets}
-

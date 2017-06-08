@@ -12,4 +12,3 @@ WORKER_READY
 It may contain the field `result` with a finished chunk
 }
 \keyword{datasets}
-

@@ -21,4 +21,3 @@ A list of call results (or try-error if they failed)
 \description{
 Each chunk comes encapsulated in a data.frame
 }
-

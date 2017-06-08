@@ -14,4 +14,3 @@ Answer is serialized common data (`fun`, `const`, and `seed`)
 or `redirect` (with URL where worker can get data)
 }
 \keyword{datasets}
-

@@ -49,4 +49,3 @@ A list of whatever `fun` returned
 \description{
 Queue function calls on the cluster
 }
-

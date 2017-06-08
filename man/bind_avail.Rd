@@ -21,4 +21,3 @@ The port the socket is bound to
 \description{
 Binds an rzmq to an available port in given range
 }
-

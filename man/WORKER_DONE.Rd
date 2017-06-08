@@ -12,4 +12,3 @@ WORKER_DONE
 Field has to be `time` with a object returned by `Sys.time()`
 }
 \keyword{datasets}
-

@@ -12,4 +12,3 @@ SSH_STOP
 No fields. Signals the worker to break its main loop.
 }
 \keyword{datasets}
-

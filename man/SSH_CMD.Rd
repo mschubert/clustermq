@@ -12,4 +12,3 @@ SSH_CMD
 Field is either `exec` (command to run) or `reply` (how it went)
 }
 \keyword{datasets}
-

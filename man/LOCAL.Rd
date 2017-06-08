@@ -12,4 +12,3 @@ LOCAL
 Mainly so tests pass without setting up a scheduler
 }
 \keyword{datasets}
-

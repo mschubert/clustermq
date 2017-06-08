@@ -21,4 +21,3 @@ Processed iterated argument list
 \description{
 Function to check arguments with which Q() is called
 }
-
