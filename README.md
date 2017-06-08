@@ -48,13 +48,15 @@ Installation
 Install the `ZeroMQ` system library as described in the
 [rzmq project README](https://github.com/ropensci/rzmq#installation).
 
+Then install the `clustermq` package in R (which automatically installs the `rzmq` package as well).
+
 ```r
 # install.packages('devtools')
 devtools::install_github('mschubert/clustermq')
 devtools::install_github('krlmlr/ulimit') # protect workers from memory overflow
 ```
 
-Then [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
+When this is done, [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
 or else the package will warn you and continue with default values.
 
 Usage
