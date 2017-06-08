@@ -30,8 +30,8 @@ ssh_proxy = function(master_port) {
     # receive common data
     msg = rzmq::receive.socket(socket)
     message("received common data:",
-            utils::head(msg$fun), names(msg$const), msg$seed)
-    qsys = qsys$new(fun=msg$fun, const=msg$const, seed=msg$seed)
+            utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
+    qsys = qsys$new(fun=msg$fun, const=msg$const, export=msg$export, seed=msg$seed)
     qsys$set_master(net_fwd)
     rzmq::send.socket(socket, data=list(id="SSH_READY", proxy=qsys$url))
     message("sent SSH_READY to master via tunnel")

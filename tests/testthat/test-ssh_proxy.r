@@ -7,7 +7,7 @@ port = bind_avail(socket, 50000:55000)
 Sys.sleep(0.5)
 if (Sys.info()[['sysname']] == "Windows")
     skip("Forking not available on Windows")
-common_data = list(fun = function(x) x*2, const=list(), seed=1)
+common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
 
 p = parallel::mcparallel(ssh_proxy(port))
 
