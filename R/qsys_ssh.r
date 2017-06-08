@@ -5,7 +5,7 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, seed) {
+        initialize = function(fun, const, export, seed) {
             if (is.null(SSH$host))
                 stop("SSH host not set")
 
@@ -30,7 +30,8 @@ SSH = R6::R6Class("SSH",
             # send common data to ssh
             message("Sending common data ...")
             rzmq::send.socket(private$socket,
-                              data = list(fun=fun, const=const, seed=seed))
+                              data = list(fun=fun, const=const,
+                                          export=export, seed=seed))
             msg = rzmq::receive.socket(private$socket)
             if (msg$id != "SSH_READY")
                 stop("Sending failed")
