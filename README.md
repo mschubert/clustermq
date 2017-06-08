@@ -4,6 +4,9 @@ ClusterMQ: send R function calls as cluster jobs
 [![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
 
+**Note:** ClusterMQ currently depends on the Github version of
+[`rzmq`](https://github.com/ropensci/rzmq)
+
 This package will allow you to send function calls as cluster jobs (using
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
 [SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
@@ -52,6 +55,7 @@ Then install the `clustermq` package in R (which automatically installs the `rzm
 
 ```r
 # install.packages('devtools')
+devtools::install_github('ropensci/rzmq')
 devtools::install_github('mschubert/clustermq')
 devtools::install_github('krlmlr/ulimit') # protect workers from memory overflow
 ```
@@ -69,6 +73,7 @@ The following arguments are supported by `Q`:
  * `...` - All iterated arguments passed to the function. If there is more than
         one, all of them need to be named
  * `const` - A named list of non-iterated arguments passed to `fun`
+ * `export` - A named list of objects to export to the worker environment
  * `expand_grid` - Whether to use every combination of `...`
 
 Behavior can further be fine-tuned using the options below:
