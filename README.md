@@ -45,6 +45,9 @@ has a high load.
 Installation
 ------------
 
+Install the `ZeroMQ` system library as described in the
+[rzmq project README](https://github.com/ropensci/rzmq#installation).
+
 ```r
 # install.packages('devtools')
 devtools::install_github('mschubert/clustermq')
