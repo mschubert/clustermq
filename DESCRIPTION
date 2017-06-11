@@ -15,9 +15,7 @@ Imports:
     pryr,
     R6,
     rzmq,
-    stats,
     tibble,
-    tools,
     utils
 Remotes: ropensci/rzmq
 License: Apache License (== 2.0) | file LICENSE
