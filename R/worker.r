@@ -41,8 +41,12 @@ worker = function(worker_id, master, memlimit) {
     counter = 0
 
     while(TRUE) {
-        msg = rzmq::receive.socket(socket)
-        message("received: ", msg$id)
+        events = rzmq::poll.socket(list(socket), list("read"), timeout=600)
+        if (events[[1]]$read) {
+            msg = rzmq::receive.socket(socket)
+            message("received: ", msg$id)
+        } else
+            stop("Timeout reached, terminating")
 
         switch(msg$id,
             "DO_CHUNK" = {
