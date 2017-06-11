@@ -14,7 +14,6 @@ Imports:
     narray,
     pryr,
     R6,
-    roxygen2,
     rzmq,
     stats,
     tibble,
