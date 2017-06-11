@@ -6,10 +6,6 @@
 #' @param master     The master address (tcp://ip:port)
 #' @param memlimit   Maximum memory before throwing an error
 worker = function(worker_id, master, memlimit) {
-    # https://github.com/krlmlr/ulimit, not on CRAN
-    if (requireNamespace("ulimit", quietly=TRUE))
-        ulimit::memory_limit(memlimit)
-
     print(master)
     print(memlimit)
 

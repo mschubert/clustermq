@@ -44,5 +44,6 @@ SGE$template = paste(sep="\n",
     "#$ -cwd                            # use pwd as work dir",
     "#$ -V                              # use environment variable",
     "",
+    "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
     "R --no-save --no-restore -e \\",
     "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")

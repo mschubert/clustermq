@@ -44,5 +44,6 @@ LSF$template = paste(sep="\n",
     "#BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes",
     "#BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes",
     "",
+    "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
     "R --no-save --no-restore -e \\",
     "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")
