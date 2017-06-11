@@ -27,6 +27,7 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
 
     fun = match.fun(fun)
     iter = Q_check(fun, list(...), const, split_array_by)
+    seed = as.integer(seed)
     if (expand_grid)
         iter = do.call(expand.grid, c(iter, list(KEEP.OUT.ATTRS=FALSE,
                        stringsAsFactors=FALSE)))
@@ -38,6 +39,8 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
         scheduler_args$memory = memory
     if (!is.null(scheduler_args$memory) && scheduler_args$memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
+    if (is.na(seed) || length(seed) != 1)
+        stop("'seed' needs to be a length-1 integer")
 
     # create call index
     call_index = as.data.frame(do.call(tibble::data_frame, iter))
