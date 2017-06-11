@@ -102,7 +102,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
                     qsys$send_job_data(id="WORKER_STOP")
             },
             "WORKER_DONE" = {
-                worker_stats[[msg$worker_id]] = msg$time
+                worker_stats[[msg$worker_id]] = msg
                 workers_running[[msg$worker_id]] = NULL
                 qsys$send_job_data() # close REQ/REP
             }
@@ -126,10 +126,16 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     }
 
     # compute summary statistics for workers
-    wt = Reduce(`+`, worker_stats) / length(worker_stats)
+    times = lapply(worker_stats, function(w) w$time)
+    wt = Reduce(`+`, times) / length(times)
     message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
                     rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))
+
+    # print worker warnings
+    warns = lapply(worker_stats, function(s) s$warnings)
+    if (any(sapply(warns, length) > 0))
+        warning(paste(warns, collapse="\n"))
 
     job_result
 }

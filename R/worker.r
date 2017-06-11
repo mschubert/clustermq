@@ -63,8 +63,13 @@ worker = function(worker_id, master, memlimit) {
     run_time = proc.time() - start_time
 
     message("shutting down worker")
-    data = list(id="WORKER_DONE", worker_id=worker_id, time=run_time, calls=counter)
-    rzmq::send.socket(socket, data)
+    rzmq::send.socket(socket, data = list(
+        id = "WORKER_DONE",
+        worker_id = worker_id,
+        time = run_time,
+        calls = counter,
+        warnings = warnings()
+    ))
 
     print(run_time)
 }
