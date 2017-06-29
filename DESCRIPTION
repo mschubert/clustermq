@@ -1,10 +1,11 @@
 Package: clustermq
-Title: ZeroMQ-Powered Cluster Jobs (LSF, SGE, SLURM)
-Version: 0.6.1
+Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)
+Version: 0.6.2
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
-Description: Transparent evaluation of function calls on HPC schedulers
-    without using network-mounted storage.
+Description: Provides the Q() function to send arbitrary function calls to
+    workers on HPC schedulers without relying on network-mounted storage.
+    Allows using remote schedulers via SSH.
 URL: https://github.com/mschubert/clustermq
 BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
@@ -14,10 +15,9 @@ Imports:
     narray,
     pryr,
     R6,
-    rzmq,
+    rzmq (>= 0.9.2),
     tibble,
     utils
-Remotes: ropensci/rzmq
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
