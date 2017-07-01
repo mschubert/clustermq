@@ -93,9 +93,15 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
                     utils::setTxtProgressBar(pb, submit_index[1] -
                                              length(jobs_running) - 1)
 
-                    errors = sapply(msg$result, class) == "try-error"
-                    if (any(errors) && fail_on_error==TRUE)
-                        shutdown = TRUE
+                    if (!is.null(msg$errors)) {
+                        if (fail_on_error)
+                            shutdown = TRUE
+                        else
+                            for (err in msg$errors)
+                                warning(err)
+                    }
+                    for (warn in msg$warnings)
+                        warning(warn)
                 }
 
                 # if we have work, send it to the worker
@@ -125,12 +131,12 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     on.exit(NULL)
 
     # check for failed jobs, report which and how many failed
-    failed = which(sapply(job_result, class) == "try-error")
-    if (any(failed)) {
-        warning(lapply(failed, function(x) paste0("(#", x, ") ", job_result[[x]])))
-        if (fail_on_error)
-            stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
-    }
+#    failed = which(sapply(job_result, class) == "try-error")
+#    if (any(failed)) {
+#        warning(lapply(failed, function(x) paste0("(#", x, ") ", job_result[[x]])))
+#        if (fail_on_error)
+#            stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
+#    }
 
     # check if workers shut down properly
     if (length(workers_running) > 0)

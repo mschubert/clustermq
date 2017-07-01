@@ -8,14 +8,34 @@
 #' @param common_seed  A seed offset common to all function calls
 #' @return             A list of call results (or try-error if they failed)
 work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
-    fwrap = function(..., seed..=NULL) {
-        if (!is.null(seed..))
-            set.seed(seed..)
-        try(do.call(fun, c(list(...), const_args)))
+    context = new.env()
+
+    fwrap = function(..., ` id `=NULL, ` seed `=NA) {
+        if (!is.na(` seed `))
+            set.seed(` seed `)
+
+        withCallingHandlers(
+            withRestarts(
+                do.call(fun, c(list(...), const_args)),
+                muffleStop = function() NULL
+            ),
+            warning = function(w) {
+                wmsg = paste0("(#", ` id `, ")", conditionMessage(w))
+                context$warnings = c(context$warnings, list(wmsg))
+                invokeRestart("muffleWarning")
+            },
+            error = function(e) {
+                context$errors = paste0("(#", ` id `, ")", conditionMessage(e))
+                invokeRestart("muffleStop")
+            }
+        )
     }
 
+    df$` id ` = rownames(df)
     if (!is.null(common_seed))
-        df$seed.. = common_seed + as.integer(rownames(df))
+        df$` seed ` = common_seed + as.integer(rownames(df))
 
-    purrr::pmap(df, fwrap)
+    list(result = stats::setNames(purrr::pmap(df, fwrap), rownames(df)),
+         warnings = context$warnings,
+         errors = context$errors)
 }

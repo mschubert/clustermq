@@ -52,8 +52,7 @@ worker = function(worker_id, master, memlimit) {
             "DO_CHUNK" = {
                 result = work_chunk(msg$chunk, fun, const, seed)
                 message("completed: ", paste(rownames(msg$chunk), collapse=", "))
-                names(result) = rownames(msg$chunk)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY", result=result))
+                rzmq::send.socket(socket, data=c(list(id="WORKER_READY"), result))
 
                 counter = counter + length(result)
                 print(pryr::mem_used())
@@ -71,10 +70,8 @@ worker = function(worker_id, master, memlimit) {
         id = "WORKER_DONE",
         worker_id = worker_id,
         time = run_time,
-        calls = counter,
-        warnings = names(warnings())
+        calls = counter
     ))
 
-    print(names(warnings()))
     print(run_time)
 }
