@@ -4,9 +4,6 @@ ClusterMQ: send R function calls as cluster jobs
 [![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
 
-**Note:** ClusterMQ currently depends on the Github version of
-[`rzmq`](https://github.com/ropensci/rzmq)
-
 This package will allow you to send function calls as cluster jobs (using
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
 [SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
@@ -55,7 +52,6 @@ Then install the `clustermq` package in R (which automatically installs the `rzm
 
 ```r
 # install.packages('devtools')
-devtools::install_github('ropensci/rzmq')
 devtools::install_github('mschubert/clustermq')
 ```
 
