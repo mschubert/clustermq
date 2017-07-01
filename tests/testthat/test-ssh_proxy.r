@@ -1,17 +1,16 @@
 context("ssh_proxy")
 
-# prerequesites
-context = rzmq::init.context()
-socket = rzmq::init.socket(context, "ZMQ_REP")
-port = bind_avail(socket, 50000:55000)
-Sys.sleep(0.5)
-if (Sys.info()[['sysname']] == "Windows")
-    skip("Forking not available on Windows")
-common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
-
-p = parallel::mcparallel(ssh_proxy(port))
-
 test_that("control flow", {
+    skip_on_os("windows")
+
+    # prerequesites
+    context = rzmq::init.context()
+    socket = rzmq::init.socket(context, "ZMQ_REP")
+    port = bind_avail(socket, 50000:55000)
+    Sys.sleep(0.5)
+    common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
+    p = parallel::mcparallel(ssh_proxy(port))
+
     # startup
     msg = rzmq::receive.socket(socket)
     expect_equal(msg$id, "SSH_UP")

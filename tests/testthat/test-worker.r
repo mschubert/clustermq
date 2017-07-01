@@ -6,8 +6,7 @@ rzmq::bind.socket(socket, "tcp://*:55443")
 Sys.sleep(0.5)
 
 start_worker = function(id="1", url="tcp://localhost:55443") {
-    if (Sys.info()[['sysname']] == "Windows")
-        skip("Forking not available on Windows")
+    skip_on_os("windows")
 
     p = parallel::mcparallel(worker(id, url, 1024))
     msg = rzmq::receive.socket(socket)
