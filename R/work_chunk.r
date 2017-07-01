@@ -17,15 +17,15 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
         withCallingHandlers(
             withRestarts(
                 do.call(fun, c(list(...), const_args)),
-                muffleStop = function() NULL
+                muffleStop = function() structure(NULL, class="error")
             ),
             warning = function(w) {
-                wmsg = paste0("(#", ` id `, ")", conditionMessage(w))
+                wmsg = paste0("(#", ` id `, ") ", conditionMessage(w))
                 context$warnings = c(context$warnings, list(wmsg))
                 invokeRestart("muffleWarning")
             },
             error = function(e) {
-                context$errors = paste0("(#", ` id `, ")", conditionMessage(e))
+                context$errors = paste0("(Error #", ` id `, ") ", conditionMessage(e))
                 invokeRestart("muffleStop")
             }
         )

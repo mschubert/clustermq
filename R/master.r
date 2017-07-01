@@ -94,11 +94,10 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
                                              length(jobs_running) - 1)
 
                     if (!is.null(msg$errors)) {
+                        for (err in msg$errors)
+                            warning(err)
                         if (fail_on_error)
                             shutdown = TRUE
-                        else
-                            for (err in msg$errors)
-                                warning(err)
                     }
                     for (warn in msg$warnings)
                         warning(warn)
@@ -131,12 +130,9 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     on.exit(NULL)
 
     # check for failed jobs, report which and how many failed
-#    failed = which(sapply(job_result, class) == "try-error")
-#    if (any(failed)) {
-#        warning(lapply(failed, function(x) paste0("(#", x, ") ", job_result[[x]])))
-#        if (fail_on_error)
-#            stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
-#    }
+    failed = which(sapply(job_result, class) == "error")
+    if (any(failed) && fail_on_error)
+        stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
 
     # check if workers shut down properly
     if (length(workers_running) > 0)
@@ -149,11 +145,6 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
                     rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))
-
-    # print worker warnings
-    warns = lapply(worker_stats, function(s) s$warnings)
-    for (warn in warns)
-        warning(warn, call.=FALSE)
 
     job_result
 }
