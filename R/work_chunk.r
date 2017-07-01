@@ -8,19 +8,14 @@
 #' @param common_seed  A seed offset common to all function calls
 #' @return             A list of call results (or try-error if they failed)
 work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
-    process_id = function(id) {
-        if (!is.null(common_seed))
-            set.seed(common_seed + as.integer(id))
-
-        # workaround for unlist(x, recursive=FALSE) that unlists matrices in lists
-        iter = lapply(df[id,], function(x) {
-            if (is.list(x) && length(x) == 1)
-                x[[1]]
-            else
-                x
-        })
-        names(iter) = colnames(df)
-        result = try(do.call(fun, c(iter, const_args)))
+    fwrap = function(..., seed..=NULL) {
+        if (!is.null(seed..))
+            set.seed(seed..)
+        try(do.call(fun, c(list(...), const_args)))
     }
-    lapply(rownames(df), process_id)
+
+    if (!is.null(common_seed))
+        df$seed.. = common_seed + as.integer(rownames(df))
+
+    purrr::pmap(df, fwrap)
 }
