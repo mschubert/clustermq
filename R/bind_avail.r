@@ -8,16 +8,12 @@
 bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
     ports = sample(range, n_tries)
 
-    on.exit(sink())
-    sink('/dev/null')
     for (i in 1:n_tries) {
         addr = paste(iface, ports[i], sep=":")
         port_found = rzmq::bind.socket(socket, addr)
         if (port_found)
             break
     }
-    sink()
-    on.exit()
 
     if (!port_found)
         stop("Could not bind after ", n_tries, " tries")
