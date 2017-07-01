@@ -26,13 +26,8 @@ SGE = R6::R6Class("SGE",
 # Static method, process scheduler options and return updated object
 SGE$setup = function() {
     user_template = getOption("clustermq.template.sge")
-    if (length(user_template) == 0) {
-        message("* Option 'clustermq.template.sge' not set, ",
-                "defaulting to package template")
-        message("--- see: https://github.com/mschubert/clustermq/wiki/SGE")
-    } else {
+    if (!is.null(user_template))
         SGE$template = readChar(user_template, file.info(user_template)$size)
-    }
     SGE
 }
 

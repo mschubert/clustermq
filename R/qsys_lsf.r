@@ -26,13 +26,8 @@ LSF = R6::R6Class("LSF",
 # Static method, process scheduler options and return updated object
 LSF$setup = function() {
     user_template = getOption("clustermq.template.lsf")
-    if (length(user_template) == 0) {
-        message("* Option 'clustermq.template.lsf' not set, ",
-                "defaulting to package template")
-        message("--- see: https://github.com/mschubert/clustermq/wiki/LSF")
-    } else {
+    if (!is.null(user_template))
         LSF$template = readChar(user_template, file.info(user_template)$size)
-    }
     LSF
 }
 

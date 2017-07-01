@@ -26,7 +26,7 @@
 
 #' Report queueing system on package attach if not set
 .onAttach = function(libname, pkgname) {
-    if (!is.null(getOption("clustermq.scheduler"))) {
+    if (is.null(getOption("clustermq.scheduler"))) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
                 "defaulting to ", sQuote(qsys_id))
         packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")

@@ -26,13 +26,8 @@ SLURM = R6::R6Class("SLURM",
 # Static method, process scheduler options and return updated object
 SLURM$setup = function() {
     user_template = getOption("clustermq.template.slurm")
-    if (length(user_template) == 0) {
-        message("* Option 'clustermq.template.slurm' not set, ",
-                "defaulting to package template")
-        message("--- see: https://github.com/mschubert/clustermq/wiki/SLURM")
-    } else {
+    if (!is.null(user_template))
         SLURM$template = readChar(user_template, file.info(user_template)$size)
-    }
     SLURM
 }
 
