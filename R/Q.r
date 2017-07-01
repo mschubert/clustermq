@@ -6,8 +6,8 @@
 #' @param export          List of objects to be exported to the worker
 #' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
-#' @param memory          Short for scheduler_args=list(memory=value)
-#' @param scheduler_args  A named list of values to fill in template
+#' @param memory          Short for template=list(memory=value)
+#' @param template  A named list of values to fill in template
 #' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
 #'                        if job_size is given as well
 #' @param job_size        The number of function calls per job
@@ -21,7 +21,7 @@
 #' @return                A list of whatever `fun` returned
 #' @export
 Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=128965,
-        memory=NULL, scheduler_args=list(), n_jobs=NULL, job_size=NULL,
+        memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=-1, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
@@ -36,8 +36,8 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
     if (!is.null(memory))
-        scheduler_args$memory = memory
-    if (!is.null(scheduler_args$memory) && scheduler_args$memory < 500)
+        template$memory = memory
+    if (!is.null(template$memory) && template$memory < 500)
         stop("Worker needs about 230 MB overhead, set memory>=500")
     if (is.na(seed) || length(seed) != 1)
         stop("'seed' needs to be a length-1 integer")
@@ -60,7 +60,7 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
         work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
     else
         master(fun=fun, iter=call_index, const=const, export=export, seed=seed,
-               scheduler_args=scheduler_args, n_jobs=n_jobs,
+               template=template, n_jobs=n_jobs,
                fail_on_error=fail_on_error, log_worker=log_worker,
                wait_time=wait_time, chunk_size=chunk_size)
 }

@@ -5,9 +5,8 @@
 \title{Master controlling the workers}
 \usage{
 master(fun, iter, const = list(), export = list(), seed = 128965,
-  scheduler_args = list(), n_jobs = NULL, walltime = NA,
-  fail_on_error = TRUE, log_worker = FALSE, wait_time = NA,
-  chunk_size = NA)
+  template = list(), n_jobs = NULL, walltime = NA, fail_on_error = TRUE,
+  log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -20,7 +19,7 @@ master(fun, iter, const = list(), export = list(), seed = 128965,
 
 \item{seed}{A seed to set for each function call}
 
-\item{scheduler_args}{Named list of values to fill in template}
+\item{template}{Named list of values to fill in template}
 
 \item{n_jobs}{The number of LSF jobs to submit}
 

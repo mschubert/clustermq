@@ -10,7 +10,7 @@ LOCAL = R6::R6Class("LOCAL",
             private$set_common_data(fun=fun, const=const, export=export, seed=seed)
         },
 
-        submit_job = function(scheduler_args=list(), log_worker=FALSE) {
+        submit_job = function(template=list(), log_worker=FALSE) {
         },
 
         cleanup = function(dirty=FALSE) {

@@ -10,8 +10,8 @@ SGE = R6::R6Class("SGE",
             private$set_common_data(fun=fun, const=const, export=export, seed=seed)
         },
 
-        submit_job = function(scheduler_args=list(), log_worker=FALSE) {
-            values = super$submit_job(scheduler_args=scheduler_args, log_worker=log_worker)
+        submit_job = function(template=list(), log_worker=FALSE) {
+            values = super$submit_job(template=template, log_worker=log_worker)
             job_input = infuser::infuse(SGE$template, values)
             system("qsub", input=job_input, ignore.stdout=TRUE)
         },

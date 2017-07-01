@@ -5,7 +5,7 @@
 \title{Queue function calls on the cluster}
 \usage{
 Q(fun, ..., const = list(), export = list(), expand_grid = FALSE,
-  seed = 128965, memory = NULL, scheduler_args = list(), n_jobs = NULL,
+  seed = 128965, memory = NULL, template = list(), n_jobs = NULL,
   job_size = NULL, split_array_by = -1, fail_on_error = TRUE,
   log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
@@ -22,9 +22,9 @@ Q(fun, ..., const = list(), export = list(), expand_grid = FALSE,
 
 \item{seed}{A seed to set for each function call}
 
-\item{memory}{Short for scheduler_args=list(memory=value)}
+\item{memory}{Short for template=list(memory=value)}
 
-\item{scheduler_args}{A named list of values to fill in template}
+\item{template}{A named list of values to fill in template}
 
 \item{n_jobs}{The number of LSF jobs to submit; upper limit of jobs
 if job_size is given as well}
