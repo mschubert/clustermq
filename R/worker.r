@@ -72,8 +72,9 @@ worker = function(worker_id, master, memlimit) {
         worker_id = worker_id,
         time = run_time,
         calls = counter,
-        warnings = warnings()
+        warnings = names(warnings())
     ))
 
+    print(names(warnings()))
     print(run_time)
 }

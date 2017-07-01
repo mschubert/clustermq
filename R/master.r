@@ -61,7 +61,14 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     # main event loop
     start_time = proc.time()
     while((!shutdown && submit_index[1] <= n_calls) || length(workers_running) > 0) {
-        msg = qsys$receive_data()
+        # wait for results only longer if we don't have all data yet
+        if (submit_index <= n_calls)
+            msg = qsys$receive_data()
+        else {
+            msg = try(qsys$receive_data(timeout=5))
+            if (class(msg) == "try-error")
+                break
+        }
 
         # for some reason we receive empty messages
         # not sure where they come from, maybe worker shutdown?
@@ -125,6 +132,11 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
             stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
     }
 
+    # check if workers shut down properly
+    if (length(workers_running) > 0)
+        warning(length(workers_running), "(of ", n_jobs,
+                ") workers did not shut down properly")
+
     # compute summary statistics for workers
     times = lapply(worker_stats, function(w) w$time)
     wt = Reduce(`+`, times) / length(times)
@@ -134,8 +146,8 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
 
     # print worker warnings
     warns = lapply(worker_stats, function(s) s$warnings)
-    if (any(sapply(warns, length) > 0))
-        warning(paste(warns, collapse="\n"))
+    for (warn in warns)
+        warning(warn, call.=FALSE)
 
     job_result
 }
