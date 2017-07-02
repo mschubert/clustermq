@@ -20,6 +20,19 @@
 #'                        defaults to 100 chunks per worker or max. 10 kb per chunk
 #' @return                A list of whatever `fun` returned
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Run a simple multiplication for numbers 1 to 3 on a worker node
+#' fx = function(x) x * 2
+#' Q(fx, x=1:3, n_jobs=1)
+#' # list(2,4,6)
+#'
+#' # Run a mutate() call in dplyr on a worker node
+#' iris %>%
+#'     mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1))
+#' # iris with an additional column 'area'
+#' }
 Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=-1, fail_on_error=TRUE,
