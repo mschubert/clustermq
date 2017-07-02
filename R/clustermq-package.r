@@ -1,24 +1,26 @@
-#' ZeroMQ-powered cluster jobs
+#' Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)
 #'
-#' Rationale This script uses rzmq to run function calls as LSF jobs. The
-#' function supplied *MUST* be self-sufficient, i.e. load libraries and
-#' scripts.
+#' Provides the \code{Q} function to send arbitrary function calls to
+#' workers on HPC schedulers without relying on network-mounted storage.
+#' Allows using remote schedulers via SSH.
 #'
-#' Usage
-#'  * Q(...)     : general queuing function
+#' Under the hood, this will submit a cluster job that connects to the master
+#' via TCP the master will then send the function and argument chunks to the
+#' worker and the worker will return the results to the master until everything
+#' is done and you get back your result
 #'
-#' Examples
-#'  > s = function(x) x
-#'  > Q(s, x=c(1:3), n_jobs=1)
-#'  returns list(1,2,3)
+#' Computations are done entirely on the network and without any temporary
+#' files on network-mounted storage, so there is no strain on the file system
+#' apart from starting up R once per job. This removes the biggest bottleneck
+#' in distributed computing.
 #'
-#'  > t = function(x) sum(x)
-#'  > a = matrix(3:6, nrow=2)
-#'  > Q(t, a, n_jobs=1)
-#'  splits a by columns, sums each column, and returns list(7, 11)
+#' Using this approach, we can easily do load-balancing, i.e. workers that get
+#' their jobs done faster will also receive more function calls to work on. This
+#' is especially useful if not all calls return after the same time, or one
+#' worker has a high load.
 #'
-#' TODO list
-#'  * rerun failed jobs?
+#' For more detailed usage instructions, see the documentation of the \code{Q}
+#' function.
 #'
 #' @name clustermq
 #' @docType package
