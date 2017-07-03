@@ -62,13 +62,15 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     start_time = proc.time()
     while((!shutdown && submit_index[1] <= n_calls) || length(workers_running) > 0) {
         # wait for results only longer if we don't have all data yet
-        if (submit_index <= n_calls)
+        if (submit_index[1] <= n_calls)
             msg = qsys$receive_data()
-        else {
-            msg = try(qsys$receive_data(timeout=5))
-            if (class(msg) == "try-error")
-                break
-        }
+        else
+            withCallingHandlers(withRestarts(qsys$receive_data(timeout=10),
+                muffleStop = function() {
+                    warning(sprintf("%i/%i workers did not shut down properly",
+                            length(workers_running), n_jobs), immediate.=TRUE)
+                    break
+                }), error = function(e) invokeRestart("muffleStop"))
 
         # for some reason we receive empty messages
         # not sure where they come from, maybe worker shutdown?
@@ -131,13 +133,13 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
 
     # check for failed jobs, report which and how many failed
     failed = which(sapply(job_result, class) == "error")
-    if (any(failed) && fail_on_error)
-        stop(length(failed), "/", min(submit_index)-1, " jobs failed. Stopping.")
-
-    # check if workers shut down properly
-    if (length(workers_running) > 0)
-        warning(length(workers_running), "(of ", n_jobs,
-                ") workers did not shut down properly")
+    if (any(failed)) {
+        msg = sprintf("%i/%i jobs failed.", length(failed), min(submit_index)-1)
+        if (fail_on_error)
+            stop(msg, " Stopping.")
+        else
+            warning(msg, immediate.=TRUE)
+    }
 
     # compute summary statistics for workers
     times = lapply(worker_stats, function(w) w$time)
