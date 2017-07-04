@@ -34,7 +34,8 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     n_calls = nrow(iter)
 
     # do the submissions
-    message("Submitting ", n_jobs, " worker jobs for ", n_calls,
+    message("Submitting ", n_jobs, " worker jobs for ",
+            format(n_calls, big.mark=",", scientific=FALSE),
             " function calls (ID: ", qsys$id, ") ...")
     pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
     for (j in 1:n_jobs) {
