@@ -63,10 +63,10 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     start_time = proc.time()
     while((!shutdown && submit_index[1] <= n_calls) || length(workers_running) > 0) {
         # wait for results only longer if we don't have all data yet
-        if (submit_index[1] <= n_calls)
+        if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
             msg = qsys$receive_data()
         else
-            withCallingHandlers(withRestarts(qsys$receive_data(timeout=10),
+            withCallingHandlers(withRestarts(qsys$receive_data(timeout=5),
                 muffleStop = function() {
                     warning(sprintf("%i/%i workers did not shut down properly",
                             length(workers_running), n_jobs), immediate.=TRUE)
