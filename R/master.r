@@ -65,13 +65,17 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
         # wait for results only longer if we don't have all data yet
         if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
             msg = qsys$receive_data()
-        else
-            withCallingHandlers(withRestarts(qsys$receive_data(timeout=5),
-                muffleStop = function() {
-                    warning(sprintf("%i/%i workers did not shut down properly",
-                            length(workers_running), n_jobs), immediate.=TRUE)
-                    break
-                }), error = function(e) invokeRestart("muffleStop"))
+        else {
+            msg = withCallingHandlers(
+                withRestarts(qsys$receive_data(timeout=5),
+                             muffleStop = function() NULL),
+                error = function(e) invokeRestart("muffleStop"))
+            if (is.null(msg)) {
+                warning(sprintf("%i/%i workers did not shut down properly",
+                        length(workers_running), n_jobs), immediate.=TRUE)
+                break
+            }
+        }
 
         # for some reason we receive empty messages
         # not sure where they come from, maybe worker shutdown?
