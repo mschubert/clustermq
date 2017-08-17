@@ -11,7 +11,7 @@ proxy = function(master) {
     fwd_out = rzmq::init.socket(context, "ZMQ_XREQ")
     re = rzmq::connect.socket(fwd_out, master)
     if (!re)
-        stop("failed to connect to SSH tunnel")
+        stop("failed to connect to master")
 
     # set up local network forward to master (or SSH tunnel)
     fwd_in = rzmq::init.socket(context, "ZMQ_XREP")
@@ -23,7 +23,7 @@ proxy = function(master) {
     socket = rzmq::init.socket(context, "ZMQ_REQ")
     rzmq::connect.socket(socket, master)
     rzmq::send.socket(socket, data=list(id="PROXY_UP"))
-    message("sent PROXY_UP to master via tunnel")
+    message("sent PROXY_UP to master")
 
     # receive common data
     msg = rzmq::receive.socket(socket)
@@ -31,8 +31,8 @@ proxy = function(master) {
             utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
     qsys = qsys$new(fun=msg$fun, const=msg$const, export=msg$export, seed=msg$seed)
     qsys$set_master(net_fwd)
-    rzmq::send.socket(socket, data=list(id="PROXY_READY", proxy=qsys$url))
-    message("sent PROXY_READY to master via tunnel")
+    rzmq::send.socket(socket, data=list(id="PROXY_READY", data_url=qsys$url))
+    message("sent PROXY_READY to master")
 
     while(TRUE) {
         events = rzmq::poll.socket(list(fwd_in, fwd_out, socket, qsys$poll),
@@ -45,7 +45,7 @@ proxy = function(master) {
         if (events[[2]]$read)
             rzmq::send.multipart(fwd_in, rzmq::receive.multipart(fwd_out))
 
-        # socket connecting ssh_proxy to master
+        # socket connecting proxy to master
         if (events[[3]]$read) {
             msg = rzmq::receive.socket(socket)
             message("received: ", msg)

@@ -41,6 +41,8 @@ worker = function(worker_id, master, memlimit) {
     counter = 0
 
     while(TRUE) {
+        #TODO: set timeout to something more reasonable
+        #  when data sending is separated from main loop
         events = rzmq::poll.socket(list(socket), list("read"), timeout=3600)
         if (events[[1]]$read) {
             msg = rzmq::receive.socket(socket)

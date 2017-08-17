@@ -118,7 +118,7 @@ QSys = R6::R6Class("QSys",
             if (msg$id != "PROXY_READY")
                 stop("Sending failed")
 
-            private$set_common_data(redirect=msg$proxy)
+            private$set_common_data(redirect=msg$data_url)
         },
 
         # Create a socket and listen on a port in range
