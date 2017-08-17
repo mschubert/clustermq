@@ -24,20 +24,7 @@ SSH = R6::R6Class("SSH",
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", SSH$host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
-            msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "PROXY_UP")
-                stop("Establishing connection failed")
-
-            # send common data to ssh
-            message("Sending common data ...")
-            rzmq::send.socket(private$socket,
-                              data = list(fun=fun, const=const,
-                                          export=export, seed=seed))
-            msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "PROXY_READY")
-                stop("Sending failed")
-
-            private$set_common_data(redirect=msg$proxy)
+            private$init_proxy()
         },
 
         submit_job = function(template=list(), log_worker=FALSE) {
