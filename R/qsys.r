@@ -61,12 +61,13 @@ QSys = R6::R6Class("QSys",
 
         # Read data from the socket
         receive_data = function(timeout=-1L) {
-            rcv = rzmq::poll.socket(list(private$socket), list("read"),
-                                    timeout=timeout)
+            rcv = rzmq::poll.socket(list(private$socket),
+                                    list("read"), timeout=timeout)
+
             if (rcv[[1]]$read)
                 rzmq::receive.socket(private$socket)
-            else
-                stop("Timeout reached, terminating")
+            else # timeout reached
+                NULL
         },
 
         # Make sure all resources are closed properly

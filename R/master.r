@@ -66,10 +66,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
         if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
             msg = qsys$receive_data()
         else {
-            msg = withCallingHandlers(
-                withRestarts(qsys$receive_data(timeout=5),
-                             muffleStop = function() NULL),
-                error = function(e) invokeRestart("muffleStop"))
+            msg = qsys$receive_data(timeout=5)
             if (is.null(msg)) {
                 warning(sprintf("%i/%i workers did not shut down properly",
                         length(workers_running), n_jobs), immediate.=TRUE)
@@ -80,8 +77,10 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
         # for some reason we receive empty messages
         # not sure where they come from, maybe worker shutdown?
         # anyway, results are all there if we just drop those
-        if (is.null(msg$id))
+        if (is.null(msg$id)) {
+            message("received NULL msg")
             next
+        }
 
         switch(msg$id,
             "SSH_NOOP" = {
