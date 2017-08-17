@@ -9,7 +9,8 @@ test_that("control flow", {
     port = bind_avail(socket, 50000:55000)
     Sys.sleep(0.5)
     common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
-    p = parallel::mcparallel(proxy(port))
+    master = sprintf("tcp://localhost:%i", port)
+    p = parallel::mcparallel(proxy(master))
 
     # startup
     msg = rzmq::receive.socket(socket)
@@ -18,8 +19,8 @@ test_that("control flow", {
     rzmq::send.socket(socket, common_data)
     msg = rzmq::receive.socket(socket)
     expect_equal(msg$id, "PROXY_READY")
-    expect_true("proxy" %in% names(msg))
-    proxy = msg$proxy
+    expect_true("data_url" %in% names(msg))
+    proxy = msg$data_url
 
     # heartbeating
     rzmq::send.socket(socket, list(id="PROXY_NOOP"))
