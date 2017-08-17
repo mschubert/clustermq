@@ -15,8 +15,9 @@ SSH = R6::R6Class("SSH",
 
             # set forward and run ssh.r (send port, master)
             rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
+            tunnel = sprintf("tcp://localhost:%i", remote_port)
             rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::ssh_proxy(%i)' > %s 2>&1", remote_port,
+                           'clustermq:::proxy(\"%s\")' > %s 2>&1", tunnel,
                            getOption("clustermq.ssh.log", default="/dev/null"))
             ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
 
@@ -24,7 +25,7 @@ SSH = R6::R6Class("SSH",
             message(sprintf("Connecting %s via SSH ...", SSH$host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
             msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "SSH_UP")
+            if (msg$id != "PROXY_UP")
                 stop("Establishing connection failed")
 
             # send common data to ssh
@@ -33,7 +34,7 @@ SSH = R6::R6Class("SSH",
                               data = list(fun=fun, const=const,
                                           export=export, seed=seed))
             msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "SSH_READY")
+            if (msg$id != "PROXY_READY")
                 stop("Sending failed")
 
             private$set_common_data(redirect=msg$proxy)
@@ -54,10 +55,10 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$socket, data = list(id="SSH_CMD", exec=call))
+            rzmq::send.socket(private$socket, data = list(id="PROXY_CMD", exec=call))
 
             msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "SSH_CMD" || class(msg$reply) == "try-error")
+            if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
         },
 
@@ -65,7 +66,7 @@ SSH = R6::R6Class("SSH",
             #FIXME: this may still get worker results when dirty=TRUE
             # need to loop over results until we get ssh_proxy
             rzmq::receive.socket(private$socket)
-            rzmq::send.socket(private$socket, data=list(id="SSH_STOP"))
+            rzmq::send.socket(private$socket, data=list(id="PROXY_STOP"))
         }
     ),
 )

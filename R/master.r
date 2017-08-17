@@ -46,7 +46,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
 
     # sync send/receive cycles with the ssh_proxy
     if (qsys_id == "SSH")
-        qsys$send_job_data(id="SSH_NOOP")
+        qsys$send_job_data(id="PROXY_NOOP")
 
     # prepare empty variables for managing results
     job_result = rep(list(NULL), n_calls)
@@ -83,8 +83,8 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
         }
 
         switch(msg$id,
-            "SSH_NOOP" = {
-                qsys$send_job_data(id="SSH_NOOP")
+            "PROXY_NOOP" = {
+                qsys$send_job_data(id="PROXY_NOOP")
             },
             "WORKER_UP" = {
                 workers_running[[msg$worker_id]] = TRUE

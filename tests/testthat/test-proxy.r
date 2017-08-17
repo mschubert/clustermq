@@ -1,4 +1,4 @@
-context("ssh_proxy")
+context("proxy")
 
 test_that("control flow", {
     skip_on_os("windows")
@@ -9,28 +9,28 @@ test_that("control flow", {
     port = bind_avail(socket, 50000:55000)
     Sys.sleep(0.5)
     common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
-    p = parallel::mcparallel(ssh_proxy(port))
+    p = parallel::mcparallel(proxy(port))
 
     # startup
     msg = rzmq::receive.socket(socket)
-    expect_equal(msg$id, "SSH_UP")
+    expect_equal(msg$id, "PROXY_UP")
 
     rzmq::send.socket(socket, common_data)
     msg = rzmq::receive.socket(socket)
-    expect_equal(msg$id, "SSH_READY")
+    expect_equal(msg$id, "PROXY_READY")
     expect_true("proxy" %in% names(msg))
     proxy = msg$proxy
 
     # heartbeating
-    rzmq::send.socket(socket, list(id="SSH_NOOP"))
+    rzmq::send.socket(socket, list(id="PROXY_NOOP"))
     msg = rzmq::receive.socket(socket)
-    expect_equal(msg$id, "SSH_NOOP")
+    expect_equal(msg$id, "PROXY_NOOP")
 
     # command execution
     cmd = methods::Quote(Sys.getpid())
-    rzmq::send.socket(socket, list(id="SSH_CMD", exec=cmd))
+    rzmq::send.socket(socket, list(id="PROXY_CMD", exec=cmd))
     msg = rzmq::receive.socket(socket)
-    expect_equal(msg$id, "SSH_CMD")
+    expect_equal(msg$id, "PROXY_CMD")
     expect_equal(msg$reply, p$pid)
 
     # common data
@@ -45,7 +45,7 @@ test_that("control flow", {
     # ???
 
     # shutdown
-    msg = list(id = "SSH_STOP")
+    msg = list(id = "PROXY_STOP")
     rzmq::send.socket(socket, msg)
     Sys.sleep(0.5)
 

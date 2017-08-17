@@ -49,27 +49,27 @@ WORKER_DONE = 12L
 WORKER_STOP = 13L
 
 #' Message ID indicating SSH proxy is up
-SSH_UP = 20L
+PROXY_UP = 20L
 
 #' Message ID indicating SSH proxy is ready to distribute data
 #'
 #' Field has to be `proxy`
-SSH_READY = 21L
+PROXY_READY = 21L
 
 #' Message telling the SSH proxy to clean up
 #'
 #' No fields. Signals the worker to break its main loop.
-SSH_STOP = 22L
+PROXY_STOP = 22L
 
 #' SSH proxy heartbeating
 #'
-#' No fields. Answer has to be `SSH_NOOP`
-SSH_NOOP = 23L
+#' No fields. Answer has to be `PROXY_NOOP`
+PROXY_NOOP = 23L
 
 #' Message is an SSH command
 #'
 #' Field is either `exec` (command to run) or `reply` (how it went)
-SSH_CMD = -24L
+PROXY_CMD = -24L
 
 #' Chunk of iterated arguments for the worker
 #'
