@@ -17,7 +17,7 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
         withCallingHandlers(
             withRestarts(
                 do.call(fun, c(list(...), const_args)),
-                muffleStop = function() structure(NULL, class="error")
+                muffleStop = function(e) structure(e, class="error")
             ),
             warning = function(w) {
                 wmsg = paste0("(#", ` id `, ") ", conditionMessage(w))
@@ -25,8 +25,8 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
                 invokeRestart("muffleWarning")
             },
             error = function(e) {
-                context$errors = paste0("(Error #", ` id `, ") ", conditionMessage(e))
-                invokeRestart("muffleStop")
+                err = paste0("(Error #", ` id `, ") ", conditionMessage(e))
+                invokeRestart("muffleStop", err)
             }
         )
     }
@@ -36,6 +36,5 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
         df$` seed ` = common_seed + as.integer(rownames(df))
 
     list(result = stats::setNames(purrr::pmap(df, fwrap), rownames(df)),
-         warnings = context$warnings,
-         errors = context$errors)
+         warnings = context$warnings)
 }

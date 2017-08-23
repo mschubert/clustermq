@@ -30,18 +30,26 @@ test_that("do not unlist matrix in data.frame", {
     expect_equal(work_chunk(df2, fx)$result$'1', list(expr=elm))
 })
 
-test_that("try-error", {
+test_that("warning and error handling", {
     fx = function(a, ...) {
+        if (a %% 3 == 0)
+            warning("warning")
         if (a %% 2 == 0)
             stop("error")
-        else
-            a
+        a
     }
 
-    re = work_chunk(df, fx)
-    expect_equal(length(re$errors), 1)
-    expect_equal(re$result$'1', 1)
-    expect_equal(re$result$'3', 3)
+    re = work_chunk(data.frame(a=1:6), fx)
+    expect_equal(sapply(re$result, class) == "error",
+                 setNames(rep(c(FALSE,TRUE), 3), 1:6))
+    expect_equal(unname(unlist(re$result[c(1,3,5)])),
+                 as.integer(names(re$result[c(1,3,5)])),
+                 c(1,3,5))
+    expect_equal(length(re$warnings), 2)
+    expect_true(grepl("3", re$warnings[[1]]))
+    expect_true(grepl("warning", re$warnings[[1]]))
+    expect_true(grepl("6", re$warnings[[2]]))
+    expect_true(grepl("warning", re$warnings[[2]]))
 })
 
 test_that("const args", {

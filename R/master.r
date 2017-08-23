@@ -54,6 +54,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     jobs_running = list()
     workers_running = list()
     worker_stats = list()
+    warnings = list()
     shutdown = FALSE
 
     message("Running calculations (", chunk_size, " calls/chunk) ...")
@@ -91,14 +92,10 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
                     utils::setTxtProgressBar(pb, submit_index[1] -
                                              length(jobs_running) - 1)
 
-                    if (!is.null(msg$errors)) {
-                        for (err in msg$errors)
-                            warning(err)
-                        if (fail_on_error)
-                            shutdown = TRUE
-                    }
-                    for (warn in msg$warnings)
-                        warning(warn)
+                    errors = sapply(msg$result, class) == "error"
+                    if (any(errors) && fail_on_error == TRUE)
+                        shutdown = TRUE
+                    warnings = c(warnings, msg$warnings)
                 }
 
                 # if we have work, send it to the worker
@@ -126,6 +123,12 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
 
     qsys$cleanup(dirty=FALSE)
     on.exit(NULL)
+
+    # register all job warnings as summary
+    if (length(warnings) > 0) {
+        summ = sprintf("%i warnings occurred in processing", length(warnings))
+        warning(paste(c(list(summ), warnings), collapse="\n"))
+    }
 
     # check for failed jobs, report which and how many failed
     failed = which(sapply(job_result, class) == "error")
