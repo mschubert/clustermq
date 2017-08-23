@@ -1,8 +1,8 @@
 ClusterMQ: send R function calls as cluster jobs
 ================================================
 
-[![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
+[![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
 
 This package will allow you to send function calls as cluster jobs (using
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
