@@ -74,14 +74,6 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
             }
         }
 
-        # for some reason we receive empty messages
-        # not sure where they come from, maybe worker shutdown?
-        # anyway, results are all there if we just drop those
-        if (is.null(msg$id)) {
-            message("received NULL msg")
-            next
-        }
-
         switch(msg$id,
             "PROXY_NOOP" = {
                 qsys$send_job_data(id="PROXY_NOOP")
