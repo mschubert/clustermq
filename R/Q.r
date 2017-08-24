@@ -4,7 +4,6 @@
 #' @param ...             Objects to be iterated in each function call
 #' @param const           A list of constant arguments passed to each function call
 #' @param export          List of objects to be exported to the worker
-#' @param expand_grid     Use all combinations of arguments in `...`
 #' @param seed            A seed to set for each function call
 #' @param memory          Short for template=list(memory=value)
 #' @param template  A named list of values to fill in template
@@ -33,7 +32,7 @@
 #'     mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1))
 #' # iris with an additional column 'area'
 #' }
-Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=128965,
+Q = function(fun, ..., const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=-1, fail_on_error=TRUE,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
@@ -41,9 +40,6 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
     fun = match.fun(fun)
     iter = Q_check(fun, list(...), const, split_array_by)
     seed = as.integer(seed)
-    if (expand_grid)
-        iter = do.call(expand.grid, c(iter, list(KEEP.OUT.ATTRS=FALSE,
-                       stringsAsFactors=FALSE)))
 
     # check job number and memory
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
@@ -73,8 +69,8 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
         re = work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
         unravel_result(re, fail_on_error=fail_on_error)
     } else
-        master(fun=fun, iter=call_index, const=const, export=export, seed=seed,
-               template=template, n_jobs=n_jobs,
+        master(fun=fun, iter=call_index, const=const, export=export,
+               seed=seed, template=template, n_jobs=n_jobs,
                fail_on_error=fail_on_error, log_worker=log_worker,
                wait_time=wait_time, chunk_size=chunk_size)
 }
