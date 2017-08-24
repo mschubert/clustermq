@@ -4,20 +4,22 @@
 #' @param at    How many calls were procesed  up to this point
 #' @param fail_on_error  Stop if error(s) occurred
 unravel_result = function(robj, at=length(robj$result), fail_on_error=TRUE) {
-    # register all job warnings as summary
-    if (length(robj$warnings) > 0) {
-        summ = sprintf("%i warnings occurred in processing", length(robj$warnings))
-        warning(paste(c(list(summ), robj$warnings), collapse="\n"))
-    }
-
     # check for failed jobs, report which and how many failed
     failed = which(sapply(robj$result, class) == "error")
+    n_warns = length(robj$warnings)
+
     if (any(failed)) {
-        msg = sprintf("%i/%i jobs failed.", length(failed), at)
+        msg = sprintf("%i/%i jobs failed (%i warnings)", length(failed), at, n_warns)
+        detail = unlist(c(head(robj$result[failed], 50), head(robj$warnings, 50)))
+        idx = gsub("[^\\d]+", "", gsub(").*$", "", detail), perl=TRUE)
+        detail = paste(detail[as.integer(order(idx))], collapse="\n")
         if (fail_on_error)
-            stop(msg, " Stopping.")
+            stop(msg, ". Stopping.\n", detail)
         else
-            warning(msg, immediate.=TRUE)
+            warning(msg, "\n", detail)
+    } else if (length(robj$warnings) > 0) {
+        msg = sprintf("%i warnings occurred in processing\n", length(robj$warnings))
+        warning(msg, paste(robj$warnings, collapse="\n"), immediate.=TRUE)
     }
 
     unname(robj$result)
