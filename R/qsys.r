@@ -5,14 +5,26 @@
 #' implementations can rely on the higher level functionality
 QSys = R6::R6Class("QSys",
     public = list(
-        initialize = function(min_port=6000, max_port=8000) {
+        # Create a class instance
+        #
+        # Initializes ZeroMQ and sets and sets up our primary communication socket
+        #
+        # @param min_port  Minimum port in range to use
+        # @param max_port  Maximum port in range to use
+        # @param master    rZMQ address of the master (if NULL we create it here)
+        initialize = function(min_port=6000, max_port=8000, master=NULL) {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
 
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, min_port:max_port)
-            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], private$port)
-            private$master = private$listen
+            private$listen = sprintf("tcp://%s:%i",
+                                     Sys.info()[['nodename']], private$port)
+
+            if (is.null(master))
+                private$master = private$listen
+            else
+                private$master = master
         },
 
         # Provides values for job submission template
@@ -76,12 +88,6 @@ QSys = R6::R6Class("QSys",
 
         # Make sure all resources are closed properly
         cleanup = function(dirty=FALSE) {
-        },
-
-        # Set a remote controller instead of the local socket
-        set_master = function(master) {
-            private$port = sub("^tcp://[^:]+:", "", master)
-            private$master = master
         }
     ),
 
@@ -89,15 +95,15 @@ QSys = R6::R6Class("QSys",
         # We use the listening port as scheduler ID
         id = function() private$port,
         url = function() private$listen,
-        poll = function() private$socket
+        sock = function() private$socket
     ),
 
     private = list(
         zmq_context = NULL,
         socket = NULL,
         port = NA,
-        listen = NULL,
         master = NULL,
+        listen = NULL,
         job_group = NULL,
         job_num = NULL,
         common_data = NULL,

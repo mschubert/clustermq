@@ -32,14 +32,14 @@ proxy = function(ctl, job) {
     msg = rzmq::receive.socket(ctl_socket)
     message("received common data:",
             utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
-    qsys = qsys$new(fun=msg$fun, const=msg$const, export=msg$export, seed=msg$seed)
-    qsys$set_master(net_fwd)
+    qsys = qsys$new(fun=msg$fun, const=msg$const, export=msg$export,
+                    seed=msg$seed, master=net_fwd)
     rzmq::send.socket(ctl_socket,
                       data = list(id="PROXY_READY", data_url=qsys$url)) # url$data w/ mod
     message("sent PROXY_READY to master ctl")
 
     while(TRUE) {
-        events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$poll),
+        events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock),
                                    rep(list("read"), 4),
                                    timeout=-1L)
 

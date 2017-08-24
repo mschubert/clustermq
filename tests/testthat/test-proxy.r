@@ -1,6 +1,6 @@
 context("proxy")
 
-test_that("control flow", {
+test_that("control flow between proxy and master", {
     skip_on_os("windows")
 
     # prerequesites
@@ -35,9 +35,6 @@ test_that("control flow", {
     rzmq::send.socket(worker, list(id="WORKER_UP"))
     msg = rzmq::receive.socket(worker)
     testthat::expect_equal(msg, common_data)
-
-    # port forwarding
-    # ???
 
     # shutdown
     msg = list(id = "PROXY_STOP")

@@ -5,11 +5,11 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, export, seed) {
+        initialize = function(fun, const, export, seed, ...) {
             if (is.null(SSH$host))
                 stop("SSH host not set")
 
-            super$initialize()
+            super$initialize(...)
             private$proxy_socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             local_port = bind_avail(private$proxy_socket, 11000:13000)
             remote_port = sample(50000:55000, 2)
