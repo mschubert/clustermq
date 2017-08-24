@@ -9,8 +9,7 @@ test_that("control flow", {
     port = bind_avail(socket, 50000:55000)
     Sys.sleep(0.5)
     common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
-    master = sprintf("tcp://localhost:%i", port)
-    p = parallel::mcparallel(proxy(master))
+    p = parallel::mcparallel(proxy(port, port))
 
     # startup
     msg = rzmq::receive.socket(socket)

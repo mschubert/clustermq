@@ -4,10 +4,12 @@
 \alias{proxy}
 \title{SSH proxy for different schedulers}
 \usage{
-proxy(master)
+proxy(ctl, job)
 }
 \arguments{
-\item{master}{The rzmq address to connect to the master (tcp://<node>:<port>)}
+\item{ctl}{The port to connect to the master for proxy control}
+
+\item{job}{The port to connect to the master for job control}
 }
 \description{
 Do not call this manually, the SSH qsys will do that

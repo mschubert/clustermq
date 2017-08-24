@@ -12,15 +12,17 @@ SSH = R6::R6Class("SSH",
             super$initialize()
             private$proxy_socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             local_port = bind_avail(private$proxy_socket, 11000:13000)
-            remote_port = sample(50000:55000, 1)
+            remote_port = sample(50000:55000, 2)
 
             # set forward and run ssh.r (send port, master)
-            rev_tunnel = sprintf("%i:localhost:%i", remote_port, local_port)
-            tunnel = sprintf("tcp://localhost:%i", remote_port)
+            ctl_tunnel = sprintf("%i:localhost:%i", remote_port[1], local_port)
+            job_tunnel = sprintf("%i:localhost:%i", remote_port[2], private$port)
             rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::proxy(\\\"%s\\\")' > %s 2>&1", tunnel,
+                           'clustermq:::proxy(ctl=%i, job=%i)' > %s 2>&1",
+                           remote_port[1], remote_port[2],
                            getOption("clustermq.ssh.log", default="/dev/null"))
-            ssh_cmd = sprintf('ssh -f -R %s %s "%s"', rev_tunnel, SSH$host, rcmd)
+            ssh_cmd = sprintf('ssh -f -R %s -R %s %s "%s"',
+                              ctl_tunnel, job_tunnel, SSH$host, rcmd)
 
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", SSH$host))
