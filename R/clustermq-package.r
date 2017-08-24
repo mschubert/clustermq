@@ -61,11 +61,6 @@ PROXY_READY = 21L
 #' No fields. Signals the worker to break its main loop.
 PROXY_STOP = 22L
 
-#' SSH proxy heartbeating
-#'
-#' No fields. Answer has to be `PROXY_NOOP`
-PROXY_NOOP = 23L
-
 #' Message is an SSH command
 #'
 #' Field is either `exec` (command to run) or `reply` (how it went)

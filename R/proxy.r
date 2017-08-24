@@ -20,22 +20,23 @@ proxy = function(master) {
     message("forwarding local network from: ", net_fwd)
 
     # connect to master
-    socket = rzmq::init.socket(context, "ZMQ_REQ")
-    rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id="PROXY_UP"))
+    master_socket = rzmq::init.socket(context, "ZMQ_REQ")
+    rzmq::connect.socket(master_socket, master)
+    rzmq::send.socket(master_socket, data=list(id="PROXY_UP"))
     message("sent PROXY_UP to master")
 
     # receive common data
-    msg = rzmq::receive.socket(socket)
+    msg = rzmq::receive.socket(master_socket)
     message("received common data:",
             utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
     qsys = qsys$new(fun=msg$fun, const=msg$const, export=msg$export, seed=msg$seed)
     qsys$set_master(net_fwd)
-    rzmq::send.socket(socket, data=list(id="PROXY_READY", data_url=qsys$url))
+    rzmq::send.socket(master_socket,
+                      data = list(id="PROXY_READY", data_url=qsys$url)) # url$data w/ mod
     message("sent PROXY_READY to master")
 
     while(TRUE) {
-        events = rzmq::poll.socket(list(fwd_in, fwd_out, socket, qsys$poll),
+        events = rzmq::poll.socket(list(fwd_in, fwd_out, master_socket, qsys$poll),
                                    rep(list("read"), 4),
                                    timeout=-1L)
 
@@ -47,16 +48,13 @@ proxy = function(master) {
 
         # socket connecting proxy to master
         if (events[[3]]$read) {
-            msg = rzmq::receive.socket(socket)
+            msg = rzmq::receive.socket(master_socket)
             message("received: ", msg)
             switch(msg$id,
-                "PROXY_NOOP" = {
-                    Sys.sleep(1)
-                    rzmq::send.socket(socket, data=list(id="PROXY_NOOP"))
-                },
                 "PROXY_CMD" = {
                     reply = try(eval(msg$exec))
-                    rzmq::send.socket(socket, data=list(id="PROXY_CMD", reply=reply))
+                    rzmq::send.socket(master_socket,
+                                      data = list(id="PROXY_CMD", reply=reply))
                 },
                 "PROXY_STOP" = {
                     break

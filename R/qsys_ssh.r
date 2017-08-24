@@ -10,7 +10,8 @@ SSH = R6::R6Class("SSH",
                 stop("SSH host not set")
 
             super$initialize()
-            local_port = private$port
+            private$proxy_socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
+            local_port = bind_avail(private$proxy_socket, 11000:13000)
             remote_port = sample(50000:55000, 1)
 
             # set forward and run ssh.r (send port, master)
@@ -24,7 +25,22 @@ SSH = R6::R6Class("SSH",
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", SSH$host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
-            private$init_proxy()
+
+            # Exchange init messages with proxy
+            msg = rzmq::receive.socket(private$proxy_socket)
+            if (msg$id != "PROXY_UP")
+                stop("Establishing connection failed")
+
+            # send common data to ssh
+            message("Sending common data ...")
+            rzmq::send.socket(private$proxy_socket,
+                              data = list(fun=fun, const=const,
+                                          export=export, seed=seed))
+            msg = rzmq::receive.socket(private$proxy_socket)
+            if (msg$id != "PROXY_READY")
+                stop("Sending failed")
+
+            private$set_common_data(redirect=msg$data_url)
         },
 
         submit_job = function(template=list(), log_worker=FALSE) {
@@ -42,39 +58,20 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$socket, data = list(id="PROXY_CMD", exec=call))
+            rzmq::send.socket(private$proxy_socket, data = list(id="PROXY_CMD", exec=call))
 
-            msg = rzmq::receive.socket(private$socket)
+            msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
         },
 
         cleanup = function(dirty=FALSE) {
-            #FIXME: this may still get worker results when dirty=TRUE
-            # need to loop over results until we get ssh_proxy
-            rzmq::receive.socket(private$socket)
-            rzmq::send.socket(private$socket, data=list(id="PROXY_STOP"))
+            rzmq::send.socket(private$proxy_socket, data=list(id="PROXY_STOP"))
         }
     ),
 
 	private = list(
-        # Exchange init messages with proxy
-        init_proxy = function() {
-            msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "PROXY_UP")
-                stop("Establishing connection failed")
-
-            # send common data to ssh
-            message("Sending common data ...")
-            rzmq::send.socket(private$socket,
-                              data = list(fun=fun, const=const,
-                                          export=export, seed=seed))
-            msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "PROXY_READY")
-                stop("Sending failed")
-
-            private$set_common_data(redirect=msg$data_url)
-        }
+        proxy_socket = NULL
 	)
 )
 

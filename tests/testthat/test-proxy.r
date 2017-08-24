@@ -22,11 +22,6 @@ test_that("control flow", {
     expect_true("data_url" %in% names(msg))
     proxy = msg$data_url
 
-    # heartbeating
-    rzmq::send.socket(socket, list(id="PROXY_NOOP"))
-    msg = rzmq::receive.socket(socket)
-    expect_equal(msg$id, "PROXY_NOOP")
-
     # command execution
     cmd = methods::Quote(Sys.getpid())
     rzmq::send.socket(socket, list(id="PROXY_CMD", exec=cmd))
