@@ -17,7 +17,7 @@ unravel_result = function(robj, at=length(robj$result), fail_on_error=TRUE) {
         if (fail_on_error)
             stop(msg, ". Stopping.\n", detail)
         else
-            warning(msg, "\n", detail)
+            warning(msg, "\n", detail, immediate.=TRUE)
     } else if (length(robj$warnings) > 0) {
         msg = sprintf("%i warnings occurred in processing\n", length(robj$warnings))
         warning(msg, paste(robj$warnings, collapse="\n"), immediate.=TRUE)
