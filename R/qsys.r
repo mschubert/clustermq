@@ -32,7 +32,7 @@ QSys = R6::R6Class("QSys",
 
             values = list(
                 job_name = paste0("rzmq", private$port, "-", private$job_num),
-                job_group = paste("/rzmq", private$node, private$port, sep="/"),
+                job_group = paste("/rzmq", Sys.info()[['nodename']], private$port, sep="/"),
                 master = private$master
             )
             if (log_worker)
@@ -92,7 +92,6 @@ QSys = R6::R6Class("QSys",
         zmq_context = NULL,
         socket = NULL,
         port = NA,
-        node = NULL,
         listen = NULL,
         master = NULL,
         job_group = NULL,
@@ -101,24 +100,6 @@ QSys = R6::R6Class("QSys",
 
         set_common_data = function(...) {
             private$common_data = serialize(list(...), NULL)
-        },
-
-        # Exchange init messages with proxy
-        init_proxy = function() {
-            msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "PROXY_UP")
-                stop("Establishing connection failed")
-
-            # send common data to ssh
-            message("Sending common data ...")
-            rzmq::send.socket(private$socket,
-                              data = list(fun=fun, const=const,
-                                          export=export, seed=seed))
-            msg = rzmq::receive.socket(private$socket)
-            if (msg$id != "PROXY_READY")
-                stop("Sending failed")
-
-            private$set_common_data(redirect=msg$data_url)
         },
 
         # Create a socket and listen on a port in range
@@ -131,10 +112,9 @@ QSys = R6::R6Class("QSys",
             if (is.null(private$zmq_context))
                 stop("QSys base class not initialized")
 
-            private$node = Sys.info()[['nodename']]
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, min_port:max_port)
-            private$listen = sprintf("tcp://%s:%i", private$node, private$port)
+            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], private$port)
             private$master = private$listen
         }
     ),

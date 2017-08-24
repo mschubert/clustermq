@@ -53,7 +53,6 @@ proxy = function(master) {
                 "PROXY_NOOP" = {
                     Sys.sleep(1)
                     rzmq::send.socket(socket, data=list(id="PROXY_NOOP"))
-                    next
                 },
                 "PROXY_CMD" = {
                     reply = try(eval(msg$exec))

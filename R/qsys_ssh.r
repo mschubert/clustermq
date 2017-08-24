@@ -56,6 +56,26 @@ SSH = R6::R6Class("SSH",
             rzmq::send.socket(private$socket, data=list(id="PROXY_STOP"))
         }
     ),
+
+	private = list(
+        # Exchange init messages with proxy
+        init_proxy = function() {
+            msg = rzmq::receive.socket(private$socket)
+            if (msg$id != "PROXY_UP")
+                stop("Establishing connection failed")
+
+            # send common data to ssh
+            message("Sending common data ...")
+            rzmq::send.socket(private$socket,
+                              data = list(fun=fun, const=const,
+                                          export=export, seed=seed))
+            msg = rzmq::receive.socket(private$socket)
+            if (msg$id != "PROXY_READY")
+                stop("Sending failed")
+
+            private$set_common_data(redirect=msg$data_url)
+        },
+	)
 )
 
 # Static method, process scheduler options and return updated object
