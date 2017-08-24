@@ -10,7 +10,8 @@ unravel_result = function(robj, at=length(robj$result), fail_on_error=TRUE) {
 
     if (any(failed)) {
         msg = sprintf("%i/%i jobs failed (%i warnings)", length(failed), at, n_warns)
-        detail = unlist(c(head(robj$result[failed], 50), head(robj$warnings, 50)))
+        detail = unlist(c(utils::head(robj$result[failed], 50),
+                          utils::head(robj$warnings, 50)))
         idx = gsub("[^\\d]+", "", gsub(").*$", "", detail), perl=TRUE)
         detail = paste(detail[as.integer(order(idx))], collapse="\n")
         if (fail_on_error)
