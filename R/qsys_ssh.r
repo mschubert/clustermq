@@ -5,7 +5,7 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, export, seed, ...) {
+        initialize = function(...) {
             if (is.null(SSH$host))
                 stop("SSH host not set")
 

@@ -29,7 +29,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
         template=list(), n_jobs=NULL, walltime=NA,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
-    qsys = qsys$new(fun=fun, const=const, export=export, seed=seed)
+    qsys = qsys$new(data=list(fun=fun, const=const, export=export, seed=seed))
     on.exit(qsys$cleanup(dirty=TRUE))
     n_calls = nrow(iter)
 

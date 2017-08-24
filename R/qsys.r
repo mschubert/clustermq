@@ -9,15 +9,15 @@ QSys = R6::R6Class("QSys",
         #
         # Initializes ZeroMQ and sets and sets up our primary communication socket
         #
-        # @param min_port  Minimum port in range to use
-        # @param max_port  Maximum port in range to use
-        # @param master    rZMQ address of the master (if NULL we create it here)
-        initialize = function(min_port=6000, max_port=8000, master=NULL) {
+        # @param data    List with elements: fun, const, export, seed
+        # @param ports   Range of ports to choose from
+        # @param master  rZMQ address of the master (if NULL we create it here)
+        initialize = function(data=NULL, ports=6000:8000, master=NULL) {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
 
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
-            private$port = bind_avail(private$socket, min_port:max_port)
+            private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("tcp://%s:%i",
                                      Sys.info()[['nodename']], private$port)
 
@@ -25,6 +25,9 @@ QSys = R6::R6Class("QSys",
                 private$master = private$listen
             else
                 private$master = master
+
+            if (!is.null(data))
+                do.call(private$set_common_data, data)
         },
 
         # Provides values for job submission template

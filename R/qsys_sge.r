@@ -5,9 +5,8 @@ SGE = R6::R6Class("SGE",
     inherit = QSys,
 
     public = list(
-        initialize = function(fun, const, export, seed, ...) {
+        initialize = function(...) {
             super$initialize(...)
-            private$set_common_data(fun=fun, const=const, export=export, seed=seed)
         },
 
         submit_job = function(template=list(), log_worker=FALSE) {
