@@ -11,7 +11,7 @@ vignette: >
 ---
 
 ```{r include=FALSE}
-options(clustermq.scheduler = 'local')
+options(clustermq.scheduler = 'LOCAL')
 ```
 
 This package will allow you to send function calls as cluster jobs (using
@@ -101,6 +101,7 @@ The simplest example is to a function call that is completely self-sufficient,
 and there is one argument (`x`) that we iterate through:
 
 ```{r}
+library(clustermq)
 fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 ```

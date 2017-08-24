@@ -4,12 +4,14 @@
 \alias{unravel_result}
 \title{Separate out warnings and errors from result}
 \usage{
-unravel_result(robj, at = length(robj$result))
+unravel_result(robj, at = length(robj$result), fail_on_error = TRUE)
 }
 \arguments{
 \item{robj}{A list with fields 'result' and 'warnings'}
 
 \item{at}{How many calls were procesed  up to this point}
+
+\item{fail_on_error}{Stop if error(s) occurred}
 }
 \description{
 Separate out warnings and errors from result
