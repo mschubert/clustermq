@@ -8,7 +8,11 @@ QSys = R6::R6Class("QSys",
         initialize = function(min_port=6000, max_port=8000) {
             private$job_num = 1
             private$zmq_context = rzmq::init.context()
-            private$listen_socket(min_port, max_port)
+
+            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
+            private$port = bind_avail(private$socket, min_port:max_port)
+            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], private$port)
+            private$master = private$listen
         },
 
         # Provides values for job submission template
@@ -100,22 +104,6 @@ QSys = R6::R6Class("QSys",
 
         set_common_data = function(...) {
             private$common_data = serialize(list(...), NULL)
-        },
-
-        # Create a socket and listen on a port in range
-        #
-        # @param fun    The function to be called
-        # @param const  Constant arguments to the function call
-        # @param seed   Common seed (to be used w/ job ID)
-        # @return       Sets "port" and "master" attributes
-        listen_socket = function(min_port, max_port=min_port, n_tries=100) {
-            if (is.null(private$zmq_context))
-                stop("QSys base class not initialized")
-
-            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
-            private$port = bind_avail(private$socket, min_port:max_port)
-            private$listen = sprintf("tcp://%s:%i", Sys.info()[['nodename']], private$port)
-            private$master = private$listen
         }
     ),
 

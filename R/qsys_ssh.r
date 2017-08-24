@@ -74,7 +74,7 @@ SSH = R6::R6Class("SSH",
                 stop("Sending failed")
 
             private$set_common_data(redirect=msg$data_url)
-        },
+        }
 	)
 )
 
