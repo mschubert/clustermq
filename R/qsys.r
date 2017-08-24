@@ -35,8 +35,8 @@ QSys = R6::R6Class("QSys",
                 stop("Need to initialize QSys first")
 
             values = list(
-                job_name = paste0("rzmq", private$port, "-", private$job_num),
-                job_group = paste("/rzmq", Sys.info()[['nodename']], private$port, sep="/"),
+                job_name = paste0("cmq", private$port, "-", private$job_num),
+                job_group = paste("/cmq", Sys.info()[['nodename']], private$port, sep="/"),
                 master = private$master
             )
             if (log_worker)
