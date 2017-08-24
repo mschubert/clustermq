@@ -78,7 +78,6 @@ The following arguments are supported by `Q`:
         one, all of them need to be named
  * `const` - A named list of non-iterated arguments passed to `fun`
  * `export` - A named list of objects to export to the worker environment
- * `expand_grid` - Whether to use every combination of `...`
 
 Behavior can further be fine-tuned using the options below:
 
