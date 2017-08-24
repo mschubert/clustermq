@@ -3,6 +3,14 @@ context("proxy")
 test_that("control flow between proxy and master", {
     skip_on_os("windows")
 
+    recv = function(sock, timeout=3L) {
+        event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
+        if (event[[1]]$read)
+            rzmq::receive.socket(sock)
+        else
+            warning(parallel::mccollect(p)[[1]], immediate.=TRUE)
+    }
+
     # prerequesites
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REP")
@@ -12,11 +20,11 @@ test_that("control flow between proxy and master", {
     p = parallel::mcparallel(proxy(port, port))
 
     # startup
-    msg = rzmq::receive.socket(socket)
+    msg = recv(socket)
     expect_equal(msg$id, "PROXY_UP")
 
     rzmq::send.socket(socket, common_data)
-    msg = rzmq::receive.socket(socket)
+    msg = recv(socket)
     expect_equal(msg$id, "PROXY_READY")
     expect_true("data_url" %in% names(msg))
     proxy = msg$data_url
@@ -24,7 +32,7 @@ test_that("control flow between proxy and master", {
     # command execution
     cmd = methods::Quote(Sys.getpid())
     rzmq::send.socket(socket, list(id="PROXY_CMD", exec=cmd))
-    msg = rzmq::receive.socket(socket)
+    msg = recv(socket)
     expect_equal(msg$id, "PROXY_CMD")
     expect_equal(msg$reply, p$pid)
 
@@ -33,7 +41,7 @@ test_that("control flow between proxy and master", {
     rzmq::connect.socket(worker, proxy)
 
     rzmq::send.socket(worker, list(id="WORKER_UP"))
-    msg = rzmq::receive.socket(worker)
+    msg = recv(worker)
     testthat::expect_equal(msg, common_data)
 
     # shutdown
