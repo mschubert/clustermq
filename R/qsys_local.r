@@ -6,6 +6,7 @@ LOCAL = R6::R6Class("LOCAL",
 
     public = list(
         initialize = function(...) {
+            super$initialize(...)
         },
 
         submit_job = function(template=list(), log_worker=FALSE) {
