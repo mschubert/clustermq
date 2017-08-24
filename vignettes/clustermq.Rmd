@@ -11,7 +11,7 @@ vignette: >
 ---
 
 ```{r include=FALSE}
-options(clustermq.scheduler = 'LOCAL')
+options(clustermq.scheduler = 'local')
 library(clustermq)
 ```
 
@@ -128,7 +128,7 @@ using a `library()` call or referencing it with `package_name::`:
 fx = function(x) {
     library(dplyr)
     x %>%
-        mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1)) %>%
+        mutate(area = Sepal.Length *Sepal.Width) %>%
         head()
 }
 Q(fx, x=list(iris), n_jobs=1)
