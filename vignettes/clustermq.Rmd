@@ -54,15 +54,27 @@ has a high load.
 
 ## Installation
 
-The package on CRAN should be relatively up-to-date.
+First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
+system library. Most likely, your package manager will provide this:
+
+```{sh eval=FALSE}
+brew install zeromq # homebrew on OS-X
+sudo apt-get install libzmq3-dev # ubuntu
+sudo yum install zeromq3-devel # fedora
+```
+
+The package on CRAN should be relatively up-to-date. You can install it using:
+
+```{r eval=FALSE}
+install.packages('clustermq')
+```
 
 Alternatively, you can get the latest version from
 [Github](https://github.com/mschubert/clustermq):
 
 ```{r eval=FALSE}
 # install.packages('devtools')
-devtools::install_github('mschubert/clustermq')
-devtools::install_github('krlmlr/ulimit') # protect workers from memory overflow
+devtools::install_github('mschubert/clustermq', ref="develop")
 ```
 
 ## Setting up the scheduler
@@ -79,6 +91,48 @@ schedulers.
 
 You can also use the schedulers above [from your local machine via SSH](SSH).
 
+## Examples
+
+The package is designed to distribute arbitrary function calls on HPC worker
+nodes. There are, however, a couple of caveats to observe as the R session
+running on a worker does not share your local memory.
+
+The simplest example is to a function call that is completely self-sufficient,
+and there is one argument (`x`) that we iterate through:
+
+```{r}
+fx = function(x) x * 2
+Q(fx, x=1:3, n_jobs=1)
+```
+
+Non-iterated arguments are supported by the `const` argument:
+
+```{r}
+fx = function(x, y) x * 2 + y
+Q(fx, x=1:3, const=list(y=10), n_jobs=1)
+```
+
+If a function relies on objects in its environment that are not passed as
+arguments, they can be exported using the `export` argument:
+
+```{r}
+fx = function(x) x * 2 + y
+Q(fx, x=1:3, export=list(y=10), n_jobs=1)
+```
+
+Finally, if we want to use a package function we need to load it on the worker
+using a `library()` call or referencing it with `package_name::`:
+
+```{r}
+fx = function(x) {
+    library(dplyr)
+    x %>%
+        mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1)) %>%
+        head()
+}
+Q(fx, x=iris, n_jobs=1)
+```
+
 ## Usage
 
 The following arguments are supported by `Q`:
@@ -88,7 +142,6 @@ The following arguments are supported by `Q`:
  * `...` - All iterated arguments passed to the function. If there is more than
         one, all of them need to be named
  * `const` - A named list of non-iterated arguments passed to `fun`
- * `expand_grid` - Whether to use every combination of `...`
 
 Behavior can further be fine-tuned using the options below:
 

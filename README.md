@@ -45,17 +45,26 @@ has a high load.
 Installation
 ------------
 
-Install the `ZeroMQ` system library as described in the
-[rzmq project README](https://github.com/ropensci/rzmq#installation).
+First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
+system library. Most likely, your package manager will provide this:
 
-Then install the `clustermq` package in R (which automatically installs the `rzmq` package as well).
+```{sh eval=FALSE}
+brew install zeromq # homebrew on OS-X
+sudo apt-get install libzmq3-dev # ubuntu
+sudo yum install zeromq3-devel # fedora
+```
+
+Then install the `clustermq` package in R (which automatically installs the
+`rzmq` package as well).
 
 ```r
 # install.packages('devtools')
 devtools::install_github('mschubert/clustermq')
+# devtools::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
-When this is done, [set up your scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
+When this is done, [set up your
+scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
 or else the package will warn you and continue with default values.
 
 Usage
