@@ -117,21 +117,9 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     qsys$cleanup(dirty=FALSE)
     on.exit(NULL)
 
-    # register all job warnings as summary
-    if (length(warnings) > 0) {
-        summ = sprintf("%i warnings occurred in processing", length(warnings))
-        warning(paste(c(list(summ), warnings), collapse="\n"))
-    }
-
-    # check for failed jobs, report which and how many failed
-    failed = which(sapply(job_result, class) == "error")
-    if (any(failed)) {
-        msg = sprintf("%i/%i jobs failed.", length(failed), min(submit_index)-1)
-        if (fail_on_error)
-            stop(msg, " Stopping.")
-        else
-            warning(msg, immediate.=TRUE)
-    }
+    result = unravel_result(list(result=job_result, warnings=warnings),
+                            at = min(submit_index)-1,
+                            fail_on_error = fail_on_error)
 
     # compute summary statistics for workers
     times = lapply(worker_stats, function(w) w$time)
@@ -140,5 +128,5 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
                     rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                     100*(wt[[1]]+wt[[2]])/wt[[3]]))
 
-    job_result
+    result
 }

@@ -69,9 +69,10 @@ Q = function(fun, ..., const=list(), export=list(), expand_grid=FALSE, seed=1289
             1e4 * n_calls / utils::object.size(call_index)[[1]]
         ))
 
-    if (n_jobs == 0 || qsys_id == "LOCAL")
-        work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
-    else
+    if (n_jobs == 0 || qsys_id == "LOCAL") {
+        re = work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
+        unravel_result(re, fail_on_error=fail_on_error)
+    } else
         master(fun=fun, iter=call_index, const=const, export=export, seed=seed,
                template=template, n_jobs=n_jobs,
                fail_on_error=fail_on_error, log_worker=log_worker,
