@@ -48,7 +48,7 @@ Installation
 First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
 system library. Most likely, your package manager will provide this:
 
-```{sh eval=FALSE}
+```sh
 brew install zeromq # homebrew on OS-X
 sudo apt-get install libzmq3-dev # ubuntu
 sudo yum install zeromq3-devel # fedora
