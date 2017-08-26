@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)
-Version: 0.7.0
+Version: 0.7.99
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Provides the Q() function to send arbitrary function calls to
