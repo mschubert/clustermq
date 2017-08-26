@@ -9,23 +9,23 @@ start_worker = function(id="1", url="tcp://localhost:55443") {
     skip_on_os("windows")
 
     p = parallel::mcparallel(worker(id, url, 1024))
-    msg = rzmq::receive.socket(socket)
+    msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
     p
 }
 
 send_common = function(fun=function(x) x) {
-    rzmq::send.socket(socket, list(id="DO_SETUP", fun=fun, const=list(),
+    send(socket, list(id="DO_SETUP", fun=fun, const=list(),
                 export=list(), seed=1))
-    msg = rzmq::receive.socket(socket)
+    msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_READY")
 }
 
 shutdown_worker = function(p, id="1") {
-    rzmq::send.socket(socket, list(id="WORKER_STOP"))
-    msg = rzmq::receive.socket(socket)
+    send(socket, list(id="WORKER_STOP"))
+    msg = recv(socket)
 #    rzmq::disconnect.socket(socket)
-    rzmq::send.socket(socket, list()) # already shut down
+    send(socket, list()) # already shut down
     testthat::expect_equal(msg$id, "WORKER_DONE")
     testthat::expect_equal(msg$worker_id, id)
     testthat::expect_is(msg$time, "proc_time")
@@ -43,8 +43,8 @@ test_that("control flow", {
 test_that("common data redirect", {
     p = start_worker()
 
-    rzmq::send.socket(socket, list(id="DO_SETUP", redirect="tcp://localhost:55443"))
-    msg = rzmq::receive.socket(socket)
+    send(socket, list(id="DO_SETUP", redirect="tcp://localhost:55443"))
+    msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
 
     send_common()
@@ -56,8 +56,8 @@ test_that("do work", {
     send_common()
 
     #TODO: should probably test for error when DO_CHUNK but no chunk provided
-    rzmq::send.socket(socket, list(id="DO_CHUNK", chunk=data.frame(x=5)))
-    msg = rzmq::receive.socket(socket)
+    send(socket, list(id="DO_CHUNK", chunk=data.frame(x=5)))
+    msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_READY")
     testthat::expect_equal(msg$result, list(`1`=5))
 
