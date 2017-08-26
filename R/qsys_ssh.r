@@ -35,7 +35,7 @@ SSH = R6::R6Class("SSH",
 
             # send common data to ssh
             message("Sending common data ...")
-            rzmq::send.socket(private$proxy_socket, data=data)
+            rzmq::send.socket(private$proxy_socket, data=c(list(id="DO_SETUP"), data))
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_READY")
                 stop("Sending failed")

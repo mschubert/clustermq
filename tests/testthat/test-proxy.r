@@ -16,7 +16,8 @@ test_that("control flow between proxy and master", {
     socket = rzmq::init.socket(context, "ZMQ_REP")
     port = bind_avail(socket, 50000:55000)
     Sys.sleep(0.5)
-    common_data = list(fun = function(x) x*2, const=list(), export=list(), seed=1)
+    common_data = list(id="DO_SETUP", fun = function(x) x*2,
+            const=list(), export=list(), seed=1)
     p = parallel::mcparallel(proxy(port, port))
 
     # startup

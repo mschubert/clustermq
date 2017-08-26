@@ -15,7 +15,8 @@ start_worker = function(id="1", url="tcp://localhost:55443") {
 }
 
 send_common = function(fun=function(x) x) {
-    rzmq::send.socket(socket, list(fun=fun, const=list(), export=list(), seed=1))
+    rzmq::send.socket(socket, list(id="DO_SETUP", fun=fun, const=list(),
+                export=list(), seed=1))
     msg = rzmq::receive.socket(socket)
     testthat::expect_equal(msg$id, "WORKER_READY")
 }
@@ -42,7 +43,7 @@ test_that("control flow", {
 test_that("common data redirect", {
     p = start_worker()
 
-    rzmq::send.socket(socket, list(redirect="tcp://localhost:55443"))
+    rzmq::send.socket(socket, list(id="DO_SETUP", redirect="tcp://localhost:55443"))
     msg = rzmq::receive.socket(socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
 

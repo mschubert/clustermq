@@ -19,24 +19,6 @@ worker = function(worker_id, master, memlimit) {
     rzmq::send.socket(socket, data=list(id="WORKER_UP", worker_id=worker_id))
 	message("WORKER_UP to: ", master)
 
-    # receive common data
-    msg = rzmq::receive.socket(socket)
-    if (!is.null(msg$redirect)) {
-        data_socket = rzmq::init.socket(context, "ZMQ_REQ")
-        rzmq::connect.socket(data_socket, msg$redirect)
-        rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
-        message("WORKER_UP to redirect: ", msg$redirect)
-        msg = rzmq::receive.socket(data_socket)
-    }
-    fun = msg$fun
-    const = msg$const
-    seed = msg$seed
-    list2env(msg$export, envir=.GlobalEnv)
-
-    print(fun)
-    print(names(const))
-
-    rzmq::send.socket(socket, data=list(id="WORKER_READY"))
     start_time = proc.time()
     counter = 0
 
@@ -51,6 +33,20 @@ worker = function(worker_id, master, memlimit) {
             stop("Timeout reached, terminating")
 
         switch(msg$id,
+            "DO_SETUP" = {
+                if (!is.null(msg$redirect)) {
+                    data_socket = rzmq::init.socket(context, "ZMQ_REQ")
+                    rzmq::connect.socket(data_socket, msg$redirect)
+                    rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
+                    message("WORKER_UP to redirect: ", msg$redirect)
+                    msg = rzmq::receive.socket(data_socket)
+                }
+                fun = msg$fun
+                const = msg$const
+                seed = msg$seed
+                list2env(msg$export, envir=.GlobalEnv)
+                rzmq::send.socket(socket, data=list(id="WORKER_READY"))
+            },
             "DO_CHUNK" = {
                 result = work_chunk(msg$chunk, fun, const, seed)
                 message("completed: ", paste(rownames(msg$chunk), collapse=", "))
