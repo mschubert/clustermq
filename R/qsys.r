@@ -75,7 +75,8 @@ QSys = R6::R6Class("QSys",
 
         # Send iterated data to one worker
         send_job_data = function(...) {
-            rzmq::send.socket(socket = private$socket, data = list(...))
+            rzmq::send.socket(socket = private$socket,
+                    data = list(id="DO_CHUNK", token=private$token, ...))
         },
 
         # Read data from the socket
@@ -87,6 +88,15 @@ QSys = R6::R6Class("QSys",
                 rzmq::receive.socket(private$socket)
             else # timeout reached
                 NULL
+        },
+
+        # Send shutdown signal to worker
+        send_shutdown_worker = function() {
+            rzmq::send.socket(socket = private$socket, data = list(id="WORKER_STOP"))
+        },
+
+        disconnect_worker = function() {
+            rzmq::send.null.msg(socket = private$socket)
         },
 
         # Make sure all resources are closed properly
@@ -110,9 +120,12 @@ QSys = R6::R6Class("QSys",
         job_group = NULL,
         job_num = NULL,
         common_data = NULL,
+        token = "not set",
 
         set_common_data = function(...) {
-            private$common_data = serialize(list(id="DO_SETUP", ...), NULL)
+            private$token = paste(sample(letters, 5, TRUE), collapse="")
+            private$common_data = serialize(list(id="DO_SETUP",
+                        token=private$token, ...), NULL)
         }
     ),
 

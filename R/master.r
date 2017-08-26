@@ -29,7 +29,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
         template=list(), n_jobs=NULL, walltime=NA,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
-    qsys = qsys$new(data=list(fun=fun, const=const, export=export, seed=seed))
+    qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
     on.exit(qsys$cleanup(dirty=TRUE))
     n_calls = nrow(iter)
 
@@ -95,16 +95,19 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
                 if (!shutdown && submit_index[1] <= n_calls) {
                     submit_index = submit_index[submit_index <= n_calls]
                     cur = iter[submit_index, , drop=FALSE]
-                    qsys$send_job_data(id="DO_CHUNK", chunk=cur)
+                    qsys$send_job_data(chunk=cur)
                     jobs_running[as.character(submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
                 } else # or else shut it down
-                    qsys$send_job_data(id="WORKER_STOP")
+                    qsys$send_shutdown_worker()
             },
             "WORKER_DONE" = {
                 worker_stats[[msg$worker_id]] = msg
                 workers_running[[msg$worker_id]] = NULL
-                qsys$send_job_data() # close REQ/REP
+                qsys$disconnect_worker()
+            },
+            "WORKER_ERROR" = {
+                stop("\nWorker error: ", msg$msg)
             }
         )
 

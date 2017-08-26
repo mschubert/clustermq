@@ -21,6 +21,8 @@ worker = function(worker_id, master, memlimit) {
 
     start_time = proc.time()
     counter = 0
+    common_data = NA
+    token = NA
 
     while(TRUE) {
         #TODO: set timeout to something more reasonable
@@ -41,19 +43,22 @@ worker = function(worker_id, master, memlimit) {
                     message("WORKER_UP to redirect: ", msg$redirect)
                     msg = rzmq::receive.socket(data_socket)
                 }
-                fun = msg$fun
-                const = msg$const
-                seed = msg$seed
+                common_data = msg[c('fun', 'const', 'common_seed')]
                 list2env(msg$export, envir=.GlobalEnv)
+                token = msg$token
+                message("token from msg: ", token)
                 rzmq::send.socket(socket, data=list(id="WORKER_READY"))
             },
             "DO_CHUNK" = {
-                result = work_chunk(msg$chunk, fun, const, seed)
-                message("completed: ", paste(rownames(msg$chunk), collapse=", "))
-                rzmq::send.socket(socket, data=c(list(id="WORKER_READY"), result))
-
-                counter = counter + length(result)
-                print(pryr::mem_used())
+                if (identical(token, msg$token)) {
+                    result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
+                    message("completed: ", paste(rownames(msg$chunk), collapse=", "))
+                    rzmq::send.socket(socket, data=c(list(id="WORKER_READY"), result))
+                    counter = counter + length(result)
+                    print(pryr::mem_used())
+                } else
+                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR",
+                                msg=paste("chunk does not match common data", token, msg$token)))
             },
             "WORKER_STOP" = {
                 break
