@@ -112,7 +112,7 @@ QSys = R6::R6Class("QSys",
         common_data = NULL,
 
         set_common_data = function(...) {
-            private$common_data = serialize(list(...), NULL)
+            private$common_data = serialize(list(id="DO_SETUP", ...), NULL)
         }
     ),
 

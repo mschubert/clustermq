@@ -42,7 +42,8 @@ test_that("control flow between proxy and master", {
 
     rzmq::send.socket(worker, list(id="WORKER_UP"))
     msg = recv(worker)
-    testthat::expect_equal(msg, common_data)
+    testthat::expect_equal(msg$id, "DO_SETUP")
+    testthat::expect_equal(msg[names(common_data)], common_data)
 
     # shutdown
     msg = list(id = "PROXY_STOP")

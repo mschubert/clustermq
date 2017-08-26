@@ -66,7 +66,12 @@ PROXY_STOP = 22L
 #' Field is either `exec` (command to run) or `reply` (how it went)
 PROXY_CMD = -24L
 
+#' Message contains common data
+#'
+#' This includes the function definition, common data, export
+DO_SETUP = 30L
+
 #' Chunk of iterated arguments for the worker
 #'
 #' Field has to be `chunk`
-DO_CHUNK = 30L
+DO_CHUNK = 31L
