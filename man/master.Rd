@@ -4,30 +4,14 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(fun, iter, const = list(), export = list(), seed = 128965,
-  template = list(), n_jobs = NULL, walltime = NA, fail_on_error = TRUE,
-  log_worker = FALSE, wait_time = NA, chunk_size = NA)
+master(qsys, iter, fail_on_error = TRUE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
-\item{fun}{A function to call}
+\item{qsys}{Instance of QSys object}
 
 \item{iter}{Objects to be iterated in each function call}
 
-\item{const}{A list of constant arguments passed to each function call}
-
-\item{export}{List of objects to be exported to the worker}
-
-\item{seed}{A seed to set for each function call}
-
-\item{template}{Named list of values to fill in template}
-
-\item{n_jobs}{The number of LSF jobs to submit}
-
-\item{walltime}{The amount of time a job has to complete; default: no value}
-
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
-
-\item{log_worker}{Write a log file for each worker}
 
 \item{wait_time}{Time to wait between messages; set 0 for short calls
 defaults to 1/sqrt(number_of_functon_calls)}

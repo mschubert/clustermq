@@ -6,8 +6,8 @@
 \usage{
 Q(fun, ..., const = list(), export = list(), seed = 128965,
   memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
-  split_array_by = -1, fail_on_error = TRUE, log_worker = FALSE,
-  wait_time = NA, chunk_size = NA)
+  split_array_by = -1, fail_on_error = TRUE, workers = NULL,
+  log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -32,6 +32,8 @@ if job_size is given as well}
 \item{split_array_by}{The dimension number to split any arrays in `...`; default: last}
 
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
+
+\item{workers}{Optional instance of QSys representing a worker pool}
 
 \item{log_worker}{Write a log file for each worker}
 

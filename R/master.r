@@ -10,40 +10,17 @@
 #'  * when computatons are complete, we send id=0 to the worker
 #'    * it responds with id=-1 (and usage stats) and shuts down
 #'
-#' @param fun            A function to call
+#' @param qsys           Instance of QSys object
 #' @param iter           Objects to be iterated in each function call
-#' @param const          A list of constant arguments passed to each function call
-#' @param export         List of objects to be exported to the worker
-#' @param seed           A seed to set for each function call
-#' @param template       Named list of values to fill in template
-#' @param n_jobs         The number of LSF jobs to submit
 #' @param fail_on_error  If an error occurs on the workers, continue or fail?
-#' @param log_worker     Write a log file for each worker
 #' @param wait_time      Time to wait between messages; set 0 for short calls
 #'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return               A list of whatever `fun` returned
-master = function(fun, iter, const=list(), export=list(), seed=128965,
-        template=list(), n_jobs=NULL,
-        fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
-
-    qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
-    on.exit(qsys$cleanup(dirty=TRUE))
-    n_calls = nrow(iter)
-
-    # do the submissions
-    message("Submitting ", n_jobs, " worker jobs for ",
-            format(n_calls, big.mark=",", scientific=FALSE),
-            " function calls (ID: ", qsys$id, ") ...")
-    pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
-    for (j in 1:n_jobs) {
-        qsys$submit_job(template=template, log_worker=log_worker)
-        utils::setTxtProgressBar(pb, j)
-    }
-    close(pb)
-
+master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
     # prepare empty variables for managing results
+    n_calls = nrow(iter)
     job_result = rep(list(NULL), n_calls)
     submit_index = 1:chunk_size
     jobs_running = list()
@@ -52,7 +29,8 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
     warnings = list()
     shutdown = FALSE
 
-    message("Running calculations (", chunk_size, " calls/chunk) ...")
+    message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
+            " calculations (", chunk_size, " calls/chunk) ...")
     pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
 
     # main event loop
@@ -65,7 +43,7 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
             msg = qsys$receive_data(timeout=5)
             if (is.null(msg)) {
                 warning(sprintf("%i/%i workers did not shut down properly",
-                        length(workers_running), n_jobs), immediate.=TRUE)
+                        length(workers_running), qsys$workers), immediate.=TRUE)
                 break
             }
         }
@@ -115,9 +93,6 @@ master = function(fun, iter, const=list(), export=list(), seed=128965,
 
     rt = proc.time() - start_time
     close(pb)
-
-    qsys$cleanup(dirty=FALSE)
-    on.exit(NULL)
 
     result = unravel_result(list(result=job_result, warnings=warnings),
                             at = min(submit_index)-1,

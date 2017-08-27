@@ -6,12 +6,13 @@
 #' @param export          List of objects to be exported to the worker
 #' @param seed            A seed to set for each function call
 #' @param memory          Short for template=list(memory=value)
-#' @param template  A named list of values to fill in template
+#' @param template        A named list of values to fill in template
 #' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
 #'                        if job_size is given as well
 #' @param job_size        The number of function calls per job
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
+#' @param workers         Optional instance of QSys representing a worker pool
 #' @param log_worker      Write a log file for each worker
 #' @param wait_time       Time to wait between messages; set 0 for short calls
 #'                        defaults to 1/sqrt(number_of_functon_calls)
@@ -34,7 +35,7 @@
 #' }
 Q = function(fun, ..., const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
-        split_array_by=-1, fail_on_error=TRUE,
+        split_array_by=-1, fail_on_error=TRUE, workers=NULL,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     fun = match.fun(fun)
@@ -69,9 +70,30 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         environment(fun) = list2env(export) # we lose pkgs if parent=baseenv()
         re = work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
         unravel_result(re, fail_on_error=fail_on_error)
-    } else
-        master(fun=fun, iter=call_index, const=const, export=export,
-               seed=seed, template=template, n_jobs=n_jobs,
-               fail_on_error=fail_on_error, log_worker=log_worker,
-               wait_time=wait_time, chunk_size=chunk_size)
+    } else {
+        if (is.null(workers)) {
+			qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
+			on.exit(qsys$cleanup(dirty=TRUE))
+
+			# do the submissions
+			message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
+			pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
+			for (j in 1:n_jobs) {
+				qsys$submit_job(template=template, log_worker=log_worker)
+				utils::setTxtProgressBar(pb, j)
+			}
+			close(pb)
+        } else
+            qsys = workers
+
+        re = master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
+                    wait_time=wait_time, chunk_size=chunk_size)
+
+		if (is.null(workers)) {
+			qsys$cleanup(dirty=FALSE)
+			on.exit(NULL)
+		}
+
+        re
+    }
 }

@@ -13,7 +13,6 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, ports=6000:8000, master=NULL) {
-            private$job_num = 1
             private$zmq_context = rzmq::init.context()
 
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
@@ -49,6 +48,7 @@ QSys = R6::R6Class("QSys",
             if (!identical(grepl("://[^:]+:[0-9]+", private$master), TRUE))
                 stop("Need to initialize QSys first")
 
+            private$job_num = private$job_num + 1
             values = list(
                 job_name = paste0("cmq", private$port, "-", private$job_num),
                 job_group = paste("/cmq", Sys.info()[['nodename']], private$port, sep="/"),
@@ -58,8 +58,6 @@ QSys = R6::R6Class("QSys",
                 values$log_file = paste0(values$job_name, ".log")
 
             private$job_group = values$job_group
-            private$job_num = private$job_num + 1
-
             utils::modifyList(template, values)
         },
 
@@ -108,7 +106,8 @@ QSys = R6::R6Class("QSys",
         # We use the listening port as scheduler ID
         id = function() private$port,
         url = function() private$listen,
-        sock = function() private$socket
+        sock = function() private$socket,
+        workers = function() private$job_num
     ),
 
     private = list(
@@ -118,7 +117,7 @@ QSys = R6::R6Class("QSys",
         master = NULL,
         listen = NULL,
         job_group = NULL,
-        job_num = NULL,
+        job_num = 0,
         common_data = NULL,
         token = "not set",
 
