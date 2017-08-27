@@ -26,7 +26,7 @@ QSys = R6::R6Class("QSys",
                 private$master = master
 
             if (!is.null(data))
-                do.call(private$set_common_data, data)
+                do.call(self$set_common_data, data)
         },
 
         # Provides values for job submission template
@@ -59,6 +59,12 @@ QSys = R6::R6Class("QSys",
 
             private$job_group = values$job_group
             utils::modifyList(template, values)
+        },
+
+        set_common_data = function(...) {
+            private$token = paste(sample(letters, 5, TRUE), collapse="")
+            private$common_data = serialize(list(id="DO_SETUP",
+                        token=private$token, ...), NULL)
         },
 
         # Send the data common to all workers, only serialize once
@@ -123,13 +129,7 @@ QSys = R6::R6Class("QSys",
         job_num = 0,
         common_data = NULL,
         token = "not set",
-        worker_pool = list(),
-
-        set_common_data = function(...) {
-            private$token = paste(sample(letters, 5, TRUE), collapse="")
-            private$common_data = serialize(list(id="DO_SETUP",
-                        token=private$token, ...), NULL)
-        }
+        worker_pool = list()
     ),
 
     cloneable = FALSE

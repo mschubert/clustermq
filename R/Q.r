@@ -42,6 +42,11 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     iter = Q_check(fun, list(...), const, split_array_by)
     seed = as.integer(seed)
 
+    if (!is.null(workers)) {
+        n_jobs = workers$workers_running
+        job_size = NULL
+    }
+
     # check job number and memory
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
         stop("n_jobs or job_size is required")
@@ -71,22 +76,16 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         re = work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
         unravel_result(re, fail_on_error=fail_on_error)
     } else {
+        data = list(fun=fun, const=const, export=export, common_seed=seed)
+
         if (is.null(workers)) {
-            qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
-            on.exit(qsys$cleanup())
-
-            # do the submissions
-            message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-            pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
-            for (j in 1:n_jobs) {
-                qsys$submit_job(template=template, log_worker=log_worker)
-                utils::setTxtProgressBar(pb, j)
-            }
-            close(pb)
+            workers = create_worker_pool(n_jobs, data=data, template=template,
+                                         log_worker=log_worker)
+            on.exit(workers$cleanup())
         } else
-            qsys = workers
+            do.call(workers$set_common_data, data)
 
-        master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
+        master(qsys=workers, iter=call_index, fail_on_error=fail_on_error,
                wait_time=wait_time, chunk_size=chunk_size)
     }
 }

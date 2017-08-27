@@ -40,7 +40,7 @@ SSH = R6::R6Class("SSH",
             if (msg$id != "PROXY_READY")
                 stop("Sending failed")
 
-            private$set_common_data(id="DO_SETUP", redirect=msg$data_url)
+            self$set_common_data(id="DO_SETUP", redirect=msg$data_url)
         },
 
         submit_job = function(template=list(), log_worker=FALSE) {
