@@ -72,27 +72,27 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         unravel_result(re, fail_on_error=fail_on_error)
     } else {
         if (is.null(workers)) {
-			qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
-			on.exit(qsys$cleanup(dirty=TRUE))
+            qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
+            on.exit(qsys$cleanup(dirty=TRUE))
 
-			# do the submissions
-			message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-			pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
-			for (j in 1:n_jobs) {
-				qsys$submit_job(template=template, log_worker=log_worker)
-				utils::setTxtProgressBar(pb, j)
-			}
-			close(pb)
+            # do the submissions
+            message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
+            pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
+            for (j in 1:n_jobs) {
+                qsys$submit_job(template=template, log_worker=log_worker)
+                utils::setTxtProgressBar(pb, j)
+            }
+            close(pb)
         } else
             qsys = workers
 
         re = master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
                     wait_time=wait_time, chunk_size=chunk_size)
 
-		if (is.null(workers)) {
-			qsys$cleanup(dirty=FALSE)
-			on.exit(NULL)
-		}
+        if (is.null(workers)) {
+            qsys$cleanup(dirty=FALSE)
+            on.exit(NULL)
+        }
 
         re
     }
