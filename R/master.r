@@ -18,7 +18,7 @@
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return               A list of whatever `fun` returned
-master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
+master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, cleanup=TRUE) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(list(NULL), n_calls)
@@ -65,7 +65,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                     warnings = c(warnings, msg$warnings)
                 }
 
-                if (msg$token != qsys$data_token) {
+                if (msg$token != qsys$data_token) { #TODO: could remove WORKER_UP with this
                     qsys$send_common_data(msg$worker_id)
                 } else if (!shutdown && submit_index[1] <= n_calls) {
                     # if we have work, send it to the worker
@@ -74,6 +74,9 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                     qsys$send_job_data(chunk=cur)
                     jobs_running[as.character(submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
+                } else if (cleanup == FALSE) {
+                    qsys$send_noop()
+                    break
                 } else # or else shut it down
                     qsys$send_shutdown_worker()
             },

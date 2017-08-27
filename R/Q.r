@@ -79,13 +79,15 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         data = list(fun=fun, const=const, export=export, common_seed=seed)
 
         if (is.null(workers)) {
-            workers = create_worker_pool(n_jobs, data=data, template=template,
-                                         log_worker=log_worker)
-            on.exit(workers$cleanup())
-        } else
-            do.call(workers$set_common_data, data)
+            qsys = create_worker_pool(n_jobs, data=data, template=template,
+                                      log_worker=log_worker)
+            on.exit(qsys$cleanup())
+        } else {
+            qsys = workers
+            do.call(qsys$set_common_data, data)
+        }
 
-        master(qsys=workers, iter=call_index, fail_on_error=fail_on_error,
-               wait_time=wait_time, chunk_size=chunk_size)
+        master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
+               wait_time=wait_time, chunk_size=chunk_size, cleanup=is.null(workers))
     }
 }

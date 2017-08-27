@@ -63,7 +63,6 @@ QSys = R6::R6Class("QSys",
 
         set_common_data = function(...) {
             private$token = paste(sample(letters, 5, TRUE), collapse="")
-            message("token is ", private$token)
             private$common_data = serialize(list(id="DO_SETUP",
                         token=private$token, ...), NULL)
         },
@@ -83,6 +82,11 @@ QSys = R6::R6Class("QSys",
         send_job_data = function(...) {
             rzmq::send.socket(socket = private$socket,
                     data = list(id="DO_CHUNK", token=private$token, ...))
+        },
+
+        send_noop = function() {
+            rzmq::send.socket(socket = private$socket,
+                    data=list(id="WORKER_WAIT", wait=0.2*self$workers))
         },
 
         # Read data from the socket
