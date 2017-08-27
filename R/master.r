@@ -35,7 +35,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
 
     # main event loop
     start_time = proc.time()
-    while((!shutdown && submit_index[1] <= n_calls) || length(workers_running) > 0) {
+    while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
         # wait for results only longer if we don't have all data yet
         if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
             msg = qsys$receive_data()
@@ -43,15 +43,14 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
             msg = qsys$receive_data(timeout=5)
             if (is.null(msg)) {
                 warning(sprintf("%i/%i workers did not shut down properly",
-                        length(workers_running), qsys$workers), immediate.=TRUE)
+                        qsys$workers_running, qsys$workers), immediate.=TRUE)
                 break
             }
         }
 
         switch(msg$id,
             "WORKER_UP" = {
-                workers_running[[msg$worker_id]] = TRUE
-                qsys$send_common_data()
+                qsys$send_common_data(msg$worker_id)
             },
             "WORKER_READY" = {
                 # process the result data if we got some
@@ -80,8 +79,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
             },
             "WORKER_DONE" = {
                 worker_stats[[msg$worker_id]] = msg
-                workers_running[[msg$worker_id]] = NULL
-                qsys$disconnect_worker()
+                qsys$disconnect_worker(msg$worker_id)
             },
             "WORKER_ERROR" = {
                 stop("\nWorker error: ", msg$msg)

@@ -70,7 +70,7 @@ proxy = function(ctl, job) {
             message("received: ", msg)
             switch(msg$id,
                 "WORKER_UP" = {
-                    qsys$send_common_data()
+                    qsys$send_common_data(msg$worker_id)
                 }
             )
         }
