@@ -17,6 +17,7 @@
 #'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
+#' @param cleanup        After processing, shut down workers or keep them
 #' @return               A list of whatever `fun` returned
 master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, cleanup=TRUE) {
     # prepare empty variables for managing results
