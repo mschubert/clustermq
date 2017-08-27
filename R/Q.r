@@ -73,7 +73,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     } else {
         if (is.null(workers)) {
             qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
-            on.exit(qsys$cleanup(dirty=TRUE))
+            on.exit(qsys$cleanup())
 
             # do the submissions
             message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
@@ -86,14 +86,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         } else
             qsys = workers
 
-        re = master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
-                    wait_time=wait_time, chunk_size=chunk_size)
-
-        if (is.null(workers)) {
-            qsys$cleanup(dirty=FALSE)
-            on.exit(NULL)
-        }
-
-        re
+        master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
+               wait_time=wait_time, chunk_size=chunk_size)
     }
 }

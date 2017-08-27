@@ -15,8 +15,8 @@ SLURM = R6::R6Class("SLURM",
             system("sbatch", input=job_input, ignore.stdout=TRUE)
         },
 
-        cleanup = function(dirty=FALSE) {
-            if (dirty)
+        cleanup = function() {
+            if (self$workers_running > 0)
                 warning("Jobs may not have shut down properly")
         }
     ),

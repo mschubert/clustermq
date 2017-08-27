@@ -15,7 +15,8 @@ LSF = R6::R6Class("LSF",
             system("bsub", input=job_input, ignore.stdout=TRUE)
         },
 
-        cleanup = function(dirty=FALSE) {
+        cleanup = function() {
+            dirty = self$workers_running > 0
             system(paste("bkill -g", private$job_group, "0"),
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }

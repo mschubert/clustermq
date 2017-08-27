@@ -65,7 +65,7 @@ SSH = R6::R6Class("SSH",
                 stop(msg)
         },
 
-        cleanup = function(dirty=FALSE) {
+        cleanup = function() {
             rzmq::send.socket(private$proxy_socket, data=list(id="PROXY_STOP"))
         }
     ),
