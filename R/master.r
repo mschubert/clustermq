@@ -10,23 +10,22 @@
 #'  * when computatons are complete, we send id=0 to the worker
 #'    * it responds with id=-1 (and usage stats) and shuts down
 #'
-#' @param fun             A function to call
-#' @param iter            Objects to be iterated in each function call
-#' @param const           A list of constant arguments passed to each function call
-#' @param export          List of objects to be exported to the worker
-#' @param seed            A seed to set for each function call
-#' @param template  Named list of values to fill in template
-#' @param walltime        The amount of time a job has to complete; default: no value
-#' @param n_jobs          The number of LSF jobs to submit
-#' @param fail_on_error   If an error occurs on the workers, continue or fail?
-#' @param log_worker      Write a log file for each worker
-#' @param wait_time       Time to wait between messages; set 0 for short calls
-#'                        defaults to 1/sqrt(number_of_functon_calls)
-#' @param chunk_size      Number of function calls to chunk together
-#'                        defaults to 100 chunks per worker or max. 500 kb per chunk
-#' @return                A list of whatever `fun` returned
+#' @param fun            A function to call
+#' @param iter           Objects to be iterated in each function call
+#' @param const          A list of constant arguments passed to each function call
+#' @param export         List of objects to be exported to the worker
+#' @param seed           A seed to set for each function call
+#' @param template       Named list of values to fill in template
+#' @param n_jobs         The number of LSF jobs to submit
+#' @param fail_on_error  If an error occurs on the workers, continue or fail?
+#' @param log_worker     Write a log file for each worker
+#' @param wait_time      Time to wait between messages; set 0 for short calls
+#'                       defaults to 1/sqrt(number_of_functon_calls)
+#' @param chunk_size     Number of function calls to chunk together
+#'                       defaults to 100 chunks per worker or max. 500 kb per chunk
+#' @return               A list of whatever `fun` returned
 master = function(fun, iter, const=list(), export=list(), seed=128965,
-        template=list(), n_jobs=NULL, walltime=NA,
+        template=list(), n_jobs=NULL,
         fail_on_error=TRUE, log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     qsys = qsys$new(data=list(fun=fun, const=const, export=export, common_seed=seed))
