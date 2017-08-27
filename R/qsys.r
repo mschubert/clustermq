@@ -63,6 +63,7 @@ QSys = R6::R6Class("QSys",
 
         set_common_data = function(...) {
             private$token = paste(sample(letters, 5, TRUE), collapse="")
+            message("token is ", private$token)
             private$common_data = serialize(list(id="DO_SETUP",
                         token=private$token, ...), NULL)
         },
@@ -100,13 +101,34 @@ QSys = R6::R6Class("QSys",
             rzmq::send.socket(socket = private$socket, data = list(id="WORKER_STOP"))
         },
 
-        disconnect_worker = function(worker_id) {
+        disconnect_worker = function(msg) {
             rzmq::send.null.msg(socket = private$socket)
-            private$worker_pool[[worker_id]] = NULL
+            private$worker_pool[[msg$worker_id]] = NULL
+            private$worker_stats[[msg$worker_id]] = msg
         },
 
         # Make sure all resources are closed properly
-        cleanup = function() {
+        cleanup = function(rt=as.list(1:3)) {
+            while(self$workers_running > 0) {
+				msg = self$receive_data(timeout=5)
+				if (is.null(msg)) {
+					warning(sprintf("%i/%i workers did not shut down properly",
+							self$workers_running, self$workers), immediate.=TRUE)
+					break
+				} else if (msg$id == "WORKER_READY")
+                    self$send_shutdown_worker()
+				else if (msg$id == "WORKER_DONE")
+                    self$disconnect_worker(msg)
+                else
+                    warning("something went wrong during cleanup")
+            }
+
+            # compute summary statistics for workers
+            times = lapply(private$worker_stats, function(w) w$time)
+            wt = Reduce(`+`, times) / length(times)
+            message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
+                            rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
+                            100*(wt[[1]]+wt[[2]])/wt[[3]]))
         }
     ),
 
@@ -116,7 +138,8 @@ QSys = R6::R6Class("QSys",
         url = function() private$listen,
         sock = function() private$socket,
         workers = function() private$job_num,
-        workers_running = function() length(private$worker_pool)
+        workers_running = function() length(private$worker_pool),
+        data_token = function() private$token
     ),
 
     private = list(
@@ -129,7 +152,8 @@ QSys = R6::R6Class("QSys",
         job_num = 0,
         common_data = NULL,
         token = "not set",
-        worker_pool = list()
+        worker_pool = list(),
+        worker_stats = list()
     ),
 
     cloneable = FALSE

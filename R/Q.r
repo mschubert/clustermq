@@ -43,7 +43,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     seed = as.integer(seed)
 
     if (!is.null(workers)) {
-        n_jobs = workers$workers_running
+        n_jobs = workers$workers
         job_size = NULL
     }
 

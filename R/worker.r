@@ -47,13 +47,13 @@ worker = function(worker_id, master, memlimit) {
                 list2env(msg$export, envir=.GlobalEnv)
                 token = msg$token
                 message("token from msg: ", token)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY"))
+                rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token))
             },
             "DO_CHUNK" = {
                 if (identical(token, msg$token)) {
                     result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
                     message("completed: ", paste(rownames(msg$chunk), collapse=", "))
-                    rzmq::send.socket(socket, data=c(list(id="WORKER_READY"), result))
+                    rzmq::send.socket(socket, data=c(list(id="WORKER_READY", token=token), result))
                     counter = counter + length(result)
                     print(pryr::mem_used())
                 } else

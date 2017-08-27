@@ -16,6 +16,7 @@ SGE = R6::R6Class("SGE",
         },
 
         cleanup = function() {
+            super$cleanup()
             if (self$workers_running > 0)
                 warning("Jobs may not have shut down properly")
         }

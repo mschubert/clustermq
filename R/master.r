@@ -24,8 +24,6 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
     job_result = rep(list(NULL), n_calls)
     submit_index = 1:chunk_size
     jobs_running = list()
-    workers_running = list()
-    worker_stats = list()
     warnings = list()
     shutdown = FALSE
 
@@ -34,7 +32,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
     pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
 
     # main event loop
-    start_time = proc.time()
+#    start_time = proc.time()
     while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
         # wait for results only longer if we don't have all data yet
         if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
@@ -57,7 +55,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                 if (!is.null(msg$result)) {
                     call_id = names(msg$result)
                     jobs_running[call_id] = NULL
-                    job_result[as.integer(call_id)] = unname(msg$result)
+                    job_result[as.integer(call_id)] = msg$result
                     utils::setTxtProgressBar(pb, submit_index[1] -
                                              length(jobs_running) - 1)
 
@@ -67,8 +65,10 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                     warnings = c(warnings, msg$warnings)
                 }
 
-                # if we have work, send it to the worker
-                if (!shutdown && submit_index[1] <= n_calls) {
+                if (msg$token != qsys$data_token) {
+                    qsys$send_common_data(msg$worker_id)
+                } else if (!shutdown && submit_index[1] <= n_calls) {
+                    # if we have work, send it to the worker
                     submit_index = submit_index[submit_index <= n_calls]
                     cur = iter[submit_index, , drop=FALSE]
                     qsys$send_job_data(chunk=cur)
@@ -78,8 +78,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                     qsys$send_shutdown_worker()
             },
             "WORKER_DONE" = {
-                worker_stats[[msg$worker_id]] = msg
-                qsys$disconnect_worker(msg$worker_id)
+                qsys$disconnect_worker(msg)
             },
             "WORKER_ERROR" = {
                 stop("\nWorker error: ", msg$msg)
@@ -89,19 +88,10 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
         Sys.sleep(wait_time)
     }
 
-    rt = proc.time() - start_time
+#    rt = proc.time() - start_time
     close(pb)
 
-    result = unravel_result(list(result=job_result, warnings=warnings),
-                            at = min(submit_index)-1,
-                            fail_on_error = fail_on_error)
-
-    # compute summary statistics for workers
-    times = lapply(worker_stats, function(w) w$time)
-    wt = Reduce(`+`, times) / length(times)
-    message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
-                    rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                    100*(wt[[1]]+wt[[2]])/wt[[3]]))
-
-    result
+    unravel_result(list(result=job_result, warnings=warnings),
+                   at = min(submit_index)-1,
+                   fail_on_error = fail_on_error)
 }
