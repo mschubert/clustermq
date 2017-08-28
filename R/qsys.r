@@ -84,7 +84,7 @@ QSys = R6::R6Class("QSys",
                     data = list(id="DO_CHUNK", token=private$token, ...))
         },
 
-        send_noop = function() {
+        send_wait = function() {
             rzmq::send.socket(socket = private$socket,
                     data=list(id="WORKER_WAIT", wait=0.2*self$workers))
         },

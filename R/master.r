@@ -76,8 +76,9 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                     jobs_running[as.character(submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
                 } else if (cleanup == FALSE) {
-                    qsys$send_noop()
-                    break
+                    qsys$send_wait()
+                    if (length(jobs_running) == 0)
+                        break
                 } else # or else shut it down
                     qsys$send_shutdown_worker()
             },
