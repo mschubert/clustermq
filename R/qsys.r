@@ -72,6 +72,11 @@ QSys = R6::R6Class("QSys",
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
 
+            #TODO: remove this and fix actual memory leak
+            private$common_data_tracker = private$common_data_tracker + 1
+            if (private$common_data_tracker %% 10 == 0)
+                gc()
+
             rzmq::send.socket(socket = private$socket,
                               data = private$common_data,
                               serialize = FALSE)
@@ -157,7 +162,8 @@ QSys = R6::R6Class("QSys",
         common_data = NULL,
         token = "not set",
         worker_pool = list(),
-        worker_stats = list()
+        worker_stats = list(),
+        common_data_tracker = 0 # see if we can limit memory by manual gc()
     ),
 
     cloneable = FALSE
