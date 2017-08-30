@@ -3,6 +3,7 @@ ClusterMQ: send R function calls as cluster jobs
 
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
 [![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
+[![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](http://cran.rstudio.com/web/packages/clustermq/index.html)
 
 This package will allow you to send function calls as cluster jobs (using
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
@@ -49,13 +50,21 @@ First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
 system library. Most likely, your package manager will provide this:
 
 ```sh
-brew install zeromq # homebrew on OS-X
-sudo apt-get install libzmq3-dev # ubuntu
-sudo yum install zeromq3-devel # fedora
+brew install zeromq # Linuxbrew, Homebrew on OS-X
+conda install zeromq # Conda
+sudo apt-get install libzmq3-dev # Ubuntu
+sudo yum install zeromq3-devel # Fedora
+pacman -S zeromq # Archlinux
 ```
 
 Then install the `clustermq` package in R (which automatically installs the
-`rzmq` package as well).
+`rzmq` package as well) from CRAN:
+
+```r
+install.packages('clustermq')
+```
+
+Alternatively you can use `devtools` to install directly from Github:
 
 ```r
 # install.packages('devtools')
@@ -65,7 +74,7 @@ devtools::install_github('mschubert/clustermq')
 
 When this is done, [set up your
 scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
-or else the package will warn you and continue with default values.
+or else the package will use whatever scheduler it can find.
 
 Usage
 -----
