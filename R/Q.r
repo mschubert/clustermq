@@ -72,7 +72,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         ))
 
     if (n_jobs == 0 || qsys_id == "LOCAL") {
-        environment(fun) = list2env(export) # we lose pkgs if parent=baseenv()
+        list2env(export, envir=environment(fun))
         re = work_chunk(df=call_index, fun=fun, const_args=const, common_seed=seed)
         unravel_result(re, fail_on_error=fail_on_error)
     } else {
