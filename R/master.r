@@ -73,7 +73,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                     submit_index = submit_index[submit_index <= n_calls]
                     cur = iter[submit_index, , drop=FALSE]
                     qsys$send_job_data(chunk=cur)
-                    jobs_running[as.character(submit_index)] = TRUE
+                    jobs_running[sprintf("%i", submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
                 } else if (cleanup == FALSE) {
                     qsys$send_wait()
