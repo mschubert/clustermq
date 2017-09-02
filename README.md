@@ -50,6 +50,7 @@ First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
 system library. Most likely, your package manager will provide this:
 
 ```sh
+# You can skip this step on Windows and OS-X, the rzmq binary has it
 brew install zeromq # Linuxbrew, Homebrew on OS-X
 conda install zeromq # Conda
 sudo apt-get install libzmq3-dev # Ubuntu
