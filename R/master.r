@@ -100,7 +100,6 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
         Sys.sleep(wait_time)
     }
 
-#    rt = proc.time() - start_time
     close(pb)
 
     unravel_result(list(result=job_result, warnings=warnings),

@@ -25,6 +25,7 @@ QSys = R6::R6Class("QSys",
             private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("tcp://%s:%i",
                                      Sys.info()[['nodename']], private$port)
+            private$timer = proc.time()
 
             if (is.null(master))
                 private$master = private$listen
@@ -139,7 +140,7 @@ QSys = R6::R6Class("QSys",
         },
 
         # Make sure all resources are closed properly
-        cleanup = function(rt=as.list(1:3)) {
+        cleanup = function() {
             while(self$workers_running > 0) {
 				msg = self$receive_data(timeout=5)
 				if (is.null(msg)) {
@@ -157,6 +158,7 @@ QSys = R6::R6Class("QSys",
             # compute summary statistics for workers
             times = lapply(private$worker_stats, function(w) w$time)
             wt = Reduce(`+`, times) / length(times)
+            rt = proc.time() - private$timer
             message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
                             rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]]))
@@ -179,6 +181,7 @@ QSys = R6::R6Class("QSys",
         port = NA,
         master = NULL,
         listen = NULL,
+        timer = NULL,
         job_group = NULL,
         job_num = 0,
         common_data = NULL,
