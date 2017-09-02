@@ -78,7 +78,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
 
                     cs = max(ceiling((n_calls - submit_index[1]) / qsys$workers_running), 1)
                     if (cs < chunk_size) {
-                        message("chunk size reduce: ", cs)
+#                        message("chunk size reduce: ", cs)
                         chunk_size = cs
                         submit_index = submit_index[1:length(chunk_size)]
                     }

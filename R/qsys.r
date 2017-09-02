@@ -114,7 +114,7 @@ QSys = R6::R6Class("QSys",
 
         send_wait = function() {
             rzmq::send.socket(socket = private$socket,
-                    data=list(id="WORKER_WAIT", wait=0.5*self$workers))
+                    data=list(id="WORKER_WAIT", wait=0.2*self$workers))
         },
 
         # Read data from the socket
