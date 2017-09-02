@@ -75,6 +75,13 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                     qsys$send_job_data(chunk=cur)
                     jobs_running[sprintf("%i", submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
+
+                    cs = min((n_calls - submit_index[1]) / qsys$workers_running, 1)
+                    if (cs < chunk_size) {
+                        message("chunk size reduce: ", cs)
+                        chunk_size = cs
+                        submit_index = submit_index[1:length(chunk_size)]
+                    }
                 } else if (cleanup == FALSE) {
                     qsys$send_wait()
                     if (length(jobs_running) == 0)
