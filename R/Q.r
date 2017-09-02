@@ -64,7 +64,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
 
     # use heuristic for wait and chunk size
     if (is.na(wait_time))
-        wait_time = min(0.1, ifelse(n_calls < 1e5, 1/sqrt(n_calls), 0))
+        wait_time = min(0.03, ifelse(n_calls < 1e5, 1/sqrt(n_calls), 0))
     if (is.na(chunk_size))
         chunk_size = ceiling(min(
             n_calls / 2000,

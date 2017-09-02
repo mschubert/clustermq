@@ -27,10 +27,11 @@ worker = function(worker_id, master, memlimit) {
     while(TRUE) {
         #TODO: set timeout to something more reasonable
         #  when data sending is separated from main loop
+        tt = proc.time()
         events = rzmq::poll.socket(list(socket), list("read"), timeout=3600)
         if (events[[1]]$read) {
             msg = rzmq::receive.socket(socket)
-            message("received: ", msg$id)
+            message(sprintf("received after %.2fs: %s", (proc.time()-tt)[[3]], msg$id))
         } else
             stop("Timeout reached, terminating")
 
@@ -61,6 +62,7 @@ worker = function(worker_id, master, memlimit) {
                                 msg=paste("chunk does not match common data", token, msg$token)))
             },
             "WORKER_WAIT" = {
+                message(sprintf("waiting %fs", msg$wait))
                 Sys.sleep(msg$wait)
                 rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token, worker_id=worker_id))
             },

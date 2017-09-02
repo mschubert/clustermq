@@ -39,7 +39,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
         if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
             msg = qsys$receive_data()
         else {
-            msg = qsys$receive_data(timeout=5)
+            msg = qsys$receive_data(timeout=10)
             if (is.null(msg)) {
                 warning(sprintf("%i/%i workers did not shut down properly",
                         qsys$workers_running, qsys$workers), immediate.=TRUE)
