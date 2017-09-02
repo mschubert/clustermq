@@ -10,8 +10,8 @@ worker = function(worker_id, master, memlimit) {
     print(memlimit)
 
     # connect to master
-    context = rzmq::init.context()
-    socket = rzmq::init.socket(context, "ZMQ_REQ")
+    assign("zmq_context", rzmq::init.context(), envir=.GlobalEnv)
+    socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
     #rzmq::set.send.timeout(socket, 10000L) # milliseconds
 
     # send the master a ready signal
@@ -37,7 +37,7 @@ worker = function(worker_id, master, memlimit) {
         switch(msg$id,
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
-                    data_socket = rzmq::init.socket(context, "ZMQ_REQ")
+                    data_socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
                     rzmq::connect.socket(data_socket, msg$redirect)
                     rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
                     message("WORKER_UP to redirect: ", msg$redirect)

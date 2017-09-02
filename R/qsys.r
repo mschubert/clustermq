@@ -13,7 +13,13 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, ports=6000:8000, master=NULL) {
-            private$zmq_context = rzmq::init.context()
+            private$zmq_context = mget("zmq_context", envir=.GlobalEnv,
+                                       ifnotfound = NA)[[1]]
+            if (is.na(private$zmq_context)) {
+                message("creating new context")
+                private$zmq_context = rzmq::init.context()
+            } else
+                message("reusing context")
 
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
@@ -62,9 +68,25 @@ QSys = R6::R6Class("QSys",
         },
 
         set_common_data = function(...) {
+            l. = pryr::named_dots(...)
+#browser()
+            if ("fun" %in% names(l.)) {
+                message("\nFUNCTION")
+                for (n in ls(environment(l.$fun)))
+                    message(n, ": ", pryr::object_size(serialize(get(n, envir=environment(l.$fun)), NULL)))
+            }
+            if ("const" %in% names(l.)) {
+                message("\nCONST")
+                for (n in names(l.$const))
+                    message(n, ": ", pryr::object_size(serialize(l.$const[[n]], NULL)))
+            }
+
             private$token = paste(sample(letters, 5, TRUE), collapse="")
             private$common_data = serialize(list(id="DO_SETUP",
                         token=private$token, ...), NULL)
+
+#            message("\nargs: ", paste(names(pryr::named_dots(...)), collapse=","))
+            message("\nnew common data, size: ", pryr::object_size(private$common_data))
         },
 
         # Send the data common to all workers, only serialize once
