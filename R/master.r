@@ -76,10 +76,10 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                     jobs_running[sprintf("%i", submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
 
-                    cs = max(ceiling((n_calls - submit_index[1]) / qsys$workers_running), 1)
+                    cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
                     if (cs < chunk_size) {
 #                        message("chunk size reduce: ", cs)
-                        chunk_size = cs
+                        chunk_size = max(cs, 1)
                         submit_index = submit_index[1:length(chunk_size)]
                     }
                 } else if (cleanup == FALSE) {

@@ -31,7 +31,7 @@ worker = function(worker_id, master, memlimit) {
         events = rzmq::poll.socket(list(socket), list("read"), timeout=3600)
         if (events[[1]]$read) {
             msg = rzmq::receive.socket(socket)
-            message(sprintf("received after %.2fs: %s", (proc.time()-tt)[[3]], msg$id))
+            message(sprintf("received after %.3fs: %s", (proc.time()-tt)[[3]], msg$id))
         } else
             stop("Timeout reached, terminating")
 
@@ -52,8 +52,10 @@ worker = function(worker_id, master, memlimit) {
             },
             "DO_CHUNK" = {
                 if (identical(token, msg$token)) {
+                    tt = proc.time()
                     result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
-                    message("completed: ", paste(rownames(msg$chunk), collapse=", "))
+                    message("completed in %.3fs: ", (proc.time()-tt)[[3]],
+                            paste(rownames(msg$chunk), collapse=", "))
                     rzmq::send.socket(socket, data=c(list(id="WORKER_READY", token=token, worker_id=worker_id), result))
                     counter = counter + length(result)
                     print(pryr::mem_used())
@@ -62,7 +64,7 @@ worker = function(worker_id, master, memlimit) {
                                 msg=paste("chunk does not match common data", token, msg$token)))
             },
             "WORKER_WAIT" = {
-                message(sprintf("waiting %fs", msg$wait))
+                message(sprintf("waiting %.2fs", msg$wait))
                 Sys.sleep(msg$wait)
                 rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token, worker_id=worker_id))
             },
