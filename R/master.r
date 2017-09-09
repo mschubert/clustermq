@@ -66,7 +66,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                     warnings = c(warnings, msg$warnings)
                 }
 
-                if (msg$token != qsys$data_token) { #TODO: could remove WORKER_UP with this
+                if (!shutdown && msg$token != qsys$data_token) { #TODO: could remove WORKER_UP with this
                     qsys$send_common_data(msg$worker_id)
                 } else if (!shutdown && submit_index[1] <= n_calls) {
                     # if we have work, send it to the worker
@@ -78,11 +78,10 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
 
                     cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
                     if (cs < chunk_size) {
-#                        message("chunk size reduce: ", cs)
                         chunk_size = max(cs, 1)
-                        submit_index = submit_index[1:length(chunk_size)]
+                        submit_index = submit_index[1:chunk_size]
                     }
-                } else if (cleanup == FALSE) {
+                } else if (!shutdown && cleanup == FALSE) {
                     qsys$send_wait()
                     if (length(jobs_running) == 0)
                         break
