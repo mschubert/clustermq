@@ -35,9 +35,6 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
     if (!is.null(common_seed))
         df$` seed ` = common_seed + as.integer(rownames(df))
 
-    re = lapply(seq_len(nrow(df)), function(i) {
-        do.call(fwrap, as.list(df[i,,drop=FALSE]))
-    })
-    list(result = stats::setNames(re, rownames(df)),
+    list(result = stats::setNames(purrr::pmap(df, fwrap), rownames(df)),
          warnings = context$warnings)
 }
