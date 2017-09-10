@@ -13,14 +13,7 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, ports=6000:8000, master=NULL) {
-            private$zmq_context = mget("zmq_context", envir=.GlobalEnv,
-                                       ifnotfound = NA)[[1]]
-            if (is.na(private$zmq_context)) {
-                message("creating new context")
-                private$zmq_context = rzmq::init.context()
-            } else
-                message("reusing context")
-
+            private$zmq_context = rzmq::init.context()
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("tcp://%s:%i",
@@ -70,7 +63,7 @@ QSys = R6::R6Class("QSys",
 
         set_common_data = function(...) {
             l. = pryr::named_dots(...)
-#browser()
+
             if ("fun" %in% names(l.)) {
                 message("\nFUNCTION")
                 for (n in ls(environment(l.$fun)))
@@ -80,11 +73,17 @@ QSys = R6::R6Class("QSys",
                 message("\nCONST")
                 for (n in names(l.$const))
                     message(n, ": ", pryr::object_size(serialize(l.$const[[n]], NULL)))
+
+                if ("data" %in% names(l.$const)) {
+                    message("\nCONST > DATA")
+                    for (n in names(l.$const$data))
+                        message(n, ": ", pryr::object_size(serialize(l.$const$data[[n]], NULL)))
+                }
             }
 
             private$token = paste(sample(letters, 5, TRUE), collapse="")
-            private$common_data = serialize(list(id="DO_SETUP",
-                        token=private$token, ...), NULL)
+            common = c(list(id="DO_SETUP", token=private$token), l.)
+            private$common_data = serialize(common, NULL)
 
 #            message("\nargs: ", paste(names(pryr::named_dots(...)), collapse=","))
             message("\nnew common data, size: ", pryr::object_size(private$common_data))
@@ -137,14 +136,14 @@ QSys = R6::R6Class("QSys",
         # Make sure all resources are closed properly
         cleanup = function() {
             while(self$workers_running > 0) {
-				msg = self$receive_data(timeout=5)
-				if (is.null(msg)) {
-					warning(sprintf("%i/%i workers did not shut down properly",
-							self$workers_running, self$workers), immediate.=TRUE)
-					break
-				} else if (msg$id == "WORKER_READY")
+                msg = self$receive_data(timeout=5)
+                if (is.null(msg)) {
+                    warning(sprintf("%i/%i workers did not shut down properly",
+                            self$workers_running, self$workers), immediate.=TRUE)
+                    break
+                } else if (msg$id == "WORKER_READY")
                     self$send_shutdown_worker()
-				else if (msg$id == "WORKER_DONE")
+                else if (msg$id == "WORKER_DONE")
                     self$disconnect_worker(msg)
                 else
                     warning("something went wrong during cleanup")

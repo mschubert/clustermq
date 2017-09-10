@@ -10,7 +10,8 @@ worker = function(worker_id, master, memlimit) {
     print(memlimit)
 
     # connect to master
-    assign("zmq_context", rzmq::init.context(), envir=.GlobalEnv)
+#    assign("zmq_context", rzmq::init.context(), envir=.GlobalEnv)
+    zmq_context = rzmq::init.context()
     socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
     #rzmq::set.send.timeout(socket, 10000L) # milliseconds
 
@@ -52,21 +53,30 @@ worker = function(worker_id, master, memlimit) {
             },
             "DO_CHUNK" = {
                 if (identical(token, msg$token)) {
-                    tt = proc.time()
-                    result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
-                    message("completed in %.3fs: ", (proc.time()-tt)[[3]],
-                            paste(rownames(msg$chunk), collapse=", "))
-                    rzmq::send.socket(socket, data=c(list(id="WORKER_READY", token=token, worker_id=worker_id), result))
+##                    tt = proc.time()
+#Rprof(sprintf("rprof-%s.txt", worker_id), append=T)
+                    result = do.call(work_chunk, c(list(df=msg$chunk, wid=worker_id), common_data))
+##                    message(sprintf("completed %i in %.3fs: ", length(result$result), (proc.time()-tt)[[3]]),
+#Rprof(NULL)
+                    message(sprintf("completed %i in %s: ",
+                                    length(result$result),
+                                    paste(proc.time() - tt, collapse=":")),
+                                    paste(rownames(msg$chunk), collapse=", "))
+                    send_data = c(list(id="WORKER_READY", token=token,
+                                  worker_id=worker_id), result)
+                    rzmq::send.socket(socket, send_data)
                     counter = counter + length(result)
                     print(pryr::mem_used())
-                } else
-                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR",
-                                msg=paste("chunk does not match common data", token, msg$token)))
+                } else {
+                    msg = paste("mismatch chunk & common data", token, msg$token)
+                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))
+                }
             },
             "WORKER_WAIT" = {
                 message(sprintf("waiting %.2fs", msg$wait))
                 Sys.sleep(msg$wait)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token, worker_id=worker_id))
+                rzmq::send.socket(socket, data=list(id="WORKER_READY",
+                                  token=token, worker_id=worker_id))
             },
             "WORKER_STOP" = {
                 break
