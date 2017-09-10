@@ -20,16 +20,6 @@ fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 
 # list(2,4,6)
-
-# this will submit a cluster job that connects to the master via TCP
-# the master will then send the function and argument chunks to the worker
-# and the worker will return the results to the master
-# until everything is done and you get back your result
-
-# we can also use dplyr's mutate to modify data frames
-library(dplyr)
-iris %>%
-    mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1))
 ```
 
 Computations are done [entirely on the
@@ -79,6 +69,8 @@ or else the package will use whatever scheduler it can find.
 
 Usage
 -----
+
+There is a list of examples in [the vignette](vignettes/clustermq.Rmd#examples).
 
 The following arguments are supported by `Q`:
 
