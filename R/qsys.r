@@ -94,21 +94,17 @@ QSys = R6::R6Class("QSys",
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
 
-            rzmq::send.socket(socket = private$socket,
-                              data = private$common_data,
-                              serialize = FALSE)
+            private$send(private$common_data, serialize=FALSE)
             private$worker_pool[[worker_id]] = TRUE
         },
 
         # Send iterated data to one worker
         send_job_data = function(...) {
-            rzmq::send.socket(socket = private$socket,
-                    data = list(id="DO_CHUNK", token=private$token, ...))
+            private$send(id="DO_CHUNK", token=private$token, ...)
         },
 
         send_wait = function() {
-            rzmq::send.socket(socket = private$socket,
-                    data=list(id="WORKER_WAIT", wait=0.05*self$workers_running))
+            private$send(id="WORKER_WAIT", wait=0.05*self$workers_running)
         },
 
         # Read data from the socket
@@ -124,11 +120,11 @@ QSys = R6::R6Class("QSys",
 
         # Send shutdown signal to worker
         send_shutdown_worker = function() {
-            rzmq::send.socket(socket = private$socket, data = list(id="WORKER_STOP"))
+            private$send(id="WORKER_STOP")
         },
 
         disconnect_worker = function(msg) {
-            rzmq::send.null.msg(socket = private$socket)
+            private$send()
             private$worker_pool[[msg$worker_id]] = NULL
             private$worker_stats[[msg$worker_id]] = msg
         },
@@ -182,7 +178,12 @@ QSys = R6::R6Class("QSys",
         token = "not set",
         worker_pool = list(),
         worker_stats = list(),
-        common_data_tracker = 0 # see if we can limit memory by manual gc()
+
+        send = function(..., serialize=TRUE) {
+            rzmq::send.socket(socket = private$socket,
+                              data = list(...),
+                              serialize = serialize)
+        }
     ),
 
     cloneable = FALSE

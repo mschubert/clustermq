@@ -55,7 +55,7 @@ worker = function(worker_id, master, memlimit) {
                 if (identical(token, msg$token)) {
 ##                    tt = proc.time()
 #Rprof(sprintf("rprof-%s.txt", worker_id), append=T)
-                    result = do.call(work_chunk, c(list(df=msg$chunk, wid=worker_id), common_data))
+                    result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
 ##                    message(sprintf("completed %i in %.3fs: ", length(result$result), (proc.time()-tt)[[3]]),
 #Rprof(NULL)
                     message(sprintf("completed %i in %s: ",
