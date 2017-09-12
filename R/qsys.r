@@ -13,7 +13,7 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, ports=6000:8000, master=NULL) {
-            private$zmq_context = rzmq::init.context()
+            private$zmq_context = rzmq::init.context(3L)
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("tcp://%s:%i",
@@ -83,7 +83,7 @@ QSys = R6::R6Class("QSys",
 
             private$token = paste(sample(letters, 5, TRUE), collapse="")
             common = c(list(id="DO_SETUP", token=private$token), l.)
-            private$common_data = serialize(common, NULL)
+            private$common_data = rzmq::init.message(common)
 
 #            message("\nargs: ", paste(names(pryr::named_dots(...)), collapse=","))
             message("\nnew common data, size: ", pryr::object_size(private$common_data))
@@ -94,7 +94,7 @@ QSys = R6::R6Class("QSys",
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
 
-            private$send(private$common_data, serialize=FALSE)
+            rzmq::send.message.object(private$socket, private$common_data)
             private$worker_pool[[worker_id]] = TRUE
         },
 
