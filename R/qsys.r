@@ -64,32 +64,12 @@ QSys = R6::R6Class("QSys",
         set_common_data = function(...) {
             l. = pryr::named_dots(...)
 
-            if ("fun" %in% names(l.)) {
-                message("\nFUNCTION")
-                message("function before .GlobalEnv: ", pryr::object_size(serialize(l.$fun, NULL)))
-                for (n in ls(environment(l.$fun)))
-                    message(n, ": ", pryr::object_size(serialize(get(n, envir=environment(l.$fun)), NULL)))
+            if ("fun" %in% names(l.))
                 environment(l.$fun) = .GlobalEnv
-                message("function after .GlobalEnv: ", pryr::object_size(serialize(l.$fun, NULL)))
-            }
-            if ("const" %in% names(l.)) {
-                message("\nCONST")
-                for (n in names(l.$const))
-                    message(n, ": ", pryr::object_size(serialize(l.$const[[n]], NULL)))
-
-                if ("data" %in% names(l.$const)) {
-                    message("\nCONST > DATA")
-                    for (n in names(l.$const$data))
-                        message(n, ": ", pryr::object_size(serialize(l.$const$data[[n]], NULL)))
-                }
-            }
 
             private$token = paste(sample(letters, 5, TRUE), collapse="")
             common = c(list(id="DO_SETUP", token=private$token), l.)
             private$common_data = rzmq::init.message(common)
-
-#            message("\nargs: ", paste(names(pryr::named_dots(...)), collapse=","))
-            message("\nnew common data, size: ", pryr::object_size(private$common_data))
         },
 
         # Send the data common to all workers, only serialize once
