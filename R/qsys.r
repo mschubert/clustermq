@@ -66,8 +66,11 @@ QSys = R6::R6Class("QSys",
 
             if ("fun" %in% names(l.)) {
                 message("\nFUNCTION")
+                message("function before .GlobalEnv: ", pryr::object_size(serialize(l.$fun, NULL)))
                 for (n in ls(environment(l.$fun)))
                     message(n, ": ", pryr::object_size(serialize(get(n, envir=environment(l.$fun)), NULL)))
+                environment(l.$fun) = .GlobalEnv
+                message("function after .GlobalEnv: ", pryr::object_size(serialize(l.$fun, NULL)))
             }
             if ("const" %in% names(l.)) {
                 message("\nCONST")
