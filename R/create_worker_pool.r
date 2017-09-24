@@ -6,7 +6,13 @@
 #' @param log_worker  Write a log file for each worker
 #' @return            An instance of the QSys class
 #' @export
-create_worker_pool = function(n_jobs, data=NULL, template=list(), log_worker=FALSE) {
+create_worker_pool = function(n_jobs, data=NULL, template=list(),
+		                      log_worker=FALSE, qsys_id=qsys_default) {
+    qsys = tryCatch(parent.env(environment())[[qsys_id]],
+        error = function(e) stop("QSys not found: ", sQuote(qsys_id)))
+    if ("setup" %in% ls(qsys))
+        qsys = qsys$setup()
+
     qsys = qsys$new(data=data)
     on.exit(qsys$cleanup)
 

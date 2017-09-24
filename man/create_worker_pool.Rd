@@ -5,7 +5,7 @@
 \title{Sets up workers for use in clustermq}
 \usage{
 create_worker_pool(n_jobs, data = NULL, template = list(),
-  log_worker = FALSE)
+  log_worker = FALSE, qsys_id = qsys_default)
 }
 \arguments{
 \item{n_jobs}{Number of jobs to submit}

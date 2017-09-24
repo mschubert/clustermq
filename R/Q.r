@@ -43,9 +43,11 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     seed = as.integer(seed)
 
     if (!is.null(workers)) {
+        qsys_id = class(workers)[1]
         n_jobs = workers$workers
         job_size = NULL
-    }
+    } else
+        qsys_id = qsys_default
 
     # check job number and memory
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
@@ -80,7 +82,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
 
         if (is.null(workers)) {
             qsys = create_worker_pool(n_jobs, data=data, template=template,
-                                      log_worker=log_worker)
+                                      log_worker=log_worker, qsys_id=qsys_default)
             on.exit(qsys$cleanup())
         } else {
             qsys = workers
