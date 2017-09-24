@@ -45,6 +45,12 @@ worker = function(worker_id, master, memlimit) {
                     message("WORKER_UP to redirect: ", msg$redirect)
                     msg = rzmq::receive.socket(data_socket)
                 }
+                need = c("id", "fun", "const", "export", "common_seed", "token")
+                if (!setequal(names(msg), need)) {
+                    msg = paste("wrong field names for DO_SETUP:",
+                                setdiff(names(msg), need))
+                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))
+                }
                 common_data = msg[c('fun', 'const', 'common_seed')]
                 list2env(msg$export, envir=.GlobalEnv)
                 token = msg$token
@@ -53,11 +59,7 @@ worker = function(worker_id, master, memlimit) {
             },
             "DO_CHUNK" = {
                 if (identical(token, msg$token)) {
-##                    tt = proc.time()
-#Rprof(sprintf("rprof-%s.txt", worker_id), append=T)
                     result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
-##                    message(sprintf("completed %i in %.3fs: ", length(result$result), (proc.time()-tt)[[3]]),
-#Rprof(NULL)
                     message(sprintf("completed %i in %s: ",
                                     length(result$result),
                                     paste(proc.time() - tt, collapse=":")),
