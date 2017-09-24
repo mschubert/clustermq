@@ -1,6 +1,4 @@
 send = function(sock, data) {
-
-
     rzmq::send.socket(sock, data)
 }
 
