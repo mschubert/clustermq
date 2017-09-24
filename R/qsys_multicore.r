@@ -13,10 +13,12 @@ MULTICORE = R6::R6Class("MULTICORE",
             values = super$submit_job(template=template, log_worker=log_worker)
             job_input = infuser::infuse(MULTICORE$template, values)
 			system(job_input, wait=FALSE)
+            #TODO: get pid, put in list, clean up in the end
         },
 
         cleanup = function(dirty=FALSE) {
-            #TODO: kill the processes here if dirty=TRUE
+            super$cleanup()
+            #TODO: kill the processes here if still running
         }
     )
 )

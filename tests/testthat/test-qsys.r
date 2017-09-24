@@ -26,3 +26,5 @@ test_that("seed reproducibility", {
     r2 = Q(fx, x=1:3, workers=w)
     expect_equal(r1, r2)
 })
+
+w$cleanup()
