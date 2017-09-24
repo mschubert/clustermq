@@ -46,16 +46,18 @@ worker = function(worker_id, master, memlimit) {
                     msg = rzmq::receive.socket(data_socket)
                 }
                 need = c("id", "fun", "const", "export", "common_seed", "token")
-                if (!setequal(names(msg), need)) {
+                if (setequal(names(msg), need)) {
+                    common_data = msg[c('fun', 'const', 'common_seed')]
+                    list2env(msg$export, envir=.GlobalEnv)
+                    token = msg$token
+                    message("token from msg: ", token)
+                    rzmq::send.socket(socket, data=list(id="WORKER_READY",
+                                      token=token, worker_id=worker_id))
+                } else {
                     msg = paste("wrong field names for DO_SETUP:",
                                 setdiff(names(msg), need))
                     rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))
                 }
-                common_data = msg[c('fun', 'const', 'common_seed')]
-                list2env(msg$export, envir=.GlobalEnv)
-                token = msg$token
-                message("token from msg: ", token)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token, worker_id=worker_id))
             },
             "DO_CHUNK" = {
                 if (identical(token, msg$token)) {

@@ -33,9 +33,19 @@ shutdown_worker = function(p, id="1") {
     Sys.sleep(0.5)
 }
 
-test_that("control flow", {
+test_that("sending common data", {
     p = start_worker()
     send_common()
+    shutdown_worker(p)
+})
+
+test_that("invalid common data", {
+    p = start_worker()
+
+    send(socket, list(id="DO_SETUP", invalid=TRUE))
+    msg = recv(socket)
+    testthat::expect_equal(msg$id, "WORKER_ERROR")
+
     shutdown_worker(p)
 })
 
@@ -62,3 +72,15 @@ test_that("do work", {
 
     shutdown_worker(p)
 })
+
+test_that("token mismatch", {
+    p = start_worker()
+    send_common()
+
+    # should probably also test for error when DO_CHUNK but no chunk provided
+    send(socket, list(id="DO_CHUNK", chunk=data.frame(x=5), token="token2"))
+    msg = recv(socket)
+    testthat::expect_equal(msg$id, "WORKER_ERROR")
+
+    shutdown_worker(p)
+}
