@@ -83,4 +83,4 @@ test_that("token mismatch", {
     testthat::expect_equal(msg$id, "WORKER_ERROR")
 
     shutdown_worker(p)
-}
+})

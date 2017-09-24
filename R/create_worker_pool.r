@@ -4,6 +4,7 @@
 #' @param data        Set common data (function, constant args, seed)
 #' @param template    A named list of values to fill in template
 #' @param log_worker  Write a log file for each worker
+#' @param qsys_id     Character string of QSys class to use
 #' @return            An instance of the QSys class
 #' @export
 create_worker_pool = function(n_jobs, data=NULL, template=list(),

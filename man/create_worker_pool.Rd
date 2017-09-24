@@ -15,6 +15,8 @@ create_worker_pool(n_jobs, data = NULL, template = list(),
 \item{template}{A named list of values to fill in template}
 
 \item{log_worker}{Write a log file for each worker}
+
+\item{qsys_id}{Character string of QSys class to use}
 }
 \value{
 An instance of the QSys class
