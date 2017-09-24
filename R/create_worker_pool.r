@@ -9,8 +9,7 @@
 #' @export
 create_worker_pool = function(n_jobs, data=NULL, template=list(),
 		                      log_worker=FALSE, qsys_id=qsys_default) {
-    qsys = tryCatch(parent.env(environment())[[qsys_id]],
-        error = function(e) stop("QSys not found: ", sQuote(qsys_id)))
+    qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     if ("setup" %in% ls(qsys))
         qsys = qsys$setup()
 
