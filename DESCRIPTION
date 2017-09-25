@@ -25,6 +25,7 @@ Encoding: UTF-8
 Suggests:
     dplyr,
     knitr,
+    parallel,
     testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1

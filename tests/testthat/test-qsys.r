@@ -1,4 +1,5 @@
 context("qsys")
+skip_on_os("windows")
 
 test_that("control flow", {
     fx = function(x) x*2

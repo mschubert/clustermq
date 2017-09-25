@@ -11,9 +11,11 @@ MULTICORE = R6::R6Class("MULTICORE",
 
         submit_job = function(template=list(), log_worker=FALSE) {
             values = super$submit_job(template=template, log_worker=log_worker)
-            job_input = infuser::infuse(MULTICORE$template, values)
-			system(job_input, wait=FALSE)
-            #TODO: get pid, put in list, clean up in the end
+#            job_input = infuser::infuse(MULTICORE$template, values)
+#            system(job_input, wait=FALSE)
+#            #TODO: get pid, put in list, clean up in the end
+            cmd = Quote(clustermq:::worker(values$job_name, values$master, values$memory))
+            parallel::mcparallel(cmd)
         },
 
         cleanup = function(dirty=FALSE) {
