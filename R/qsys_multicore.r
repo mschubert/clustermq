@@ -20,10 +20,7 @@ MULTICORE = R6::R6Class("MULTICORE",
 #                                  master = values$master,
 #                                  memlimit = values$memory)
 
-            cmd = Quote(clustermq:::worker(values$job_name,
-                                           values$master,
-                                           values$memory))
-
+            cmd = Quote(clustermq:::worker(values$master, values$memory))
             for (i in seq_len(n_jobs))
                 parallel::mcparallel(cmd)
         },

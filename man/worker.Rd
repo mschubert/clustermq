@@ -4,11 +4,9 @@
 \alias{worker}
 \title{R worker submitted as cluster job}
 \usage{
-worker(worker_id, master, memlimit)
+worker(master, memlimit)
 }
 \arguments{
-\item{worker_id}{The ID of the worker (usually just numbered)}
-
 \item{master}{The master address (tcp://ip:port)}
 
 \item{memlimit}{Maximum memory before throwing an error}

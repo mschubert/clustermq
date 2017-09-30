@@ -43,4 +43,4 @@ SLURM$template = paste(sep="\n",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
     "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")
+    "    'clustermq:::worker(\"{{ master }}\", {{ memory | 4096 }})'")

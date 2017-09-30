@@ -5,10 +5,10 @@ socket = rzmq::init.socket(context, "ZMQ_REP")
 rzmq::bind.socket(socket, "tcp://*:55443")
 Sys.sleep(0.5)
 
-start_worker = function(id="1", url="tcp://localhost:55443") {
+start_worker = function(url="tcp://localhost:55443") {
     skip_on_os("windows")
 
-    p = parallel::mcparallel(worker(id, url, 1024))
+    p = parallel::mcparallel(worker(url, 1024))
     msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
     p
@@ -21,12 +21,11 @@ send_common = function(fun=function(x) x) {
     testthat::expect_equal(msg$id, "WORKER_READY")
 }
 
-shutdown_worker = function(p, id="1") {
+shutdown_worker = function(p) {
     send(socket, list(id="WORKER_STOP"))
     msg = recv(socket)
     send(socket, list()) # already shut down
     testthat::expect_equal(msg$id, "WORKER_DONE")
-    testthat::expect_equal(msg$worker_id, id)
     testthat::expect_is(msg$time, "proc_time")
     testthat::expect_is(msg$calls, "numeric")
     parallel::mccollect(p)
