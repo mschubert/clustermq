@@ -69,8 +69,6 @@ or else the package will use whatever scheduler it can find.
 Usage
 -----
 
-There is a list of examples in [the vignette](vignettes/clustermq.Rmd#examples).
-
 The following arguments are supported by `Q`:
 
  * `fun` - The function to call. This needs to be self-sufficient (because it
@@ -80,18 +78,8 @@ The following arguments are supported by `Q`:
  * `const` - A named list of non-iterated arguments passed to `fun`
  * `export` - A named list of objects to export to the worker environment
 
-Behavior can further be fine-tuned using the options below:
-
- * `fail_on_error` - Whether to stop if one of the calls returns an error
- * `seed` - A common seed that is combined with job number for reproducible results
- * `template` - Named list of template values to fill
- * `memory` - Shorthand for `template=list(memory=...)`
- * `n_jobs` - Number of jobs to submit for all the function calls
- * `job_size` - Number of function calls per job. If used in combination with
-        `n_jobs` the latter will be overall limit
- * `chunk_size` - How many calls a worker should process before reporting back
-        to the master. Default: every worker will report back 100 times total
- * `wait_time` - How long the master should wait between checking for results
+There is a list of examples and further arguments in
+[the vignette](vignettes/clustermq.Rmd#examples).
 
 Comparison to other packages
 ----------------------------
