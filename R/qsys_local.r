@@ -9,7 +9,7 @@ LOCAL = R6::R6Class("LOCAL",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
+        submit_jobs = function(n_jobs=0, template=list(), log_worker=FALSE) {
         },
 
         cleanup = function(dirty=FALSE) {

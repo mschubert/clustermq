@@ -41,7 +41,7 @@ QSys = R6::R6Class("QSys",
         #   master    : The rzmq address of the qsys instance we listen on
         #   template  : Named list of template values
         #   log_file  : File name to log workers to
-        submit_job = function(template=list(), log_worker=FALSE) {
+        submit_jobs = function(template=list(), log_worker=FALSE) {
             # if not called from derived
             # stop("Derived class needs to overwrite submit_job()")
 
@@ -50,8 +50,8 @@ QSys = R6::R6Class("QSys",
 
             private$job_num = private$job_num + 1
             values = list(
-                job_name = paste0("cmq", private$port, "-", private$job_num),
-                job_group = paste("/cmq", Sys.info()[['nodename']], private$port, sep="/"),
+                job_name = paste0("cmq", private$port),
+                job_group = paste("/cmq"),
                 master = private$master
             )
             if (log_worker)

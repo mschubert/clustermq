@@ -43,7 +43,7 @@ SSH = R6::R6Class("SSH",
             self$set_common_data(id="DO_SETUP", redirect=msg$data_url)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             if (is.null(private$master))
                 stop("Need to call listen_socket() first")
 
@@ -58,7 +58,8 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$proxy_socket, data = list(id="PROXY_CMD", exec=call))
+            rzmq::send.socket(private$proxy_socket,
+                              data = list(id="PROXY_CMD", exec=call))
 
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")

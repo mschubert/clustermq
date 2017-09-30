@@ -9,8 +9,8 @@ SGE = R6::R6Class("SGE",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
-            values = super$submit_job(template=template, log_worker=log_worker)
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            values = super$submit_jobs(template=template, log_worker=log_worker)
             job_input = infuser::infuse(SGE$template, values)
             system("qsub", input=job_input, ignore.stdout=TRUE)
         },
@@ -38,6 +38,7 @@ SGE$template = paste(sep="\n",
     "#$ -o {{ log_file | /dev/null }}   # output file",
     "#$ -cwd                            # use pwd as work dir",
     "#$ -V                              # use environment variable",
+    "#$ -t 1-{{ n_jobs }}               # submit jobs as array",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
     "R --no-save --no-restore -e \\",

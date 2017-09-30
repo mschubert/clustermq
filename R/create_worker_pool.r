@@ -17,12 +17,7 @@ create_worker_pool = function(n_jobs, data=NULL, template=list(),
     on.exit(qsys$cleanup)
 
     message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-    pb = utils::txtProgressBar(min=0, max=n_jobs, style=3)
-    for (j in 1:n_jobs) {
-        qsys$submit_job(template=template, log_worker=log_worker)
-        utils::setTxtProgressBar(pb, j)
-    }
-    close(pb)
+    qsys$submit_jobs(n_jobs, template=template, log_worker=log_worker)
 
     on.exit()
     qsys

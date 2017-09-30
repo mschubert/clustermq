@@ -9,8 +9,9 @@ SLURM = R6::R6Class("SLURM",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
-            values = super$submit_job(template=template, log_worker=log_worker)
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template$n_jobs = n_jobs
+            values = super$submit_jobs(template=template, log_worker=log_worker)
             job_input = infuser::infuse(SLURM$template, values)
             system("sbatch", input=job_input, ignore.stdout=TRUE)
         },
@@ -33,10 +34,12 @@ SLURM$setup = function() {
 
 # Static method, overwritten in qsys w/ user option
 SLURM$template = paste(sep="\n",
-	"#SBATCH --job-name={{ job_name }}",
-	"#SBATCH --output={{ log_file | /dev/null }}",
-	"#SBATCH --error={{ log_file | /dev/null }}",
-	"#SBATCH --mem-per-cpu={{ memory | 4096 }}",
+    "#!/bin/sh",
+    "#SBATCH --job-name={{ job_name }}",
+    "#SBATCH --output={{ log_file | /dev/null }}",
+    "#SBATCH --error={{ log_file | /dev/null }}",
+    "#SBATCH --mem-per-cpu={{ memory | 4096 }}",
+    "#SBATCH --array=1-{{ n_jobs }}",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
     "R --no-save --no-restore -e \\",

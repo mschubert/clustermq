@@ -9,19 +9,25 @@ LSF = R6::R6Class("LSF",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
-            values = super$submit_job(template=template, log_worker=log_worker)
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template$n_jobs = n_jobs
+            values = super$submit_jobs(template=template, log_worker=log_worker)
             job_input = infuser::infuse(LSF$template, values)
+            private$job_id = values$job_name
             system("bsub", input=job_input, ignore.stdout=TRUE)
         },
 
         cleanup = function() {
             super$cleanup()
             dirty = self$workers_running > 0
-            system(paste("bkill -g", private$job_group, "0"),
+            system(paste("bkill", private$job_id),
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
+
+    private = list(
+        job_id = NULL
+    )
 )
 
 # Static method, process scheduler options and return updated object
@@ -34,7 +40,7 @@ LSF$setup = function() {
 
 # Static method, overwritten in qsys w/ user option
 LSF$template = paste(sep="\n",
-    "#BSUB-J {{ job_name }}                    # name of the job / array jobs",
+    "#BSUB-J {{ job_name }}[1-{{ n_jobs }}]    # name of the job / array jobs",
     "#BSUB-g {{ job_group | /rzmq }}           # group the job belongs to",
     "#BSUB-o {{ log_file | /dev/null }}        # stdout + stderr",
     "#BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes",
