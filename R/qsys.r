@@ -73,12 +73,12 @@ QSys = R6::R6Class("QSys",
         },
 
         # Send the data common to all workers, only serialize once
-        send_common_data = function(worker_id) {
+        send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
 
             rzmq::send.message.object(private$socket, private$common_data)
-            private$worker_pool[[worker_id]] = TRUE
+            private$workers_up = private$workers_up + 1
         },
 
         # Send iterated data to one worker
@@ -108,8 +108,8 @@ QSys = R6::R6Class("QSys",
 
         disconnect_worker = function(msg) {
             private$send()
-            private$worker_pool[[msg$worker_id]] = NULL
-            private$worker_stats[[msg$worker_id]] = msg
+            private$workers_up = private$workers_up - 1
+            private$worker_stats = c(private$worker_stats, list(msg))
         },
 
         # Make sure all resources are closed properly
@@ -144,7 +144,7 @@ QSys = R6::R6Class("QSys",
         url = function() private$listen,
         sock = function() private$socket,
         workers = function() private$job_num,
-        workers_running = function() length(private$worker_pool),
+        workers_running = function() private$workers_up,
         data_token = function() private$token
     ),
 
@@ -159,7 +159,7 @@ QSys = R6::R6Class("QSys",
         job_num = 0,
         common_data = NULL,
         token = "not set",
-        worker_pool = list(),
+        workers_up = 0,
         worker_stats = list(),
 
         send = function(..., serialize=TRUE) {

@@ -2,10 +2,9 @@
 #'
 #' Do not call this manually, the master will do that
 #'
-#' @param worker_id  The ID of the worker (usually just numbered)
 #' @param master     The master address (tcp://ip:port)
 #' @param memlimit   Maximum memory before throwing an error
-worker = function(worker_id, master, memlimit) {
+worker = function(master, memlimit) {
     print(master)
     print(memlimit)
 
@@ -17,7 +16,7 @@ worker = function(worker_id, master, memlimit) {
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id="WORKER_UP", worker_id=worker_id))
+    rzmq::send.socket(socket, data=list(id="WORKER_UP"))
 	message("WORKER_UP to: ", master)
 
     start_time = proc.time()
@@ -52,7 +51,7 @@ worker = function(worker_id, master, memlimit) {
                     token = msg$token
                     message("token from msg: ", token)
                     rzmq::send.socket(socket, data=list(id="WORKER_READY",
-                                      token=token, worker_id=worker_id))
+                                      token=token))
                 } else {
                     msg = paste("wrong field names for DO_SETUP:",
                                 setdiff(names(msg), need))
@@ -66,8 +65,7 @@ worker = function(worker_id, master, memlimit) {
                                     length(result$result),
                                     paste(proc.time() - tt, collapse=":")),
                                     paste(rownames(msg$chunk), collapse=", "))
-                    send_data = c(list(id="WORKER_READY", token=token,
-                                  worker_id=worker_id), result)
+                    send_data = c(list(id="WORKER_READY", token=token), result)
                     rzmq::send.socket(socket, send_data)
                     counter = counter + length(result)
                     print(pryr::mem_used())
@@ -79,8 +77,7 @@ worker = function(worker_id, master, memlimit) {
             "WORKER_WAIT" = {
                 message(sprintf("waiting %.2fs", msg$wait))
                 Sys.sleep(msg$wait)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY",
-                                  token=token, worker_id=worker_id))
+                rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token))
             },
             "WORKER_STOP" = {
                 break
@@ -93,7 +90,6 @@ worker = function(worker_id, master, memlimit) {
     message("shutting down worker")
     rzmq::send.socket(socket, data = list(
         id = "WORKER_DONE",
-        worker_id = worker_id,
         time = run_time,
         calls = counter
     ))

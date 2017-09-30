@@ -4,7 +4,7 @@
 \name{MULTICORE}
 \alias{MULTICORE}
 \title{Process on multiple cores on one machine}
-\format{An object of class \code{R6ClassGenerator} of length 25.}
+\format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 MULTICORE
 }

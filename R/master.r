@@ -33,7 +33,6 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
     pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
 
     # main event loop
-#    start_time = proc.time()
     while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
         # wait for results only longer if we don't have all data yet
         if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
@@ -49,7 +48,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
 
         switch(msg$id,
             "WORKER_UP" = {
-                qsys$send_common_data(msg$worker_id)
+                qsys$send_common_data()
             },
             "WORKER_READY" = {
                 # process the result data if we got some
@@ -67,7 +66,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                 }
 
                 if (!shutdown && msg$token != qsys$data_token) { #TODO: could remove WORKER_UP with this
-                    qsys$send_common_data(msg$worker_id)
+                    qsys$send_common_data()
                 } else if (!shutdown && submit_index[1] <= n_calls) {
                     # if we have work, send it to the worker
                     submit_index = submit_index[submit_index <= n_calls]
