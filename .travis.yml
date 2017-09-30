@@ -1,12 +1,13 @@
 before_install: 
-- sudo apt-get install libzmq3-dev
+ - sudo apt-get install libzmq3-dev
 # - sudo wget -P /usr/local/bin
 # https://bitbucket.org/dalloliogm/fake-qsub/raw/default/{b,q}sub
 # - sudo chmod a+x /usr/local/bin/{b,q}sub
-
-install:
- - R -e "install.packages('devtools')" \
-     -e "devtools::install_github('mschubert/rzmq',ref='msgreuse')"
+ - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
+ - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+ - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
+ - echo "Host localhost
+    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config 
 
 language: r
 
