@@ -12,7 +12,10 @@ SGE = R6::R6Class("SGE",
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             values = super$submit_jobs(template=template, log_worker=log_worker)
             job_input = infuser::infuse(SGE$template, values)
-            system("qsub", input=job_input, ignore.stdout=TRUE)
+
+            success = system("qsub", input=job_input, ignore.stdout=TRUE)
+            if (success != 0)
+                stop("Job submission failed with error code ", success)
         },
 
         cleanup = function() {

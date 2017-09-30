@@ -14,7 +14,10 @@ LSF = R6::R6Class("LSF",
             values = super$submit_jobs(template=template, log_worker=log_worker)
             job_input = infuser::infuse(LSF$template, values)
             private$job_id = values$job_name
-            system("bsub", input=job_input, ignore.stdout=TRUE)
+
+            success = system("bsub", input=job_input, ignore.stdout=TRUE)
+            if (success != 0)
+                stop("Job submission failed with error code ", success)
         },
 
         cleanup = function() {

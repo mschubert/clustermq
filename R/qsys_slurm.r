@@ -13,7 +13,10 @@ SLURM = R6::R6Class("SLURM",
             template$n_jobs = n_jobs
             values = super$submit_jobs(template=template, log_worker=log_worker)
             job_input = infuser::infuse(SLURM$template, values)
-            system("sbatch", input=job_input, ignore.stdout=TRUE)
+
+            success = system("sbatch", input=job_input, ignore.stdout=TRUE)
+            if (success != 0)
+                stop("Job submission failed with error code ", success)
         },
 
         cleanup = function() {
