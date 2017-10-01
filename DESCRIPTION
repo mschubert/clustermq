@@ -16,11 +16,9 @@ Imports:
     pryr,
     purrr,
     R6,
-    rzmq (>= 0.9.2),
+    rzmq (>= 0.9.3),
     tibble,
     utils
-Remotes:
-    ropensci/rzmq
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
