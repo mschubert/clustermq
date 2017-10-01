@@ -3,10 +3,8 @@
 #' Do not call this manually, the master will do that
 #'
 #' @param master     The master address (tcp://ip:port)
-#' @param memlimit   Maximum memory before throwing an error
-worker = function(master, memlimit) {
+worker = function(master) {
     print(master)
-    print(memlimit)
 
     # connect to master
 #    assign("zmq_context", rzmq::init.context(), envir=.GlobalEnv)

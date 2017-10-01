@@ -8,7 +8,7 @@ Sys.sleep(0.5)
 start_worker = function(url="tcp://localhost:55443") {
     skip_on_os("windows")
 
-    p = parallel::mcparallel(worker(url, 1024))
+    p = parallel::mcparallel(worker(url))
     msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
     p

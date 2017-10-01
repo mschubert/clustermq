@@ -44,5 +44,4 @@ SGE$template = paste(sep="\n",
     "#$ -t 1-{{ n_jobs }}               # submit jobs as array",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ master }}\", {{ memory | 4096 }})'")
+    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"'")
