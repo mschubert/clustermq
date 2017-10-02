@@ -20,7 +20,9 @@ test_that("control flow between proxy and master", {
     msg = recv(socket)
     expect_equal(msg$id, "PROXY_READY")
     expect_true("data_url" %in% names(msg))
+    expect_true("token" %in% names(msg))
     proxy = msg$data_url
+    token = msg$token
 
     # command execution
     cmd = methods::Quote(Sys.getpid())
@@ -36,6 +38,7 @@ test_that("control flow between proxy and master", {
     send(worker, list(id="WORKER_UP"))
     msg = recv(worker)
     testthat::expect_equal(msg$id, "DO_SETUP")
+    testthat::expect_equal(msg$token, token)
     testthat::expect_equal(msg[names(common_data)], common_data)
 
     # shutdown
