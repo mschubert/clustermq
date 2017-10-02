@@ -118,6 +118,7 @@ QSys = R6::R6Class("QSys",
     ),
 
     active = list(
+        id = function() private$port,
         url = function() private$listen,
         sock = function() private$socket,
         workers = function() private$job_num,
