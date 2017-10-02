@@ -51,5 +51,5 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     call_args$df = as.data.frame(do.call(tibble::data_frame, iter),
                                  stringsAsFactors=FALSE)
 
-    do.call(Qrows, call_args)
+    do.call(Q_rows, call_args)
 }

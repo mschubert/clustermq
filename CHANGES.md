@@ -5,7 +5,7 @@
   * Objects in the function environment must now be `export`ed explicitly (#47)
   * Messages on the master are now processed in threads (#42)
   * Added `multicore` qsys using the `parallel` package (#49)
-  * New function `Qrows` using data.frame rows as iterated arguments (#43)
+  * New function `Q_rows` using data.frame rows as iterated arguments (#43)
   * Jobs will now be submitted as array if possible
 
 * 0.7.0
