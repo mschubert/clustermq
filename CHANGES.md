@@ -1,9 +1,11 @@
 * 0.8.0
-  * `common_data` is no longer copied each time it is sent (#19)
-  * `create_worker_pool` is now separated from `Q`, enabling worker reuse (#45)
+  * Templates changed: `clustermq:::worker` now takes only master as argument
+  * Fix a bug where copies of `common_data` are not collected by gc (#19)
+  * Creating `workers` is now separated from `Q`, enabling worker reuse (#45)
   * Objects in the function environment must now be `export`ed explicitly (#47)
   * Messages on the master are now processed in threads (#42)
   * Added `multicore` qsys using the `parallel` package (#49)
+  * New function `Qrows` using data.frame rows as iterated arguments (#43)
   * Jobs will now be submitted as array if possible
 
 * 0.7.0
