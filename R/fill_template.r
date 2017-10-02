@@ -1,0 +1,18 @@
+#' Fill a QSys template will values supplied
+#'
+#' @param template    Job submission template
+#' @param master      The address of the master; this is required
+#' @param values      Values as named list
+#' @param ...         Additional values as key-value pairs (take precendence)
+#' @param log_worker  Whether to log worker (default: FALSE)
+#' @return            A filled template
+fill_template = function(template, master, values=list(), ..., log_worker=FALSE) {
+    values = utils::modifyList(values, list(...))
+        values$job_name = paste0("cmq", sub("^[^:]://[^:]:", "", master))
+    values$master = master
+    if (log_worker)
+        values$log_file = paste0(values$job_name, ".log")
+
+    withCallingHandlers(infuser::infuse(template, values),
+        warning = function(w) stop(conditionMessage(w), call.=FALSE))
+}

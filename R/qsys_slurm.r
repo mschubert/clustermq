@@ -11,12 +11,14 @@ SLURM = R6::R6Class("SLURM",
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
-            values = super$submit_jobs(template=template, log_worker=log_worker)
-            job_input = infuser::infuse(SLURM$template, values)
+            filled = fill_template(template=LSF$template, master=private$master,
+                                   values=template, log_worker=log_worker)
 
-            success = system("sbatch", input=job_input, ignore.stdout=TRUE)
-            if (success != 0)
+            success = system("sbatch", input=filled, ignore.stdout=TRUE)
+            if (success != 0) {
+                print(filled)
                 stop("Job submission failed with error code ", success)
+            }
         },
 
         cleanup = function() {
@@ -45,4 +47,4 @@ SLURM$template = paste(sep="\n",
     "#SBATCH --array=1-{{ n_jobs }}",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"'")
+    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"')")

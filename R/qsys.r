@@ -30,38 +30,15 @@ QSys = R6::R6Class("QSys",
                 do.call(self$set_common_data, data)
         },
 
-        # Provides values for job submission template
+        # Submits jobs to the cluster system
         #
-        # Overwrite this in each derived class
-        #
-        # @param memory      The amount of memory (megabytes) to request
-        # @param log_worker  Create a log file for each worker
-        # @return  A list with values:
-        #   job_name  : An identifier for the current job
-        #   job_group : An common identifier for all jobs handled by this qsys
-        #   master    : The rzmq address of the qsys instance we listen on
-        #   template  : Named list of template values
-        #   log_file  : File name to log workers to
-        submit_jobs = function(template=list(), log_worker=FALSE) {
-            # if not called from derived
-            # stop("Derived class needs to overwrite submit_job()")
-
-            if (!identical(grepl("://[^:]+:[0-9]+", private$master), TRUE))
-                stop("Need to initialize QSys first")
-
-            private$job_num = private$job_num + 1
-            values = list(
-                job_name = paste0("cmq", private$port),
-                job_group = paste("/cmq"),
-                master = private$master
-            )
-            if (log_worker)
-                values$log_file = paste0(values$job_name, ".log")
-
-            private$job_group = values$job_group
-            utils::modifyList(template, values)
+        # This needs to be overwritten in the derived class and only
+        # produces an error if called directly
+        submit_jobs = function(...) {
+            stop(sQuote(submit_jobs), " must be overwritten")
         },
 
+        # Sets the common data as an rzmq message object
         set_common_data = function(...) {
             l. = pryr::named_dots(...)
 
@@ -87,6 +64,7 @@ QSys = R6::R6Class("QSys",
             private$send(id="DO_CHUNK", token=private$token, ...)
         },
 
+        # Wait for a total of 50 ms
         send_wait = function() {
             private$send(id="WORKER_WAIT", wait=0.05*self$workers_running)
         },

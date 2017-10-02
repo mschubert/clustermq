@@ -10,12 +10,15 @@ SGE = R6::R6Class("SGE",
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
-            values = super$submit_jobs(template=template, log_worker=log_worker)
-            job_input = infuser::infuse(SGE$template, values)
+            template$n_jobs = n_jobs
+            filled = fill_template(template=LSF$template, master=private$master,
+                                   values=template, log_worker=log_worker)
 
-            success = system("qsub", input=job_input, ignore.stdout=TRUE)
-            if (success != 0)
+            success = system("qsub", input=filled, ignore.stdout=TRUE)
+            if (success != 0) {
+                print(filled)
                 stop("Job submission failed with error code ", success)
+            }
         },
 
         cleanup = function() {
@@ -44,4 +47,4 @@ SGE$template = paste(sep="\n",
     "#$ -t 1-{{ n_jobs }}               # submit jobs as array",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"'")
+    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"')")

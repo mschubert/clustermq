@@ -10,15 +10,11 @@ MULTICORE = R6::R6Class("MULTICORE",
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
-            values = super$submit_jobs(template=template, log_worker=log_worker)
-
 #            # create cluster and start worker on every node
 #            private$cluster = parallel::makeCluster(n_jobs)
 #            parallel::clusterCall(cl = private$cluster,
 #                                  fun = clustermq:::worker,
-#                                  worker_id = values$job_name,
-#                                  master = values$master,
-#                                  memlimit = values$memory)
+#                                  master = values$master)
 
             cmd = Quote(clustermq:::worker(values$master))
             for (i in seq_len(n_jobs))
