@@ -67,7 +67,6 @@ worker = function(master) {
                     send_data = c(list(id="WORKER_READY", token=token), result)
                     rzmq::send.socket(socket, send_data)
                     counter = counter + length(result)
-                    print(pryr::mem_used())
                 } else {
                     msg = paste("mismatch chunk & common data", token, msg$token)
                     rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))

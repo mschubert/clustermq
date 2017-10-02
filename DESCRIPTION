@@ -13,7 +13,6 @@ Depends:
 Imports:
     infuser,
     narray,
-    pryr,
     purrr,
     R6,
     rzmq (>= 0.9.3),
