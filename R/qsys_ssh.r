@@ -1,6 +1,6 @@
-#' LSF scheduler functions
+#' SSH scheduler functions
 #'
-#' Derives from QSys to provide LSF-specific functions
+#' Derives from QSys to provide SSH-specific functions
 SSH = R6::R6Class("SSH",
     inherit = QSys,
 
@@ -40,7 +40,8 @@ SSH = R6::R6Class("SSH",
             if (msg$id != "PROXY_READY")
                 stop("Sending failed")
 
-            self$set_common_data(id="DO_SETUP", redirect=msg$data_url)
+            self$set_common_data(id="DO_SETUP", redirect=msg$data_url,
+                                 token = msg$token)
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {

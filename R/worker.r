@@ -29,7 +29,8 @@ worker = function(master) {
         events = rzmq::poll.socket(list(socket), list("read"), timeout=3600)
         if (events[[1]]$read) {
             msg = rzmq::receive.socket(socket)
-            message(sprintf("received after %.3fs: %s", (proc.time()-tt)[[3]], msg$id))
+            message(sprintf("received after %.3fs: %s",
+                            (proc.time()-tt)[[3]], msg$id))
         } else
             stop("Timeout reached, terminating")
 

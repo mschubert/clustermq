@@ -40,14 +40,23 @@ QSys = R6::R6Class("QSys",
 
         # Sets the common data as an rzmq message object
         set_common_data = function(...) {
-            l. = pryr::named_dots(...)
+            args = list(...)
+            for (n in names(args)) {
+                obj = args[[n]]
+                if (is.call(obj) || is.name(obj))
+                    args[[n]] = eval(obj, envir=parent.frame())
+            }
 
-            if ("fun" %in% names(l.))
-                environment(l.$fun) = .GlobalEnv
+            if ("fun" %in% names(args))
+                environment(args$fun) = .GlobalEnv
 
-            private$token = paste(sample(letters, 5, TRUE), collapse="")
-            common = c(list(id="DO_SETUP", token=private$token), l.)
-            private$common_data = rzmq::init.message(common)
+            if ("token" %in% names(args))
+                private$token = args$token
+            else {
+                private$token = paste(sample(letters, 5, TRUE), collapse="")
+                args$token = private$token
+            }
+            private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
         },
 
         # Send the data common to all workers, only serialize once
