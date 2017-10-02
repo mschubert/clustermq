@@ -18,7 +18,6 @@
 #'                        defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size      Number of function calls to chunk together
 #'                        defaults to 100 chunks per worker or max. 10 kb per chunk
-#' @param qsys_id         Character string of QSys class to use
 #' @return                A list of whatever `fun` returned
 #' @export
 #'
@@ -37,7 +36,7 @@
 Q = function(fun, ..., const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=-1, fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, wait_time=NA, chunk_size=NA, qsys_id=qsys_default) {
+        log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     fun = match.fun(fun)
     iter = Q_check(fun, list(...), const, split_array_by)
@@ -48,7 +47,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         n_jobs = workers$workers
         job_size = NULL
     } else
-        qsys_id = toupper(qsys_id)
+        qsys_id = toupper(qsys_default)
 
     # check job number and memory
     if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
@@ -82,8 +81,8 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         data = list(fun=fun, const=const, export=export, common_seed=seed)
 
         if (is.null(workers)) {
-            qsys = create_worker_pool(n_jobs, data=data, template=template,
-                                      log_worker=log_worker, qsys_id=qsys_id)
+            qsys = workers(n_jobs, data=data, reuse=FALSE, template=template,
+                           log_worker=log_worker)
             on.exit(qsys$cleanup())
         } else {
             qsys = workers
@@ -91,6 +90,6 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
         }
 
         master(qsys=qsys, iter=call_index, fail_on_error=fail_on_error,
-               wait_time=wait_time, chunk_size=chunk_size, cleanup=is.null(workers))
+               wait_time=wait_time, chunk_size=chunk_size)
     }
 }

@@ -7,8 +7,7 @@
 Q(fun, ..., const = list(), export = list(), seed = 128965,
   memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
   split_array_by = -1, fail_on_error = TRUE, workers = NULL,
-  log_worker = FALSE, wait_time = NA, chunk_size = NA,
-  qsys_id = qsys_default)
+  log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{fun}{A function to call}
@@ -43,8 +42,6 @@ defaults to 1/sqrt(number_of_functon_calls)}
 
 \item{chunk_size}{Number of function calls to chunk together
 defaults to 100 chunks per worker or max. 10 kb per chunk}
-
-\item{qsys_id}{Character string of QSys class to use}
 }
 \value{
 A list of whatever `fun` returned

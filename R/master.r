@@ -17,9 +17,8 @@
 #'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
-#' @param cleanup        After processing, shut down workers or keep them
 #' @return               A list of whatever `fun` returned
-master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, cleanup=TRUE) {
+master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(list(NULL), n_calls)
@@ -80,7 +79,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA, c
                         chunk_size = max(cs, 1)
                         submit_index = submit_index[1:chunk_size]
                     }
-                } else if (!shutdown && cleanup == FALSE) {
+                } else if (!shutdown && qsys$reusable) {
                     qsys$send_wait()
                     if (length(jobs_running) == 0)
                         break

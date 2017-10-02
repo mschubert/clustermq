@@ -4,8 +4,7 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(qsys, iter, fail_on_error = TRUE, wait_time = NA, chunk_size = NA,
-  cleanup = TRUE)
+master(qsys, iter, fail_on_error = TRUE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{qsys}{Instance of QSys object}
@@ -19,8 +18,6 @@ defaults to 1/sqrt(number_of_functon_calls)}
 
 \item{chunk_size}{Number of function calls to chunk together
 defaults to 100 chunks per worker or max. 500 kb per chunk}
-
-\item{cleanup}{After processing, shut down workers or keep them}
 }
 \value{
 A list of whatever `fun` returned
