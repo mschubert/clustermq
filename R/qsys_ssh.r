@@ -18,7 +18,7 @@ SSH = R6::R6Class("SSH",
             ctl_tunnel = sprintf("%i:localhost:%i", remote_port[1], local_port)
             job_tunnel = sprintf("%i:localhost:%i", remote_port[2], private$port)
             rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::proxy(ctl=%i, job=%i)' > %s 2>&1",
+                           'clustermq:::ssh_proxy(ctl=%i, job=%i)' > %s 2>&1",
                            remote_port[1], remote_port[2],
                            getOption("clustermq.ssh.log", default="/dev/null"))
             ssh_cmd = sprintf('ssh -f -R %s -R %s %s "%s"',

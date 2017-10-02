@@ -2,9 +2,10 @@
 #'
 #' Do not call this manually, the SSH qsys will do that
 #'
-#' @param ctl  The port to connect to the master for proxy control
-#' @param job  The port to connect to the master for job control
-proxy = function(ctl, job) {
+#' @param ctl      The port to connect to the master for proxy control
+#' @param job      The port to connect to the master for job control
+#' @param qsys_id  Character string of QSys class to use
+ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     master_ctl = sprintf("tcp://localhost:%i", ctl)
     master_job = sprintf("tcp://localhost:%i", job)
     context = rzmq::init.context()
@@ -32,9 +33,14 @@ proxy = function(ctl, job) {
     msg = rzmq::receive.socket(ctl_socket)
     message("received common data:",
             utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
+
+    # set up qsys on cluster
+    qsys = get(toupper(qsys_id), envir=parent.env(environment()))
+    if ("setup" %in% ls(qsys))
+        qsys = qsys$setup()
     qsys = qsys$new(data=msg, master=net_fwd)
     rzmq::send.socket(ctl_socket,
-                      data = list(id="PROXY_READY", data_url=qsys$url)) # url$data w/ mod
+                      data = list(id="PROXY_READY", data_url=qsys$url))
     message("sent PROXY_READY to master ctl")
 
     while(TRUE) {
@@ -70,7 +76,7 @@ proxy = function(ctl, job) {
             message("received: ", msg)
             switch(msg$id,
                 "WORKER_UP" = {
-                    qsys$send_common_data(msg$worker_id)
+                    qsys$send_common_data()
                 }
             )
         }
