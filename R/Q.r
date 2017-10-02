@@ -46,10 +46,26 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     }
     iter = lapply(list(...), split_arrays)
 
-    call_args = as.list(match.call(expand.dots=FALSE))[-1]
-    call_args$`...` = NULL
-    call_args$df = as.data.frame(do.call(tibble::data_frame, iter),
-                                 stringsAsFactors=FALSE)
+#    call_args = as.list(match.call(expand.dots=FALSE))[-1]
+#    call_args$`...` = NULL
+#    call_args$df = as.data.frame(do.call(tibble::data_frame, iter),
+#                                 stringsAsFactors=FALSE)
+#
+#    do.call(Q_rows, call_args)
 
-    do.call(Q_rows, call_args)
+    Q_rows(fun = fun,
+           df = as.data.frame(do.call(tibble::data_frame, iter),
+                              stringsAsFactors=FALSE),
+           const = const,
+           export = export,
+           seed = seed,
+           memory = memory,
+           template = template,
+           n_jobs = n_jobs,
+           job_size = job_size,
+           fail_on_error = fail_on_error,
+           workers = workers,
+           log_worker = log_worker,
+           wait_time = wait_time,
+           chunk_size = chunk_size)
 }

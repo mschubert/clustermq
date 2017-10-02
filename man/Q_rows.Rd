@@ -6,8 +6,8 @@
 \usage{
 Q_rows(df, fun, const = list(), export = list(), seed = 128965,
   memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
-  split_array_by = -1, fail_on_error = TRUE, workers = NULL,
-  log_worker = FALSE, wait_time = NA, chunk_size = NA)
+  fail_on_error = TRUE, workers = NULL, log_worker = FALSE,
+  wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{df}{data.frame with iterated arguments}
@@ -28,8 +28,6 @@ Q_rows(df, fun, const = list(), export = list(), seed = 128965,
 if job_size is given as well}
 
 \item{job_size}{The number of function calls per job}
-
-\item{split_array_by}{The dimension number to split any arrays in `...`; default: last}
 
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
 
