@@ -8,7 +8,7 @@
 #' @return            A filled template
 fill_template = function(template, master, values=list(), ..., log_worker=FALSE) {
     values = utils::modifyList(values, list(...))
-        values$job_name = paste0("cmq", sub("^[^:]://[^:]:", "", master))
+    values$job_name = paste0("cmq", rev(strsplit(master, "[:/]")[[1]])[1])
     values$master = master
     if (log_worker)
         values$log_file = paste0(values$job_name, ".log")
