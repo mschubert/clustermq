@@ -11,7 +11,7 @@ SGE = R6::R6Class("SGE",
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
-            filled = fill_template(template=LSF$template, master=private$master,
+            filled = fill_template(template=SGE$template, master=private$master,
                                    values=template, log_worker=log_worker)
 
             success = system("qsub", input=filled, ignore.stdout=TRUE)
