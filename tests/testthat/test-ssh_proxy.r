@@ -10,7 +10,7 @@ test_that("control flow between proxy and master", {
     Sys.sleep(0.5)
     common_data = list(id="DO_SETUP", fun = function(x) x*2,
             const=list(), export=list(), seed=1)
-    p = parallel::mcparallel(ssh_proxy(port, port))
+    p = parallel::mcparallel(ssh_proxy(port, port, 'multicore'))
 
     # startup
     msg = recv(socket)
