@@ -47,19 +47,16 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
     iter = lapply(list(...), split_arrays)
 
     # keep matrices as single columns in df
-#    fn = names(formals(fun))
-#    if (length(fn) == 1)
-#        names(iter) = fn
-#    df = data.frame(..placeholder.. = seq_along(iter[[1]]))
-#    for (field in names(iter))
-#        df[[field]] = iter[[field]]
-#    df$..placeholder.. = NULL
-##    df = `$<-`(data.frame(), 'x', iter)
+    fn = names(formals(fun))
+    if (length(fn) == 1)
+        names(iter) = fn
+    df = data.frame(..placeholder.. = seq_along(iter[[1]]))
+    for (field in names(iter))
+        df[[field]] = iter[[field]]
+    df$..placeholder.. = NULL
 
     Q_rows(fun = fun,
-           df = as.data.frame(do.call(tibble::data_frame, iter),
-                              stringsAsFactors=FALSE),
- #          df = df,
+           df = df,
            const = const,
            export = export,
            seed = seed,

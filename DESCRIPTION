@@ -16,7 +16,6 @@ Imports:
     purrr,
     R6,
     rzmq (>= 0.9.3),
-    tibble,
     utils
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
