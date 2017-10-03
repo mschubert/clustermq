@@ -1,6 +1,6 @@
 * 0.8.0
   * Templates changed: `clustermq:::worker` now takes only master as argument
-  * Fix a bug where copies of `common_data` are not collected by gc (#19)
+  * Fix a bug where copies of `common_data` are collected by gc too slowly (#19)
   * Creating `workers` is now separated from `Q`, enabling worker reuse (#45)
   * Objects in the function environment must now be `export`ed explicitly (#47)
   * Messages on the master are now processed in threads (#42)

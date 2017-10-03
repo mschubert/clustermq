@@ -5,10 +5,10 @@ socket = rzmq::init.socket(context, "ZMQ_REP")
 rzmq::bind.socket(socket, "tcp://*:55443")
 Sys.sleep(0.5)
 
-start_worker = function(url="tcp://localhost:55443") {
+start_worker = function(master="tcp://localhost:55443") {
     skip_on_os("windows")
 
-    p = parallel::mcparallel(worker(url))
+    p = parallel::mcparallel(worker(master))
     msg = recv(socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
     p

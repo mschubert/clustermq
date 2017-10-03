@@ -10,7 +10,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
 
     # basic variable checking
     fun = match.fun(fun)
-    df = as.data.frame(df, stringsAsFactors=FALSE)
+    df = as.data.frame(df, check.names=FALSE, stringsAsFactors=FALSE)
     n_calls = nrow(df)
     n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
     seed = as.integer(seed)

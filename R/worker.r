@@ -7,8 +7,8 @@
 #' @param ...      Catch-all to not break older template values (ignored)
 worker = function(master, timeout=600, ...) {
     print(master)
-    if (length(...) > 0)
-        warning("Arguments ignored: ", paste(names(...), collapse=", "))
+    if (length(list(...)) > 0)
+        warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
 
     # connect to master
     zmq_context = rzmq::init.context()
