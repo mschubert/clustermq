@@ -4,10 +4,14 @@
 \alias{worker}
 \title{R worker submitted as cluster job}
 \usage{
-worker(master)
+worker(master, timeout = 600, ...)
 }
 \arguments{
 \item{master}{The master address (tcp://ip:port)}
+
+\item{timeout}{Time until worker shuts down without hearing from master}
+
+\item{...}{Catch-all to not break older template values (ignored)}
 }
 \description{
 Do not call this manually, the master will do that

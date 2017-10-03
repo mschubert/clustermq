@@ -2,15 +2,18 @@
 #'
 #' Do not call this manually, the master will do that
 #'
-#' @param master     The master address (tcp://ip:port)
-worker = function(master) {
+#' @param master   The master address (tcp://ip:port)
+#' @param timeout  Time until worker shuts down without hearing from master
+#' @param ...      Catch-all to not break older template values (ignored)
+worker = function(master, timeout=600, ...) {
     print(master)
+    if (length(...) > 0)
+        warning("Arguments ignored: ", paste(names(...), collapse=", "))
 
     # connect to master
-#    assign("zmq_context", rzmq::init.context(), envir=.GlobalEnv)
     zmq_context = rzmq::init.context()
     socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
-    #rzmq::set.send.timeout(socket, 10000L) # milliseconds
+    rzmq::set.send.timeout(socket, as.integer(timeout * 1000)) # msec
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
@@ -23,10 +26,8 @@ worker = function(master) {
     token = NA
 
     while(TRUE) {
-        #TODO: set timeout to something more reasonable
-        #  when data sending is separated from main loop
         tt = proc.time()
-        events = rzmq::poll.socket(list(socket), list("read"), timeout=3600)
+        events = rzmq::poll.socket(list(socket), list("read"), timeout=timeout)
         if (events[[1]]$read) {
             msg = rzmq::receive.socket(socket)
             message(sprintf("received after %.3fs: %s",
