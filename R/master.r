@@ -64,25 +64,28 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                     warnings = c(warnings, msg$warnings)
                 }
 
-                if (!shutdown && msg$token != qsys$data_token) { #TODO: could remove WORKER_UP with this
+                if (!shutdown && msg$token != qsys$data_token) {
                     qsys$send_common_data()
+
                 } else if (!shutdown && submit_index[1] <= n_calls) {
                     # if we have work, send it to the worker
                     submit_index = submit_index[submit_index <= n_calls]
-                    cur = iter[submit_index, , drop=FALSE]
-                    qsys$send_job_data(chunk=cur)
+                    qsys$send_job_data(chunk = iter[submit_index, , drop=FALSE])
                     jobs_running[sprintf("%i", submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
 
+                    # adapt chunk size towards end of processing
                     cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
                     if (cs < chunk_size) {
                         chunk_size = max(cs, 1)
                         submit_index = submit_index[1:chunk_size]
                     }
+
                 } else if (!shutdown && qsys$reusable) {
                     qsys$send_wait()
                     if (length(jobs_running) == 0)
                         break
+
                 } else # or else shut it down
                     qsys$send_shutdown_worker()
             },
