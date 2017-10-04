@@ -13,6 +13,5 @@ fill_template = function(template, master, values=list(), ..., log_worker=FALSE)
     if (log_worker)
         values$log_file = paste0(values$job_name, ".log")
 
-    withCallingHandlers(infuser::infuse(template, values),
-        warning = function(w) stop(conditionMessage(w), call.=FALSE))
+    infuser::infuse(template, values, strict=TRUE)
 }
