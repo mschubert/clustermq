@@ -17,7 +17,8 @@ worker = function(master, timeout=600, ...) {
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id="WORKER_UP"))
+    rzmq::send.socket(socket, data=list(id="WORKER_UP",
+                      pkgver=utils::packageVersion("clustermq")))
 	message("WORKER_UP to: ", master)
 
     start_time = proc.time()

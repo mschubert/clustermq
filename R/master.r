@@ -26,6 +26,8 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
     jobs_running = list()
     warnings = list()
     shutdown = FALSE
+    pkgver = utils::packageVersion("clustermq")
+    pkg_warn = TRUE
 
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
@@ -47,6 +49,11 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
 
         switch(msg$id,
             "WORKER_UP" = {
+                if (msg$pkgver != pkgver && pkg_warn) {
+                    warning("Version mismatch: master has ", pkgver,
+                            " worker ", msg$pkgver, immediate.=TRUE)
+                    pkg_warn = FALSE
+                }
                 qsys$send_common_data()
             },
             "WORKER_READY" = {
