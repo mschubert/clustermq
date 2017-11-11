@@ -118,11 +118,12 @@ QSys = R6::R6Class("QSys",
 
             # compute summary statistics for workers
             times = lapply(private$worker_stats, function(w) w$time)
+            mem = sapply(private$worker_stats, function(w) w$mem)
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
-            message(sprintf("Master: [%.1fs %.1f%% CPU]; Worker average: [%.1f%% CPU]",
-                            rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]]))
+            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
+            message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max(mem)))
         }
     ),
 

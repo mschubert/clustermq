@@ -7,6 +7,7 @@
   * Added `multicore` qsys using the `parallel` package (#49)
   * New function `Q_rows` using data.frame rows as iterated arguments (#43)
   * Jobs will now be submitted as array if possible
+  * Job summary will now report max memory as reported by `gc` (#18)
 
 * 0.7.0
   * Initial release on CRAN
