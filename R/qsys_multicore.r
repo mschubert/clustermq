@@ -16,7 +16,7 @@ MULTICORE = R6::R6Class("MULTICORE",
 #                                  fun = clustermq:::worker,
 #                                  master = values$master)
 
-            cmd = Quote(clustermq:::worker(private$master))
+            cmd = methods::Quote(clustermq:::worker(private$master))
             for (i in seq_len(n_jobs))
                 parallel::mcparallel(cmd)
         },
