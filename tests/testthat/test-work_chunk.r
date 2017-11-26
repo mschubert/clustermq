@@ -23,8 +23,7 @@ test_that("check call classes", {
 
 test_that("do not unlist matrix in data.frame", {
     elm = structure(1:4, .Dim = c(2,2), .Dimnames=list(c("r1","r2"), c("c1","c2")))
-    df2 = structure(list(expr = structure(list(expr = elm))),
-    .Names = "expr", row.names = c(NA, -1L), class = "data.frame")
+    df2 = structure(list(expr = structure(list(expr = elm))))
 
     fx = function(...) list(...)
     expect_equal(work_chunk(df2, fx)$result$'1', list(expr=elm))

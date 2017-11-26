@@ -10,7 +10,7 @@
 work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
     context = new.env()
 
-    fwrap = function(..., ` id `=NULL, ` seed `=NA) {
+    fwrap = function(..., ` id `, ` seed `=NA) {
         if (!is.na(` seed `))
             set.seed(` seed `)
 
@@ -31,10 +31,12 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
         )
     }
 
-    df$` id ` = rownames(df)
-    if (!is.null(common_seed))
-        df$` seed ` = common_seed + as.integer(rownames(df))
+    if (is.null(df$` id `))
+        df$` id ` = seq_along(df[[1]])
 
-    list(result = stats::setNames(purrr::pmap(df, fwrap), rownames(df)),
+    if (!is.null(common_seed))
+        df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
+
+    list(result = stats::setNames(purrr::pmap(df, fwrap), df$` id `),
          warnings = context$warnings)
 }

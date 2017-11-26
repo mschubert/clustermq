@@ -77,7 +77,7 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                 } else if (!shutdown && submit_index[1] <= n_calls) {
                     # if we have work, send it to the worker
                     submit_index = submit_index[submit_index <= n_calls]
-                    qsys$send_job_data(chunk = iter[submit_index, , drop=FALSE])
+                    qsys$send_job_data(chunk = chunk(iter, submit_index))
                     jobs_running[sprintf("%i", submit_index)] = TRUE
                     submit_index = submit_index + chunk_size
 
