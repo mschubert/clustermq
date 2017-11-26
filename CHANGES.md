@@ -1,3 +1,8 @@
+* 0.8.1
+  * Fix performance issues for a high number of function calls (#56)
+  * Fix bug where multicore workers were not shut down properly (#58)
+  * Fix default templates for SGE, LSF and SLURM (misplaced quote)
+
 * 0.8.0
   * Templates changed: `clustermq:::worker` now takes only master as argument
   * Fix a bug where copies of `common_data` are collected by gc too slowly (#19)

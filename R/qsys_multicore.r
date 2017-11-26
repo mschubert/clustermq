@@ -18,7 +18,7 @@ MULTICORE = R6::R6Class("MULTICORE",
 
             cmd = quote(clustermq:::worker(private$master))
             for (i in seq_len(n_jobs)) {
-                p = parallel::mcparallel(cmd, detached=TRUE)
+                p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
                 private$pids = c(private$pids, list(p$pid))
             }
         },
