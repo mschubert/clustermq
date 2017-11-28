@@ -11,8 +11,11 @@ SGE = R6::R6Class("SGE",
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
-            filled = fill_template(template=SGE$template, master=private$master,
-                                   values=template, log_worker=log_worker)
+            template$master = private$master
+            if (log_worker)
+                template$log_file = paste0(values$job_name, ".log")
+
+            filled = infuser::infuse(SGE$template, template)
 
             success = system("qsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {

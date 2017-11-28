@@ -11,8 +11,12 @@ LSF = R6::R6Class("LSF",
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
-            filled = fill_template(template=LSF$template, master=private$master,
-                                   values=template, log_worker=log_worker)
+            template$master = private$master
+            private$job_id = template$job_name = paste0("cmq", self$id)
+            if (log_worker)
+                template$log_file = paste0(values$job_name, ".log")
+
+            filled = infuser::infuse(LSF$template, template)
 
             success = system("bsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {
@@ -24,7 +28,7 @@ LSF = R6::R6Class("LSF",
         cleanup = function() {
             super$cleanup()
             dirty = self$workers_running > 0
-            system(paste("bkill", private$job_id),
+            system(paste("bkill -J", private$job_id),
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
