@@ -45,7 +45,6 @@ LSF$setup = function() {
 # Static method, overwritten in qsys w/ user option
 LSF$template = paste(sep="\n",
     "#BSUB-J {{ job_name }}[1-{{ n_jobs }}]    # name of the job / array jobs",
-    "#BSUB-g {{ job_group | /rzmq }}           # group the job belongs to",
     "#BSUB-o {{ log_file | /dev/null }}        # stdout + stderr",
     "#BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes",
     "#BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes",
