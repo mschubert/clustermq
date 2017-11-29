@@ -12,6 +12,7 @@ SGE = R6::R6Class("SGE",
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
             template$master = private$master
+            private$job_id = template$job_name = paste0("cmq", self$id)
             if (log_worker)
                 template$log_file = paste0(values$job_name, ".log")
 
@@ -26,10 +27,15 @@ SGE = R6::R6Class("SGE",
 
         cleanup = function() {
             super$cleanup()
-            if (self$workers_running > 0)
-                warning("Jobs may not have shut down properly")
+            dirty = self$workers_running > 0
+            system(paste("qdel", private$job_id),
+                   ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
+
+    private = list(
+        job_id = NULL
+    )
 )
 
 # Static method, process scheduler options and return updated object
