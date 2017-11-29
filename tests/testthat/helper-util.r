@@ -16,9 +16,9 @@ clean_collect = function(p, timeout=5L) {
     if (is.null(re)) {
         # if timeout is reached without results
         tools::pskill(p$pid)
-        stop("Unclean shutdown")
+        stop("Unclean worker shutdown")
     }
 
     Sys.sleep(0.5)
-    re
+    invisible(re)
 }

@@ -6,7 +6,7 @@
 #' @param timeout  Time until worker shuts down without hearing from master
 #' @param ...      Catch-all to not break older template values (ignored)
 worker = function(master, timeout=600, ...) {
-    print(master)
+    message("Master: ", master)
     if (length(list(...)) > 0)
         warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
 
@@ -95,5 +95,5 @@ worker = function(master, timeout=600, ...) {
         calls = counter
     ))
 
-    print(run_time)
+    message(sprintf("Times: %.2f [user], %.2f [system], %.2f [elapsed]", run_time[1:3]))
 }
