@@ -95,5 +95,6 @@ worker = function(master, timeout=600, ...) {
         calls = counter
     ))
 
-    message(sprintf("Times: %.2f [user], %.2f [system], %.2f [elapsed]", run_time[1:3]))
+    message(sprintf("Times: %.2fs [user], %.2fs [system], %.2fs [elapsed]",
+                    run_time[1], run_time[2], run_time[3]))
 }

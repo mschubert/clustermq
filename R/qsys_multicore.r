@@ -19,15 +19,16 @@ MULTICORE = R6::R6Class("MULTICORE",
             cmd = quote(clustermq:::worker(private$master))
             for (i in seq_len(n_jobs)) {
                 p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
-                private$pids = c(private$pids, list(p$pid))
+                private$pids = c(private$pids, p$pid)
             }
+            private$workers_total = n_jobs
         },
 
         cleanup = function(dirty=FALSE) {
             super$cleanup()
 
             if (self$workers_running > 0)
-                tools::pskill(pids, tools::SIGKILL)
+                tools::pskill(private$pids, tools::SIGKILL)
 
 #            parallel::stopCluster(private$cluster)
         }

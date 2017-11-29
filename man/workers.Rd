@@ -8,7 +8,7 @@ workers(n_jobs, data = NULL, reuse = TRUE, template = list(),
   log_worker = FALSE, qsys_id = qsys_default)
 }
 \arguments{
-\item{n_jobs}{Number of jobs to submit}
+\item{n_jobs}{Number of jobs to submit (0 implies local processing)}
 
 \item{data}{Set common data (function, constant args, seed)}
 

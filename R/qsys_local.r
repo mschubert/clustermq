@@ -5,8 +5,11 @@ LOCAL = R6::R6Class("LOCAL",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
-            super$initialize(...)
+        initialize = function(..., data=NULL) {
+            super$initialize(..., data=data)
+        },
+
+        set_common_data = function(...) {
         },
 
         submit_jobs = function(n_jobs=0, template=list(), log_worker=FALSE) {

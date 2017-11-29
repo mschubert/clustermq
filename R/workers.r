@@ -1,6 +1,6 @@
 #' Creates a pool of workers
 #'
-#' @param n_jobs      Number of jobs to submit
+#' @param n_jobs      Number of jobs to submit (0 implies local processing)
 #' @param data        Set common data (function, constant args, seed)
 #' @param reuse       Whether workers are reusable or get shut down after call
 #' @param template    A named list of values to fill in template
@@ -10,6 +10,9 @@
 #' @export
 workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(),
                    log_worker=FALSE, qsys_id=qsys_default) {
+    if (n_jobs == 0)
+        return(get("LOCAL", envir=parent.env(environment())))
+
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     if ("setup" %in% ls(qsys))
         qsys = qsys$setup()

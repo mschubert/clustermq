@@ -23,6 +23,7 @@ LSF = R6::R6Class("LSF",
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$workers_total = n_jobs
         },
 
         cleanup = function() {
