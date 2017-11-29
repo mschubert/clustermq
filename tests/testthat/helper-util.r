@@ -2,10 +2,23 @@ send = function(sock, data) {
     rzmq::send.socket(sock, data)
 }
 
-recv = function(sock, timeout=3L) {
+recv = function(p, sock, timeout=3L) {
     event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
     if (event[[1]]$read)
         rzmq::receive.socket(sock)
     else
-        warning(parallel::mccollect(p)[[1]], immediate.=TRUE)
+        clean_collect(p)
+}
+
+clean_collect = function(p, timeout=5L) {
+    re = parallel::mccollect(p, wait=FALSE, timeout=timeout)
+
+    if (is.null(re)) {
+        # if timeout is reached without results
+        tools::pskill(p$pid)
+        stop("Unclean shutdown")
+    }
+
+    Sys.sleep(0.5)
+    re
 }

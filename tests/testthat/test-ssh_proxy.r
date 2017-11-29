@@ -13,11 +13,11 @@ test_that("control flow between proxy and master", {
     p = parallel::mcparallel(ssh_proxy(port, port, 'multicore'))
 
     # startup
-    msg = recv(socket)
+    msg = recv(p, socket)
     expect_equal(msg$id, "PROXY_UP")
 
     send(socket, common_data)
-    msg = recv(socket)
+    msg = recv(p, socket)
     expect_equal(msg$id, "PROXY_READY")
     expect_true("data_url" %in% names(msg))
     expect_true("token" %in% names(msg))
@@ -27,7 +27,7 @@ test_that("control flow between proxy and master", {
     # command execution
     cmd = methods::Quote(Sys.getpid())
     send(socket, list(id="PROXY_CMD", exec=cmd))
-    msg = recv(socket)
+    msg = recv(p, socket)
     expect_equal(msg$id, "PROXY_CMD")
     expect_equal(msg$reply, p$pid)
 
@@ -36,7 +36,7 @@ test_that("control flow between proxy and master", {
     rzmq::connect.socket(worker, proxy)
 
     send(worker, list(id="WORKER_UP"))
-    msg = recv(worker)
+    msg = recv(p, worker)
     testthat::expect_equal(msg$id, "DO_SETUP")
     testthat::expect_equal(msg$token, token)
     testthat::expect_equal(msg[names(common_data)], common_data)
@@ -46,6 +46,6 @@ test_that("control flow between proxy and master", {
     send(socket, msg)
     Sys.sleep(0.5)
 
-    collect = parallel::mccollect(p)
+    collect = clean_collect(p)
     expect_equal(as.integer(names(collect)), p$pid)
 })
