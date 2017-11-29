@@ -1,3 +1,8 @@
+* 0.8.2
+  * Fix a bug where never-started jobs are not cleaned up
+  * Fix a bug where tests leave processes if port binding fails (#60)
+  * Multicore no longer prints worker debug messages (#61)
+
 * 0.8.1
   * Fix performance issues for a high number of function calls (#56)
   * Fix bug where multicore workers were not shut down properly (#58)

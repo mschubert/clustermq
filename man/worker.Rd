@@ -4,7 +4,7 @@
 \alias{worker}
 \title{R worker submitted as cluster job}
 \usage{
-worker(master, timeout = 600, ...)
+worker(master, timeout = 600, ..., verbose = TRUE)
 }
 \arguments{
 \item{master}{The master address (tcp://ip:port)}
@@ -12,6 +12,8 @@ worker(master, timeout = 600, ...)
 \item{timeout}{Time until worker shuts down without hearing from master}
 
 \item{...}{Catch-all to not break older template values (ignored)}
+
+\item{verbose}{Whether to print debug messages}
 }
 \description{
 Do not call this manually, the master will do that
