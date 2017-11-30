@@ -85,15 +85,17 @@ Comparison to other packages
 ----------------------------
 
 There are some packages that provide high-level parallelization of R function calls
-on a computing cluster. A thorough comparison of features and performance is available
-[on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages).
+on a computing cluster. We compared `clustermq` to `BatchJobs` and `batchtools` for
+processing many short-running jobs, and found it to have approximately 1000x less
+overhead cost.
+
+![Overhead comparison](https://preview.ibb.co/ezvoCw/plot.png)
 
 In short, use `ClusterMQ` if you want:
 
 * a one-line solution to run cluster jobs with minimal setup
 * access cluster functions from your local Rstudio via SSH
-* network storage I/O is a problem for you(r cluster)
-* your function calls or some workers are (much) slower than others
+* fast processing of many function calls without network storage I/O
 
 Use [`batchtools`](https://github.com/mllg/batchtools) if you:
 
@@ -109,4 +111,6 @@ Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) (or
 
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
-(issues with SQLite on network-mounted storage).
+(issues with SQLite on network-mounted storage). See
+[the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages)
+for details.
