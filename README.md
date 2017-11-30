@@ -87,7 +87,7 @@ Comparison to other packages
 There are some packages that provide high-level parallelization of R function calls
 on a computing cluster. We compared `clustermq` to `BatchJobs` and `batchtools` for
 processing many short-running jobs, and found it to have approximately 1000x less
-overhead cost.
+overhead cost (details [on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages)).
 
 ![Overhead comparison](https://preview.ibb.co/ezvoCw/plot.png)
 
@@ -111,6 +111,4 @@ Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) (or
 
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
-(issues with SQLite on network-mounted storage). See
-[the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages)
-for details.
+(issues with SQLite on network-mounted storage).
