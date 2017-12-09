@@ -27,10 +27,9 @@ SGE = R6::R6Class("SGE",
         },
 
         cleanup = function() {
-            super$cleanup()
-            dirty = self$workers_running > 0
+            success = super$cleanup()
             system(paste("qdel", private$job_id),
-                   ignore.stdout=!dirty, ignore.stderr=!dirty)
+                   ignore.stdout=success, ignore.stderr=success)
         }
     ),
 

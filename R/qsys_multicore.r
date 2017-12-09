@@ -10,12 +10,6 @@ MULTICORE = R6::R6Class("MULTICORE",
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
-#            # create cluster and start worker on every node
-#            private$cluster = parallel::makeCluster(n_jobs)
-#            parallel::clusterCall(cl = private$cluster,
-#                                  fun = clustermq:::worker,
-#                                  master = values$master)
-
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
                 p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
@@ -25,17 +19,12 @@ MULTICORE = R6::R6Class("MULTICORE",
         },
 
         cleanup = function(dirty=FALSE) {
-            super$cleanup()
-
-            if (self$workers_running > 0)
-                tools::pskill(private$pids, tools::SIGKILL)
-
-#            parallel::stopCluster(private$cluster)
+            success = super$cleanup()
+            tools::pskill(private$pids, tools::SIGKILL)
         }
     ),
 
     private = list(
         pids = NULL
-#        cluster = NULL
     )
 )

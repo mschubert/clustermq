@@ -116,11 +116,23 @@ QSys = R6::R6Class("QSys",
                     warning("something went wrong during cleanup")
             }
 
-            # compute summary statistics for workers
+            success = self$workers_running == 0
+            self$summary_stats()
+            success
+        },
+
+        # Compute summary statistics for workers
+        summary_stats = function() {
             times = lapply(private$worker_stats, function(w) w$time)
             mem = sapply(private$worker_stats, function(w) w$mem)
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
+
+            if (class(wt) != "proc_time")
+                wt = rep(NA, 3)
+            if (!is.numeric(mem) || length(mem) == 1)
+                mem = NA
+
             fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max(mem)))
