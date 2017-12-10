@@ -13,8 +13,10 @@ start_worker = function() {
         skip("Failed to bind port")
 
     p = parallel::mcparallel(worker(master))
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
+    on.exit(NULL)
     p
 }
 
@@ -37,22 +39,27 @@ shutdown_worker = function(p) {
 
 test_that("sending common data", {
     p = start_worker()
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
     shutdown_worker(p)
+    on.exit(NULL)
 })
 
 test_that("invalid common data", {
     p = start_worker()
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
 
     send(socket, list(id="DO_SETUP", invalid=TRUE))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_ERROR")
 
     shutdown_worker(p)
+    on.exit(NULL)
 })
 
 test_that("common data redirect", {
     p = start_worker()
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
 
     send(socket, list(id="DO_SETUP", redirect=master))
     msg = recv(p, socket)
@@ -60,10 +67,12 @@ test_that("common data redirect", {
 
     send_common()
     shutdown_worker(p)
+    on.exit(NULL)
 })
 
 test_that("do work", {
     p = start_worker()
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
 
     # should probably also test for error when DO_CHUNK but no chunk provided
@@ -73,10 +82,12 @@ test_that("do work", {
     testthat::expect_equal(msg$result, list(`1`=5))
 
     shutdown_worker(p)
+    on.exit(NULL)
 })
 
 test_that("token mismatch", {
     p = start_worker()
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
 
     # should probably also test for error when DO_CHUNK but no chunk provided
@@ -85,4 +96,5 @@ test_that("token mismatch", {
     testthat::expect_equal(msg$id, "WORKER_ERROR")
 
     shutdown_worker(p)
+    on.exit(NULL)
 })
