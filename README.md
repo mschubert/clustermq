@@ -62,9 +62,11 @@ devtools::install_github('mschubert/clustermq')
 # devtools::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
-When this is done, [set up your
-scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler),
-or else the package will use whatever scheduler it can find.
+You should be good to go!
+
+If you need to set scheduler options see 
+[the wiki on how to set it
+up](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler).
 
 Usage
 -----
