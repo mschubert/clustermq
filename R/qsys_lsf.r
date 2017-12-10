@@ -28,12 +28,20 @@ LSF = R6::R6Class("LSF",
 
         cleanup = function() {
             success = super$cleanup()
-            system(paste("bkill -J", private$job_id),
-                   ignore.stdout=success, ignore.stderr=success)
+            self$finalize(success)
+        },
+
+        finalize = function(clean=FALSE) {
+            if (!private$is_cleaned_up) {
+                system(paste("bkill -J", private$job_id),
+                       ignore.stdout=clean, ignore.stderr=clean)
+                private$is_cleaned_up = TRUE
+            }
         }
     ),
 
     private = list(
+        is_cleaned_up = FALSE,
         job_id = NULL
     )
 )

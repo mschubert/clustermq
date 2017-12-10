@@ -15,7 +15,7 @@ LOCAL = R6::R6Class("LOCAL",
         submit_jobs = function(n_jobs=0, template=list(), log_worker=FALSE) {
         },
 
-        cleanup = function(dirty=FALSE) {
+        cleanup = function() {
         }
     )
 )

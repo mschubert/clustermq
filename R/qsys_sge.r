@@ -28,12 +28,20 @@ SGE = R6::R6Class("SGE",
 
         cleanup = function() {
             success = super$cleanup()
-            system(paste("qdel", private$job_id),
-                   ignore.stdout=success, ignore.stderr=success)
+            self$finalize(success)
+        },
+
+        finalize = function(clean=FALSE) {
+            if (!private$is_cleaned_up) {
+                system(paste("qdel", private$job_id),
+                       ignore.stdout=success, ignore.stderr=success)
+                private$is_cleaned_up = TRUE
+            }
         }
     ),
 
     private = list(
+        is_cleaned_up = FALSE,
         job_id = NULL
     )
 )
