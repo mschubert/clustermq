@@ -8,6 +8,7 @@ Sys.sleep(0.5)
 
 start_worker = function() {
     skip_on_os("windows")
+    skip_on_cran()
 
     if (class(port) == "try-error")
         skip("Failed to bind port")
