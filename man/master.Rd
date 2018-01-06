@@ -4,12 +4,15 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(qsys, iter, fail_on_error = TRUE, wait_time = NA, chunk_size = NA)
+master(qsys, iter, rettype = "list", fail_on_error = TRUE, wait_time = NA,
+  chunk_size = NA)
 }
 \arguments{
 \item{qsys}{Instance of QSys object}
 
 \item{iter}{Objects to be iterated in each function call}
+
+\item{rettype}{Return type of function}
 
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
 

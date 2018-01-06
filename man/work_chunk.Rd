@@ -4,7 +4,8 @@
 \alias{work_chunk}
 \title{Function to process a chunk of calls}
 \usage{
-work_chunk(df, fun, const_args = list(), common_seed = NULL)
+work_chunk(df, fun, const_args = list(), rettype = "list",
+  common_seed = NULL)
 }
 \arguments{
 \item{df}{A data.frame with call IDs as rownames and arguments as columns}
@@ -12,6 +13,8 @@ work_chunk(df, fun, const_args = list(), common_seed = NULL)
 \item{fun}{The function to call}
 
 \item{const_args}{Constant arguments passed to each call}
+
+\item{rettype}{Return type of function}
 
 \item{common_seed}{A seed offset common to all function calls}
 }

@@ -5,28 +5,34 @@
 #' @param df           A data.frame with call IDs as rownames and arguments as columns
 #' @param fun          The function to call
 #' @param const_args   Constant arguments passed to each call
+#' @param rettype        Return type of function
 #' @param common_seed  A seed offset common to all function calls
 #' @return             A list of call results (or try-error if they failed)
-work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
+work_chunk = function(df, fun, const_args=list(), rettype="list", common_seed=NULL) {
     context = new.env()
+    context$warnings = list()
+    context$errors = list()
 
     fwrap = function(..., ` id `, ` seed `=NA) {
+        chr_id = as.character(` id `)
         if (!is.na(` seed `))
             set.seed(` seed `)
 
         withCallingHandlers(
             withRestarts(
                 do.call(fun, c(list(...), const_args)),
-                muffleStop = function(e) structure(e, class="error")
+                muffleStop = function(e) if (rettype == "list")
+                    structure(e, class="error")
             ),
             warning = function(w) {
-                wmsg = paste0("(#", ` id `, ") ", conditionMessage(w))
-                context$warnings = c(context$warnings, list(wmsg))
+                wmsg = paste0("(#", chr_id, ") ", conditionMessage(w))
+                context$warnings[[chr_id]] = wmsg
                 invokeRestart("muffleWarning")
             },
             error = function(e) {
-                err = paste0("(Error #", ` id `, ") ", conditionMessage(e))
-                invokeRestart("muffleStop", err)
+                emsg = paste0("(Error #", chr_id, ") ", conditionMessage(e))
+                context$errors[[chr_id]] = emsg
+                invokeRestart("muffleStop", emsg)
             }
         )
     }
@@ -38,5 +44,6 @@ work_chunk = function(df, fun, const_args=list(), common_seed=NULL) {
         df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
 
     list(result = stats::setNames(purrr::pmap(df, fwrap), df$` id `),
-         warnings = context$warnings)
+         warnings = context$warnings,
+         errors = context$errors)
 }

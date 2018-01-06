@@ -12,19 +12,23 @@
 #'
 #' @param qsys           Instance of QSys object
 #' @param iter           Objects to be iterated in each function call
+#' @param rettype        Return type of function
 #' @param fail_on_error  If an error occurs on the workers, continue or fail?
 #' @param wait_time      Time to wait between messages; set 0 for short calls
 #'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @return               A list of whatever `fun` returned
-master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
+master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
+                  wait_time=NA, chunk_size=NA) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
-    job_result = rep(list(NULL), n_calls)
+    job_result = vector(rettype, n_calls)
     submit_index = 1:chunk_size
     jobs_running = list()
-    warnings = list()
+    cond_msgs = list()
+    n_errors = 0
+    n_warnings = 0
     shutdown = FALSE
     pkgver = utils::packageVersion("clustermq")
     pkg_warn = TRUE
@@ -65,10 +69,13 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
                     utils::setTxtProgressBar(pb, submit_index[1] -
                                              length(jobs_running) - 1)
 
-                    errors = sapply(msg$result, class) == "error"
-                    if (any(errors) && fail_on_error == TRUE)
+                    n_warnings = n_warnings + length(msg$warnings)
+                    n_errors = n_errors + length(msg$errors)
+                    if (n_errors > 0 && fail_on_error == TRUE)
                         shutdown = TRUE
-                    warnings = c(warnings, msg$warnings)
+                    new_msgs = c(msg$errors, msg$warnings)
+                    if (length(new_msgs > 0) && length(cond_msgs) < 50)
+                        cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
                 }
 
                 if (!shutdown && msg$token != qsys$data_token) {
@@ -109,7 +116,6 @@ master = function(qsys, iter, fail_on_error=TRUE, wait_time=NA, chunk_size=NA) {
 
     close(pb)
 
-    unravel_result(list(result=job_result, warnings=warnings),
-                   at = min(submit_index)-1,
-                   fail_on_error = fail_on_error)
+    summarize_result(job_result, n_errors, n_warnings, cond_msgs,
+                     min(submit_index)-1, fail_on_error)
 }

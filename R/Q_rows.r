@@ -56,7 +56,8 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     if (n_jobs == 0 || qsys_id == "LOCAL") {
         list2env(export, envir=environment(fun))
         re = work_chunk(df=df, fun=fun, const_args=const, common_seed=seed)
-        unravel_result(re, fail_on_error=fail_on_error)
+        summarize_result(re$result, length(re$errors), length(re$warnings),
+                         c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
         master(qsys=qsys, iter=df, fail_on_error=fail_on_error,
                wait_time=wait_time, chunk_size=chunk_size)
