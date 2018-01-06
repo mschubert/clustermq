@@ -43,7 +43,9 @@ work_chunk = function(df, fun, const_args=list(), rettype="list", common_seed=NU
     if (!is.null(common_seed))
         df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
 
-    list(result = stats::setNames(purrr::pmap(df, fwrap), df$` id `),
-         warnings = context$warnings,
-         errors = context$errors)
+    #TODO: let purrr handle return types
+    re = stats::setNames(purrr::pmap(df, fwrap), df$` id `)
+    if (rettype != "list")
+        re = unlist(re)
+    list(result = re, warnings = context$warnings, errors = context$errors)
 }

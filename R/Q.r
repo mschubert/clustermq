@@ -11,6 +11,7 @@
 #'                        if job_size is given as well
 #' @param job_size        The number of function calls per job
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
+#' @param rettype         Return type of function call (vector type or 'list')
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param workers         Optional instance of QSys representing a worker pool
 #' @param log_worker      Write a log file for each worker
@@ -35,7 +36,7 @@
 #' }
 Q = function(fun, ..., const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
-        split_array_by=-1, fail_on_error=TRUE, workers=NULL,
+        split_array_by=-1, rettype="list", fail_on_error=TRUE, workers=NULL,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     split_arrays = function(x) {
@@ -64,6 +65,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
            template = template,
            n_jobs = n_jobs,
            job_size = job_size,
+           rettype = rettype,
            fail_on_error = fail_on_error,
            workers = workers,
            log_worker = log_worker,

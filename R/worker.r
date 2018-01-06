@@ -49,9 +49,9 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                     message("WORKER_UP to redirect: ", msg$redirect)
                     msg = rzmq::receive.socket(data_socket)
                 }
-                need = c("id", "fun", "const", "export", "common_seed", "token")
+                need = c("id", "fun", "const", "export", "rettype", "common_seed", "token")
                 if (setequal(names(msg), need)) {
-                    common_data = msg[c('fun', 'const', 'common_seed')]
+                    common_data = msg[setdiff(need, c("id", "export", "token"))]
                     list2env(msg$export, envir=.GlobalEnv)
                     token = msg$token
                     message("token from msg: ", token)

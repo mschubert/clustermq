@@ -10,6 +10,9 @@ test_that("data types and arg names", {
     fx = function(c, a, b) a + c
     expect_equal(work_chunk(df, fx)$result,
                  setNames(as.list(rep(4,3)), rownames(df)))
+
+    expect_equal(work_chunk(df, fx, rettype="numeric")$result,
+                 setNames(rep(4,3), rownames(df)))
 })
 
 test_that("check call classes", {

@@ -23,7 +23,7 @@ start_worker = function() {
 
 send_common = function(fun=function(x) x) {
     send(socket, list(id="DO_SETUP", fun=fun, const=list(),
-         export=list(), common_seed=1, token="token"))
+         export=list(), rettype="list", common_seed=1, token="token"))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_READY")
 }

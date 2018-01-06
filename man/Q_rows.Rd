@@ -6,8 +6,8 @@
 \usage{
 Q_rows(df, fun, const = list(), export = list(), seed = 128965,
   memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
-  fail_on_error = TRUE, workers = NULL, log_worker = FALSE,
-  wait_time = NA, chunk_size = NA)
+  rettype = "list", fail_on_error = TRUE, workers = NULL,
+  log_worker = FALSE, wait_time = NA, chunk_size = NA)
 }
 \arguments{
 \item{df}{data.frame with iterated arguments}
@@ -28,6 +28,8 @@ Q_rows(df, fun, const = list(), export = list(), seed = 128965,
 if job_size is given as well}
 
 \item{job_size}{The number of function calls per job}
+
+\item{rettype}{Return type of function call (vector type or 'list')}
 
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
 

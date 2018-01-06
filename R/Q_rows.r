@@ -5,7 +5,7 @@
 #' @export
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
-        fail_on_error=TRUE, workers=NULL,
+        rettype="list", fail_on_error=TRUE, workers=NULL,
         log_worker=FALSE, wait_time=NA, chunk_size=NA) {
 
     # check if call args make sense
@@ -21,7 +21,8 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     n_calls = nrow(df)
     seed = as.integer(seed)
     check_args(fun, df, const)
-    data = list(fun=fun, const=const, export=export, common_seed=seed)
+    data = list(fun=fun, const=const, export=export,
+                rettype=rettype, common_seed=seed)
 
     # set up qsys if no workers provided
     if (is.null(workers)) {
@@ -55,11 +56,12 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     # process calls
     if (n_jobs == 0 || qsys_id == "LOCAL") {
         list2env(export, envir=environment(fun))
-        re = work_chunk(df=df, fun=fun, const_args=const, common_seed=seed)
+        re = work_chunk(df=df, fun=fun, const_args=const, rettype=rettype,
+                        common_seed=seed)
         summarize_result(re$result, length(re$errors), length(re$warnings),
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
-        master(qsys=qsys, iter=df, fail_on_error=fail_on_error,
+        master(qsys=qsys, iter=df, rettype=rettype, fail_on_error=fail_on_error,
                wait_time=wait_time, chunk_size=chunk_size)
     }
 }

@@ -49,3 +49,12 @@ test_that("master does not exit loop prematurely", {
     r = Q(fx, x=1:3, workers=w)
     expect_equal(r, as.list(1:3*2))
 })
+
+test_that("rettype is respected", {
+    skip_on_os("windows")
+    skip_on_cran()
+    fx = function(x) x*2
+    w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
+    r = Q(fx, x=1:3, rettype="numeric", workers=w)
+    expect_equal(r, 1:3*2)
+})
