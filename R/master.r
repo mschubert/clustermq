@@ -25,7 +25,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     n_calls = nrow(iter)
     job_result = vector(rettype, n_calls)
     submit_index = 1:chunk_size
-    jobs_running = list()
+    jobs_running = 0
     cond_msgs = list()
     n_errors = 0
     n_warnings = 0
@@ -40,7 +40,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
         # wait for results only longer if we don't have all data yet
-        if ((!shutdown && submit_index[1] <= n_calls) || length(jobs_running) > 0)
+        if ((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0)
             msg = qsys$receive_data()
         else {
             msg = qsys$receive_data(timeout=10)
@@ -64,10 +64,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 # process the result data if we got some
                 if (!is.null(msg$result)) {
                     call_id = names(msg$result)
-                    jobs_running[call_id] = NULL
+                    jobs_running = jobs_running - length(call_id)
                     job_result[as.integer(call_id)] = msg$result
-                    utils::setTxtProgressBar(pb, submit_index[1] -
-                                             length(jobs_running) - 1)
+                    utils::setTxtProgressBar(pb, submit_index[1] - jobs_running - 1)
 
                     n_warnings = n_warnings + length(msg$warnings)
                     n_errors = n_errors + length(msg$errors)
@@ -85,7 +84,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                     # if we have work, send it to the worker
                     submit_index = submit_index[submit_index <= n_calls]
                     qsys$send_job_data(chunk = chunk(iter, submit_index))
-                    jobs_running[sprintf("%i", submit_index)] = TRUE
+                    jobs_running = jobs_running + length(submit_index)
                     submit_index = submit_index + chunk_size
 
                     # adapt chunk size towards end of processing
@@ -97,7 +96,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
                 } else if (!shutdown && qsys$reusable) {
                     qsys$send_wait()
-                    if (length(jobs_running) == 0)
+                    if (jobs_running == 0)
                         break
 
                 } else # or else shut it down
