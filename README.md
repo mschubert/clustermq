@@ -91,7 +91,7 @@ on a computing cluster. We compared `clustermq` to `BatchJobs` and `batchtools` 
 processing many short-running jobs, and found it to have approximately 1000x less
 overhead cost (details [on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages)).
 
-![Overhead comparison](https://preview.ibb.co/ezvoCw/plot.png)
+![Overhead comparison](http://image.ibb.co/f5zYz6/plot.png)
 
 In short, use `ClusterMQ` if you want:
 
