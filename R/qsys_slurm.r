@@ -34,7 +34,7 @@ SLURM = R6::R6Class("SLURM",
         finalize = function(clean=FALSE) {
             if (!private$is_cleaned_up) {
                 system(paste("scancel --jobname", private$job_id),
-                       ignore.stdout=success, ignore.stderr=success)
+                       ignore.stdout=clean, ignore.stderr=clean)
                 private$is_cleaned_up = TRUE
             }
         }
