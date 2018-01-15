@@ -1,6 +1,7 @@
 * 0.8.3
   * Support `rettype` for function calls where return type is known (#59)
   * Reduce memory requirements by processing results when we receive them
+  * Fix a bug where cleanup, `log_worker` flag were not working for SGE/SLURM
 
 * 0.8.2
   * Fix a bug where never-started jobs are not cleaned up

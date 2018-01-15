@@ -23,7 +23,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                   wait_time=NA, chunk_size=NA) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
-    job_result = vector(rettype, n_calls)
+    job_result = rep(vec_lookup[[rettype]], n_calls)
     submit_index = 1:chunk_size
     jobs_running = 0
     cond_msgs = list()
