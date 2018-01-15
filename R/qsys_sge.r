@@ -14,7 +14,7 @@ SGE = R6::R6Class("SGE",
             template$master = private$master
             private$job_id = template$job_name = paste0("cmq", self$id)
             if (log_worker)
-                template$log_file = paste0(values$job_name, ".log")
+                template$log_file = paste0(template$job_name, ".log")
 
             filled = infuser::infuse(SGE$template, template)
 
