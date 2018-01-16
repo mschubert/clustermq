@@ -19,6 +19,5 @@ clean_collect = function(p, timeout=5L) {
         stop("Unclean worker shutdown")
     }
 
-    Sys.sleep(0.5)
     invisible(re)
 }

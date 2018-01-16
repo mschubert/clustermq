@@ -8,7 +8,6 @@ test_that("control flow between proxy and master", {
     context = rzmq::init.context()
     socket = rzmq::init.socket(context, "ZMQ_REP")
     port = bind_avail(socket, 50000:55000)
-    Sys.sleep(0.5)
     common_data = list(id="DO_SETUP", fun = function(x) x*2,
             const=list(), export=list(), seed=1)
     p = parallel::mcparallel(ssh_proxy(port, port, 'multicore'))
@@ -46,8 +45,6 @@ test_that("control flow between proxy and master", {
     # shutdown
     msg = list(id = "PROXY_STOP")
     send(socket, msg)
-    Sys.sleep(0.5)
-
     collect = clean_collect(p)
     expect_equal(as.integer(names(collect)), p$pid)
     on.exit(NULL)
