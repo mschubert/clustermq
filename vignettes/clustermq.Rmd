@@ -28,18 +28,7 @@ fx = function(x) x * 2
 
 # queue the function call 
 Q(fx, x=1:3, n_jobs=1)
-
 # list(2,4,6)
-
-# this will submit a cluster job that connects to the master via TCP
-# the master will then send the function and argument chunks to the worker
-# and the worker will return the results to the master
-# until everything is done and you get back your result
-
-# we can also use dplyr's mutate to modify data frames
-library(dplyr)
-iris %>%
-    mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1))
 ```
 
 Computations are done [entirely on the
@@ -59,30 +48,41 @@ First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
 system library. Most likely, your package manager will provide this:
 
 ```{sh eval=FALSE}
-brew install zeromq # homebrew on OS-X
-sudo apt-get install libzmq3-dev # ubuntu
-sudo yum install zeromq3-devel # fedora
+# You can skip this step on Windows and OS-X, the rzmq binary has it
+brew install zeromq # Linuxbrew, Homebrew on OS-X
+conda install zeromq # Conda
+sudo apt-get install libzmq3-dev # Ubuntu
+sudo yum install zeromq3-devel # Fedora
+pacman -S zeromq # Archlinux
 ```
 
-The package on CRAN should be relatively up-to-date. You can install it using:
+Then install the `clustermq` package in R (which automatically installs the
+rzmq package as well) from CRAN:
 
 ```{r eval=FALSE}
 install.packages('clustermq')
 ```
 
-Alternatively, you can get the latest version from
+
+Alternatively you can use `devtools` to install directly from
 [Github](https://github.com/mschubert/clustermq):
 
 ```{r eval=FALSE}
 # install.packages('devtools')
-devtools::install_github('mschubert/clustermq', ref="develop")
+devtools::install_github('mschubert/clustermq')
+# devtools::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
 ## Setting up the scheduler
 
 An HPC cluster's scheduler ensures that computing jobs are distributed to
 available worker nodes. Hence, this is what `clustermq` interfaces with in
-order to do computations. See the links below to set up the respective
+order to do computations.
+
+By default, `clustermq` will look for `sbatch` (SLURM), `bsub` (LSF), or `qsub`
+(SGE) in your `$PATH` and use the scheduler that is available.
+
+If you need specific options, see the links below to set up the respective
 schedulers.
 
 * [LSF](https://github.com/mschubert/clustermq/wiki/LSF)
@@ -143,6 +143,7 @@ The following arguments are supported by `Q`:
  * `...` - All iterated arguments passed to the function. If there is more than
         one, all of them need to be named
  * `const` - A named list of non-iterated arguments passed to `fun`
+ * `export` - A named list of objects to export to the worker environment
 
 Behavior can further be fine-tuned using the options below:
 
@@ -165,13 +166,13 @@ on a computing cluster. A thorough comparison of features and performance is ava
 In short, use `ClusterMQ` if you want:
 
 * a one-line solution to run cluster jobs with minimal setup
-* access cluster functions from your local Rstudio
-* network storage I/O is a problem for you(r cluster)
-* your function calls or some workers are (much) slower than others
+* access cluster functions from your local Rstudio via SSH
+* fast processing of many function calls without network storage I/O
 
 Use [`batchtools`](https://github.com/mllg/batchtools) if:
 
-* you want more control over how your jobs are run
+* want to use a mature and well-tested package
+* want more control over how your jobs are run
 * don't mind a few extra lines to register and schedule your jobs
 
 Use [`flowr`](https://github.com/sahilseth/flowr),
