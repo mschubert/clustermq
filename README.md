@@ -5,11 +5,12 @@ ClusterMQ: send R function calls as cluster jobs
 [![Build Status](https://travis-ci.org/mschubert/clustermq.svg?branch=master)](https://travis-ci.org/mschubert/clustermq)
 [![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](http://cran.rstudio.com/web/packages/clustermq/index.html)
 
-This package will allow you to send function calls as cluster jobs (using
+This package will allow you to send function calls as jobs on a computing
+cluster (using the schedulers
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
 [SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
 [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
-using a minimal interface provided by the `Q` function:
+with a minimal interface provided by the `Q` function:
 
 ```r
 # load the library and create a simple function
@@ -24,13 +25,13 @@ Q(fx, x=1:3, n_jobs=1)
 Computations are done [entirely on the
 network](https://github.com/armstrtw/rzmq) and without any temporary files on
 network-mounted storage, so there is no strain on the file system apart from
-starting up R once per job. This removes the biggest bottleneck in distributed
-computing.
+starting up R once per job. This way, we can also send around data and results
+around a lot quicker.
 
-Using this approach, we can easily do load-balancing, i.e. workers that get
-their jobs done faster will also receive more function calls to work on. This
-is especially useful if not all calls return after the same time, or one worker
-has a high load.
+All calculations are load-balanced, i.e. workers that get their jobs done
+faster will also receive more function calls to work on. This is especially
+useful if not all calls return after the same time, or one worker has a high
+load.
 
 Installation
 ------------
@@ -40,6 +41,7 @@ system library. Most likely, your package manager will provide this:
 
 ```sh
 # You can skip this step on Windows and OS-X, the rzmq binary has it
+# On a computing cluster, we highly recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on OS-X
 conda install zeromq # Conda
 sudo apt-get install libzmq3-dev # Ubuntu
@@ -64,14 +66,15 @@ devtools::install_github('mschubert/clustermq')
 
 You should be good to go!
 
-If you need to set scheduler options see 
+If you need to set scheduler options (or want to access your computing cluster
+via SSH) see 
 [the wiki on how to set it
 up](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler).
 
 Usage
 -----
 
-The following arguments are supported by `Q`:
+The basic arguments for `Q` are:
 
  * `fun` - The function to call. This needs to be self-sufficient (because it
         will not have access to the `master` environment)
@@ -80,8 +83,20 @@ The following arguments are supported by `Q`:
  * `const` - A named list of non-iterated arguments passed to `fun`
  * `export` - A named list of objects to export to the worker environment
 
-There is a list of examples and further arguments in
-[the vignette](vignettes/clustermq.Rmd#examples).
+The documentation for other arguments can be accessed by typing `?Q`.
+
+```r
+# adding a constant argument
+fx = function(x, y) x * 2 + y
+Q(fx, x=1:3, const=list(y=10), n_jobs=1)
+
+# exporting an object to workers
+fx = function(x) x * 2 + y
+Q(fx, x=1:3, export=list(y=10), n_jobs=1)
+```
+
+More examples are available in [the
+vignette](vignettes/clustermq.Rmd#examples). 
 
 Comparison to other packages
 ----------------------------
