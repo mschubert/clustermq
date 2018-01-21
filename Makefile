@@ -1,5 +1,5 @@
 .PHONY: all
-all: documentation vignettes
+all: doc vignettes
 
 R = Rscript --no-save --no-restore -e
 
@@ -23,8 +23,8 @@ inst/doc:
 inst/doc/%.md: vignettes/%.rmd
 	$(R) "knitr::knit('$<', '$@')"
 
-.PHONY: documentation
-documentation:
+.PHONY: doc
+doc:
 	$(R) "devtools::document()"
 
 cleanall:
