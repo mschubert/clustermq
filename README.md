@@ -41,7 +41,7 @@ system library. Most likely, your package manager will provide this:
 
 ```sh
 # You can skip this step on Windows and OS-X, the rzmq binary has it
-# On a computing cluster, we highly recommend to use Conda or Linuxbrew
+# On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on OS-X
 conda install zeromq # Conda
 sudo apt-get install libzmq3-dev # Ubuntu
@@ -74,7 +74,7 @@ up](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler).
 Usage
 -----
 
-The basic arguments for `Q` are:
+The most common arguments for `Q` are:
 
  * `fun` - The function to call. This needs to be self-sufficient (because it
         will not have access to the `master` environment)
@@ -83,7 +83,8 @@ The basic arguments for `Q` are:
  * `const` - A named list of non-iterated arguments passed to `fun`
  * `export` - A named list of objects to export to the worker environment
 
-The documentation for other arguments can be accessed by typing `?Q`.
+The documentation for other arguments can be accessed by typing `?Q`. Examples
+of using `const` and `export` would be:
 
 ```r
 # adding a constant argument

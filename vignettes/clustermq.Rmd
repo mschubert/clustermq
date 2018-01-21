@@ -15,6 +15,8 @@ options(clustermq.scheduler = 'local')
 library(clustermq)
 ```
 
+## Quick start
+
 This package will allow you to send function calls as cluster jobs (using
 [LSF](https://github.com/mschubert/clustermq/wiki/LSF),
 [SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
@@ -49,6 +51,7 @@ system library. Most likely, your package manager will provide this:
 
 ```{sh eval=FALSE}
 # You can skip this step on Windows and OS-X, the rzmq binary has it
+# On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on OS-X
 conda install zeromq # Conda
 sudo apt-get install libzmq3-dev # Ubuntu
@@ -63,7 +66,6 @@ rzmq package as well) from CRAN:
 install.packages('clustermq')
 ```
 
-
 Alternatively you can use `devtools` to install directly from
 [Github](https://github.com/mschubert/clustermq):
 
@@ -73,7 +75,11 @@ devtools::install_github('mschubert/clustermq')
 # devtools::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
-## Setting up the scheduler
+You should be good to go by trying one of the examples!
+
+However, some schedulers will need explicit setup.
+
+## Setting up the scheduler explicitly
 
 An HPC cluster's scheduler ensures that computing jobs are distributed to
 available worker nodes. Hence, this is what `clustermq` interfaces with in
@@ -121,14 +127,14 @@ fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 ```
 
-Finally, if we want to use a package function we need to load it on the worker
-using a `library()` call or referencing it with `package_name::`:
+If we want to use a package function we need to load it on the worker using a
+`library()` call or referencing it with `package_name::`:
 
 ```{r}
 fx = function(x) {
     library(dplyr)
     x %>%
-        mutate(area = Sepal.Length *Sepal.Width) %>%
+        mutate(area = Sepal.Length * Sepal.Width) %>%
         head()
 }
 Q(fx, x=list(iris), n_jobs=1)
@@ -157,11 +163,26 @@ Behavior can further be fine-tuned using the options below:
         to the master. Default: every worker will report back 100 times total
  * `wait_time` - How long the master should wait between checking for results
 
+The full documentation is available by typing `?Q`.
+
 ## Comparison to other packages
 
 There are some packages that provide high-level parallelization of R function calls
 on a computing cluster. A thorough comparison of features and performance is available
 [on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages).
+
+Briefly, we compare how long it takes different HPC scheduler tools to submit, run
+and collect function calls of negligible processing time (multiplying a numeric
+value by 2). This serves to quantify the maximum throughput we can reach with
+`BatchJobs`, `batchtools` and `clustermq`.
+
+We find that `BatchJobs` is unable to process 10<sup>6</sup> calls or more but
+produces a reproducible `RSQLite` error. `batchtools` is able to process more
+function calls, but the file system practically limits it at about
+10<sup>6</sup> calls. `clustermq` has no problems processing 10<sup>9</sup>
+calls, and is still faster than `batchtools` at 10<sup>6</sup> calls.
+
+![Overhead comparison](http://image.ibb.co/cRgYNR/plot.png)
 
 In short, use `ClusterMQ` if you want:
 
