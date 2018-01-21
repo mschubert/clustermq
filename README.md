@@ -22,8 +22,8 @@ Q(fx, x=1:3, n_jobs=1)
 Computations are done [entirely on the
 network](https://github.com/armstrtw/rzmq) and without any temporary files on
 network-mounted storage, so there is no strain on the file system apart from
-starting up R once per job. This way, we can also send around data and results
-around a lot quicker.
+starting up R once per job. This way, we can also send data and results around
+a lot quicker.
 
 All calculations are load-balanced, i.e. workers that get their jobs done
 faster will also receive more function calls to work on. This is especially
