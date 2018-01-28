@@ -6,16 +6,12 @@ R = Rscript --no-save --no-restore -e
 test:
 	$(R) "devtools::test()"
 
-.PHONY: vignettes
-vignettes: knit_all
-	$(R) "library(knitr); library(devtools); build_vignettes()"
-
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,inst/doc/%.md,$(rmd_files))
 
-.PHONY: knit_all
-knit_all: inst/doc ${knit_results}
-	cp -r vignettes/* inst/doc/
+.PHONY: vignettes
+vignettes: inst/doc ${knit_results}
+	$(R) "library(knitr); library(devtools); build_vignettes()"
 
 inst/doc:
 	mkdir -p $@
@@ -27,6 +23,7 @@ inst/doc/%.md: vignettes/%.rmd
 doc:
 	$(R) "devtools::document()"
 
-cleanall:
+.PHONY: clean
+clean:
 	${RM} -r inst/doc
 	${RM} -r man
