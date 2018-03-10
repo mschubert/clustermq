@@ -13,8 +13,11 @@ cluster (using the schedulers
 with a minimal interface provided by the `Q` function:
 
 ```r
+# load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
+
+# queue the function call
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
@@ -115,12 +118,13 @@ In short, use `ClusterMQ` if you want:
 Use [`batchtools`](https://github.com/mllg/batchtools) if you:
 
 * want to use a mature and well-tested package
-* want more control over how your jobs are run
-* don't mind a few extra lines to register and schedule your jobs
+* don't mind that arguments to every call are written to/read from disc
+* don't mind there's no load-balancing at run-time
 
 Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) (or
 [`flowr`](https://github.com/sahilseth/flowr),
-[`remake`](https://github.com/richfitz/remake)) if:
+[`remake`](https://github.com/richfitz/remake),
+[`drake`](https://github.com/ropensci/drake)) if:
 
 * you want to design and run a pipeline of different tools
 
