@@ -33,6 +33,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     pkgver = utils::packageVersion("clustermq")
     pkg_warn = TRUE
 
+    if (!qsys$reusable)
+        on.exit(qsys$cleanup())
+
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
     pb = utils::txtProgressBar(min=0, max=n_calls, style=3)

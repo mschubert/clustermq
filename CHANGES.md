@@ -1,3 +1,6 @@
+* 0.8.4
+  * Fix error for `qsys$reusable` when using `n_jobs=0`/local processing (#75)
+
 * 0.8.3
   * Support `rettype` for function calls where return type is known (#59)
   * Reduce memory requirements by processing results when we receive them

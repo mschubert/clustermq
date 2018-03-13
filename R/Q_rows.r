@@ -41,9 +41,6 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         do.call(qsys$set_common_data, data)
     }
 
-    if (!qsys$reusable)
-        on.exit(qsys$cleanup())
-
     # use heuristic for wait and chunk size
     if (is.na(wait_time))
         wait_time = min(0.03, ifelse(n_calls < 1e5, 1/sqrt(n_calls), 0))
