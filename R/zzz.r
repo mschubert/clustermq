@@ -9,8 +9,8 @@
 
     if (length(qsys_default) == 0) {
         qname = c("SLURM", "LSF", "SGE", "LOCAL")
-        exec = c(Sys.which(c("sbatch", "bsub", "qsub")), "/bin/true")
-        select = which(nchar(exec) > 0)[1]
+        exec = Sys.which(c("sbatch", "bsub", "qsub"))
+        select = c(which(nchar(exec) > 0), 4)[1]
         qsys_default = qname[select]
     }
 
