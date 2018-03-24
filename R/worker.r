@@ -67,16 +67,29 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             "DO_CHUNK" = {
                 if (identical(token, msg$token)) {
                     tic = proc.time()
-                    result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
+                    result = tryCatch(
+                        do.call(work_chunk, c(list(df=msg$chunk), common_data)),
+                        error = function(e) e)
                     delta = proc.time() - tic
-                    message("completed ", sprintf(fmt, length(result$result),
-                        delta[1], delta[2], delta[3]))
-                    send_data = c(list(id="WORKER_READY", token=token), result)
-                    rzmq::send.socket(socket, send_data)
-                    counter = counter + length(result$result)
+
+                    if ("error" %in% class(result)) {
+                        rzmq::send.socket(socket, send.more=TRUE,
+                            data=list(id="WORKER_ERROR", msg=conditionMessage(result)))
+                        message("WORKER_ERROR: ", conditionMessage(result))
+                        break
+                    } else {
+                        message("completed ", sprintf(fmt, length(result$result),
+                            delta[1], delta[2], delta[3]))
+                        send_data = c(list(id="WORKER_READY", token=token), result)
+                        rzmq::send.socket(socket, send_data)
+                        counter = counter + length(result$result)
+                    }
                 } else {
                     msg = paste("mismatch chunk & common data", token, msg$token)
-                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))
+                    rzmq::send.socket(socket, send.more=TRUE,
+                                      data=list(id="WORKER_ERROR", msg=msg))
+                    message("WORKER_ERROR: ", msg)
+                    break
                 }
             },
             "WORKER_WAIT" = {

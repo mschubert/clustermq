@@ -109,7 +109,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 qsys$disconnect_worker(msg)
             },
             "WORKER_ERROR" = {
-                stop("\nWorker error: ", msg$msg)
+                stop("\nWORKER_ERROR: ", msg$msg)
             }
         )
 
