@@ -14,7 +14,7 @@ check_args(fun, iter, const = list())
 \item{const}{A list of constant arguments passed to each function call}
 }
 \value{
-Processed iterated argument list
+Processed iterated argument list if 'iter' is a list
 }
 \description{
 Function to check arguments with which Q() is called

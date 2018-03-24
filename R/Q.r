@@ -46,15 +46,7 @@ Q = function(fun, ..., const=list(), export=list(), seed=128965,
             x
     }
     iter = lapply(list(...), split_arrays)
-
-    # keep matrices as single columns in df
-    fn = names(formals(fun))
-    if (length(fn) == 1)
-        names(iter) = fn
-    df = data.frame(..placeholder.. = seq_along(iter[[1]]))
-    for (field in names(iter))
-        df[[field]] = iter[[field]]
-    df$..placeholder.. = NULL
+    df = check_args(fun, iter, const)
 
     Q_rows(fun = fun,
            df = df,
