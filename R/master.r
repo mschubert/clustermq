@@ -38,7 +38,8 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
-    pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
+    pb = progress::progress_bar$new(total = n_calls,
+                                    format = "[:bar] :percent eta: :eta")
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
@@ -69,7 +70,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                     call_id = names(msg$result)
                     jobs_running = jobs_running - length(call_id)
                     job_result[as.integer(call_id)] = msg$result
-                    utils::setTxtProgressBar(pb, submit_index[1] - jobs_running - 1)
+                    pb$tick(length(msg$result))
 
                     n_warnings = n_warnings + length(msg$warnings)
                     n_errors = n_errors + length(msg$errors)
@@ -115,8 +116,6 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
         Sys.sleep(wait_time)
     }
-
-    close(pb)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)
