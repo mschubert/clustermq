@@ -1,5 +1,7 @@
 * 0.8.4
   * Fix error for `qsys$reusable` when using `n_jobs=0`/local processing (#75)
+  * Scheduler-specific templates are deprecated. Use `clustermq.template` instead
+  * Allow option `clustermq.defaults` to fill default template values (#71)
 
 * 0.8.3
   * Support `rettype` for function calls where return type is known (#59)

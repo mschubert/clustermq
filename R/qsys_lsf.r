@@ -10,6 +10,7 @@ LSF = R6::R6Class("LSF",
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template = utils::modifyList(LSF$defaults, template)
             template$n_jobs = n_jobs
             template$master = private$master
             private$job_id = template$job_name = paste0("cmq", self$id)
@@ -60,6 +61,8 @@ LSF$setup = function() {
     user_defaults = getOption("clustermq.defaults")
     if (!is.null(user_defaults))
         LSF$defaults = user_defaults
+    else
+        LSF$defaults = list()
 
     LSF
 }
