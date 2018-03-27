@@ -4,6 +4,7 @@
   * Allow option `clustermq.defaults` to fill default template values (#71)
   * Errors in worker processing are now shut down cleanly (#67)
   * Progress bar now shows estimated time remaining (#66)
+  * Progress bar now also shown when processing locally
 
 * 0.8.3
   * Support `rettype` for function calls where return type is known (#59)

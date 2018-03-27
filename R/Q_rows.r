@@ -54,7 +54,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     if (n_jobs == 0 || qsys_id == "LOCAL") {
         list2env(export, envir=environment(fun))
         re = work_chunk(df=df, fun=fun, const_args=const, rettype=rettype,
-                        common_seed=seed)
+                        common_seed=seed, progress=TRUE)
         summarize_result(re$result, length(re$errors), length(re$warnings),
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
