@@ -5,7 +5,7 @@
 \title{Function to process a chunk of calls}
 \usage{
 work_chunk(df, fun, const_args = list(), rettype = "list",
-  common_seed = NULL)
+  common_seed = NULL, progress = FALSE)
 }
 \arguments{
 \item{df}{A data.frame with call IDs as rownames and arguments as columns}
@@ -17,6 +17,8 @@ work_chunk(df, fun, const_args = list(), rettype = "list",
 \item{rettype}{Return type of function}
 
 \item{common_seed}{A seed offset common to all function calls}
+
+\item{progress}{Logical indicated whether to display a progress bar}
 }
 \value{
 A list of call results (or try-error if they failed)
