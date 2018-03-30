@@ -4,7 +4,7 @@ all: doc vignettes
 R = Rscript --no-save --no-restore -e
 
 test:
-	$(R) "devtools::test()"
+	PATH=$$PATH:$$PWD/tests/bin $(R) "devtools::test()"
 
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,inst/doc/%.md,$(rmd_files))
