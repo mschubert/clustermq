@@ -12,7 +12,7 @@ before_script:
 script:
  - make test
  - R CMD build .
- - R CMD check *.tar.gz
+ - R CMD check --as-cran *.tar.gz
 
 language: r
 
