@@ -9,7 +9,16 @@ before_install:
 before_script:
  - export PATH=$PATH:$PWD/tests/bin
 
+script:
+ - make test
+ - R CMD build .
+ - R CMD check *.tar.gz
+
 language: r
+
+r:
+ - release
+ - devel
 
 warnings_are_errors: false
 
