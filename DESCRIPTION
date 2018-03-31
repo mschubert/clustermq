@@ -25,6 +25,7 @@ Suggests:
     dplyr,
     knitr,
     parallel,
+    roxygen2 (>= 5.0.0),
     testthat,
     tools
 VignetteBuilder: knitr
