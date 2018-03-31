@@ -27,10 +27,12 @@ send_common = function(fun=function(x) x) {
     testthat::expect_equal(msg$id, "WORKER_READY")
 }
 
-shutdown_worker = function(p) {
-    send(socket, list(id="WORKER_STOP"))
+shutdown_worker = function(p, worker_active=TRUE) {
+    if (worker_active)
+        send(socket, list(id="WORKER_STOP"))
     msg = recv(p, socket)
-    send(socket, list()) # already shut down
+    if (worker_active)
+        send(socket, list()) # already shut down, but reset socket state
     testthat::expect_equal(msg$id, "WORKER_DONE")
     testthat::expect_is(msg$time, "proc_time")
     testthat::expect_is(msg$calls, "numeric")
@@ -94,7 +96,7 @@ test_that("token mismatch", {
     send(socket, list(id="DO_CHUNK", chunk=data.frame(x=5), token="token2"))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_ERROR")
+    shutdown_worker(p, worker_active=FALSE)
 
-    shutdown_worker(p)
     on.exit(NULL)
 })

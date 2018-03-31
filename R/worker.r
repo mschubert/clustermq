@@ -65,31 +65,31 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 }
             },
             "DO_CHUNK" = {
-                if (identical(token, msg$token)) {
-                    tic = proc.time()
-                    result = tryCatch(
-                        do.call(work_chunk, c(list(df=msg$chunk), common_data)),
-                        error = function(e) e)
-                    delta = proc.time() - tic
-
-                    if ("error" %in% class(result)) {
-                        rzmq::send.socket(socket, send.more=TRUE,
-                            data=list(id="WORKER_ERROR", msg=conditionMessage(result)))
-                        message("WORKER_ERROR: ", conditionMessage(result))
-                        break
-                    } else {
-                        message("completed ", sprintf(fmt, length(result$result),
-                            delta[1], delta[2], delta[3]))
-                        send_data = c(list(id="WORKER_READY", token=token), result)
-                        rzmq::send.socket(socket, send_data)
-                        counter = counter + length(result$result)
-                    }
-                } else {
+                if (!identical(token, msg$token)) {
                     msg = paste("mismatch chunk & common data", token, msg$token)
                     rzmq::send.socket(socket, send.more=TRUE,
-                                      data=list(id="WORKER_ERROR", msg=msg))
+                        data=list(id="WORKER_ERROR", msg=msg))
                     message("WORKER_ERROR: ", msg)
                     break
+                }
+
+                tic = proc.time()
+                result = tryCatch(
+                    do.call(work_chunk, c(list(df=msg$chunk), common_data)),
+                    error = function(e) e)
+                delta = proc.time() - tic
+
+                if ("error" %in% class(result)) {
+                    rzmq::send.socket(socket, send.more=TRUE,
+                        data=list(id="WORKER_ERROR", msg=conditionMessage(result)))
+                    message("WORKER_ERROR: ", conditionMessage(result))
+                    break
+                } else {
+                    message("completed ", sprintf(fmt, length(result$result),
+                        delta[1], delta[2], delta[3]))
+                    send_data = c(list(id="WORKER_READY", token=token), result)
+                    rzmq::send.socket(socket, send_data)
+                    counter = counter + length(result$result)
                 }
             },
             "WORKER_WAIT" = {
