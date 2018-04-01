@@ -1,7 +1,8 @@
 context("qsys implementations")
 
 test_that("qsys_lsf", {
-    skip_if_not(all(nchar(Sys.which(c("bsub", "bkill"))) > 0))
+    # skip_if[_not] seems to be implemented the wrong way?
+    if (nchar(Sys.which("bsub")) == 0) skip("bsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -11,7 +12,7 @@ test_that("qsys_lsf", {
 })
 
 test_that("qsys_sge", {
-    skip_if_not(all(nchar(Sys.which(c("qsub", "qdel"))) > 0))
+    if (nchar(Sys.which("qsub")) == 0) skip("qsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -21,7 +22,7 @@ test_that("qsys_sge", {
 })
 
 test_that("qsys_slurm", {
-    skip_if_not(all(nchar(Sys.which(c("sbatch", "scancel"))) > 0))
+    if (nchar(Sys.which("sbatch")) == 0) skip("sbatch not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -31,7 +32,7 @@ test_that("qsys_slurm", {
 })
 
 test_that("qsys_pbs", {
-    skip_if_not(all(nchar(Sys.which(c("qsub", "qdel"))) > 0))
+    if (nchar(Sys.which("qsub")) == 0) skip("qsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2

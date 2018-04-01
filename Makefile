@@ -4,7 +4,7 @@ all: doc vignettes
 R = Rscript --no-save --no-restore -e
 
 test:
-	export PATH=$$PATH:$(abspath $(lastword $(MAKEFILE_LIST)))/tests/bin
+	export PATH=$$PATH:$(abspath $(lastword $(MAKEFILE_LIST))/../tests/bin); \
 	$(R) "devtools::test()"
 
 rmd_files=$(wildcard vignettes/*.rmd)

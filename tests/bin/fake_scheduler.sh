@@ -1,2 +1,2 @@
 #!/bin/sh
-sh < /dev/stdin 2> /dev/null &
+timeout 30 sh < /dev/stdin 2> /dev/null &
