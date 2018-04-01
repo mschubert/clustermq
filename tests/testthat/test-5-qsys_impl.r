@@ -4,7 +4,8 @@ avail = nchar(Sys.which(c("bsub", "qsub", "qsh", "sbatch", "fake_scheduler.sh"))
 
 test_that("qsys_lsf", {
     # skip_if[_not] seems to be implemented the wrong way?
-    if (!avail['bsub']) skip("bsub not found")
+    if (!avail['bsub'])
+        skip("bsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -25,7 +26,8 @@ test_that("qsys_sge", {
 })
 
 test_that("qsys_slurm", {
-    if (!avail['sbatch']) skip("sbatch not found")
+    if (!avail['sbatch'])
+        skip("sbatch not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2

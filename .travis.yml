@@ -10,9 +10,13 @@ before_script:
  - export PATH=$PATH:$PWD/tests/bin
 
 script:
- - make test
  - R CMD build .
+ - R CMD INSTALL *.tar.gz
+ - make test
  - R CMD check --as-cran *.tar.gz
+
+after_failure:
+ - cat ~/*.log
 
 language: r
 
