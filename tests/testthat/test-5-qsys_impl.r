@@ -1,8 +1,10 @@
 context("qsys implementations")
 
+avail = nchar(Sys.which(c("bsub", "qsub", "qsh", "sbatch", "fake_scheduler.sh"))) != 0
+
 test_that("qsys_lsf", {
     # skip_if[_not] seems to be implemented the wrong way?
-    if (nchar(Sys.which("bsub")) == 0) skip("bsub not found")
+    if (!avail['bsub']) skip("bsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -12,7 +14,8 @@ test_that("qsys_lsf", {
 })
 
 test_that("qsys_sge", {
-    if (nchar(Sys.which("qsub")) == 0) skip("qsub not found")
+    if (!avail['qsub'] || (!avail['qsh'] && !avail['fake_scheduler.sh']))
+        skip("SGE qsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -22,7 +25,7 @@ test_that("qsys_sge", {
 })
 
 test_that("qsys_slurm", {
-    if (nchar(Sys.which("sbatch")) == 0) skip("sbatch not found")
+    if (!avail['sbatch']) skip("sbatch not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -32,7 +35,8 @@ test_that("qsys_slurm", {
 })
 
 test_that("qsys_pbs", {
-    if (nchar(Sys.which("qsub")) == 0) skip("qsub not found")
+    if (!avail['qsub'] || (avail['qsh'] && !avail['fake_scheduler.sh']))
+        skip("PBS qsub not found")
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
