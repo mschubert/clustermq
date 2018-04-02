@@ -1,17 +1,20 @@
-before_install: 
+before_install:
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
  - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
  - echo "Host localhost
     IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+ - echo "$(hostname) 127.0.0.1" >> ~/.hosts
+ - ping -c3 $(hostname)
 
 before_script:
- - export PATH=$PATH:$PWD/tests/bin
+# - export PATH=$PATH:$PWD/tests/bin
+ - echo $PATH
 
 script:
  - R CMD build .
- - R CMD INSTALL *.tar.gz
+# - R CMD INSTALL *.tar.gz
  - make test
  - R CMD check --as-cran *.tar.gz
 

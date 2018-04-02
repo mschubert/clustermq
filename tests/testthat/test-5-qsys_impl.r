@@ -1,11 +1,11 @@
 context("qsys implementations")
 
-avail = nchar(Sys.which(c("bsub", "qsub", "qsh", "sbatch", "fake_scheduler.sh"))) != 0
+avail = Sys.which(c("bsub", "qsub", "qsh", "sbatch", "fake_scheduler.sh"))
+avail = as.list(nchar(avail) != 0)
 
 test_that("qsys_lsf", {
-    # skip_if[_not] seems to be implemented the wrong way?
-    if (!avail['bsub'])
-        skip("bsub not found")
+    skip_if_not_installed('clustermq')
+    skip_if_not(with(avail, bsub))
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -15,8 +15,8 @@ test_that("qsys_lsf", {
 })
 
 test_that("qsys_sge", {
-    if (!avail['qsub'] || (!avail['qsh'] && !avail['fake_scheduler.sh']))
-        skip("SGE qsub not found")
+    skip_if_not_installed('clustermq')
+    skip_if_not(with(avail, qsub && (qsh || fake_scheduler.sh)))
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -26,8 +26,8 @@ test_that("qsys_sge", {
 })
 
 test_that("qsys_slurm", {
-    if (!avail['sbatch'])
-        skip("sbatch not found")
+    skip_if_not_installed('clustermq')
+    skip_if_not(with(avail, sbatch))
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -37,8 +37,8 @@ test_that("qsys_slurm", {
 })
 
 test_that("qsys_pbs", {
-    if (!avail['qsub'] || (avail['qsh'] && !avail['fake_scheduler.sh']))
-        skip("PBS qsub not found")
+    skip_if_not_installed('clustermq')
+    skip_if(with(avail, !qsub || (qsh && !fake_scheduler.sh)))
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
