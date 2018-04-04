@@ -6,7 +6,7 @@
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, wait_time=NA, chunk_size=NA) {
+        log_worker=FALSE, wait_time=NA, chunk_size=NA, timeout=Inf) {
 
     # check if call args make sense
     if (!is.null(memory))
@@ -59,6 +59,6 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
         master(qsys=qsys, iter=df, rettype=rettype, fail_on_error=fail_on_error,
-               wait_time=wait_time, chunk_size=chunk_size)
+               wait_time=wait_time, chunk_size=chunk_size, timeout=timeout)
     }
 }

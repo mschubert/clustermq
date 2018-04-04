@@ -18,9 +18,10 @@
 #'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
+#' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @return               A list of whatever `fun` returned
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
-                  wait_time=NA, chunk_size=NA) {
+                  wait_time=NA, chunk_size=NA, timeout=Inf) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
@@ -45,9 +46,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
         # wait for results only longer if we don't have all data yet
         if ((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0)
-            msg = qsys$receive_data()
+            msg = qsys$receive_data(timeout=timeout)
         else {
-            msg = qsys$receive_data(timeout=10)
+            msg = qsys$receive_data(timeout=min(10, timeout))
             if (is.null(msg)) {
                 warning(sprintf("%i/%i workers did not shut down properly",
                         qsys$workers_running, qsys$workers), immediate.=TRUE)
