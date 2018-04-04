@@ -14,7 +14,7 @@ before_script:
 
 script:
  - R CMD build .
-# - R CMD INSTALL *.tar.gz
+ - R CMD INSTALL *.tar.gz
  - make test
  - R CMD check --as-cran *.tar.gz
 
