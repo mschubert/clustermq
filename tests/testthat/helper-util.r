@@ -21,3 +21,22 @@ clean_collect = function(p, timeout=5L) {
 
     invisible(re)
 }
+
+has_connectivity = function(host, protocol="tcp") {
+    context = rzmq::init.context()
+    server = rzmq::init.socket(context, "ZMQ_REP")
+    port = try(bind_avail(server, 55000:57000, n_tries=10))
+    if (class(port) == "try-error")
+        return(FALSE)
+    master = sprintf("%s://%s:%i", protocol, host, port)
+    client = rzmq::init.socket(context, "ZMQ_REQ")
+    rzmq::connect.socket(client, master)
+    rzmq::send.socket(client, data=list(id="test"))
+    event = rzmq::poll.socket(list(server), list("read"), timeout=1L)
+    if (event[[1]]$read) {
+        msg = rzmq::receive.socket(server)
+        if (msg == "test")
+            return(TRUE)
+    }
+    FALSE
+}

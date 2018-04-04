@@ -1,6 +1,9 @@
 context("qsys")
 
+has_localhost = has_connectivity("localhost")
+
 test_that("control flow", {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2
@@ -10,6 +13,7 @@ test_that("control flow", {
 })
 
 test_that("common data", {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x, y) x*2 + y
@@ -19,6 +23,7 @@ test_that("common data", {
 })
 
 test_that("export", {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2 + z
@@ -28,6 +33,7 @@ test_that("export", {
 })
 
 test_that("seed reproducibility", {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) sample(1:100, 1)
@@ -39,6 +45,7 @@ test_that("seed reproducibility", {
 })
 
 test_that("master does not exit loop prematurely", {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) {
@@ -51,6 +58,7 @@ test_that("master does not exit loop prematurely", {
 })
 
 test_that("rettype is respected", {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
     fx = function(x) x*2

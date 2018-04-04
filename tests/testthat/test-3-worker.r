@@ -1,16 +1,15 @@
 context("worker")
 
+has_localhost = has_connectivity("localhost")
 context = rzmq::init.context()
 socket = rzmq::init.socket(context, "ZMQ_REP")
-port = try(bind_avail(socket, 55000:57000, n_tries=10))
+port = bind_avail(socket, 55000:57000, n_tries=10)
 master = paste("tcp://localhost", port, sep=":")
 
 start_worker = function() {
+    skip_if_not(has_localhost)
     skip_on_os("windows")
     skip_on_cran()
-
-    if (class(port) == "try-error")
-        skip("Failed to bind port")
 
     p = parallel::mcparallel(worker(master))
     on.exit(tools::pskill(p$pid, tools::SIGKILL))
