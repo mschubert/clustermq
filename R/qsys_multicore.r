@@ -12,7 +12,7 @@ MULTICORE = R6::R6Class("MULTICORE",
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
-                p = parallel::mcparallel(cmd, silent=TRUE)
+                p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
                 private$pids = c(private$pids, p$pid)
             }
             private$workers_total = n_jobs
@@ -25,7 +25,7 @@ MULTICORE = R6::R6Class("MULTICORE",
 
         finalize = function(clean=FALSE) {
             if (length(private$pids) > 0) {
-                tools::pskill(private$pids, tools::SIGKILL)
+                suppressWarnings(tools::pskill(private$pids, tools::SIGKILL))
                 private$pids = NULL
             }
         }
