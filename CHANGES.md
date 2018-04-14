@@ -5,6 +5,7 @@
   * Errors in worker processing are now shut down cleanly (#67)
   * Progress bar now shows estimated time remaining (#66)
   * Progress bar now also shown when processing locally
+  * Memory summary now adds estimated memory of R session (#69)
 
 * 0.8.3
   * Support `rettype` for function calls where return type is known (#59)
