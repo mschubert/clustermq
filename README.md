@@ -63,6 +63,10 @@ devtools::install_github('mschubert/clustermq')
 Schedulers
 ----------
 
+An HPC cluster's scheduler ensures that computing jobs are distributed to
+available worker nodes. Hence, this is what clustermq interfaces with in order
+to do computations.
+
 We currently support the [following
 schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler):
 
@@ -72,7 +76,8 @@ schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler
 * [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs SGE scheduler option and custom template*
 
 You can also access each of these schedulers from your local machine via the
-[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH).
+[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH). Results will
+be returned to your local session.
 
 If you need specific [computing environments or
 containers](https://github.com/mschubert/clustermq/wiki/Environments), you can
