@@ -6,18 +6,14 @@ ClusterMQ: send R function calls as cluster jobs
 [![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](http://cran.rstudio.com/web/packages/clustermq/index.html)
 
 This package will allow you to send function calls as jobs on a computing
-cluster (using the schedulers
-[LSF](https://github.com/mschubert/clustermq/wiki/LSF),
-[SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
-[SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
-with a minimal interface provided by the `Q` function:
+cluster with a minimal interface provided by the `Q` function:
 
 ```r
 # load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
 
-# queue the function call
+# queue the function call on your scheduler
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
@@ -64,12 +60,23 @@ devtools::install_github('mschubert/clustermq')
 # devtools::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
-You should be good to go!
+Schedulers
+----------
 
-If you need to set scheduler options (or want to access your computing cluster
-via SSH) see 
-[the wiki on how to set it
-up](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler).
+We currently support the [following
+schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler):
+
+* [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
+* [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
+* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
+* [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs SGE scheduler option and custom template*
+
+You can also access each of these schedulers from your local machine via the
+[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH).
+
+If you need specific [computing environments or
+containers](https://github.com/mschubert/clustermq/wiki/Environments), you can
+activate them via the scheduler template.
 
 Usage
 -----
