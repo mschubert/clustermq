@@ -23,9 +23,9 @@ after_failure:
 
 language: r
 
-#r:
-# - release
-# - devel
+r:
+ - release
+ - devel
 
 warnings_are_errors: false
 
