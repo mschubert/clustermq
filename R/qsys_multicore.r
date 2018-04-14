@@ -25,7 +25,7 @@ MULTICORE = R6::R6Class("MULTICORE",
 
         finalize = function(clean=FALSE) {
             if (length(private$pids) > 0) {
-                suppressWarnings(tools::pskill(private$pids, tools::SIGKILL))
+                tools::pskill(private$pids, tools::SIGKILL)
                 private$pids = NULL
             }
         }
