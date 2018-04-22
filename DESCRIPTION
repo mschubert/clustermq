@@ -1,5 +1,5 @@
 Package: clustermq
-Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)
+Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
 Version: 0.8.4
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
