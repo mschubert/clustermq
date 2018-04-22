@@ -20,10 +20,12 @@ MULTICORE = R6::R6Class("MULTICORE",
 
         cleanup = function() {
             success = super$cleanup()
-            self$finalize(success)
+            if (success)
+                private$pids = NULL
+            self$finalize()
         },
 
-        finalize = function(clean=FALSE) {
+        finalize = function() {
             if (length(private$pids) > 0) {
                 tools::pskill(private$pids, tools::SIGKILL)
                 private$pids = NULL
