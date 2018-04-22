@@ -24,18 +24,15 @@ library(clustermq)
 
 ## Quick start
 
-This package will allow you to send function calls as cluster jobs (using
-[LSF](https://github.com/mschubert/clustermq/wiki/LSF),
-[SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
-[SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
-using a minimal interface provided by the `Q` function:
+This package will allow you to send function calls as jobs on a computing
+cluster with a minimal interface provided by the `Q` function:
 
 ```{r eval=FALSE}
 # load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
 
-# queue the function call
+# queue the function call on your scheduler
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
@@ -43,8 +40,8 @@ Q(fx, x=1:3, n_jobs=1)
 Computations are done [entirely on the
 network](https://github.com/armstrtw/rzmq) and without any temporary files on
 network-mounted storage, so there is no strain on the file system apart from
-starting up R once per job. This way, we can also send around data and results
-around a lot quicker.
+starting up R once per job. This way, we can also send data and results around
+a lot quicker.
 
 All calculations are load-balanced, i.e. workers that get their jobs done
 faster will also receive more function calls to work on. This is especially
@@ -67,14 +64,13 @@ pacman -S zeromq # Archlinux
 ```
 
 Then install the `clustermq` package in R (which automatically installs the
-rzmq package as well) from CRAN:
+`rzmq` package as well) from CRAN:
 
 ```{r eval=FALSE}
 install.packages('clustermq')
 ```
 
-Alternatively you can use `devtools` to install directly from
-[Github](https://github.com/mschubert/clustermq):
+Alternatively you can use `devtools` to install directly from Github:
 
 ```{r eval=FALSE}
 # install.packages('devtools')
@@ -91,18 +87,24 @@ don't run out of the box, you might need to set your scheduler explicitly.
 ## Setting up the scheduler explicitly
 
 An HPC cluster's scheduler ensures that computing jobs are distributed to
-available worker nodes. Hence, this is what `clustermq` interfaces with in
-order to do computations.
+available worker nodes. Hence, this is what clustermq interfaces with in order
+to do computations.
 
-If you need specific options, see the links below to set up the respective
-schedulers.
+We currently support the [following
+schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler):
 
-* [LSF](https://github.com/mschubert/clustermq/wiki/LSF)
-* [SGE](https://github.com/mschubert/clustermq/wiki/SGE)
-* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM)
-* if you want another scheduler, [open an issue](https://github.com/mschubert/clustermq/issues/new)
+* [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
+* [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
+* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
+* [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs SGE scheduler option and custom template*
 
-You can also use the schedulers above [from your local machine via SSH](SSH).
+You can also access each of these schedulers from your local machine via the
+[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH). Results will
+be returned to your local session.
+
+If you need specific [computing environments or
+containers](https://github.com/mschubert/clustermq/wiki/Environments), you can
+activate them via the scheduler template.
 
 ## Examples
 
