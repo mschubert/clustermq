@@ -16,6 +16,8 @@ packages: character vector of required packages
 verbose : whether to print status messages [logical]
 errorHandling: string of function name to call error with, e.g. "stop"}
 
+\item{expr}{An R expression in curly braces}
+
 \item{envir}{Environment where to evaluate the arguments}
 
 \item{data}{Common arguments passed by register_dopcar_cmq(), e.g. n_jobs}

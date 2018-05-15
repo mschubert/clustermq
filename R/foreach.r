@@ -1,9 +1,10 @@
 #' Register clustermq as `foreach` parallel handler
 #'
 #' @param ...  List of arguments passed to the `Q` function, e.g. n_jobs
+#' @export
 register_dopar_cmq = function(...) {
     info = function(data, item)
-        switch(item, name="clustermq", version=packageVersion("clustermq"))
+        switch(item, name="clustermq", version=utils::packageVersion("clustermq"))
     foreach::setDoPar(cmq_foreach, data=list(...), info=info)
 }
 
@@ -17,8 +18,7 @@ register_dopar_cmq = function(...) {
 #'   packages: character vector of required packages
 #'   verbose : whether to print status messages [logical]
 #'   errorHandling: string of function name to call error with, e.g. "stop"
-#' @param expr   An R expression in {...}, class "{"; length=2, the first
-#'   object is the braces and 2nd the [no, depends on epxR]
+#' @param expr   An R expression in curly braces
 #' @param envir  Environment where to evaluate the arguments
 #' @param data   Common arguments passed by register_dopcar_cmq(), e.g. n_jobs
 cmq_foreach = function(obj, expr, envir, data) {
@@ -29,7 +29,7 @@ cmq_foreach = function(obj, expr, envir, data) {
     args_df = do.call(rbind, as.list(it))
 
     fun = function() NULL
-    formals(fun) = setNames(replicate(ncol(args_df), substitute()), obj$argnames)
+    formals(fun) = stats::setNames(replicate(ncol(args_df), substitute()), obj$argnames)
     body(fun) = expr
 
     data$export = utils::modifyList(as.list(data$export), as.list(obj$export))

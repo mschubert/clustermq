@@ -2,4 +2,5 @@
 
 export(Q)
 export(Q_rows)
+export(register_dopar_cmq)
 export(workers)
