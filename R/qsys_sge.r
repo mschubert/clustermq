@@ -6,8 +6,8 @@ SGE = R6::R6Class("SGE",
 
     public = list(
         initialize = function(...) {
-            super$initialize(...,
-                template=getOption("clustermq.template", system.file("SGE.tmpl")))
+            super$initialize(..., template=getOption("clustermq.template",
+                system.file("SGE.tmpl", package="clustermq", mustWork=TRUE)))
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {

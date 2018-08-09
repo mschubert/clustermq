@@ -6,8 +6,8 @@ LSF = R6::R6Class("LSF",
 
     public = list(
         initialize = function(...) {
-            super$initialize(...,
-                template=getOption("clustermq.template", system.file("LSF.tmpl")))
+            super$initialize(..., template=getOption("clustermq.template",
+                system.file("LSF.tmpl", package="clustermq", mustWork=TRUE)))
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
