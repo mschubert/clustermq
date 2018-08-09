@@ -8,15 +8,12 @@
 #' @param qsys_id     Character string of QSys class to use
 #' @return            An instance of the QSys class
 #' @export
-workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(),
-                   log_worker=FALSE, qsys_id=qsys_default) {
+workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FALSE,
+                   qsys_id=getOption("clustermq.scheduler", qsys_default)) {
     if (n_jobs == 0)
         return(get("LOCAL", envir=parent.env(environment())))
 
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-    if ("setup" %in% ls(qsys))
-        qsys = qsys$setup()
-
     qsys = qsys$new(data=data, reuse=reuse)
     on.exit(qsys$cleanup)
 

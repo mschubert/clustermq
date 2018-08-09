@@ -26,7 +26,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
 
     # set up qsys if no workers provided
     if (is.null(workers)) {
-        qsys_id = toupper(qsys_default)
+        qsys_id = toupper(getOption("clustermq.scheduler", qsys_default))
         if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
             stop("n_jobs or job_size is required")
         n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
@@ -34,9 +34,6 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         qsys = workers(n_jobs, data=data, reuse=FALSE, template=template,
                        log_worker=log_worker)
     } else {
-        qsys_id = class(workers)[1]
-        n_jobs = workers$workers
-        job_size = NULL
         qsys = workers
         do.call(qsys$set_common_data, data)
     }
@@ -51,7 +48,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         ))
 
     # process calls
-    if (n_jobs == 0 || qsys_id == "LOCAL") {
+    if (qsys$workers == 0 || class(qsys)[1] == "LOCAL") {
         list2env(export, envir=environment(fun))
         re = work_chunk(df=df, fun=fun, const_args=const, rettype=rettype,
                         common_seed=seed, progress=TRUE)

@@ -1,6 +1,7 @@
 * 0.8.5
   * Added experimental support as parallel foreach backend (#83)
   * Moved templates to package `inst/` directory (#85)
+  * Option `clustermq.scheduler` is now respected if set after package load (#88)
 
 * 0.8.4
   * Fix error for `qsys$reusable` when using `n_jobs=0`/local processing (#75)

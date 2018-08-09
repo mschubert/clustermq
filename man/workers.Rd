@@ -5,7 +5,8 @@
 \title{Creates a pool of workers}
 \usage{
 workers(n_jobs, data = NULL, reuse = TRUE, template = list(),
-  log_worker = FALSE, qsys_id = qsys_default)
+  log_worker = FALSE, qsys_id = getOption("clustermq.scheduler",
+  qsys_default))
 }
 \arguments{
 \item{n_jobs}{Number of jobs to submit (0 implies local processing)}
