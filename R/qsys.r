@@ -13,13 +13,18 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              protocol="tcp", node=Sys.info()[['nodename']]) {
+                              protocol="tcp", node=Sys.info()[['nodename']],
+                              template=NULL) {
             private$zmq_context = rzmq::init.context(3L)
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("%s://%s:%i", protocol, node, private$port)
             private$timer = proc.time()
             private$reuse = reuse
+
+            if (!is.null(template))
+                private$template = readChar(template, file.info(template)$size)
+            private$defaults = getOption("clustermq.defaults", list())
 
             if (is.null(master))
                 private$master = private$listen
@@ -167,6 +172,8 @@ QSys = R6::R6Class("QSys",
         workers_up = 0,
         worker_stats = list(),
         reuse = NULL,
+        template = NULL,
+        defaults = list(),
 
         send = function(..., serialize=TRUE) {
             rzmq::send.socket(socket = private$socket,

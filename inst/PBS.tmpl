@@ -1,0 +1,7 @@
+#PBS -N {{ job_name }}
+#PBS -l nodes={{ n_jobs }}:ppn=1
+#PBS -o {{ log_file | /dev/null }}
+#PBS -j oe
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\")'

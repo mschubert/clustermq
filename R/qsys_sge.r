@@ -6,18 +6,19 @@ SGE = R6::R6Class("SGE",
 
     public = list(
         initialize = function(...) {
-            super$initialize(...)
+            super$initialize(...,
+                template=getOption("clustermq.template", system.file("SGE.tmpl")))
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
-            template = utils::modifyList(SGE$defaults, template)
+            template = utils::modifyList(private$defaults, template)
             template$n_jobs = n_jobs
             template$master = private$master
             private$job_id = template$job_name = paste0("cmq", self$id)
             if (log_worker)
                 template$log_file = paste0(template$job_name, ".log")
 
-            filled = infuser::infuse(SGE$template, template)
+            filled = infuser::infuse(private$template, template)
 
             success = system("qsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {
@@ -42,39 +43,9 @@ SGE = R6::R6Class("SGE",
     ),
 
     private = list(
+        template = "",
+        defaults = list(),
         is_cleaned_up = FALSE,
         job_id = NULL
     )
 )
-
-# Static method, process scheduler options and return updated object
-SGE$setup = function() {
-    user_template = getOption("clustermq.template.sge")
-    if (!is.null(user_template)) {
-        warning("scheduler-specific templates are deprecated; use clustermq.template instead")
-        SGE$template = readChar(user_template, file.info(user_template)$size)
-    }
-    user_template = getOption("clustermq.template")
-    if (!is.null(user_template))
-        SGE$template = readChar(user_template, file.info(user_template)$size)
-
-    user_defaults = getOption("clustermq.defaults")
-    if (!is.null(user_defaults))
-        SGE$defaults = user_defaults
-    else
-        SGE$defaults = list()
-
-    SGE
-}
-
-# Static method, overwritten in qsys w/ user option
-SGE$template = paste(sep="\n",
-    "#$ -N {{ job_name }}               # job name",
-    "#$ -j y                            # combine stdout/error in one file",
-    "#$ -o {{ log_file | /dev/null }}   # output file",
-    "#$ -cwd                            # use pwd as work dir",
-    "#$ -V                              # use environment variable",
-    "#$ -t 1-{{ n_jobs }}               # submit jobs as array",
-    "",
-    "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\")'")
