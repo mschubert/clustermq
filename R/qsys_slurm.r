@@ -6,8 +6,7 @@ SLURM = R6::R6Class("SLURM",
 
     public = list(
         initialize = function(...) {
-            super$initialize(..., template=getOption("clustermq.template",
-                system.file("SLURM.tmpl", package="clustermq", mustWork=TRUE)))
+            super$initialize(..., template=getOption("clustermq.template", "SLURM"))
         },
 
         submit_jobs = function(...) {

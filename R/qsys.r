@@ -23,6 +23,9 @@ QSys = R6::R6Class("QSys",
             private$reuse = reuse
 
             if (!is.null(template)) {
+                if (!file.exists(template))
+                    template = system.file(paste0(template, ".tmpl"),
+                                           package="clustermq", mustWork=TRUE)
                 if (file.exists(template))
                     private$template = readChar(template, file.info(template)$size)
                 else
