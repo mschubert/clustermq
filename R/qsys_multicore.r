@@ -9,13 +9,13 @@ MULTICORE = R6::R6Class("MULTICORE",
             super$initialize(..., node="localhost")
         },
 
-        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+        submit_jobs = function(n_jobs, ...) {
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
                 p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
                 private$pids = c(private$pids, p$pid)
             }
-            private$workers_total = n_jobs
+            private$workers_total = opts$n_jobs
         },
 
         cleanup = function() {

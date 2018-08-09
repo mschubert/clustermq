@@ -171,7 +171,7 @@ QSys = R6::R6Class("QSys",
         listen = NULL,
         timer = NULL,
         common_data = NULL,
-        token = "not set",
+        token = NA,
         workers_total = 0,
         workers_up = 0,
         worker_stats = list(),
@@ -185,10 +185,15 @@ QSys = R6::R6Class("QSys",
                               serialize = serialize)
         },
 
-        fill_template = function(...) {
+        fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
-            values$job_name = paste0("cmq", self$id)
+            if (!"job_name" %in% names(values))
+                values$job_name = paste0("cmq", private$port)
+            values
+        },
+
+        fill_template = function(values) {
             infuser::infuse(private$template, values)
         }
     ),

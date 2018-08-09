@@ -1,7 +1,7 @@
 context("qsys implementations")
 
 has_network = has_connectivity(Sys.info()[['nodename']])
-avail = Sys.which(c("bsub", "qsub", "qsh", "sbatch", "fake_scheduler.sh"))
+avail = Sys.which(c("bsub", "qsub", "sbatch", "fake_scheduler.sh"))
 avail = as.list(nchar(avail) != 0)
 
 test_that("qsys_lsf", {

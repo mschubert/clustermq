@@ -10,17 +10,17 @@ LSF = R6::R6Class("LSF",
                 system.file("LSF.tmpl", package="clustermq", mustWork=TRUE)))
         },
 
-        submit_jobs = function(n_jobs, ...) {
-            args = list(n_jobs=n_jobs, ...)
-            private$job_id = args$job_name
-            filled = do.call(private$fill_template, args)
+        submit_jobs = function(...) {
+            opts = private$fill_options(...)
+            private$job_id = opts$job_name
+            filled = private$fill_template(opts)
 
             success = system("bsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
-            private$workers_total = n_jobs
+            private$workers_total = opts$n_jobs
         },
 
         cleanup = function() {

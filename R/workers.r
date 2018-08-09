@@ -21,9 +21,11 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
         template$log_file = paste0("cmq", qsys$id, ".log")
 	}
 
+    template$n_jobs = n_jobs
+
     on.exit(qsys$cleanup)
     message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-    qsys$submit_jobs(n_jobs, template=template)
+    do.call(qsys$submit_jobs, template)
     on.exit()
 
     qsys
