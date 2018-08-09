@@ -190,6 +190,7 @@ QSys = R6::R6Class("QSys",
             values$master = private$master
             if (!"job_name" %in% names(values))
                 values$job_name = paste0("cmq", private$port)
+            private$workers_total = values$n_jobs
             values
         },
 

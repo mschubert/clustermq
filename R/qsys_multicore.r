@@ -15,7 +15,7 @@ MULTICORE = R6::R6Class("MULTICORE",
                 p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
                 private$pids = c(private$pids, p$pid)
             }
-            private$workers_total = opts$n_jobs
+            private$workers_total = n_jobs
         },
 
         cleanup = function() {
