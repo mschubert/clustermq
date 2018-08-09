@@ -4,7 +4,7 @@
 \name{SLURM}
 \alias{SLURM}
 \title{SLURM scheduler functions}
-\format{An object of class \code{R6ClassGenerator} of length 26.}
+\format{An object of class \code{R6ClassGenerator} of length 24.}
 \usage{
 SLURM
 }

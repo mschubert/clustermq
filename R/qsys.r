@@ -22,8 +22,12 @@ QSys = R6::R6Class("QSys",
             private$timer = proc.time()
             private$reuse = reuse
 
-            if (!is.null(template))
-                private$template = readChar(template, file.info(template)$size)
+            if (!is.null(template)) {
+                if (file.exists(template))
+                    private$template = readChar(template, file.info(template)$size)
+                else
+                    stop("Template file does not exist: ", template)
+            }
             private$defaults = getOption("clustermq.defaults", list())
 
             if (is.null(master))
