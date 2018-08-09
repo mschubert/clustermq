@@ -178,6 +178,13 @@ QSys = R6::R6Class("QSys",
             rzmq::send.socket(socket = private$socket,
                               data = list(...),
                               serialize = serialize)
+        },
+
+        fill_template = function(...) {
+            values = utils::modifyList(private$defaults, list(...))
+            values$master = private$master
+            values$job_name = paste0("cmq", self$id)
+            infuser::infuse(private$template, values)
         }
     ),
 

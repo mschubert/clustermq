@@ -10,15 +10,10 @@ SGE = R6::R6Class("SGE",
                 system.file("SGE.tmpl", package="clustermq", mustWork=TRUE)))
         },
 
-        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
-            template = utils::modifyList(private$defaults, template)
-            template$n_jobs = n_jobs
-            template$master = private$master
-            private$job_id = template$job_name = paste0("cmq", self$id)
-            if (log_worker)
-                template$log_file = paste0(template$job_name, ".log")
-
-            filled = infuser::infuse(private$template, template)
+        submit_jobs = function(n_jobs, ...) {
+            args = list(n_jobs=n_jobs, ...)
+            private$job_id = args$job_name
+            filled = do.call(private$fill_template, args)
 
             success = system("qsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {

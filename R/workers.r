@@ -15,11 +15,16 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
 
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     qsys = qsys$new(data=data, reuse=reuse)
+
+    if (log_worker && is.null(template$log_file)) {
+		warning("'log_worker' is deprecated, use template(log_file=...) instead")
+        template$log_file = paste0("cmq", qsys$id, ".log")
+	}
+
     on.exit(qsys$cleanup)
-
     message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-    qsys$submit_jobs(n_jobs, template=template, log_worker=log_worker)
-
+    qsys$submit_jobs(n_jobs, template=template)
     on.exit()
+
     qsys
 }
