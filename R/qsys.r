@@ -141,7 +141,7 @@ QSys = R6::R6Class("QSys",
         # Compute summary statistics for workers
         summary_stats = function() {
             times = lapply(private$worker_stats, function(w) w$time)
-            max_mem = max(sapply(private$worker_stats, function(w) w$mem))
+            max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
 
