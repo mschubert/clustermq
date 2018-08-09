@@ -26,7 +26,7 @@ QSys = R6::R6Class("QSys",
                 if (file.exists(template))
                     private$template = readChar(template, file.info(template)$size)
                 else
-                    stop("Template file does not exist: ", template)
+                    stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
 
