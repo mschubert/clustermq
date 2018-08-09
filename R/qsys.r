@@ -49,12 +49,7 @@ QSys = R6::R6Class("QSys",
 
         # Sets the common data as an rzmq message object
         set_common_data = function(...) {
-            args = list(...)
-            for (n in names(args)) {
-                obj = args[[n]]
-                if (is.call(obj) || is.name(obj))
-                    args[[n]] = eval(obj, envir=parent.frame())
-            }
+            args = lapply(list(...), force)
 
             if ("fun" %in% names(args))
                 environment(args$fun) = .GlobalEnv
