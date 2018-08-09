@@ -47,6 +47,11 @@ QSys = R6::R6Class("QSys",
             stop(sQuote(submit_jobs), " must be overwritten")
         },
 
+        # Evaluate an arbitrary expression on a worker
+        send_call = function(expr, env=list()) {
+            private$send(id="DO_CALL", expr=substitute(expr), env=env)
+        },
+
         # Sets the common data as an rzmq message object
         set_common_data = function(...) {
             args = lapply(list(...), force)

@@ -42,6 +42,11 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             stop("Timeout reached, terminating")
 
         switch(msg$id,
+            "DO_CALL" = {
+                result = try(eval(msg$expr, envir=msg$env))
+                rzmq::send.socket(socket, data=list(id="WORKER_READY",
+                    token=token, expr=msg$expr, result=result))
+            },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
                     data_socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
