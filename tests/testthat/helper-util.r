@@ -11,7 +11,7 @@ recv = function(p, sock, timeout=3L) {
 }
 
 clean_collect = function(p, timeout=5L) {
-    re = parallel::mccollect(p, wait=FALSE, timeout=timeout)
+    re = suppressWarnings(parallel::mccollect(p, wait=FALSE, timeout=timeout))
 
     if (is.null(re)) {
         # if timeout is reached without results
