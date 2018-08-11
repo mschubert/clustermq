@@ -152,7 +152,7 @@ QSys = R6::R6Class("QSys",
 
             fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem))
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem + 200))
         }
     ),
 

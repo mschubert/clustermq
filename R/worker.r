@@ -114,7 +114,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     rzmq::send.socket(socket, data = list(
         id = "WORKER_DONE",
         time = run_time,
-        mem = 200 + sum(gc()[,6]),
+        mem = sum(gc()[,6]),
         calls = counter
     ))
 
