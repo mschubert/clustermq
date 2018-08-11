@@ -116,7 +116,7 @@ QSys = R6::R6Class("QSys",
         },
 
         # Make sure all resources are closed properly
-        cleanup = function(verbose=TRUE) {
+        cleanup = function(quiet=FALSE) {
             while(self$workers_running > 0) {
                 msg = self$receive_data(timeout=5)
                 if (is.null(msg)) {
@@ -132,7 +132,7 @@ QSys = R6::R6Class("QSys",
             }
 
             success = self$workers_running == 0
-            if (verbose)
+            if (!quiet)
                 private$summary_stats()
             success
         }

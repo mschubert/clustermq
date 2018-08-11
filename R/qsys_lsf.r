@@ -21,8 +21,8 @@ LSF = R6::R6Class("LSF",
             }
         },
 
-        cleanup = function() {
-            success = super$cleanup()
+        cleanup = function(quiet=FALSE) {
+            success = super$cleanup(quiet=quiet)
             self$finalize(success)
         },
 

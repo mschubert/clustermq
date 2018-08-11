@@ -18,8 +18,8 @@ MULTICORE = R6::R6Class("MULTICORE",
             private$workers_total = n_jobs
         },
 
-        cleanup = function() {
-            success = super$cleanup()
+        cleanup = function(quiet=FALSE) {
+            success = super$cleanup(quiet=quiet)
             if (success)
                 private$pids = NULL
             self$finalize()
