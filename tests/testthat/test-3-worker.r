@@ -30,8 +30,7 @@ shutdown_worker = function(p, worker_active=TRUE) {
     if (worker_active)
         send(socket, list(id="WORKER_STOP"))
     msg = recv(p, socket)
-    if (worker_active)
-        send(socket, list()) # already shut down, but reset socket state
+    send(socket, list()) # already shut down, but reset socket state
     testthat::expect_equal(msg$id, "WORKER_DONE")
     testthat::expect_is(msg$time, "proc_time")
     testthat::expect_is(msg$calls, "numeric")
@@ -91,11 +90,26 @@ test_that("token mismatch", {
     on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
 
-    # should probably also test for error when DO_CHUNK but no chunk provided
     send(socket, list(id="DO_CHUNK", chunk=data.frame(x=5), token="token2"))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_ERROR")
-    shutdown_worker(p, worker_active=FALSE)
 
+    shutdown_worker(p, worker_active=FALSE)
+    on.exit(NULL)
+})
+
+test_that("custom call", {
+    p = start_worker()
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
+    send_common()
+
+    send(socket, list(id="DO_CALL", expr=quote(x*2), env=list(x=4), ref=1L))
+    msg = recv(p, socket)
+
+    testthat::expect_equal(msg$id, "WORKER_READY")
+    testthat::expect_equal(msg$result, 8)
+    testthat::expect_equal(msg$ref, 1L)
+
+    shutdown_worker(p)
     on.exit(NULL)
 })
