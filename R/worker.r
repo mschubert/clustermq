@@ -44,8 +44,9 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
         switch(msg$id,
             "DO_CALL" = {
                 result = try(eval(msg$expr, envir=msg$env))
+                message("eval'd: ", msg$expr)
                 rzmq::send.socket(socket, data=list(id="WORKER_READY",
-                    token=token, expr=msg$expr, result=result))
+                    token=token, ref=msg$ref, result=result))
             },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {

@@ -51,8 +51,8 @@ QSys = R6::R6Class("QSys",
         },
 
         # Evaluate an arbitrary expression on a worker
-        send_call = function(expr, env=list()) {
-            private$send(id="DO_CALL", expr=substitute(expr), env=env)
+        send_call = function(expr, env=list(), ref=substitute(expr)) {
+            private$send(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
         },
 
         # Sets the common data as an rzmq message object
