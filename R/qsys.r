@@ -86,8 +86,8 @@ QSys = R6::R6Class("QSys",
         },
 
         # Wait for a total of 50 ms
-        send_wait = function() {
-            private$send(id="WORKER_WAIT", wait=0.05*self$workers_running)
+        send_wait = function(wait=0.05*self$workers_running) {
+            private$send(id="WORKER_WAIT", wait=wait)
         },
 
         # Read data from the socket
@@ -100,10 +100,8 @@ QSys = R6::R6Class("QSys",
             rcv = rzmq::poll.socket(list(private$socket),
                                     list("read"), timeout=timeout)
 
-            if (rcv[[1]]$read)
+            if (rcv[[1]]$read) # otherwise timeout reached
                 rzmq::receive.socket(private$socket)
-            else # timeout reached
-                NULL
         },
 
         # Send shutdown signal to worker
@@ -118,7 +116,7 @@ QSys = R6::R6Class("QSys",
         },
 
         # Make sure all resources are closed properly
-        cleanup = function() {
+        cleanup = function(verbose=TRUE) {
             while(self$workers_running > 0) {
                 msg = self$receive_data(timeout=5)
                 if (is.null(msg)) {
@@ -134,25 +132,9 @@ QSys = R6::R6Class("QSys",
             }
 
             success = self$workers_running == 0
-            self$summary_stats()
+            if (verbose)
+                private$summary_stats()
             success
-        },
-
-        # Compute summary statistics for workers
-        summary_stats = function() {
-            times = lapply(private$worker_stats, function(w) w$time)
-            max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
-            wt = Reduce(`+`, times) / length(times)
-            rt = proc.time() - private$timer
-
-            if (class(wt) != "proc_time")
-                wt = rep(NA, 3)
-            if (length(max_mem) != 1)
-                max_mem = NA
-
-            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
-            message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem + 200))
         }
     ),
 
@@ -199,6 +181,22 @@ QSys = R6::R6Class("QSys",
 
         fill_template = function(values) {
             infuser::infuse(private$template, values)
+        },
+
+        summary_stats = function() {
+            times = lapply(private$worker_stats, function(w) w$time)
+            max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
+            wt = Reduce(`+`, times) / length(times)
+            rt = proc.time() - private$timer
+
+            if (class(wt) != "proc_time")
+                wt = rep(NA, 3)
+            if (length(max_mem) != 1)
+                max_mem = NA
+
+            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
+            message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem + 200))
         }
     ),
 
