@@ -134,6 +134,8 @@ QSys = R6::R6Class("QSys",
             success = self$workers_running == 0
             if (!quiet)
                 private$summary_stats()
+            if (success)
+                private$is_cleaned_up = TRUE
             success
         }
     ),
@@ -163,6 +165,7 @@ QSys = R6::R6Class("QSys",
         reuse = NULL,
         template = NULL,
         defaults = list(),
+        is_cleaned_up = FALSE,
 
         send = function(..., serialize=TRUE) {
             rzmq::send.socket(socket = private$socket,
