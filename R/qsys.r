@@ -136,7 +136,7 @@ QSys = R6::R6Class("QSys",
                 private$summary_stats()
             if (success)
                 private$is_cleaned_up = TRUE
-            success
+            invisible(success)
         }
     ),
 

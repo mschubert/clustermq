@@ -21,6 +21,7 @@ MULTICORE = R6::R6Class("MULTICORE",
         cleanup = function(quiet=FALSE) {
             success = super$cleanup(quiet=quiet)
             self$finalize()
+            invisible(success)
         },
 
         finalize = function() {
