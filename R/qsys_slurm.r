@@ -31,7 +31,6 @@ SLURM = R6::R6Class("SLURM",
     ),
 
     private = list(
-        is_cleaned_up = FALSE,
         job_id = NULL
     )
 )

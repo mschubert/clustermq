@@ -31,9 +31,6 @@ SGE = R6::R6Class("SGE",
     ),
 
     private = list(
-        template = "",
-        defaults = list(),
-        is_cleaned_up = FALSE,
         job_id = NULL
     )
 )
