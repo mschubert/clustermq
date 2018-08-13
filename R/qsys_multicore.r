@@ -12,28 +12,29 @@ MULTICORE = R6::R6Class("MULTICORE",
         submit_jobs = function(n_jobs, ...) {
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
-                p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
-                private$pids = c(private$pids, p$pid)
+                p = parallel::mcparallel(cmd, silent=TRUE)
+                private$children[[p$pid]] = p
             }
             private$workers_total = n_jobs
         },
 
         cleanup = function(quiet=FALSE) {
             success = super$cleanup(quiet=quiet)
-            if (success)
-                private$pids = NULL
             self$finalize()
         },
 
         finalize = function() {
-            if (length(private$pids) > 0) {
-                tools::pskill(private$pids, tools::SIGKILL)
-                private$pids = NULL
+            for (pid in names(private$children)) {
+                res = parallel::mccollect(private$children[[pid]],
+                                          wait=FALSE, timeout=0.5)
+                if (is.null(res))
+                    tools::pskill(pid, tools::SIGKILL)
+                private$children[[pid]] = NULL
             }
         }
     ),
 
     private = list(
-        pids = NULL
+        children = list()
     )
 )
