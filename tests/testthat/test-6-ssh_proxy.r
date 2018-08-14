@@ -48,7 +48,7 @@ test_that("control flow between proxy and master", {
     # shutdown
     msg = list(id = "PROXY_STOP")
     send(socket, msg)
-    collect = clean_collect(p)
+    collect = suppressWarnings(parallel::mccollect(p))
     expect_equal(as.integer(names(collect)), p$pid)
     on.exit(NULL)
 })

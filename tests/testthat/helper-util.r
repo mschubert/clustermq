@@ -3,23 +3,14 @@ send = function(sock, data) {
 }
 
 recv = function(p, sock, timeout=3L) {
-    event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
+    event = try(rzmq::poll.socket(list(sock), list("read"), timeout=timeout))
+    if (class(event) == "try-error") {
+        return(recv(p, sock, timeout=3L))
+    }
     if (event[[1]]$read)
         rzmq::receive.socket(sock)
     else
-        clean_collect(p)
-}
-
-clean_collect = function(p, timeout=5L) {
-    re = suppressWarnings(parallel::mccollect(p, wait=FALSE, timeout=timeout))
-
-    if (is.null(re)) {
-        # if timeout is reached without results
-        tools::pskill(p$pid)
-        stop("Unclean worker shutdown")
-    }
-
-    invisible(re)
+        stop("this should not happen")
 }
 
 has_connectivity = function(host, protocol="tcp") {

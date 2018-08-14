@@ -12,10 +12,8 @@ start_worker = function() {
     skip_on_cran()
 
     p = parallel::mcparallel(worker(master))
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_UP")
-    on.exit(NULL)
     p
 }
 
@@ -34,32 +32,27 @@ shutdown_worker = function(p, worker_active=TRUE) {
     testthat::expect_equal(msg$id, "WORKER_DONE")
     testthat::expect_is(msg$time, "proc_time")
     testthat::expect_is(msg$calls, "numeric")
-    clean_collect(p)
+    parallel::mccollect(p)
 }
 
 test_that("sending common data", {
     p = start_worker()
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
     shutdown_worker(p)
-    on.exit(NULL)
 })
 
 test_that("invalid common data", {
     p = start_worker()
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
 
     send(socket, list(id="DO_SETUP", invalid=TRUE))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_ERROR")
 
     shutdown_worker(p)
-    on.exit(NULL)
 })
 
 test_that("common data redirect", {
     p = start_worker()
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
 
     send(socket, list(id="DO_SETUP", redirect=master))
     msg = recv(p, socket)
@@ -67,12 +60,10 @@ test_that("common data redirect", {
 
     send_common()
     shutdown_worker(p)
-    on.exit(NULL)
 })
 
 test_that("do work", {
     p = start_worker()
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
 
     # should probably also test for error when DO_CHUNK but no chunk provided
@@ -82,12 +73,10 @@ test_that("do work", {
     testthat::expect_equal(msg$result, list(`1`=5))
 
     shutdown_worker(p)
-    on.exit(NULL)
 })
 
 test_that("token mismatch", {
     p = start_worker()
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
 
     send(socket, list(id="DO_CHUNK", chunk=data.frame(x=5), token="token2"))
@@ -95,12 +84,10 @@ test_that("token mismatch", {
     testthat::expect_equal(msg$id, "WORKER_ERROR")
 
     shutdown_worker(p, worker_active=FALSE)
-    on.exit(NULL)
 })
 
 test_that("custom call", {
     p = start_worker()
-    on.exit(tools::pskill(p$pid, tools::SIGKILL))
     send_common()
 
     send(socket, list(id="DO_CALL", expr=quote(x*2), env=list(x=4), ref=1L))
@@ -111,5 +98,4 @@ test_that("custom call", {
     testthat::expect_equal(msg$ref, 1L)
 
     shutdown_worker(p)
-    on.exit(NULL)
 })

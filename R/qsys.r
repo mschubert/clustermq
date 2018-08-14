@@ -97,8 +97,10 @@ QSys = R6::R6Class("QSys",
             else
                 timeout = as.integer(timeout * 1000)
 
-            rcv = rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=timeout)
+            rcv = try(rzmq::poll.socket(list(private$socket),
+                                    list("read"), timeout=timeout))
+            if (class(rcv) == "try-error")
+                return(self$receive_data(timeout))
 
             if (rcv[[1]]$read) # otherwise timeout reached
                 rzmq::receive.socket(private$socket)

@@ -13,25 +13,23 @@ MULTICORE = R6::R6Class("MULTICORE",
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
                 p = parallel::mcparallel(cmd, silent=TRUE)
-                private$children[[p$pid]] = p
+                private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs
         },
 
         cleanup = function(quiet=FALSE) {
             success = super$cleanup(quiet=quiet)
-            self$finalize()
             invisible(success)
         },
 
         finalize = function() {
-            for (pid in names(private$children)) {
-                res = parallel::mccollect(private$children[[pid]],
-                                          wait=FALSE, timeout=0.5)
-                if (is.null(res))
-                    tools::pskill(pid, tools::SIGKILL)
-                private$children[[pid]] = NULL
-            }
+            res = suppressWarnings(parallel::mccollect(private$children))
+#            kill_pids = names(res)[sapply(res, is.null)]
+#            if (length(kill_pids) > 0) {
+#                warning("unclean shutdown for pids: ", paste(kill_pids, collapse=", "))
+#                tools::pskill(kill_pids, tools::SIGKILL)
+#            }
         }
     ),
 
