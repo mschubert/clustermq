@@ -4,6 +4,17 @@ has_network = has_connectivity(Sys.info()[['nodename']])
 avail = Sys.which(c("bsub", "qsub", "sbatch", "fake_scheduler.sh"))
 avail = as.list(nchar(avail) != 0)
 
+#TODO: factor out in "test worker api"?
+test_that("qsys_multicore", {
+    skip_on_os("windows")
+    fx = function(x) x*2
+    w = workers(n_jobs=4, qsys_id="multicore", reuse=TRUE)
+    r = Q(fx, x=1:3, workers=w, timeout=3L)
+    success = w$cleanup()
+    expect_equal(r, as.list(1:3*2))
+    expect_equal(success, TRUE)
+})
+
 test_that("qsys_lsf", {
     skip_if_not_installed('clustermq')
     skip_if_not(with(avail, bsub))
