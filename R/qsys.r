@@ -93,12 +93,12 @@ QSys = R6::R6Class("QSys",
         # Read data from the socket
         receive_data = function(timeout=Inf) {
             if (is.infinite(timeout))
-                timeout = -1L
+                ztimeout = -1L
             else
-                timeout = as.integer(timeout * 1000)
+                ztimeout = as.integer(timeout * 1000)
 
             rcv = rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=timeout)
+                                    list("read"), timeout=ztimeout)
             if (is.null(rcv[[1]]))
                 return(self$receive_data(timeout))
 
