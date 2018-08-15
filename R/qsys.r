@@ -119,7 +119,7 @@ QSys = R6::R6Class("QSys",
 
         # Make sure all resources are closed properly
         cleanup = function(quiet=FALSE) {
-            while(private$workers_up > 0) {
+            while(self$workers_running > 0) {
                 msg = self$receive_data(timeout=5)
                 if (is.null(msg)) {
                     warning(sprintf("%i/%i workers did not shut down properly",
@@ -128,7 +128,7 @@ QSys = R6::R6Class("QSys",
                 }
                 switch(msg$id,
                     "WORKER_UP" = {
-                        private$workers_up = private$workers_up + 1
+                        self$workers_running = self$workers_running + 1
                         self$send_shutdown_worker()
                     },
                     "WORKER_READY" = self$send_shutdown_worker(),
