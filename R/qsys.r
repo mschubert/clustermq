@@ -118,9 +118,9 @@ QSys = R6::R6Class("QSys",
         },
 
         # Make sure all resources are closed properly
-        cleanup = function(quiet=FALSE) {
+        cleanup = function(quiet=FALSE, timeout=5) {
             while(self$workers_running > 0) {
-                msg = self$receive_data(timeout=5)
+                msg = self$receive_data(timeout=timeout)
                 if (is.null(msg)) {
                     warning(sprintf("%i/%i workers did not shut down properly",
                             self$workers_running, self$workers), immediate.=TRUE)
