@@ -14,14 +14,12 @@
 #' @param iter           Objects to be iterated in each function call
 #' @param rettype        Return type of function
 #' @param fail_on_error  If an error occurs on the workers, continue or fail?
-#' @param wait_time      Time to wait between messages; set 0 for short calls
-#'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @return               A list of whatever `fun` returned
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
-                  wait_time=NA, chunk_size=NA, timeout=Inf) {
+                  chunk_size=NA, timeout=Inf) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
@@ -102,8 +100,6 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 stop("\nWORKER_ERROR: ", msg$msg)
             }
         )
-
-        Sys.sleep(wait_time)
     }
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,

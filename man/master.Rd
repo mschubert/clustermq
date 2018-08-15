@@ -4,7 +4,7 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(qsys, iter, rettype = "list", fail_on_error = TRUE, wait_time = NA,
+master(qsys, iter, rettype = "list", fail_on_error = TRUE,
   chunk_size = NA, timeout = Inf)
 }
 \arguments{
@@ -15,9 +15,6 @@ master(qsys, iter, rettype = "list", fail_on_error = TRUE, wait_time = NA,
 \item{rettype}{Return type of function}
 
 \item{fail_on_error}{If an error occurs on the workers, continue or fail?}
-
-\item{wait_time}{Time to wait between messages; set 0 for short calls
-defaults to 1/sqrt(number_of_functon_calls)}
 
 \item{chunk_size}{Number of function calls to chunk together
 defaults to 100 chunks per worker or max. 500 kb per chunk}

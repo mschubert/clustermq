@@ -6,7 +6,7 @@
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, wait_time=NA, chunk_size=NA, timeout=Inf) {
+        log_worker=FALSE, chunk_size=NA, timeout=Inf) {
 
     # check if call args make sense
     if (!is.null(memory))
@@ -37,8 +37,6 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         do.call(workers$set_common_data, data)
 
     # use heuristic for wait and chunk size
-    if (is.na(wait_time))
-        wait_time = min(0.03, ifelse(n_calls < 1e5, 1/sqrt(n_calls), 0))
     if (is.na(chunk_size))
         chunk_size = ceiling(min(
             n_calls / 2000,
@@ -54,6 +52,6 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
         master(qsys=workers, iter=df, rettype=rettype, fail_on_error=fail_on_error,
-               wait_time=wait_time, chunk_size=chunk_size, timeout=timeout)
+               chunk_size=chunk_size, timeout=timeout)
     }
 }

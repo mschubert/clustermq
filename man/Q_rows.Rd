@@ -7,7 +7,7 @@
 Q_rows(df, fun, const = list(), export = list(), seed = 128965,
   memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
   rettype = "list", fail_on_error = TRUE, workers = NULL,
-  log_worker = FALSE, wait_time = NA, chunk_size = NA, timeout = Inf)
+  log_worker = FALSE, chunk_size = NA, timeout = Inf)
 }
 \arguments{
 \item{df}{data.frame with iterated arguments}
@@ -36,9 +36,6 @@ if job_size is given as well}
 \item{workers}{Optional instance of QSys representing a worker pool}
 
 \item{log_worker}{Write a log file for each worker}
-
-\item{wait_time}{Time to wait between messages; set 0 for short calls
-defaults to 1/sqrt(number_of_functon_calls)}
 
 \item{chunk_size}{Number of function calls to chunk together
 defaults to 100 chunks per worker or max. 10 kb per chunk}
