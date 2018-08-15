@@ -97,9 +97,9 @@ QSys = R6::R6Class("QSys",
             else
                 timeout = as.integer(timeout * 1000)
 
-            rcv = try(rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=timeout))
-            if (class(rcv) == "try-error")
+            rcv = rzmq::poll.socket(list(private$socket),
+                                    list("read"), timeout=timeout)
+            if (is.null(rcv[[1]]))
                 return(self$receive_data(timeout))
 
             if (rcv[[1]]$read) # otherwise timeout reached
@@ -119,18 +119,22 @@ QSys = R6::R6Class("QSys",
 
         # Make sure all resources are closed properly
         cleanup = function(quiet=FALSE) {
-            while(self$workers_running > 0) {
+            while(private$workers_up > 0) {
                 msg = self$receive_data(timeout=5)
                 if (is.null(msg)) {
                     warning(sprintf("%i/%i workers did not shut down properly",
                             self$workers_running, self$workers), immediate.=TRUE)
                     break
-                } else if (msg$id == "WORKER_READY")
-                    self$send_shutdown_worker()
-                else if (msg$id == "WORKER_DONE")
-                    self$disconnect_worker(msg)
-                else
-                    warning("something went wrong during cleanup")
+                }
+                switch(msg$id,
+                    "WORKER_UP" = {
+                        private$workers_up = private$workers_up + 1
+                        self$send_shutdown_worker()
+                    },
+                    "WORKER_READY" = self$send_shutdown_worker(),
+                    "WORKER_DONE" = self$disconnect_worker(msg),
+                    warning("Unexpected message ID: ", sQuote(msg$id))
+                )
             }
 
             success = self$workers_running == 0

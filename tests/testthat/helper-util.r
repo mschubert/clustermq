@@ -3,8 +3,8 @@ send = function(sock, data) {
 }
 
 recv = function(p, sock, timeout=3L) {
-    event = try(rzmq::poll.socket(list(sock), list("read"), timeout=timeout))
-    if (class(event) == "try-error") {
+    event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
+    if (is.null(event[[1]])) {
         return(recv(p, sock, timeout=3L))
     }
     if (event[[1]]$read)
