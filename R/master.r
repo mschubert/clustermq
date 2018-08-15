@@ -43,18 +43,8 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                                     format = "[:bar] :percent eta: :eta")
 
     # main event loop
-    while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
-        # wait for results only longer if we don't have all data yet
-        if ((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0)
-            msg = qsys$receive_data(timeout=timeout)
-        else {
-            msg = qsys$receive_data(timeout=min(10, timeout))
-            if (is.null(msg)) {
-                warning(sprintf("%i/%i workers did not shut down properly",
-                        qsys$workers_running, qsys$workers), immediate.=TRUE)
-                break
-            }
-        }
+    while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
+        msg = qsys$receive_data(timeout=timeout)
 
         switch(msg$id,
             "WORKER_UP" = {
@@ -101,8 +91,6 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
                 } else if (!shutdown && qsys$reusable) {
                     qsys$send_wait()
-                    if (jobs_running == 0)
-                        break
 
                 } else # or else shut it down
                     qsys$send_shutdown_worker()
