@@ -9,7 +9,6 @@ master = paste("tcp://localhost", port, sep=":")
 start_worker = function() {
     skip_if_not(has_localhost)
     skip_on_os("windows")
-    skip_on_cran()
 
     p = parallel::mcparallel(worker(master))
     msg = recv(p, socket)

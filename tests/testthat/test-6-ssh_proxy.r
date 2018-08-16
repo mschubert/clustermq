@@ -5,7 +5,6 @@ has_localhost = has_connectivity("localhost")
 test_that("control flow between proxy and master", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
-    skip_on_cran()
 
     # prerequesites
     context = rzmq::init.context()
