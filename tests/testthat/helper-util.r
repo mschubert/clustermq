@@ -4,10 +4,9 @@ send = function(sock, data) {
 
 recv = function(p, sock, timeout=3L) {
     event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
-    if (is.null(event[[1]])) {
-        return(recv(p, sock, timeout=3L))
-    }
-    if (event[[1]]$read)
+    if (is.null(event[[1]]))
+        return(recv(p, sock, timeout=timeout))
+    else if (event[[1]]$read)
         rzmq::receive.socket(sock)
     else
         stop("this should not happen")
