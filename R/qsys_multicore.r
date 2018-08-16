@@ -18,22 +18,30 @@ MULTICORE = R6::R6Class("MULTICORE",
             private$workers_total = n_jobs
         },
 
-        cleanup = function(quiet=FALSE) {
-            success = super$cleanup(quiet=quiet)
-            invisible(success)
+        cleanup = function(quiet=FALSE, timeout=3L) {
+            success = super$cleanup(quiet=quiet, timeout=timeout)
+            private$collect_children(timeout=timeout)
+            invisible(success && length(private$children) == 0)
         },
 
         finalize = function() {
-            res = suppressWarnings(parallel::mccollect(private$children))
-#            kill_pids = names(res)[sapply(res, is.null)]
-#            if (length(kill_pids) > 0) {
-#                warning("unclean shutdown for pids: ", paste(kill_pids, collapse=", "))
-#                tools::pskill(kill_pids, tools::SIGKILL)
-#            }
+            private$collect_children()
+            running = names(private$children)
+            if (length(running) > 0) {
+                warning("Unclean shutdown for PIDs: ", paste(running, collapse=", "))
+                tools::pskill(running, tools::SIGKILL)
+            }
         }
     ),
 
     private = list(
+        collect_children = function(timeout=0L) {
+            pids = as.integer(names(private$children))
+            res = suppressWarnings(parallel::mccollect(pids, wait=FALSE, timeout=timeout))
+            finished = names(res)
+            private$children[intersect(names(private$children), finished)] = NULL
+        },
+
         children = list()
     )
 )

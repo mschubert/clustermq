@@ -33,7 +33,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     pkg_warn = TRUE
 
     if (!qsys$reusable)
-        on.exit(qsys$cleanup())
+        on.exit(qsys$finalize())
 
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
@@ -101,6 +101,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
             }
         )
     }
+
+    if (!qsys$reusable)
+        on.exit(qsys$cleanup())
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)
