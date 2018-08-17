@@ -22,11 +22,7 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
 	}
 
     template$n_jobs = n_jobs
-
-    on.exit(qsys$cleanup)
     message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
     do.call(qsys$submit_jobs, template)
-    on.exit()
-
     qsys
 }
