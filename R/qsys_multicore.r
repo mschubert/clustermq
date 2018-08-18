@@ -18,14 +18,14 @@ MULTICORE = R6::R6Class("MULTICORE",
             private$workers_total = n_jobs
         },
 
-        cleanup = function(quiet=FALSE, timeout=3L) {
+        cleanup = function(quiet=FALSE, timeout=3) {
             success = super$cleanup(quiet=quiet, timeout=timeout)
-            private$collect_children(timeout=timeout)
+            private$collect_children(wait=success, timeout=timeout)
             invisible(success && length(private$children) == 0)
         },
 
         finalize = function() {
-            private$collect_children()
+            private$collect_children(wait=FALSE, timeout=0)
             running = names(private$children)
             if (length(running) > 0) {
                 warning("Unclean shutdown for PIDs: ", paste(running, collapse=", "))
@@ -35,11 +35,11 @@ MULTICORE = R6::R6Class("MULTICORE",
     ),
 
     private = list(
-        collect_children = function(timeout=0L) {
+        collect_children = function(...) {
             pids = as.integer(names(private$children))
-            res = suppressWarnings(parallel::mccollect(pids, wait=FALSE, timeout=timeout))
-            finished = names(res)
-            private$children[intersect(names(private$children), finished)] = NULL
+            res = suppressWarnings(parallel::mccollect(pids, ...))
+            finished = intersect(names(private$children), names(res))
+            private$children[finished] = NULL
         },
 
         children = list()
