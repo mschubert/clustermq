@@ -32,8 +32,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     pkgver = utils::packageVersion("clustermq")
     pkg_warn = TRUE
 
-    if (!qsys$reusable)
-        on.exit(qsys$finalize())
+    on.exit(qsys$finalize())
 
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
@@ -102,8 +101,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
         )
     }
 
+    on.exit(NULL)
     if (!qsys$reusable)
-        on.exit(qsys$cleanup())
+        qsys$cleanup()
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)
