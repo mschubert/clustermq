@@ -6,8 +6,9 @@ SSH = R6::R6Class("SSH",
 
     public = list(
         initialize = function(data, ...) {
-            if (is.null(SSH$host))
-                stop("SSH host not set")
+            private$ssh_host = getOption("clustermq.ssh.host")
+            if (is.null(private$ssh_host))
+                stop("Option 'clustermq.ssh.host' required for SSH but not set")
 
             super$initialize(...)
             private$proxy_socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
@@ -22,10 +23,10 @@ SSH = R6::R6Class("SSH",
                            remote_port[1], remote_port[2],
                            getOption("clustermq.ssh.log", default="/dev/null"))
             ssh_cmd = sprintf('ssh -f -R %s -R %s %s "%s"',
-                              ctl_tunnel, job_tunnel, SSH$host, rcmd)
+                              ctl_tunnel, job_tunnel, private$ssh_host, rcmd)
 
             # wait for ssh to connect
-            message(sprintf("Connecting %s via SSH ...", SSH$host))
+            message(sprintf("Connecting %s via SSH ...", private$ssh_host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
             # Exchange init messages with proxy
@@ -74,19 +75,7 @@ SSH = R6::R6Class("SSH",
     ),
 
 	private = list(
+        ssh_host = NULL,
         proxy_socket = NULL
 	)
 )
-
-# Static method, process scheduler options and return updated object
-SSH$setup = function() {
-    host = getOption("clustermq.ssh.host")
-    if (length(host) == 0) {
-        packageStartupMessage("* Option 'clustermq.ssh.host' not set, ",
-                "trying to use it will fail")
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/SSH")
-    } else {
-        SSH$host = host
-    }
-    SSH
-}
