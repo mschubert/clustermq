@@ -75,9 +75,7 @@ QSys = R6::R6Class("QSys",
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-
             rzmq::send.message.object(private$socket, private$common_data)
-            private$workers_up = private$workers_up + 1
         },
 
         # Send iterated data to one worker
@@ -102,8 +100,20 @@ QSys = R6::R6Class("QSys",
             if (is.null(rcv[[1]]))
                 return(self$receive_data(timeout))
 
-            if (rcv[[1]]$read) # otherwise timeout reached
-                rzmq::receive.socket(private$socket)
+            if (rcv[[1]]$read) { # otherwise timeout reached
+                msg = rzmq::receive.socket(private$socket)
+                if (msg$id == "WORKER_UP") {
+                    if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
+                        warning("\nVersion mismatch: master has ", private$pkg_warn,
+                                ", worker ", msg$pkgver, immediate.=TRUE)
+                        private$pkg_warn = NULL
+                    }
+                    msg$id = "WORKER_READY"
+                    msg$token = "not set"
+                    private$workers_up = private$workers_up + 1
+                }
+                msg
+            }
         },
 
         # Send shutdown signal to worker
@@ -172,6 +182,7 @@ QSys = R6::R6Class("QSys",
         template = NULL,
         defaults = list(),
         is_cleaned_up = FALSE,
+        pkg_warn = utils::packageVersion("clustermq"),
 
         send = function(..., serialize=TRUE) {
             rzmq::send.socket(socket = private$socket,

@@ -29,8 +29,6 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     n_errors = 0
     n_warnings = 0
     shutdown = FALSE
-    pkgver = utils::packageVersion("clustermq")
-    pkg_warn = TRUE
 
     on.exit(qsys$finalize())
 
@@ -44,14 +42,6 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
         msg = qsys$receive_data(timeout=timeout)
 
         switch(msg$id,
-            "WORKER_UP" = {
-                if (msg$pkgver != pkgver && pkg_warn) {
-                    warning("\nVersion mismatch: master has ", pkgver,
-                            ", worker ", msg$pkgver, immediate.=TRUE)
-                    pkg_warn = FALSE
-                }
-                qsys$send_common_data()
-            },
             "WORKER_READY" = {
                 # process the result data if we got some
                 if (!is.null(msg$result)) {
