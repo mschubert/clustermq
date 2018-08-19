@@ -39,7 +39,7 @@ test_that("control flow between proxy and master", {
     worker = rzmq::init.socket(context, "ZMQ_REQ")
     rzmq::connect.socket(worker, proxy)
 
-    send(worker, list(id="WORKER_UP"))
+    send(worker, list(id="WORKER_READY"))
     msg = recv(p, worker)
     testthat::expect_equal(msg$id, "DO_SETUP")
     testthat::expect_equal(msg$token, token)

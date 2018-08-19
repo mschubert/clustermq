@@ -74,7 +74,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
             msg = qsys$receive_data()
             message("received: ", msg)
             switch(msg$id,
-                "WORKER_UP" = {
+                "WORKER_READY" = {
                     qsys$send_common_data()
                 }
             )

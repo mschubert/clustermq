@@ -9,7 +9,7 @@ recv = function(p, sock, timeout=3L) {
     else if (event[[1]]$read)
         rzmq::receive.socket(sock)
     else
-        stop("this should not happen")
+        stop("Timeout reached")
 }
 
 has_connectivity = function(host, protocol="tcp") {
