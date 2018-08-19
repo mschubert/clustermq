@@ -15,7 +15,8 @@ LOCAL = R6::R6Class("LOCAL",
         submit_jobs = function(...) {
         },
 
-        cleanup = function(...) {
+        cleanup = function(quiet=FALSE, timeout=3) {
+            invisible(TRUE)
         }
     )
 )
