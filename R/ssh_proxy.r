@@ -45,8 +45,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
     while(TRUE) {
         events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock),
-                                   rep(list("read"), 4),
-                                   timeout=-1L)
+                                   rep(list("read"), 4), timeout=-1L)
 
         # forwarding messages between workers and master
         if (events[[1]]$read)

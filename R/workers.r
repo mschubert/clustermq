@@ -11,7 +11,7 @@
 workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FALSE,
                    qsys_id=getOption("clustermq.scheduler", qsys_default)) {
     if (n_jobs == 0)
-        return(get("LOCAL", envir=parent.env(environment())))
+        return(get("LOCAL", envir=parent.env(environment()))$new())
 
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     qsys = qsys$new(data=data, reuse=reuse)
