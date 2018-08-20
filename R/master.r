@@ -35,11 +35,13 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
     pb = progress::progress_bar$new(total = n_calls,
-                                    format = "[:bar] :percent eta: :eta")
+            format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
         msg = qsys$receive_data(timeout=timeout)
+        pb$tick(length(msg$result),
+                tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
 
         switch(msg$id,
             "WORKER_READY" = {
@@ -48,7 +50,6 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                     call_id = names(msg$result)
                     jobs_running = jobs_running - length(call_id)
                     job_result[as.integer(call_id)] = msg$result
-                    pb$tick(length(msg$result))
 
                     n_warnings = n_warnings + length(msg$warnings)
                     n_errors = n_errors + length(msg$errors)
