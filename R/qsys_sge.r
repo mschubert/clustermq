@@ -24,7 +24,7 @@ SGE = R6::R6Class("SGE",
         finalize = function() {
             if (!private$is_cleaned_up) {
                 system(paste("qdel", private$job_id),
-                       ignore.stdout=FALSE, ignore.stderr=FALSE)
+                       ignore.stdout=FALSE, ignore.stderr=FALSE, wait=FALSE)
                 private$is_cleaned_up = TRUE
             }
         }
