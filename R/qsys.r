@@ -102,16 +102,24 @@ QSys = R6::R6Class("QSys",
 
             if (rcv[[1]]$read) { # otherwise timeout reached
                 msg = rzmq::receive.socket(private$socket)
-                if (msg$id == "WORKER_UP") {
-                    if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
-                        warning("\nVersion mismatch: master has ", private$pkg_warn,
-                                ", worker ", msg$pkgver, immediate.=TRUE)
-                        private$pkg_warn = NULL
-                    }
-                    msg$id = "WORKER_READY"
-                    msg$token = "not set"
-                    private$workers_up = private$workers_up + 1
-                }
+                switch(msg$id,
+                    "WORKER_UP" = {
+                        if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
+                            warning("\nVersion mismatch: master has ", private$pkg_warn,
+                                    ", worker ", msg$pkgver, immediate.=TRUE)
+                            private$pkg_warn = NULL
+                        }
+                        msg$id = "WORKER_READY"
+                        msg$token = "not set"
+                        private$workers_up = private$workers_up + 1
+                    },
+                    "WORKER_DONE" = {
+                        private$disconnect_worker(msg)
+                        if (private$workers_up > 0)
+                            return(self$receive_data(timeout))
+                    },
+                    "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
+                )
                 msg
             }
         },
@@ -121,15 +129,9 @@ QSys = R6::R6Class("QSys",
             private$send(id="WORKER_STOP")
         },
 
-        disconnect_worker = function(msg) {
-            private$send()
-            private$workers_up = private$workers_up - 1
-            private$worker_stats = c(private$worker_stats, list(msg))
-        },
-
         # Make sure all resources are closed properly
         cleanup = function(quiet=FALSE, timeout=5) {
-            while(self$workers_running > 0) {
+            while(private$workers_up > 0) {
                 msg = self$receive_data(timeout=timeout)
                 if (is.null(msg)) {
                     warning(sprintf("%i/%i workers did not shut down properly",
@@ -142,7 +144,7 @@ QSys = R6::R6Class("QSys",
                         self$send_shutdown_worker()
                     },
                     "WORKER_READY" = self$send_shutdown_worker(),
-                    "WORKER_DONE" = self$disconnect_worker(msg),
+                    "WORKER_DONE" = next,
                     warning("Unexpected message ID: ", sQuote(msg$id))
                 )
             }
@@ -188,6 +190,12 @@ QSys = R6::R6Class("QSys",
             rzmq::send.socket(socket = private$socket,
                               data = list(...),
                               serialize = serialize)
+        },
+
+        disconnect_worker = function(msg) {
+            private$send()
+            private$workers_up = private$workers_up - 1
+            private$worker_stats = c(private$worker_stats, list(msg))
         },
 
         fill_options = function(...) {

@@ -43,53 +43,43 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
         pb$tick(length(msg$result),
                 tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
 
-        switch(msg$id,
-            "WORKER_READY" = {
-                # process the result data if we got some
-                if (!is.null(msg$result)) {
-                    call_id = names(msg$result)
-                    jobs_running = jobs_running - length(call_id)
-                    job_result[as.integer(call_id)] = msg$result
+        # process the result data if we got some
+        if (!is.null(msg$result)) {
+            call_id = names(msg$result)
+            jobs_running = jobs_running - length(call_id)
+            job_result[as.integer(call_id)] = msg$result
 
-                    n_warnings = n_warnings + length(msg$warnings)
-                    n_errors = n_errors + length(msg$errors)
-                    if (n_errors > 0 && fail_on_error == TRUE)
-                        shutdown = TRUE
-                    new_msgs = c(msg$errors, msg$warnings)
-                    if (length(new_msgs > 0) && length(cond_msgs) < 50)
-                        cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
-                }
+            n_warnings = n_warnings + length(msg$warnings)
+            n_errors = n_errors + length(msg$errors)
+            if (n_errors > 0 && fail_on_error == TRUE)
+                shutdown = TRUE
+            new_msgs = c(msg$errors, msg$warnings)
+            if (length(new_msgs > 0) && length(cond_msgs) < 50)
+                cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
+        }
 
-                if (!shutdown && msg$token != qsys$data_token) {
-                    qsys$send_common_data()
+        if (!shutdown && msg$token != qsys$data_token) {
+            qsys$send_common_data()
 
-                } else if (!shutdown && submit_index[1] <= n_calls) {
-                    # if we have work, send it to the worker
-                    submit_index = submit_index[submit_index <= n_calls]
-                    qsys$send_job_data(chunk = chunk(iter, submit_index))
-                    jobs_running = jobs_running + length(submit_index)
-                    submit_index = submit_index + chunk_size
+        } else if (!shutdown && submit_index[1] <= n_calls) {
+            # if we have work, send it to the worker
+            submit_index = submit_index[submit_index <= n_calls]
+            qsys$send_job_data(chunk = chunk(iter, submit_index))
+            jobs_running = jobs_running + length(submit_index)
+            submit_index = submit_index + chunk_size
 
-                    # adapt chunk size towards end of processing
-                    cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
-                    if (cs < chunk_size) {
-                        chunk_size = max(cs, 1)
-                        submit_index = submit_index[1:chunk_size]
-                    }
-
-                } else if (!shutdown && qsys$reusable) {
-                    qsys$send_wait()
-
-                } else # or else shut it down
-                    qsys$send_shutdown_worker()
-            },
-            "WORKER_DONE" = {
-                qsys$disconnect_worker(msg)
-            },
-            "WORKER_ERROR" = {
-                stop("\nWORKER_ERROR: ", msg$msg)
+            # adapt chunk size towards end of processing
+            cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
+            if (cs < chunk_size) {
+                chunk_size = max(cs, 1)
+                submit_index = submit_index[1:chunk_size]
             }
-        )
+
+        } else if (!shutdown && qsys$reusable) {
+            qsys$send_wait()
+
+        } else # or else shut it down
+            qsys$send_shutdown_worker()
     }
 
     if (qsys$reusable || qsys$cleanup())
