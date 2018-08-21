@@ -92,9 +92,8 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
         )
     }
 
-    on.exit(NULL)
-    if (!qsys$reusable)
-        qsys$cleanup()
+    if (qsys$reusable || qsys$cleanup())
+        on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)
