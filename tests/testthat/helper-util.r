@@ -13,6 +13,8 @@ recv = function(p, sock, timeout=3L) {
 }
 
 has_connectivity = function(host, protocol="tcp") {
+    if (length(host) == 0 || nchar(host) == 0)
+        return(FALSE)
     context = rzmq::init.context()
     server = rzmq::init.socket(context, "ZMQ_REP")
     port = try(bind_avail(server, 55000:57000, n_tries=10))
