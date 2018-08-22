@@ -71,7 +71,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
         # socket connecting ssh_proxy to workers
         if (events[[4]]$read) {
-            msg = qsys$receive_data()
+            msg = qsys$receive_data(with_checks=FALSE)
             message("received: ", msg)
             switch(msg$id,
                 "WORKER_READY" = {

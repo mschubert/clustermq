@@ -89,7 +89,10 @@ QSys = R6::R6Class("QSys",
         },
 
         # Read data from the socket
-        receive_data = function(timeout=Inf) {
+        receive_data = function(timeout=Inf, with_checks=TRUE) {
+            if (private$workers_total == 0 && with_checks)
+                stop("Trying to receive data without workers")
+
             if (is.infinite(timeout))
                 msec = -1L
             else
@@ -98,7 +101,7 @@ QSys = R6::R6Class("QSys",
             rcv = rzmq::poll.socket(list(private$socket),
                                     list("read"), timeout=msec)
             if (is.null(rcv[[1]]))
-                return(self$receive_data(timeout))
+                return(self$receive_data(timeout, with_checks=with_checks))
 
             if (rcv[[1]]$read) { # otherwise timeout reached
                 msg = rzmq::receive.socket(private$socket)
@@ -116,7 +119,9 @@ QSys = R6::R6Class("QSys",
                     "WORKER_DONE" = {
                         private$disconnect_worker(msg)
                         if (private$workers_up > 0)
-                            return(self$receive_data(timeout))
+                            return(self$receive_data(timeout, with_checks=with_checks))
+                        else if (with_checks)
+                            stop("Trying to receive data after work finished")
                     },
                     "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
                 )
@@ -132,7 +137,7 @@ QSys = R6::R6Class("QSys",
         # Make sure all resources are closed properly
         cleanup = function(quiet=FALSE, timeout=5) {
             while(private$workers_up > 0) {
-                msg = self$receive_data(timeout=timeout)
+                msg = self$receive_data(timeout=timeout, with_checks=FALSE)
                 if (is.null(msg)) {
                     warning(sprintf("%i/%i workers did not shut down properly",
                             self$workers_running, self$workers), immediate.=TRUE)
@@ -195,6 +200,7 @@ QSys = R6::R6Class("QSys",
         disconnect_worker = function(msg) {
             private$send()
             private$workers_up = private$workers_up - 1
+            private$workers_total = private$workers_total - 1
             private$worker_stats = c(private$worker_stats, list(msg))
         },
 
