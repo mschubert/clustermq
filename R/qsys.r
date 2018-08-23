@@ -154,11 +154,13 @@ QSys = R6::R6Class("QSys",
                 )
             }
 
-            success = self$workers_running == 0
+            success = self$workers == 0
             if (!quiet)
                 private$summary_stats()
             if (success)
                 private$is_cleaned_up = TRUE
+            else
+                self$finalize(quiet=quiet || self$workers_running == 0)
             invisible(success)
         }
     ),

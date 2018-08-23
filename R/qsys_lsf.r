@@ -21,10 +21,10 @@ LSF = R6::R6Class("LSF",
             }
         },
 
-        finalize = function() {
+        finalize = function(quiet=self$workers_running == 0) {
             if (!private$is_cleaned_up) {
                 system(paste("bkill -J", private$job_id),
-                       ignore.stdout=FALSE, ignore.stderr=FALSE, wait=FALSE)
+                       ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
                 private$is_cleaned_up = TRUE
             }
         }
