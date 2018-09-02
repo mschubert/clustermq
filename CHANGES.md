@@ -1,8 +1,10 @@
 * 0.8.5
   * Added experimental support as parallel foreach backend (#83)
   * Moved templates to package `inst/` directory (#85)
-  * Added `send_call` to worker to evaluate arbitrary expressions (#86)
+  * Added `send_call` to worker to evaluate arbitrary expressions (drake#501; #86)
   * Option `clustermq.scheduler` is now respected if set after package load (#88)
+  * System interrupts are now handled correctly (rzmq#44; #73, #93, #97)
+  * Number of workers running/total is now shown in progress bar (#98)
 
 * 0.8.4
   * Fix error for `qsys$reusable` when using `n_jobs=0`/local processing (#75)
