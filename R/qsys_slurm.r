@@ -5,8 +5,8 @@ SLURM = R6::R6Class("SLURM",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
-            super$initialize(..., template=getOption("clustermq.template", "SLURM"))
+        initialize = function(..., template=getOption("clustermq.template", "SLURM")) {
+            super$initialize(..., template=template)
         },
 
         submit_jobs = function(...) {

@@ -5,8 +5,8 @@ SGE = R6::R6Class("SGE",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
-            super$initialize(..., template=getOption("clustermq.template", "SGE"))
+        initialize = function(..., template=getOption("clustermq.template", "SGE")) {
+            super$initialize(..., template=template)
         },
 
         submit_jobs = function(...) {
@@ -32,5 +32,25 @@ SGE = R6::R6Class("SGE",
 
     private = list(
         job_id = NULL
+    )
+)
+
+PBS = R6::R6Class("PBS",
+    inherit = SGE,
+
+    public = list(
+        initialize = function(..., template=getOption("clustermq.template", "PBS")) {
+            super$initialize(..., template=template)
+        }
+    )
+)
+
+TORQUE = R6::R6Class("TORQUE",
+    inherit = SGE,
+
+    public = list(
+        initialize = function(..., template=getOption("clustermq.template", "TORQUE")) {
+            super$initialize(..., template=template)
+        }
     )
 )

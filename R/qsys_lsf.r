@@ -5,8 +5,8 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
-            super$initialize(..., template=getOption("clustermq.template", "LSF"))
+        initialize = function(..., template=getOption("clustermq.template", "LSF")) {
+            super$initialize(..., template=template)
         },
 
         submit_jobs = function(...) {
