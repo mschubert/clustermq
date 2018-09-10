@@ -33,9 +33,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
 
     while(TRUE) {
         events = rzmq::poll.socket(list(socket), list("read"), timeout=timeout)
-        if (is.null(events[[1]])) {
-            next
-        } else if (events[[1]]$read) {
+        if (events[[1]]$read) {
             tic = proc.time()
             msg = rzmq::receive.socket(socket)
             delta = proc.time() - tic
