@@ -68,7 +68,7 @@ available worker nodes. Hence, this is what clustermq interfaces with in order
 to do computations.
 
 We currently support the [following
-schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler):
+schedulers](https://github.com/mschubert/clustermq/wiki/Configuration#setting-up-the-scheduler):
 
 * [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
 * [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
@@ -76,12 +76,12 @@ schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler
 * [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 
 You can also access each of these schedulers from your local machine via the
-[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH). Results will
-be returned to your local session.
+[SSH connector](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector).
+Results will be returned to your local session.
 
 If you need specific [computing environments or
-containers](https://github.com/mschubert/clustermq/wiki/Environments), you can
-activate them via the scheduler template.
+containers](https://github.com/mschubert/clustermq/wiki/Configuration#compute-environments),
+you can activate them via the scheduler template.
 
 Usage
 -----
@@ -109,7 +109,7 @@ Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 ```
 
 More examples are available in [the
-vignette](vignettes/clustermq.Rmd#examples). 
+user guide](https://github.com/mschubert/clustermq/wiki/Usage).
 
 Comparison to other packages
 ----------------------------
