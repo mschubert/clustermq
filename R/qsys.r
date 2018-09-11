@@ -69,6 +69,7 @@ QSys = R6::R6Class("QSys",
                 args$token = private$token
             }
             private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
+            args$token
         },
 
         # Send the data common to all workers, only serialize once
