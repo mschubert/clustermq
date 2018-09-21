@@ -18,16 +18,14 @@ Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
 
-A full [user guide is available here](https://github.com/mschubert/clustermq/wiki).
 Computations are done [entirely on the network](https://github.com/armstrtw/rzmq)
 and without any temporary files on network-mounted storage, so there is no
-strain on the file system apart from starting up R once per job. This way, we
-can also send data and results around a lot quicker.
+strain on the file system apart from starting up R once per job. All
+calculations are load-balanced, i.e. workers that get their jobs done faster
+will also receive more function calls to work on. This is especially useful if
+not all calls return after the same time, or one worker has a high load.
 
-All calculations are load-balanced, i.e. workers that get their jobs done
-faster will also receive more function calls to work on. This is especially
-useful if not all calls return after the same time, or one worker has a high
-load.
+[A full user guide is available here.](https://github.com/mschubert/clustermq/wiki)
 
 Installation
 ------------
@@ -68,18 +66,15 @@ available worker nodes. Hence, this is what clustermq interfaces with in order
 to do computations.
 
 We currently support the [following
-schedulers](https://github.com/mschubert/clustermq/wiki/Configuration#setting-up-the-scheduler):
+schedulers](https://github.com/mschubert/clustermq/wiki/Configuration#setting-up-the-scheduler)
+(either locally or via SSH):
 
 * [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
 * [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
 * [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
 * [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
-* [SSH](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector)
-- *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=&lt;yourhost&gt;)`
-
-You can also access each of these schedulers from your local machine via the
-[SSH connector](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector).
-Results will be returned to your local session.
+* via [SSH](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector) -
+*needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
 If you need specific [computing environments or
 containers](https://github.com/mschubert/clustermq/wiki/Configuration#compute-environments),
@@ -135,12 +130,10 @@ Use [`batchtools`](https://github.com/mllg/batchtools) if you:
 * don't mind that arguments to every call are written to/read from disc
 * don't mind there's no load-balancing at run-time
 
-Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) (or
-[`flowr`](https://github.com/sahilseth/flowr),
-[`remake`](https://github.com/richfitz/remake),
-[`drake`](https://github.com/ropensci/drake)) if:
+Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) or
+[`drake`](https://github.com/ropensci/drake) if:
 
-* you want to design and run a pipeline of different tools
+* you want to design and run a workflow on HPC
 
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
