@@ -16,7 +16,7 @@ Imports:
     progress,
     purrr,
     R6,
-    rzmq (>= 0.9.3),
+    rzmq (>= 0.9.4),
     utils
 License: Apache License (== 2.0) | file LICENSE
 LazyData: true
@@ -30,7 +30,5 @@ Suggests:
     roxygen2 (>= 5.0.0),
     testthat,
     tools
-Remotes:
-    mschubert/rzmq@signal
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000
