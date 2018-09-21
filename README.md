@@ -74,6 +74,8 @@ schedulers](https://github.com/mschubert/clustermq/wiki/Configuration#setting-up
 * [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
 * [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
 * [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
+* [SSH](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector)
+- *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=&lt;yourhost&gt;)`
 
 You can also access each of these schedulers from your local machine via the
 [SSH connector](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector).
