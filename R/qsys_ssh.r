@@ -59,6 +59,7 @@ SSH = R6::R6Class("SSH",
             })
 
             # forward the submit_job call via ssh
+            call[[1]] = quote(qsys$submit_jobs) #FIXME: only works bc 'qsys' in ssh_proxy
             call[2:length(call)] = evaluated
             rzmq::send.socket(private$proxy_socket,
                               data = list(id="PROXY_CMD", exec=call))

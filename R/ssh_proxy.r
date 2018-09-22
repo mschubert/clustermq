@@ -20,7 +20,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     # set up local network forward to master (or SSH tunnel)
     fwd_in = rzmq::init.socket(context, "ZMQ_XREP")
     net_port = bind_avail(fwd_in, 8000:9999)
-    net_fwd = sprintf("tcp://%s:%i", Sys.info()[['nodename']], net_port)
+    net_fwd = sprintf("tcp://%s:%i", host(), net_port)
     message("forwarding local network from: ", net_fwd)
 
     # connect to master

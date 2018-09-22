@@ -20,3 +20,11 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 
     ports[i]
 }
+
+#' Construct the ZeroMQ host
+host = function(host=Sys.info()["nodename"],
+                short=getOption("clustermq.short.host", TRUE)) {
+    if (short)
+        host = strsplit(host, "\\.")[[1]][1]
+    host
+}

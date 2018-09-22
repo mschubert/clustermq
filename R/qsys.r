@@ -13,8 +13,7 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              protocol="tcp", node=Sys.info()[['nodename']],
-                              template=NULL) {
+                              node=host(), protocol="tcp", template=NULL) {
             private$zmq_context = rzmq::init.context(3L)
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
