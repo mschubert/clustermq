@@ -7,7 +7,8 @@
 Q(fun, ..., const = list(), export = list(), seed = 128965,
   memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
   split_array_by = -1, rettype = "list", fail_on_error = TRUE,
-  workers = NULL, log_worker = FALSE, chunk_size = NA, timeout = Inf)
+  workers = NULL, log_worker = FALSE, chunk_size = NA,
+  timeout = Inf)
 }
 \arguments{
 \item{fun}{A function to call}
