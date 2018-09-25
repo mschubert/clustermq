@@ -6,6 +6,11 @@
 \usage{
 .onAttach(libname, pkgname)
 }
+\arguments{
+\item{libname}{default arg for compatibility}
+
+\item{pkgname}{default arg for compatibility}
+}
 \description{
 Report queueing system on package attach if not set
 }

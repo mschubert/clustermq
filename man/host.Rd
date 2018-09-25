@@ -4,8 +4,13 @@
 \alias{host}
 \title{Construct the ZeroMQ host}
 \usage{
-host(host = Sys.info()["nodename"],
-  short = getOption("clustermq.short.host", TRUE))
+host(short = getOption("clustermq.short.host", TRUE))
+}
+\arguments{
+\item{short}{whether to use unqualified host name (before first dot)}
+}
+\value{
+the host name as character string
 }
 \description{
 Construct the ZeroMQ host

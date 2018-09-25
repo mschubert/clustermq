@@ -22,8 +22,11 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 }
 
 #' Construct the ZeroMQ host
-host = function(host=Sys.info()["nodename"],
-                short=getOption("clustermq.short.host", TRUE)) {
+#'
+#' @param short  whether to use unqualified host name (before first dot)
+#' @return  the host name as character string
+host = function(short=getOption("clustermq.short.host", TRUE)) {
+    host = Sys.info()["nodename"]
     if (short)
         host = strsplit(host, "\\.")[[1]][1]
     host

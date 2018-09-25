@@ -4,6 +4,9 @@
 #' to the object that contains the desired queueing system. We further call
 #' its setup() function if it exists, and set the variable 'qsys_id' to
 #' the scheduler we use
+#'
+#' @param libname  default arg for compatibility
+#' @param pkgname  default arg for compatibility
 .onLoad = function(libname, pkgname) {
     qsys_default = toupper(getOption('clustermq.scheduler'))
 
@@ -18,6 +21,9 @@
 }
 
 #' Report queueing system on package attach if not set
+#'
+#' @param libname  default arg for compatibility
+#' @param pkgname  default arg for compatibility
 .onAttach = function(libname, pkgname) {
     if (is.null(getOption("clustermq.scheduler"))) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",

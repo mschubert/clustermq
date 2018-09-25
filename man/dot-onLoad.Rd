@@ -6,6 +6,11 @@
 \usage{
 .onLoad(libname, pkgname)
 }
+\arguments{
+\item{libname}{default arg for compatibility}
+
+\item{pkgname}{default arg for compatibility}
+}
 \description{
 This is done by setting the variable 'qsys' in the package environment
 to the object that contains the desired queueing system. We further call
