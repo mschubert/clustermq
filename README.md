@@ -107,8 +107,10 @@ fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 ```
 
-`clustermq` can also be used as a parallel backend for `foreach`. As this is
-also used by `BiocParallel`, we can run packages those on the cluster as well:
+`clustermq` can also be used as a parallel backend for
+[`foreach`](https://cran.r-project.org/package=foreach). As this is also
+used by [`BiocParallel`](http://bioconductor.org/packages/release/bioc/html/BiocParallel.html),
+we can run those packages on the cluster as well:
 
 ```r
 library(foreach)
