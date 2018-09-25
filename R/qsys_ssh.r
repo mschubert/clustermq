@@ -79,16 +79,17 @@ SSH = R6::R6Class("SSH",
 
         finalize = function(quiet = self$workers_running == 0) {
             #TODO: should we handle this with PROXY_CMD for break (and finalize if req'd)??
-            if (!private$is_cleaned_up) {
+            if (private$ssh_proxy_running) {
                 rzmq::send.socket(private$proxy_socket,
                       data=list(id="PROXY_STOP", finalize=!private$is_cleaned_up))
-                private$is_cleaned_up = TRUE
+                private$ssh_proxy_running = FALSE
             }
         }
     ),
 
 	private = list(
         ssh_host = NULL,
-        proxy_socket = NULL
+        proxy_socket = NULL,
+        ssh_proxy_running = TRUE
 	)
 )
