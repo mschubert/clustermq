@@ -67,11 +67,18 @@ SSH = R6::R6Class("SSH",
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
+
+            private$workers_total = list(...)[["n_jobs"]] #TODO: find cleaner way to handle this
         },
 
         cleanup = function(quiet=FALSE) {
-            rzmq::send.socket(private$proxy_socket, data=list(id="PROXY_STOP"))
             success = super$cleanup(quiet=quiet)
+            #TODO: should we handle this with PROXY_CMD for break (and finalize if req'd)??
+            rzmq::send.socket(private$proxy_socket,
+                              data=list(id="PROXY_STOP", finalize=!success))
+        },
+
+        finalize = function(quiet=NA) {
         }
     ),
 

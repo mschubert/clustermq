@@ -64,6 +64,8 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
                                       data = list(id="PROXY_CMD", reply=reply))
                 },
                 "PROXY_STOP" = {
+                    if (msg$finalize)
+                        qsys$finalize()
                     break
                 }
             )

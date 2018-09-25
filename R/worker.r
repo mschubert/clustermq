@@ -52,8 +52,8 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 if (!is.null(msg$redirect)) {
                     data_socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
                     rzmq::connect.socket(data_socket, msg$redirect)
-                    rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
-                    message("WORKER_UP to redirect: ", msg$redirect)
+                    rzmq::send.socket(data_socket, data=list(id="WORKER_READY"))
+                    message("WORKER_READY to redirect: ", msg$redirect)
                     msg = rzmq::receive.socket(data_socket)
                 }
                 need = c("id", "fun", "const", "export", "rettype", "common_seed", "token")

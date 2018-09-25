@@ -55,7 +55,7 @@ test_that("common data redirect", {
 
     send(socket, list(id="DO_SETUP", redirect=master))
     msg = recv(p, socket)
-    testthat::expect_equal(msg$id, "WORKER_UP")
+    testthat::expect_equal(msg$id, "WORKER_READY")
 
     send_common()
     shutdown_worker(p)
