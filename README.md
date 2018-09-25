@@ -99,10 +99,21 @@ of using `const` and `export` would be:
 # adding a constant argument
 fx = function(x, y) x * 2 + y
 Q(fx, x=1:3, const=list(y=10), n_jobs=1)
+```
 
+```r
 # exporting an object to workers
 fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
+```
+
+`clustermq` can also be used as a parallel backend for `foreach`. As this is
+also used by `BiocParallel`, we can run packages those on the cluster as well:
+
+```r
+library(foreach)
+register_dopar_cmq(n_jobs=2, memory=1024) # accepts same arguments as `workers`
+x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
 More examples are available in [the
@@ -118,7 +129,7 @@ overhead cost (details [on the wiki](https://github.com/mschubert/clustermq/wiki
 
 ![Overhead comparison](http://image.ibb.co/cRgYNR/plot.png)
 
-In short, use `ClusterMQ` if you want:
+In short, use `clustermq` if you want:
 
 * a one-line solution to run cluster jobs with minimal setup
 * access cluster functions from your local Rstudio via SSH
