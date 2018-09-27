@@ -5,6 +5,7 @@
   * Option `clustermq.scheduler` is now respected if set after package load (#88)
   * System interrupts are now handled correctly (rzmq#44; #73, #93, #97)
   * Number of workers running/total is now shown in progress bar (#98)
+  * Unqualified (short) host names are now resolved by default (#104)
 
 * 0.8.4
   * Fix error for `qsys$reusable` when using `n_jobs=0`/local processing (#75)

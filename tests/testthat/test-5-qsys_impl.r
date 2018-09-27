@@ -1,6 +1,6 @@
 context("qsys implementations")
 
-has_network = has_connectivity(Sys.info()[['nodename']])
+has_network = has_connectivity(host())
 avail = Sys.which(c("bsub", "qsub", "sbatch", "fake_scheduler.sh"))
 avail = as.list(nchar(avail) != 0)
 fx = function(x) x*2
