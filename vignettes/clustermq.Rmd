@@ -147,9 +147,9 @@ If we want to use a package function we need to load it on the worker using a
 
 ```{r}
 fx = function(x) {
-    library(dplyr)
+    `%>%` = dplyr::`%>%`
     x %>%
-        mutate(area = Sepal.Length * Sepal.Width) %>%
+        dplyr::mutate(area = Sepal.Length * Sepal.Width) %>%
         head()
 }
 Q(fx, x=list(iris), n_jobs=1)

@@ -115,7 +115,7 @@ we can run those packages on the cluster as well:
 ```r
 library(foreach)
 register_dopar_cmq(n_jobs=2, memory=1024) # accepts same arguments as `workers`
-x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
+foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
 More examples are available in [the
