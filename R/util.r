@@ -10,7 +10,7 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 
     for (i in 1:n_tries) {
         addr = paste(iface, ports[i], sep=":")
-        port_found = rzmq::bind.socket(socket, addr)
+        utils::capture.output({port_found = rzmq::bind.socket(socket, addr)}, type="message")
         if (port_found)
             break
     }
