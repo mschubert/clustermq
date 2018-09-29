@@ -13,6 +13,7 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
     if (n_jobs == 0)
         return(get("LOCAL", envir=parent.env(environment()))$new())
 
+    gc() # be sure to clean up old rzmq handles (zeromq/libzmq/issues/1108)
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     qsys = qsys$new(data=data, reuse=reuse)
 
