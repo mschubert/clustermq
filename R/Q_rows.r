@@ -3,6 +3,21 @@
 #' @param df  data.frame with iterated arguments
 #' @inheritParams Q
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Run a simple multiplication for data frame columns x and y on a worker node
+#' fx = function (x, y) x * y
+#' df = data.frame(x = 5, y = 10)
+#' Q_rows(df, fx, job_size = 1)
+#' # [1] 50
+#'
+#' # Q_rows also matches the names of a data frame with the function arguments
+#' fx = function (x, y) x - y
+#' df = data.frame(y = 5, x = 10)
+#' Q_rows(df, fx, job_size = 1)
+#' # [1] 5
+#' }
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
