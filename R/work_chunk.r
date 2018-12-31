@@ -14,18 +14,18 @@ work_chunk = function(df, fun, const_args=list(), rettype="list",
     context = new.env()
     context$warnings = list()
     context$errors = list()
-    if (progress)
+    if (progress) {
         pb = progress::progress_bar$new(total = nrow(df),
                                         format = "[:bar] :percent eta: :eta")
+        pb$tick(0)
+    }
 
     fwrap = function(..., ` id `, ` seed `=NA) {
         chr_id = as.character(` id `)
         if (!is.na(` seed `))
             set.seed(` seed `)
-        if (progress)
-            pb$tick()
 
-        withCallingHandlers(
+        result = withCallingHandlers(
             withRestarts(
                 do.call(fun, c(list(...), const_args)),
                 muffleStop = function(e) if (rettype == "list")
@@ -42,6 +42,10 @@ work_chunk = function(df, fun, const_args=list(), rettype="list",
                 invokeRestart("muffleStop", emsg)
             }
         )
+
+        if (progress)
+            pb$tick()
+        result
     }
 
     if (is.null(df$` id `))
