@@ -1,7 +1,5 @@
 ---
 title: "ClusterMQ: send R function calls as cluster jobs"
-author: "Michael Schubert"
-date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette
 vignette: >
@@ -29,8 +27,6 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 ```
-
-# ClusterMQ: send R function calls as cluster jobs
 
 This package will allow you to send function calls as jobs on a computing
 cluster with a minimal interface provided by the `Q` function:
