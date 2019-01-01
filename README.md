@@ -39,7 +39,7 @@ system library. Most likely, your package manager will provide this:
 brew install zeromq # Linuxbrew, Homebrew on OS-X
 conda install zeromq # Conda
 sudo apt-get install libzmq3-dev # Ubuntu
-sudo yum install zeromq3-devel # Fedora
+sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Archlinux
 ```
 
