@@ -18,9 +18,9 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
     qsys = qsys$new(data=data, reuse=reuse)
 
     if (log_worker && is.null(template$log_file)) {
-		warning("'log_worker' is deprecated, use template(log_file=...) instead")
+        .Deprecated(msg="'log_worker' is deprecated, use template(log_file=...) instead")
         template$log_file = paste0("cmq", qsys$id, ".log")
-	}
+    }
 
     template$n_jobs = n_jobs
     message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
