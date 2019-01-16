@@ -7,6 +7,7 @@
 #'
 #' @param libname  default arg for compatibility
 #' @param pkgname  default arg for compatibility
+#' @keywords internal
 .onLoad = function(libname, pkgname) {
     qsys_default = toupper(getOption('clustermq.scheduler'))
 
@@ -24,10 +25,11 @@
 #'
 #' @param libname  default arg for compatibility
 #' @param pkgname  default arg for compatibility
+#' @keywords internal
 .onAttach = function(libname, pkgname) {
     if (is.null(getOption("clustermq.scheduler"))) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
                 "defaulting to ", sQuote(qsys_default))
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler")
+        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/Configuration")
     }
 }
