@@ -21,6 +21,7 @@ register_dopar_cmq = function(...) {
 #' @param expr   An R expression in curly braces
 #' @param envir  Environment where to evaluate the arguments
 #' @param data   Common arguments passed by register_dopcar_cmq(), e.g. n_jobs
+#' @keywords  internal
 cmq_foreach = function(obj, expr, envir, data) {
     stopifnot(inherits(obj, "foreach"))
     stopifnot(inherits(envir, "environment"))

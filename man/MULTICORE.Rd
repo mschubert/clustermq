@@ -11,4 +11,4 @@ MULTICORE
 \description{
 This makes use of rzmq messaging and sends requests via TCP/IP
 }
-\keyword{datasets}
+\keyword{internal}

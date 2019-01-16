@@ -9,6 +9,7 @@
 #' @param common_seed  A seed offset common to all function calls
 #' @param progress     Logical indicated whether to display a progress bar
 #' @return             A list of call results (or try-error if they failed)
+#' @keywords internal
 work_chunk = function(df, fun, const_args=list(), rettype="list",
                       common_seed=NULL, progress=FALSE) {
     context = new.env()

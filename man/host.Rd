@@ -15,3 +15,4 @@ the host name as character string
 \description{
 Construct the ZeroMQ host
 }
+\keyword{internal}

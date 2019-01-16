@@ -1,6 +1,8 @@
 #' LSF scheduler functions
 #'
 #' Derives from QSys to provide LSF-specific functions
+#'
+#' @keywords internal
 LSF = R6::R6Class("LSF",
     inherit = QSys,
 

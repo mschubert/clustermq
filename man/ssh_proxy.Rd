@@ -16,3 +16,4 @@ ssh_proxy(ctl, job, qsys_id = qsys_default)
 \description{
 Do not call this manually, the SSH qsys will do that
 }
+\keyword{internal}

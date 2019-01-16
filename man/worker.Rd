@@ -18,3 +18,4 @@ worker(master, timeout = 600, ..., verbose = TRUE)
 \description{
 Do not call this manually, the master will do that
 }
+\keyword{internal}

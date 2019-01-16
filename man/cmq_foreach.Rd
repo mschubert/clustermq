@@ -25,3 +25,4 @@ errorHandling: string of function name to call error with, e.g. "stop"}
 \description{
 clustermq foreach handler
 }
+\keyword{internal}

@@ -18,6 +18,7 @@
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @return               A list of whatever `fun` returned
+#' @keywords  internal
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                   chunk_size=NA, timeout=Inf) {
     # prepare empty variables for managing results

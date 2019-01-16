@@ -11,4 +11,4 @@ purrr_lookup
 \description{
 Lookup table for return types to purrr functions
 }
-\keyword{datasets}
+\keyword{internal}

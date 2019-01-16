@@ -5,6 +5,7 @@
 #' @param x  Index data.frame
 #' @param i  Rows to subset
 #' @return   x[i,]
+#' @keywords  internal
 chunk = function(x, i) {
     re = lapply(x, `[`, i=i)
     re$` id ` = i

@@ -1,6 +1,8 @@
 #' Process on multiple cores on one machine
 #'
 #' This makes use of rzmq messaging and sends requests via TCP/IP
+#'
+#' @keywords internal
 MULTICORE = R6::R6Class("MULTICORE",
     inherit = QSys,
 

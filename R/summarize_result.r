@@ -6,6 +6,7 @@
 #' @param cond_msgs   Error and warnings messages, we display first 50
 #' @param at          How many calls were procesed  up to this point
 #' @param fail_on_error  Stop if error(s) occurred
+#' @keywords internal
 summarize_result = function(result, n_errors, n_warnings,
                             cond_msgs, at=length(result), fail_on_error=TRUE) {
 

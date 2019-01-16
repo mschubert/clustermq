@@ -3,6 +3,8 @@
 #' Provides the basic functions needed to communicate between machines
 #' This should abstract most functions of rZMQ so the scheduler
 #' implementations can rely on the higher level functionality
+#'
+#' @keywords internal
 QSys = R6::R6Class("QSys",
     public = list(
         # Create a class instance

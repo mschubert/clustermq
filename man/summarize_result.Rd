@@ -23,3 +23,4 @@ summarize_result(result, n_errors, n_warnings, cond_msgs,
 \description{
 Print a summary of errors and warnings that occurred during processing
 }
+\keyword{internal}

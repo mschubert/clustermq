@@ -11,4 +11,4 @@ LSF
 \description{
 Derives from QSys to provide LSF-specific functions
 }
-\keyword{datasets}
+\keyword{internal}

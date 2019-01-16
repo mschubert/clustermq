@@ -5,6 +5,7 @@
 #' @param ctl      The port to connect to the master for proxy control
 #' @param job      The port to connect to the master for job control
 #' @param qsys_id  Character string of QSys class to use
+#' @keywords internal
 ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     master_ctl = sprintf("tcp://localhost:%i", ctl)
     master_job = sprintf("tcp://localhost:%i", job)

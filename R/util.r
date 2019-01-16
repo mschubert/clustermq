@@ -5,6 +5,7 @@
 #' @param iface    Interface to listen on
 #' @param n_tries  Number of ports to try in range
 #' @return         The port the socket is bound to
+#' @keywords internal
 bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
     ports = sample(range, n_tries)
 
@@ -25,6 +26,7 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 #'
 #' @param short  whether to use unqualified host name (before first dot)
 #' @return  the host name as character string
+#' @keywords internal
 host = function(short=getOption("clustermq.short.host", TRUE)) {
     host = Sys.info()["nodename"]
     if (short)
@@ -33,6 +35,8 @@ host = function(short=getOption("clustermq.short.host", TRUE)) {
 }
 
 #' Lookup table for return types to vector NAs
+#'
+#' @keywords internal
 vec_lookup = list(
     "list" = list(NULL),
     "logical" = as.logical(NA),
@@ -46,6 +50,8 @@ vec_lookup = list(
 )
 
 #' Lookup table for return types to purrr functions
+#'
+#' @keywords internal
 purrr_lookup = list(
     "list" = purrr::pmap,
     "logical" = purrr::pmap_lgl,

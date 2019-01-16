@@ -1,6 +1,8 @@
 #' SGE scheduler functions
 #'
 #' Derives from QSys to provide SGE-specific functions
+#'
+#' @keywords internal
 SGE = R6::R6Class("SGE",
     inherit = QSys,
 

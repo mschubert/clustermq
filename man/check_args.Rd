@@ -19,3 +19,4 @@ Processed iterated argument list if 'iter' is a list
 \description{
 Function to check arguments with which Q() is called
 }
+\keyword{internal}

@@ -1,6 +1,8 @@
 #' SSH scheduler functions
 #'
 #' Derives from QSys to provide SSH-specific functions
+#'
+#' @keywords internal
 SSH = R6::R6Class("SSH",
     inherit = QSys,
 

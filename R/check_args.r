@@ -4,6 +4,7 @@
 #' @param iter   Objects to be iterated in each function call
 #' @param const  A list of constant arguments passed to each function call
 #' @return       Processed iterated argument list if 'iter' is a list
+#' @keywords     internal
 check_args = function(fun, iter, const=list()) {
     if (!is.list(iter) || length(iter) == 0)
         stop("'iter' needs to be a list with at least one element")

@@ -1,6 +1,8 @@
 #' SLURM scheduler functions
 #'
 #' Derives from QSys to provide SLURM-specific functions
+#'
+#' @keywords internal
 SLURM = R6::R6Class("SLURM",
     inherit = QSys,
 

@@ -17,3 +17,4 @@ x[i,]
 \description{
 'attr' in `[.data.frame` takes too much CPU time
 }
+\keyword{internal}

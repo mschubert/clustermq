@@ -11,4 +11,4 @@ vec_lookup
 \description{
 Lookup table for return types to vector NAs
 }
-\keyword{datasets}
+\keyword{internal}
