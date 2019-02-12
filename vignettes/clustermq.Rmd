@@ -57,13 +57,13 @@ First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
 system library. Most likely, your package manager will provide this:
 
 ```{sh eval=FALSE}
-# You can skip this step on Windows and OS-X, the rzmq binary has it
+# You can skip this step on Windows and macOS, the rzmq binary has it
 # On a computing cluster, we recommend to use Conda or Linuxbrew
-brew install zeromq # Linuxbrew, Homebrew on OS-X
+brew install zeromq # Linuxbrew, Homebrew on macOS
 conda install zeromq # Conda
 sudo apt-get install libzmq3-dev # Ubuntu
 sudo yum install zeromq3-devel # Fedora
-pacman -S zeromq # Archlinux
+pacman -S zeromq # Arch Linux
 ```
 
 Then install the `clustermq` package in R (which automatically installs the
