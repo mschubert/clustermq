@@ -1,5 +1,5 @@
 ---
-title: "ClusterMQ: send R function calls as cluster jobs"
+title: "ClusterMQ Quick Start"
 output:
   rmarkdown::html_vignette
 vignette: >
