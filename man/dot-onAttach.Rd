@@ -14,3 +14,4 @@
 \description{
 Report queueing system on package attach if not set
 }
+\keyword{internal}
