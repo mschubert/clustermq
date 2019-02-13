@@ -1,0 +1,582 @@
+---
+title: "ClusterMQ User Guide"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{User Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css echo=FALSE}
+img {
+    border: 0px !important;
+    margin: 2em 2em 2em 2em !important;
+}
+code {
+    border: 0px !important;
+}
+```
+
+```{r echo=FALSE, results="hide"}
+options(clustermq.scheduler = "local")
+knitr::opts_chunk$set(
+    cache = FALSE,
+    echo = TRUE,
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+## Installation
+
+### ZeroMQ
+
+The `rzmq` package (which this package depends on) needs the system library
+ZeroMQ.
+
+```{sh eval=FALSE}
+# You can skip this step on Windows and macOS, the rzmq binary has it
+brew install zeromq # Linuxbrew, Homebrew on macOS
+conda install zeromq # Conda
+sudo apt-get install libzmq3-dev # Ubuntu
+sudo yum install zeromq3-devel # Fedora
+pacman -S zeromq # Arch Linux
+```
+
+More details can be found at the [rzmq project
+README](https://github.com/ropensci/rzmq#installation).
+
+### R package
+
+The latest stable version is available [on
+CRAN](https://cran.r-project.org/package=clustermq).
+
+Alternatively, it is also available on the
+[`master`](https://github.com/mschubert/clustermq) branch of the repository.
+
+```{r eval=FALSE}
+# from CRAN
+install.packages('clustermq')
+
+# from Github
+# install.packages('devtools')
+devtools::install_github('mschubert/clustermq')
+```
+
+In the [`develop`](https://github.com/mschubert/clustermq/tree/develop) branch,
+we will introduce code changes and new features. These may contain bugs, poor
+documentation, or other inconveniences. This branch may not install at times.
+However, [feedback is very
+welcome](https://github.com/mschubert/clustermq/issues/new).
+
+```{r eval=FALSE}
+# install.packages('devtools')
+devtools::install_github('mschubert/clustermq', ref="develop")
+```
+
+## Configuration
+
+### Setting up the scheduler
+
+An HPC cluster's scheduler ensures that computing jobs are distributed to
+available worker nodes. Hence, this is what `clustermq` interfaces with in
+order to do computations.
+
+By default, we will take whichever scheduler we find and fall back on local
+processing. This will work in most, but not all cases.
+
+To set up a scheduler explicitly,  see the following links:
+
+* [LSF](LSF)
+* [SGE](SGE)
+* [Slurm](SLURM)
+* [Torque](Torque)
+* [PBS](PBS)
+* if you want another scheduler, [open an
+  issue](https://github.com/mschubert/clustermq/issues/new)
+
+### SSH connector
+
+There are reasons why you might prefer to not to work on the computing cluster
+directly but rather on your local machine instead.
+[RStudio](https://www.rstudio.com/) is an excellent local IDE, it's more
+responsive than and feature-rich than browser-based solutions ([RStudio
+server](https://www.rstudio.com/products/rstudio/download-server/), [Project
+Jupyter](http://jupyter.org/)), and it avoids X forwarding issues when you want
+to look at plots you just made.
+
+Using this setup, however, you lost access to the computing cluster. Instead,
+you had to copy your data there, and then submit individual scripts as jobs,
+aggregating the data in the end again. `clustermq` is trying to solve this by
+providing a transparent SSH interface.
+
+In order to use `clustermq` from your local machine, the package needs to be
+installed on both there and on the computing cluster. On the computing cluster,
+[set up your
+scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
+and make sure `clustermq` runs there without problems. On your local machine,
+add the following options in your `~/.Rprofile`:
+
+```r
+options(
+    clustermq.scheduler = "ssh",
+    clustermq.ssh.host = "user@host", # use your user and host, obviously
+    clustermq.ssh.log = "~/cmq_ssh.log" # log for easier debugging
+)
+```
+
+We recommend that you [set up SSH keys](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) for password-less login.
+
+## Usage
+
+### The `Q` function
+
+The following arguments are supported by `Q`:
+
+ * `fun` - The function to call. This needs to be self-sufficient (because it
+        will not have access to the `master` environment)
+ * `...` - All iterated arguments passed to the function. If there is more than
+        one, all of them need to be named
+ * `const` - A named list of non-iterated arguments passed to `fun`
+ * `export` - A named list of objects to export to the worker environment
+
+Behavior can further be fine-tuned using the options below:
+
+ * `fail_on_error` - Whether to stop if one of the calls returns an error
+ * `seed` - A common seed that is combined with job number for reproducible results
+ * `memory` - Amount of memory to request for the job (`bsub -M`)
+ * `n_jobs` - Number of jobs to submit for all the function calls
+ * `job_size` - Number of function calls per job. If used in combination with
+        `n_jobs` the latter will be overall limit
+ * `chunk_size` - How many calls a worker should process before reporting back
+        to the master. Default: every worker will report back 100 times total
+
+The full documentation is available by typing `?Q`.
+
+### Examples
+
+The package is designed to distribute arbitrary function calls on HPC worker
+nodes. There are, however, a couple of caveats to observe as the R session
+running on a worker does not share your local memory.
+
+The simplest example is to a function call that is completely self-sufficient,
+and there is one argument (`x`) that we iterate through:
+
+```{r}
+fx = function(x) x * 2
+Q(fx, x=1:3, n_jobs=1)
+```
+
+Non-iterated arguments are supported by the `const` argument:
+
+```{r}
+fx = function(x, y) x * 2 + y
+Q(fx, x=1:3, const=list(y=10), n_jobs=1)
+```
+
+If a function relies on objects in its environment that are not passed as
+arguments, they can be exported using the `export` argument:
+
+```{r}
+fx = function(x) x * 2 + y
+Q(fx, x=1:3, export=list(y=10), n_jobs=1)
+```
+
+If we want to use a package function we need to load it on the worker using a
+`library()` call or referencing it with `package_name::`:
+
+```{r}
+fx = function(x) {
+    library(dplyr)
+    x %>%
+        mutate(area = Sepal.Length * Sepal.Width) %>%
+        head()
+}
+Q(fx, x=list(iris), n_jobs=1)
+```
+
+### As parallel `foreach` backend
+
+The [`foreach`](https://cran.r-project.org/package=foreach) package provides an
+interface to perform repeated tasks on different backends. While it can perform
+the function of simple loops using `%do%`:
+
+```{r}
+library(foreach)
+x = foreach(i=1:3) %do% sqrt(i)
+```
+
+it can also perform these operations in parallel using `%dopar%`:
+
+```{r}
+x = foreach(i=1:3) %dopar% sqrt(i)
+```
+
+The latter allows registering different handlers for parallel execution, where
+we can use `clustermq`:
+
+```{r}
+clustermq::register_dopar_cmq(n_jobs=2, memory=1024) # this accepts same arguments as `Q`
+x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
+```
+
+As [BiocParallel](http://bioconductor.org/packages/release/bioc/html/BiocParallel.html)
+uses `foreach` too, this means we can run all packages that use `BiocParallel`
+on the cluster as well.
+
+### With `drake`
+
+The [`drake`](https://github.com/ropensci/drake) package enables users to
+define a dependency structure of different function calls, and only evaluate
+them if the underlying data changed.
+
+> drake — or, Data Frames in R for Make — is a general-purpose workflow manager
+> for data-driven tasks. It rebuilds intermediate data objects when their
+> dependencies change, and it skips work when the results are already up to
+> date. Not every runthrough starts from scratch, and completed workflows have
+> tangible evidence of reproducibility. drake also supports scalability,
+> parallel computing, and a smooth user experience when it comes to setting up,
+> deploying, and maintaining data science projects.
+
+It can use `clustermq` to perform calculations as jobs:
+
+```{r eval=FALSE}
+library(drake)
+load_mtcars_example()
+# clean(destroy = TRUE)
+# options(clustermq.scheduler = "multicore")
+make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
+```
+
+## Troubleshooting
+
+### Debugging workers
+
+Function calls evaluated by workers are wrapped in event handlers, which means
+that even if a call evaluation throws an error, this should be reported back to
+the main R session.
+
+However, there are reasons why workers might crash, and in which case they can
+not report back. These include:
+
+* A segfault in a low-level process
+* Process kill due to resource constraints (e.g. walltime)
+* Reaching the wait timeout without any signal from the master process
+* Probably others
+
+In this case, it is useful to have the worker(s) create a log file that will
+also include events that are not reported back. It can be requested using:
+
+```{r eval=FALSE}
+Q(..., log_file="/path/to.file")
+```
+
+Note that `log_file` is a template field of your scheduler script, and hence
+needs to be present there in order for this to work. The default templates all
+have this field included.
+
+In order to log each worker separately, some schedulers support wildcards in
+their log file names. For instance:
+
+* LSF: `log_file="/path/to.file.%I"`
+* Slurm: `log_file="/path/to.file.%a"`
+
+Your scheduler documentation will have more details about the available
+options.
+
+When reporting a bug that includes worker crashes, please always include a log
+file.
+
+### SSH
+
+Before trying remote schedulers via SSH, make sure that the scheduler works
+when you first connect to the cluster and run a job from there.
+
+If the terminal is stuck at
+
+```
+Connecting <user@host> via SSH ...
+```
+
+make sure that each step of your SSH connection works by typing the following
+commands in your **local** terminal and make sure that you don't get errors or
+warnings in each step:
+
+```{sh eval=FALSE}
+# test your ssh login that you set up in ~/.ssh/config
+# if this fails you have not set up SSH correctly
+ssh <user@host>
+
+# test port forwarding from 54709 remote to 6687 local (ports are random)
+# if the fails you will not be able to use clustermq via SSH
+ssh -R 54709:localhost:6687 <user@host> R --vanilla
+```
+
+If you get an `Command not found: R` error, make sure your `$PATH` is set up
+correctly in your `~/.bash_profile` and/or your `~/.bashrc` (depending on
+your cluster config you might need either).
+
+If you get a SSH warning or error try again with `ssh -v` to enable verbose
+output.
+
+If the forward itself works, set the following option in your `~/.Rprofile`:
+
+```{r eval=FALSE}
+options(clustermq.ssh.log = "~/ssh_proxy.log")
+```
+
+This will create a log file *on the remote server* that will contain any errors
+that might have occurred during `ssh_proxy` startup.
+
+## Environments
+
+In some cases, it may be necessary to activate a specific computing environment
+on the scheduler jobs prior to starting up the worker. This can be, for
+instance, because *R* was only installed in a specific environment or
+container.
+
+Examples for such environments or containers are:
+
+* [Bash module](http://modules.sourceforge.net/) environments
+* [Conda](https://conda.io/docs/user-guide/overview.html) environments
+* [Docker](https://www.docker.com/)/[Singularity](https://singularity.lbl.gov/) containers
+
+It should be possible to activate them in the job submission script (i.e., the
+template file). This is widely untested, but would look the following for the
+[LSF](LSF) scheduler (analogous for others):
+
+```r
+#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
+#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr
+#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
+#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes
+##BSUB-q default                        # name of the queue (uncomment)
+##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
+
+module load {{ bashenv | default_bash_env }}
+# or: source activate {{ conda | default_conda_env_name }}
+# or: your environment activation command
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+This template still needs to be filled, so in the above example you need to
+pass either
+
+```r
+Q(..., template=list(bashenv="my environment name"))
+```
+
+or set it via an *.Rprofile* option:
+
+```r
+options(
+    clustermq.defaults = list(bashenv="my default env")
+)
+```
+
+## Scheduler templates
+
+### LSF
+
+In your `~/.Rprofile` on your computing cluster, set the following options:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "lsf",
+    clustermq.template = "/path/to/file/below"
+)
+```
+
+The option `clustermq.template` should point to a LSF template file like the one below.
+
+```{r eval=FALSE}
+#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
+#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index
+#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
+#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes
+##BSUB-q default                        # name of the queue (uncomment)
+##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
+
+* Memory: defined by `BSUB-M` and `BSUB-R`. Check your local setup if the
+  memory values supplied are MiB or KiB, default is `4096` if not requesting
+  memory when calling `Q()`
+* Queue: `BSUB-q default`. Use the queue with name *default*. This will most
+  likely not exist on your system, so choose the right name (or comment out
+  this line with an additional `#`)
+* Walltime: `BSUB-W {{ walltime }}`. Set the maximum time a job is allowed to
+  run before being killed. The default here is to disable this line. If you
+  enable it, enter a fixed value or pass the `walltime` argument to each
+  function call. The way it is written, it will use 6 hours if no arguemnt is
+  given.
+* For other options, see [the LSF
+  documentation](http://www.vub.ac.be/BFUCC/LSF/man/bsub.1.html) and add them
+  via `#BSUB-*` (where `*` represents the argument)
+* Do not change the identifiers in curly braces (`{{ ... }}`), as they are used
+  to fill in the right variables
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
+
+### SGE
+
+In your `~/.Rprofile` on your computing cluster, set the following options:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "sge",
+    clustermq.template = "/path/to/file/below"
+)
+```
+
+The option `clustermq.template` should point to a SGE template file like the one below.
+
+```{r eval=FALSE}
+#$ -N {{ job_name }}               # job name
+#$ -q default                      # submit to queue named "default"
+#$ -j y                            # combine stdout/error in one file
+#$ -o {{ log_file | /dev/null }}   # output file
+#$ -cwd                            # use pwd as work dir
+#$ -V                              # use environment variable
+#$ -t 1-{{ n_jobs }}               # submit jobs as array
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#$-*` defines command-line arguments to the `qsub` program.
+
+* Queue: `$ -q default`. Use the queue with name *default*. This will most
+  likely not exist on your system, so choose the right name (or comment out
+  this line with an additional `#`)
+* For other options, see [the SGE
+  documentation](http://gridscheduler.sourceforge.net/htmlman/manuals.html). Do
+  not change the identifiers in curly braces (`{{ ... }}`), as they are used to
+  fill in the right variables.
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
+
+### SLURM
+
+In your `~/.Rprofile` on your computing cluster, set the following options:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "slurm",
+    clustermq.template = "/path/to/file/below"
+)
+```
+
+The option `clustermq.template` should point to a SLURM template file like the
+one below.
+
+```{r eval=FALSE}
+#!/bin/sh
+#SBATCH --job-name={{ job_name }}
+#SBATCH --partition=default
+#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index
+#SBATCH --error={{ log_file | /dev/null }}
+#SBATCH --mem-per-cpu={{ memory | 4096 }}
+#SBATCH --array=1-{{ n_jobs }}
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#SBATCH` defines command-line arguments to the `sbatch` program.
+
+* Queue: `SBATCH --partition default`. Use the queue with name *default*. This
+  will most likely not exist on your system, so choose the right name (or
+  comment out this line with an additional `#`)
+* For other options, see [the SLURM
+  documentation](https://slurm.schedmd.com/sbatch.html). Do not change the
+  identifiers in curly braces (`{{ ... }}`), as they are used to fill in the
+  right variables.
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
+
+### PBS
+
+In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
+PBS template:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "sge",
+    clustermq.template.lsf = "/path/to/file/below"
+)
+```
+
+The option `clustermq.template` should point to a PBS template file like the
+one below.
+
+```{r eval=FALSE}
+#PBS -N {{ job_name }}
+#PBS -l select=1:ncpus={{ cores | 1 }}
+#PBS -l walltime={{ walltime | 1:00:00 }}
+#PBS -q default
+#PBS -o {{ log_file | /dev/null }}
+#PBS -j oe
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
+
+* Queue: `#PBS-q default`. Use the queue with name *default*. This will most
+  likely not exist on your system, so choose the right name (or comment out
+  this line with an additional `#`)
+* For other options, see the PBS documentation. Do not change the identifiers
+  in curly braces (`{{ ... }}`), as they are used to fill in the right
+  variables.
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
+
+### Torque
+
+In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
+Torque template:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "sge",
+    clustermq.template.lsf = "/path/to/file/below"
+)
+```
+
+The option `clustermq.template` should point to a Torque template file like the
+one below.
+
+```{r eval=FALSE}
+#PBS -N {{ job_name }}
+#PBS -l nodes={{ n_jobs }}:ppn=1,walltime={{ walltime | 30:00 }}
+#PBS -o {{ log_file | /dev/null }}
+#PBS -q default
+#PBS -j oe
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
+
+* Queue: `#PBS -q default`. Use the queue with name *default*. This will most
+  likely not exist on your system, so choose the right name (or comment out
+  this line with an additional `#`)
+* For other options, see the Torque documentation. Do not change the
+  identifiers in curly braces (`{{ ... }}`), as they are used to fill in the
+  right variables.
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
