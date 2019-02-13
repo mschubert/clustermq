@@ -19,13 +19,14 @@ code {
 ```
 
 ```{r echo=FALSE, results="hide"}
-options(clustermq.scheduler = "local")
 knitr::opts_chunk$set(
     cache = FALSE,
     echo = TRUE,
     collapse = TRUE,
     comment = "#>"
 )
+options(clustermq.scheduler = "local")
+library(clustermq)
 ```
 
 ## Installation
