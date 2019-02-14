@@ -223,8 +223,8 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
 As [BiocParallel](http://bioconductor.org/packages/release/bioc/html/BiocParallel.html)
-uses `foreach` too, this means we can run all packages that use `BiocParallel`
-on the cluster as well.
+supports `foreach` too, this means we can run all packages that use `BiocParallel`
+on the cluster as well via `DoparParam`.
 
 ### With `drake`
 
