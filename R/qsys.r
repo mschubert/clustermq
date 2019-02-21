@@ -107,13 +107,17 @@ QSys = R6::R6Class("QSys",
 
             if (rcv[[1]]$read) { # otherwise timeout reached
                 msg = rzmq::receive.socket(private$socket)
+
+                if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
+                    stop("Authentication provided by worker does not match")
+
                 switch(msg$id,
                     "WORKER_UP" = {
                         if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
                             warning("\nVersion mismatch: master has ", private$pkg_warn,
                                     ", worker ", msg$pkgver, immediate.=TRUE)
-                            private$pkg_warn = NULL
                         }
+                        private$pkg_warn = NULL
                         msg$id = "WORKER_READY"
                         msg$token = "not set"
                         private$workers_up = private$workers_up + 1
@@ -194,6 +198,7 @@ QSys = R6::R6Class("QSys",
         defaults = list(),
         is_cleaned_up = FALSE,
         pkg_warn = utils::packageVersion("clustermq"),
+        auth = "",
 
         send = function(..., serialize=TRUE) {
             rzmq::send.socket(socket = private$socket,
@@ -211,6 +216,7 @@ QSys = R6::R6Class("QSys",
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
+            values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
             if (!"job_name" %in% names(values))
                 values$job_name = paste0("cmq", private$port)
             private$workers_total = values$n_jobs
@@ -218,6 +224,13 @@ QSys = R6::R6Class("QSys",
         },
 
         fill_template = function(values) {
+            # note: auth will be obligatory in the future and this check will
+            #   be removed (i.e., filling will fail if no field in template)
+            if (! "auth" %in% names(infuser::variables_requested(private$template))) {
+                values$auth = NULL
+                warning("Add 'CMQ_AUTH={{ auth }}' to template to enable socket authentication",
+                        immediate.=TRUE)
+            }
             infuser::infuse(private$template, values)
         },
 
