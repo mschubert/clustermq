@@ -1,5 +1,6 @@
 * 0.8.6
   * Progress bar is now shown before any workers start (#107)
+  * Socket connections are now authenticated using a session password (#125)
   * Marked internal functions with @keywords internal
   * Added vignettes for the _User Guide_ and _Technical Documentation_
 

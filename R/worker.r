@@ -11,6 +11,9 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     if (!verbose)
         message = function(...) invisible(NULL)
 
+    #TODO: replace this by proper authentication
+    auth = Sys.getenv("CMQ_AUTH")
+
     message("Master: ", master)
     if (length(list(...)) > 0)
         warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
@@ -22,7 +25,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
 
     # send the master a ready signal
     rzmq::connect.socket(socket, master)
-    rzmq::send.socket(socket, data=list(id="WORKER_UP",
+    rzmq::send.socket(socket, data=list(id="WORKER_UP", auth=auth,
                       pkgver=utils::packageVersion("clustermq")))
 	message("WORKER_UP to: ", master)
 
@@ -46,14 +49,14 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             "DO_CALL" = {
                 result = try(eval(msg$expr, envir=msg$env))
                 message("eval'd: ", msg$expr)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY",
+                rzmq::send.socket(socket, data=list(id="WORKER_READY", auth=auth,
                     token=token, ref=msg$ref, result=result))
             },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
                     data_socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
                     rzmq::connect.socket(data_socket, msg$redirect)
-                    rzmq::send.socket(data_socket, data=list(id="WORKER_READY"))
+                    rzmq::send.socket(data_socket, data=list(id="WORKER_READY", auth=auth))
                     message("WORKER_READY to redirect: ", msg$redirect)
                     msg = rzmq::receive.socket(data_socket)
                 }
@@ -64,18 +67,18 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                     token = msg$token
                     message("token from msg: ", token)
                     rzmq::send.socket(socket, data=list(id="WORKER_READY",
-                                      token=token))
+                                      auth=auth, token=token))
                 } else {
                     msg = paste("wrong field names for DO_SETUP:",
                                 setdiff(names(msg), need))
-                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))
+                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR", auth=auth, msg=msg))
                 }
             },
             "DO_CHUNK" = {
                 if (!identical(token, msg$token)) {
                     msg = paste("mismatch chunk & common data", token, msg$token)
                     rzmq::send.socket(socket, send.more=TRUE,
-                        data=list(id="WORKER_ERROR", msg=msg))
+                        data=list(id="WORKER_ERROR", auth=auth, msg=msg))
                     message("WORKER_ERROR: ", msg)
                     break
                 }
@@ -88,13 +91,13 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
 
                 if ("error" %in% class(result)) {
                     rzmq::send.socket(socket, send.more=TRUE,
-                        data=list(id="WORKER_ERROR", msg=conditionMessage(result)))
+                        data=list(id="WORKER_ERROR", auth=auth, msg=conditionMessage(result)))
                     message("WORKER_ERROR: ", conditionMessage(result))
                     break
                 } else {
                     message("completed ", sprintf(fmt, length(result$result),
                         delta[1], delta[2], delta[3]))
-                    send_data = c(list(id="WORKER_READY", token=token), result)
+                    send_data = c(list(id="WORKER_READY", auth=auth, token=token), result)
                     rzmq::send.socket(socket, send_data)
                     counter = counter + length(result$result)
                 }
@@ -102,7 +105,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             "WORKER_WAIT" = {
                 message(sprintf("waiting %.2fs", msg$wait))
                 Sys.sleep(msg$wait)
-                rzmq::send.socket(socket, data=list(id="WORKER_READY", token=token))
+                rzmq::send.socket(socket, data=list(id="WORKER_READY", auth=auth, token=token))
             },
             "WORKER_STOP" = {
                 break
@@ -117,7 +120,8 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
         id = "WORKER_DONE",
         time = run_time,
         mem = sum(gc()[,6]),
-        calls = counter
+        calls = counter,
+        auth = auth
     ))
 
     message("\nTotal: ", sprintf(fmt, counter, run_time[1], run_time[2], run_time[3]))
