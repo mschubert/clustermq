@@ -1,3 +1,8 @@
+* 0.8.6
+  * Progress bar is now shown before any workers start (#107)
+  * Marked internal functions with @keywords internal
+  * Added vignettes for the _User Guide_ and _Technical Documentation_
+
 * 0.8.5
   * Added experimental support as parallel foreach backend (#83)
   * Moved templates to package `inst/` directory (#85)
