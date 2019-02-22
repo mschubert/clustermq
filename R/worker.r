@@ -120,7 +120,8 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
         id = "WORKER_DONE",
         time = run_time,
         mem = sum(gc()[,6]),
-        calls = counter
+        calls = counter,
+        auth = auth
     ))
 
     message("\nTotal: ", sprintf(fmt, counter, run_time[1], run_time[2], run_time[3]))

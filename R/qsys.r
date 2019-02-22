@@ -216,7 +216,13 @@ QSys = R6::R6Class("QSys",
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
-            values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
+            if ("auth" %in% names(infuser::variables_requested(private$template))) {
+                values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
+            } else {
+                values$auth = NULL
+                warning("Add 'CMQ_AUTH={{ auth }}' to template to enable socket authentication",
+                        immediate.=TRUE)
+            }
             if (!"job_name" %in% names(values))
                 values$job_name = paste0("cmq", private$port)
             private$workers_total = values$n_jobs
@@ -226,11 +232,6 @@ QSys = R6::R6Class("QSys",
         fill_template = function(values) {
             # note: auth will be obligatory in the future and this check will
             #   be removed (i.e., filling will fail if no field in template)
-            if (! "auth" %in% names(infuser::variables_requested(private$template))) {
-                values$auth = NULL
-                warning("Add 'CMQ_AUTH={{ auth }}' to template to enable socket authentication",
-                        immediate.=TRUE)
-            }
             infuser::infuse(private$template, values)
         },
 
