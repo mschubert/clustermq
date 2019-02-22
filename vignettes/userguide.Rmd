@@ -340,7 +340,7 @@ container.
 Examples for such environments or containers are:
 
 * [Bash module](http://modules.sourceforge.net/) environments
-* [Conda](https://conda.io/docs/user-guide/overview.html) environments
+* [Conda](https://conda.io/) environments
 * [Docker](https://www.docker.com/)/[Singularity](https://singularity.lbl.gov/) containers
 
 It should be possible to activate them in the job submission script (i.e., the
