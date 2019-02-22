@@ -12,6 +12,7 @@ check_args = function(fun, iter, const=list()) {
     # check function and arguments provided
     funargs = formals(fun)
     required = names(funargs)[unlist(lapply(funargs, function(f) class(f)=='name'))]
+    required = setdiff(required, "...")
 
     if (length(iter) == 1 && length(required) == 1 && is.null(names(iter)))
         names(iter) = required
@@ -19,7 +20,7 @@ check_args = function(fun, iter, const=list()) {
     provided = names(c(iter, const))
 
     sdiff = unlist(setdiff(required, provided))
-    if (length(sdiff) > 1 && sdiff != '...')
+    if (length(sdiff) > 1)
         stop(paste("If more than one argument, all must be named:",
                    paste(sdiff, collapse=" ")))
 
