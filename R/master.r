@@ -94,13 +94,12 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 }
 
 #' Convert a structure returned from qsys to a list of objects 
-flatten <- function(data)
-{
-  res <- list()
-  for(i in 1:length(data)) {
-    for(j in 1:length(data[[i]])) {
-      res <- c(res, data[[i]][j])
+flatten <- function(data) {
+    res <- list()
+    for(i in 1:length(data)) {
+        for(j in 1:length(data[[i]])) {
+            res <- c(res, data[[i]][j])
+        }
     }
-  }
-  return(res)
+    return(res)
 }
