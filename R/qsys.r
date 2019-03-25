@@ -217,6 +217,8 @@ QSys = R6::R6Class("QSys",
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
             if ("auth" %in% names(infuser::variables_requested(private$template))) {
+                # note: auth will be obligatory in the future and this check will
+                #   be removed (i.e., filling will fail if no field in template)
                 values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
             } else {
                 values$auth = NULL
@@ -230,8 +232,6 @@ QSys = R6::R6Class("QSys",
         },
 
         fill_template = function(values) {
-            # note: auth will be obligatory in the future and this check will
-            #   be removed (i.e., filling will fail if no field in template)
             infuser::infuse(private$template, values)
         },
 
