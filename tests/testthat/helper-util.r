@@ -32,3 +32,9 @@ has_connectivity = function(host, protocol="tcp") {
     }
     FALSE
 }
+
+has_ssh = function(host) {
+    status = system(paste("ssh", host, "'exit'"), wait=TRUE,
+                    ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status == 0
+}

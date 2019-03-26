@@ -3,7 +3,6 @@ context("proxy")
 has_localhost = has_connectivity("localhost")
 
 test_that("control flow between proxy and master", {
-    options(clustermq.ssh.host = "localhost")
     skip_if_not(has_localhost)
     skip_on_os("windows")
 
@@ -51,4 +50,19 @@ test_that("control flow between proxy and master", {
     collect = suppressWarnings(parallel::mccollect(p))
     expect_equal(as.integer(names(collect)), p$pid)
     on.exit(NULL)
+})
+
+test_that("full SSH connection", {
+    skip_if_not_installed('clustermq')
+    skip_on_os("windows")
+    skip_on_cran()
+    skip_if_not(has_localhost)
+    skip_if_not(has_ssh("localhost"))
+
+    options(clustermq.scheduler = "ssh",
+            clustermq.ssh.host = "localhost",
+            clustermq.ssh.log = "/dev/stderr")
+
+    result = Q(identity, 42, n_jobs=1)
+    expect_equal(result, list(42))
 })
