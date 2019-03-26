@@ -62,6 +62,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 }
                 need = c("id", "fun", "const", "export", "rettype", "common_seed", "token")
                 if (setequal(names(msg), need)) {
+                    message("received:", format(object.size(msg), units="MB"))
                     common_data = msg[setdiff(need, c("id", "export", "token"))]
                     list2env(msg$export, envir=.GlobalEnv)
                     token = msg$token
