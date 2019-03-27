@@ -14,6 +14,9 @@ before_script:
  - cat ~/.bashrc
  - echo export PATH=$PATH >> ~/.bashrc
  - cat ~/.bashrc
+ - cat ~/.bash_profile
+ - echo export PATH=$PATH >> ~/.bash_profile
+ - cat ~/.bash_profile
 
 script:
  - R CMD build .
