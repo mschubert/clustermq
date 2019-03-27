@@ -11,9 +11,9 @@ before_install:
 before_script:
 # - export PATH=$PATH:$PWD/tests/bin
  - echo $PATH
- - cat ~/.bash_profile
- - echo export PATH=$PATH >> ~/.bash_profile
- - cat ~/.bash_profile
+ - cat ~/.bashrc
+ - echo export PATH=$PATH >> ~/.bashrc
+ - cat ~/.bashrc
 
 script:
  - R CMD build .
