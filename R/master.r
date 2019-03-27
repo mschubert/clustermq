@@ -101,5 +101,7 @@ flatten <- function(data) {
             res <- c(res, data[[i]][j])
         }
     }
+    type <- paste0('as.', rettype)
+    res <- do.call(type, list(res))
     return(res)
 }
