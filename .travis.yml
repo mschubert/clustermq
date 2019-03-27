@@ -10,6 +10,7 @@ before_install:
 
 before_script:
 # - export PATH=$PATH:$PWD/tests/bin
+ - which R
  - echo $PATH
  - cat ~/.bashrc
  - echo export PATH=$PATH >> ~/.bashrc
