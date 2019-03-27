@@ -84,7 +84,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
             qsys$send_shutdown_worker()
     }
   
-    job_result <- flatten(job_result)
+    job_result <- flatten(job_result, rettype)
 
     if (qsys$reusable || qsys$cleanup())
         on.exit(NULL)
@@ -94,7 +94,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 }
 
 #' Convert a structure returned from qsys to a list of objects 
-flatten <- function(data) {
+flatten <- function(data, rettype) {
     res <- list()
     for(i in 1:length(data)) {
         for(j in 1:length(data[[i]])) {
