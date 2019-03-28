@@ -21,19 +21,25 @@ SSH = R6::R6Class("SSH",
 
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", private$ssh_host))
-            system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
+            res = system(ssh_cmd, wait=TRUE, intern=TRUE)
+            if (length(res) != 0)
+                stop(res)
 
             # Exchange init messages with proxy
-            msg = rzmq::receive.socket(private$proxy_socket)
+            poll = rzmq::poll.socket(list(private$proxy_socket), list("read"), timeout=5)
+            if (!poll[[1]]$read)
+                stop("Remote R process did not respond after 5 seconds. ",
+                     "Check your SSH server log.")
+            msg = receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_UP")
-                stop("Establishing connection failed")
+                stop("Expected PROXY_UP, received ", sQuote(msg$id))
 
             # send common data to ssh
             message("Sending common data ...")
             rzmq::send.socket(private$proxy_socket, data=c(list(id="DO_SETUP"), data))
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_READY")
-                stop("Sending failed")
+                stop("Expected PROXY_READY, received ", sQuote(msg$id))
 
             self$set_common_data(id="DO_SETUP", redirect=msg$data_url,
                                  token = msg$token)
