@@ -93,7 +93,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                      min(submit_index)-1, fail_on_error)
 }
 
-#' Convert a structure returned from qsys to a list of objects 
+#' Convert a structure returned from qsys to a list of objects
+#' @param data           data received from QSys objects
+#' @param rettype        Return type of function
 flatten <- function(data, rettype) {
     res <- list()
     for(i in 1:length(data)) {
