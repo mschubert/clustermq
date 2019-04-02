@@ -11,6 +11,7 @@ cache: packages
 before_install:
  - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):tests/bin" ~/.bashrc
  - sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc
+ - sed -i "3iexport R_LIBS_SITE=$R_LIBS_SITE" ~/.bashrc
  - source ~/.bashrc
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
@@ -21,6 +22,7 @@ before_install:
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
  - echo $R_LIBS_USER
  - echo $R_LIBS_SITE
+ - cat ~/.bashrc
 
 before_script:
  - pwd
@@ -30,7 +32,7 @@ before_script:
  - R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null
  - ping -c3 $(hostname)
  - ssh localhost 'which R; which sbatch; echo $PATH'
- - ssh localhost 'R --no-save --no-restore -e ".libPaths()" > /dev/null'
+ - ssh localhost 'R --no-save --no-restore -e ".libPaths()"'
 
 script:
  - R CMD build .
