@@ -22,6 +22,7 @@ License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
 Suggests:
+    R.utils,
     dplyr,
     foreach,
     iterators,
