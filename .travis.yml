@@ -7,7 +7,12 @@ before_install:
  - echo "Host localhost
     IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
+
+before_script:
  - ping -c3 $(hostname)
+ - ssh localhost 'exit'
+ - ssh localhost 'R --no-save --no-restore -e "quit()" > /dev/null'
+ - ssh localhost 'R --no-save --no-restore -e "getOption(\"clustermq.scheduler\")"'
 
 script:
  - R CMD build .
