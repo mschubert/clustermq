@@ -37,7 +37,7 @@ script:
  - ssh localhost 'R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null'
  - make test
 # - make check
- - timeout 120 R CMD check --as-cran *.tar.gz
+ - timeout --kill-after=130 120 R CMD check --as-cran *.tar.gz
 
 after_failure:
  - cat ~/*.log
