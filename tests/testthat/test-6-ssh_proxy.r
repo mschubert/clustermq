@@ -57,7 +57,7 @@ test_that("full SSH connection", {
     skip_on_os("windows")
     skip_on_cran()
     skip_if_not(has_localhost)
-    skip_if_not(has_ssh("localhost"))
+    skip_if_not(has_ssh_r("localhost", warn=TRUE))
 
     # 'LOCAL' mode (default) will not set up required sockets
     sched = getOption("clustermq.scheduler", qsys_default)

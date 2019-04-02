@@ -38,3 +38,9 @@ has_ssh = function(host) {
                     ignore.stdout=TRUE, ignore.stderr=TRUE)
     status == 0
 }
+
+has_ssh_r = function(host, warn=FALSE) {
+    status = system(paste("ssh", host, "'R -e \'quit(save=\"no\")\''"), wait=TRUE,
+                    ignore.stdout=TRUE, ignore.stderr=!warn)
+    status == 0
+}
