@@ -59,10 +59,12 @@ test_that("full SSH connection", {
     skip_if_not(has_localhost)
     skip_if_not(has_ssh("localhost"))
 
-    options(clustermq.scheduler = "ssh",
-            clustermq.ssh.host = "localhost",
-            clustermq.ssh.log = "/dev/stderr")
+    # 'LOCAL' mode (default) will not set up required sockets
+    sched = getOption("clustermq.scheduler")
+    skip_if(is.null(sched) || toupper(sched) == "LOCAL")
 
-    result = Q(identity, 42, n_jobs=1)
+    w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE,
+                ssh_host="localhost", node="localhost")
+    result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
     expect_equal(result, list(42))
 })
