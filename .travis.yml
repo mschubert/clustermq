@@ -9,7 +9,7 @@ warnings_are_errors: true
 cache: packages
 
 before_install:
- - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):tests/bin" ~/.bashrc
+ - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):$(pwd)/tests/bin" ~/.bashrc
  - sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc
  - sed -i "3iexport R_LIBS_SITE=$R_LIBS_SITE" ~/.bashrc
  - source ~/.bashrc
@@ -20,13 +20,10 @@ before_install:
  - echo "Host localhost
     IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
- - echo $R_LIBS_USER
- - echo $R_LIBS_SITE
- - cat ~/.bashrc
 
 before_script:
  - pwd
- - echo $PATH
+ - cat ~/.bashrc
  - which R
  - which sbatch
  - R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null
