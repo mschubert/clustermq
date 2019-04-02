@@ -17,6 +17,8 @@ before_install:
  - echo "Host localhost
     IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
+ - echo $R_LIBS_USER
+ - echo $R_LIBS_SITE
 
 before_script:
  - pwd
@@ -28,7 +30,6 @@ before_script:
  - ping -c3 $(hostname)
  - ssh localhost 'exit'
  - ssh localhost 'R --no-save --no-restore -e "quit()" > /dev/null'
- - cat ~/.Rprofile
 
 script:
  - R CMD build .
