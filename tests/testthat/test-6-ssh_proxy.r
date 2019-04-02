@@ -57,11 +57,12 @@ test_that("full SSH connection", {
     skip_on_os("windows")
     skip_on_cran()
     skip_if_not(has_localhost)
-    skip_if_not(has_ssh_r("localhost", warn=TRUE))
+    skip_if_not(has_ssh_cmq("localhost"))
 
     # 'LOCAL' mode (default) will not set up required sockets
     sched = getOption("clustermq.scheduler", qsys_default)
-    skip_if(is.null(sched) || toupper(sched) == "LOCAL")
+    skip_if(is.null(sched) || toupper(sched) == "LOCAL",
+            message="options(clustermq.scheduler') can not be 'LOCAL'")
 
     w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE,
                 ssh_host="localhost", node="localhost")
