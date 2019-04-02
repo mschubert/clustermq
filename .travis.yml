@@ -10,10 +10,14 @@ before_install:
 
 before_script:
  - pwd
+ - echo $PATH
+ - which R
+ - which sbatch
+ - R --no-save --no-restore -e "print(clustermq:::qsys_default)"
  - ping -c3 $(hostname)
  - ssh localhost 'exit'
  - ssh localhost 'R --no-save --no-restore -e "quit()" > /dev/null'
- - ssh localhost 'R --no-save --no-restore -e "getOption(\"clustermq.scheduler\")"'
+ - ssh localhost 'R --no-save --no-restore -e "print(clustermq:::qsys_default)"'
 
 script:
  - R CMD build .
