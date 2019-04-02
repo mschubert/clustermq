@@ -9,15 +9,8 @@ before_install:
  - ping -c3 $(hostname)
 
 before_script:
-# - export PATH=$PATH:$PWD/tests/bin
- - which R
- - echo $PATH
+ - sed -i "1iexport PATH=$PATH:$(dirname $(which R))" ~/.bashrc
  - cat ~/.bashrc
- - echo export PATH=$PATH >> ~/.bashrc
- - cat ~/.bashrc
- - cat ~/.bash_profile
- - echo export PATH=$PATH >> ~/.bash_profile
- - cat ~/.bash_profile
 
 script:
  - R CMD build .
