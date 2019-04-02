@@ -1,3 +1,13 @@
+language: r
+
+r:
+ - release
+ - devel
+
+warnings_are_errors: true
+
+cache: packages
+
 before_install:
  - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):tests/bin" ~/.bashrc
  - sudo apt-get install libzmq3-dev
@@ -14,28 +24,19 @@ before_script:
  - echo $PATH
  - which R
  - which sbatch
- - R --no-save --no-restore -e "print(clustermq:::qsys_default)"
+ - R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null
  - ping -c3 $(hostname)
  - ssh localhost 'exit'
  - ssh localhost 'R --no-save --no-restore -e "quit()" > /dev/null'
+ - cat ~/.Rprofile
 
 script:
  - R CMD build .
  - R CMD INSTALL *.tar.gz
- - ssh localhost 'R --no-save --no-restore -e "print(clustermq:::qsys_default)"'
+ - ssh localhost 'R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null'
  - make test
 # - make check
  - R CMD check --as-cran *.tar.gz
 
 after_failure:
  - cat ~/*.log
-
-language: r
-
-r:
- - release
- - devel
-
-warnings_are_errors: true
-
-cache: packages
