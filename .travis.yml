@@ -1,4 +1,5 @@
 before_install:
+ - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):./tests/bin" ~/.bashrc
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -8,14 +9,11 @@ before_install:
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
  - ping -c3 $(hostname)
 
-before_script:
- - sed -i "1iexport PATH=$PATH:$(dirname $(which R))" ~/.bashrc
- - cat ~/.bashrc
-
 script:
  - R CMD build .
  - R CMD INSTALL *.tar.gz
  - make test
+# - make check
  - R CMD check --as-cran *.tar.gz
 
 after_failure:
