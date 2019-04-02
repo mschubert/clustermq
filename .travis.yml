@@ -1,5 +1,5 @@
 before_install:
- - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):/home/travis/build/mschubert/clustermq/tests/bin" ~/.bashrc
+ - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):tests/bin" ~/.bashrc
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -10,6 +10,7 @@ before_install:
 
 before_script:
  - pwd
+ - source ~/.bashrc
  - echo $PATH
  - which R
  - which sbatch
