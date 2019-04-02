@@ -1,5 +1,5 @@
 before_install:
- - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):./tests/bin" ~/.bashrc
+ - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):/home/travis/build/mschubert/clustermq/tests/bin" ~/.bashrc
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -9,6 +9,7 @@ before_install:
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
 
 before_script:
+ - pwd
  - ping -c3 $(hostname)
  - ssh localhost 'exit'
  - ssh localhost 'R --no-save --no-restore -e "quit()" > /dev/null'
