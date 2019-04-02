@@ -18,11 +18,11 @@ before_script:
  - ping -c3 $(hostname)
  - ssh localhost 'exit'
  - ssh localhost 'R --no-save --no-restore -e "quit()" > /dev/null'
- - ssh localhost 'R --no-save --no-restore -e "print(clustermq:::qsys_default)"'
 
 script:
  - R CMD build .
  - R CMD INSTALL *.tar.gz
+ - ssh localhost 'R --no-save --no-restore -e "print(clustermq:::qsys_default)"'
  - make test
 # - make check
  - R CMD check --as-cran *.tar.gz
