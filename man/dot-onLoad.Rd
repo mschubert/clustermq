@@ -13,8 +13,6 @@
 }
 \description{
 This is done by setting the variable 'qsys' in the package environment
-to the object that contains the desired queueing system. We further call
-its setup() function if it exists, and set the variable 'qsys_id' to
-the scheduler we use
+to the object that contains the desired queueing system.
 }
 \keyword{internal}
