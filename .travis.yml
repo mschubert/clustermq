@@ -10,6 +10,7 @@ cache: packages
 
 before_install:
  - sed -i "1iexport PATH=\$PATH:$(dirname $(which R)):tests/bin" ~/.bashrc
+ - sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
