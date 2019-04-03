@@ -1,5 +1,5 @@
 #PBS -N {{ job_name }}
-#PBS -l nodes={{ n_jobs }}:ppn=1
+#PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }}
 #PBS -o {{ log_file | /dev/null }}
 #PBS -j oe
 

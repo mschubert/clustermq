@@ -4,6 +4,7 @@
 #$ -cwd
 #$ -V
 #$ -t 1-{{ n_jobs }}
+#$ -pe {{ cores | 1 }}
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
