@@ -44,3 +44,9 @@ has_ssh_cmq = function(host) {
                     wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
     status == 0
 }
+
+has_cmq = function(host) {
+    status = system("R -e 'library(clustermq)'", wait=TRUE,
+                    ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status == 0
+}
