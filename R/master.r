@@ -35,7 +35,8 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     on.exit(qsys$finalize())
 
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
-            " calculations (", chunk_size, " calls/chunk) ...")
+            " calculations (", format(qsys$data_size, big.mark=",", units="Mb"),
+            " common, ", chunk_size, " calls/chunk) ...")
     pb = progress::progress_bar$new(total = n_calls,
             format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
     pb$tick(0)

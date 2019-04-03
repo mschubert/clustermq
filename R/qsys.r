@@ -178,6 +178,7 @@ QSys = R6::R6Class("QSys",
         workers = function() private$workers_total,
         workers_running = function() private$workers_up,
         data_token = function() private$token,
+        data_size = function() utils::object.size(private$common_data),
         reusable = function() private$reuse
     ),
 
