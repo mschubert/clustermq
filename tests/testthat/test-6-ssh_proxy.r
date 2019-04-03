@@ -53,9 +53,8 @@ test_that("control flow between proxy and master", {
 })
 
 test_that("full SSH connection", {
-    skip_if_not_installed('clustermq')
-    skip_on_os("windows")
     skip_on_cran()
+    skip_on_os("windows")
     skip_if_not(has_localhost)
     skip_if_not(has_ssh_cmq("localhost"))
 
