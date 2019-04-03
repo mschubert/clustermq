@@ -26,12 +26,16 @@ MULTICORE = R6::R6Class("MULTICORE",
             invisible(success && length(private$children) == 0)
         },
 
-        finalize = function() {
-            private$collect_children(wait=FALSE, timeout=0)
-            running = names(private$children)
-            if (length(running) > 0) {
-                warning("Unclean shutdown for PIDs: ", paste(running, collapse=", "))
-                tools::pskill(running, tools::SIGKILL)
+        finalize = function(quiet=FALSE) {
+            if (!private$is_cleaned_up) {
+                private$collect_children(wait=FALSE, timeout=0)
+                running = names(private$children)
+                if (length(running) > 0) {
+                    if (!quiet)
+                        warning("Unclean shutdown for PIDs: ", paste(running, collapse=", "))
+                    tools::pskill(running, tools::SIGKILL)
+                }
+                private$is_cleaned_up = TRUE
             }
         }
     ),
