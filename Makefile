@@ -1,11 +1,16 @@
 .PHONY: all
 all: doc vignettes
 
-R = Rscript --no-save --no-restore -e
+R = R --no-save --no-restore -e
+BIN = $(abspath $(lastword $(MAKEFILE_LIST))/../tests/bin)
 
+.PHONY: test
 test:
-	export PATH=$(abspath $(lastword $(MAKEFILE_LIST))/../tests/bin):$$PATH; \
-	$(R) "devtools::test()"
+	PATH=$(BIN):$$PATH $(R) "devtools::test()"
+
+.PHONY: check
+check:
+	PATH=$(BIN):$$PATH $(R) "devtools::check()"
 
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,inst/doc/%.md,$(rmd_files))

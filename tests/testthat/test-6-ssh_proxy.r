@@ -3,7 +3,6 @@ context("proxy")
 has_localhost = has_connectivity("localhost")
 
 test_that("control flow between proxy and master", {
-    options(clustermq.ssh.host = "localhost")
     skip_if_not(has_localhost)
     skip_on_os("windows")
 
@@ -51,4 +50,21 @@ test_that("control flow between proxy and master", {
     collect = suppressWarnings(parallel::mccollect(p))
     expect_equal(as.integer(names(collect)), p$pid)
     on.exit(NULL)
+})
+
+test_that("full SSH connection", {
+    skip_on_cran()
+    skip_on_os("windows")
+    skip_if_not(has_localhost)
+    skip_if_not(has_ssh_cmq("localhost"))
+
+    # 'LOCAL' mode (default) will not set up required sockets
+    sched = getOption("clustermq.scheduler", qsys_default)
+    skip_if(is.null(sched) || toupper(sched) == "LOCAL",
+            message="options(clustermq.scheduler') can not be 'LOCAL'")
+
+    w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE,
+                ssh_host="localhost", node="localhost")
+    result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
+    expect_equal(result, list(42))
 })

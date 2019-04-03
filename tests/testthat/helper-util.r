@@ -32,3 +32,21 @@ has_connectivity = function(host, protocol="tcp") {
     }
     FALSE
 }
+
+has_ssh = function(host) {
+    status = system(paste("ssh", host, "'exit'"), wait=TRUE,
+                    ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status == 0
+}
+
+has_ssh_cmq = function(host) {
+    status = system(paste("ssh", host, "'R -e \"library(clustermq)\"'"),
+                    wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status == 0
+}
+
+has_cmq = function(host) {
+    status = system("R -e 'library(clustermq)'", wait=TRUE,
+                    ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status == 0
+}

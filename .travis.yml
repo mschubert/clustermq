@@ -1,26 +1,3 @@
-before_install:
- - sudo apt-get install libzmq3-dev
- - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
- - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
- - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
- - echo "Host localhost
-    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
- - echo "$(hostname) 127.0.0.1" >> ~/.hosts
- - ping -c3 $(hostname)
-
-before_script:
-# - export PATH=$PATH:$PWD/tests/bin
- - echo $PATH
-
-script:
- - R CMD build .
- - R CMD INSTALL *.tar.gz
- - make test
- - R CMD check --as-cran *.tar.gz
-
-after_failure:
- - cat ~/*.log
-
 language: r
 
 r:
@@ -30,3 +7,40 @@ r:
 warnings_are_errors: true
 
 cache: packages
+
+before_install:
+ - sed -i "1iexport PATH=$(dirname $(which R)):$(pwd)/tests/bin:\$PATH" ~/.bashrc
+ - sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc
+ - sed -i "3iexport R_LIBS_SITE=$R_LIBS_SITE" ~/.bashrc
+ - source ~/.bashrc
+ - sudo apt-get install libzmq3-dev
+ - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
+ - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+ - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
+ - echo "Host localhost
+    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+ - echo "$(hostname) 127.0.0.1" >> ~/.hosts
+
+before_script:
+ - pwd
+ - cat ~/.bashrc
+ - which R
+ - which sbatch
+ - R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null
+ - ping -c3 $(hostname)
+ - ssh localhost 'which R; which sbatch; echo $PATH'
+ - ssh localhost 'R --no-save --no-restore -e ".libPaths()"'
+
+script:
+ - R CMD build .
+ - R CMD INSTALL *.tar.gz
+ - ssh localhost 'R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null'
+ - make test
+# - make check
+ - timeout 120 R CMD check --as-cran *.tar.gz
+
+after_failure:
+ - cat ~/*.log
+ - cat ~/worker.log || true
+ - cat ~/ssh_proxy.log || true
+ - cat clustermq.Rcheck/tests/* || true

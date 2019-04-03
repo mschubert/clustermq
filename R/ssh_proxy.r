@@ -37,6 +37,12 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
     # set up qsys on cluster
     message("setting up qsys: ", qsys_id)
+    if (toupper(qsys_id) %in% c("LOCAL", "SSH")) {
+        msg = paste("Remote QSys not set up,",
+                    sQuote(qsys_id), "not allowed on SSH server")
+        rzmq::send.socket(ctl_socket, data=list(id=paste("PROXY_ERROR:", msg)))
+        stop(msg)
+    }
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     qsys = qsys$new(data=msg, master=net_fwd)
     redirect = list(id="PROXY_READY", data_url=qsys$url, token=qsys$data_token)
