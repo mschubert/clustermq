@@ -33,7 +33,13 @@ cmq_foreach = function(obj, expr, envir, data) {
     formals(fun) = stats::setNames(replicate(ncol(args_df), substitute()), obj$argnames)
     body(fun) = expr
 
-    data$export = utils::modifyList(as.list(data$export), as.list(obj$export))
+    # evaluate objects in "export" amd add them to clustermq exports
+    if (length(obj$export) > 0) {
+        export = mget(obj$export, envir=envir)
+        data$export = utils::modifyList(as.list(data$export), export)
+    }
+
+    # make sure packages are loaded on the dopar target
 #    data$packages = utils::modifyList(as.list(data$packages), as.list(obj$packages))
 
     do.call(Q_rows, c(list(df=args_df, fun=fun), data))
