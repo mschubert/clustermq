@@ -63,10 +63,9 @@ test_that("full SSH connection", {
     sched = getOption("clustermq.scheduler", qsys_default)
     skip_if(is.null(sched) || toupper(sched) == "LOCAL",
             message="options(clustermq.scheduler') can not be 'LOCAL'")
-return()
+
     w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE,
-                ssh_host="localhost", node="localhost",
-                template=list(ssh_log="~/ssh_proxy.log"))
+                ssh_host="localhost", node="localhost")
     result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
     expect_equal(result, list(42))
 })
