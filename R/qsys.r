@@ -98,7 +98,7 @@ QSys = R6::R6Class("QSys",
             if (is.infinite(timeout))
                 msec = -1L
             else
-                msec = as.integer(timeout * 1000)
+                msec = as.integer(timeout)
 
             rcv = rzmq::poll.socket(list(private$socket),
                                     list("read"), timeout=msec)
