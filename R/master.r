@@ -30,6 +30,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     n_errors = 0
     n_warnings = 0
     shutdown = FALSE
+    clean_exit = TRUE
 
     on.exit(qsys$finalize())
 
@@ -42,6 +43,10 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
         msg = qsys$receive_data(timeout=timeout)
+        if (is.null(msg)) { # reached timeout
+            clean_exit = FALSE
+            break
+        }
         pb$tick(length(msg$result),
                 tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
 
@@ -53,10 +58,12 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
             n_warnings = n_warnings + length(msg$warnings)
             n_errors = n_errors + length(msg$errors)
-            if (n_errors > 0 && fail_on_error == TRUE)
+            if (n_errors > 0 && fail_on_error == TRUE) {
                 shutdown = TRUE
+                timeout = getOption("clustermq.error.timeout", min(timeout, 30))
+            }
             new_msgs = c(msg$errors, msg$warnings)
-            if (length(new_msgs > 0) && length(cond_msgs) < 50)
+            if (length(new_msgs) > 0 && length(cond_msgs) < 50)
                 cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
         }
 
@@ -84,7 +91,10 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
             qsys$send_shutdown_worker()
     }
 
-    if (qsys$reusable || qsys$cleanup())
+    if (!clean_exit) {
+        qsys$finalize(quiet=TRUE)
+        on.exit(NULL)
+    } else if (qsys$reusable || qsys$cleanup())
         on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
