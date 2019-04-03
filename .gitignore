@@ -1,5 +1,6 @@
 Meta
 doc
+docs
 inst/doc
 vignettes/*.R
 vignettes/*.md
