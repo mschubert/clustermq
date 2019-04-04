@@ -23,3 +23,9 @@ test_that(".export objects are exported", {
     expect_equal(res, cmp)
 #    expect_error(foreach(x=1:3) %dopar% { x + y })
 })
+
+test_that(".packages are loaded", {
+    register_dopar_cmq(n_jobs=0)
+
+    expect_error(foreach(i=1:3, .packages="testthat") %dopar% sqrt(i))
+})
