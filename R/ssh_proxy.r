@@ -35,59 +35,62 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     message("received common data:",
             utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
 
-    # set up qsys on cluster
-    message("setting up qsys: ", qsys_id)
-    if (toupper(qsys_id) %in% c("LOCAL", "SSH")) {
-        msg = paste("Remote QSys not set up,",
-                    sQuote(qsys_id), "not allowed on SSH server")
-        rzmq::send.socket(ctl_socket, data=list(id=paste("PROXY_ERROR:", msg)))
-        stop(msg)
-    }
-    qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-    qsys = qsys$new(data=msg, master=net_fwd)
-    redirect = list(id="PROXY_READY", data_url=qsys$url, token=qsys$data_token)
-    rzmq::send.socket(ctl_socket, data=redirect)
-    message("sent PROXY_READY to master ctl")
+    tryCatch({
+        # set up qsys on cluster
+        message("setting up qsys: ", qsys_id)
+        if (toupper(qsys_id) %in% c("LOCAL", "SSH"))
+            stop("Remote SSH QSys ", sQuote(qsys_id), " is not allowed")
 
-    while(TRUE) {
-        events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock),
-                                   rep(list("read"), 4), timeout=-1L)
+        qsys = get(toupper(qsys_id), envir=parent.env(environment()))
+        qsys = qsys$new(data=msg, master=net_fwd)
+        redirect = list(id="PROXY_READY", data_url=qsys$url, token=qsys$data_token)
+        rzmq::send.socket(ctl_socket, data=redirect)
+        message("sent PROXY_READY to master ctl")
 
-        # forwarding messages between workers and master
-        if (events[[1]]$read)
-            rzmq::send.multipart(fwd_out, rzmq::receive.multipart(fwd_in))
-        if (events[[2]]$read)
-            rzmq::send.multipart(fwd_in, rzmq::receive.multipart(fwd_out))
+        while(TRUE) {
+            events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock),
+                                       rep(list("read"), 4), timeout=-1L)
 
-        # socket connecting proxy to master
-        if (events[[3]]$read) {
-            msg = rzmq::receive.socket(ctl_socket)
-            message("received: ", msg)
-            switch(msg$id,
-                "PROXY_CMD" = {
-                    reply = try(eval(msg$exec))
-                    rzmq::send.socket(ctl_socket,
-                                      data = list(id="PROXY_CMD", reply=reply))
-                },
-                "PROXY_STOP" = {
-                    if (msg$finalize)
-                        qsys$finalize()
-                    break
-                }
-            )
+            # forwarding messages between workers and master
+            if (events[[1]]$read)
+                rzmq::send.multipart(fwd_out, rzmq::receive.multipart(fwd_in))
+            if (events[[2]]$read)
+                rzmq::send.multipart(fwd_in, rzmq::receive.multipart(fwd_out))
+
+            # socket connecting proxy to master
+            if (events[[3]]$read) {
+                msg = rzmq::receive.socket(ctl_socket)
+                message("received: ", msg)
+                switch(msg$id,
+                    "PROXY_CMD" = {
+                        reply = try(eval(msg$exec))
+                        rzmq::send.socket(ctl_socket,
+                                          data = list(id="PROXY_CMD", reply=reply))
+                    },
+                    "PROXY_STOP" = {
+                        if (msg$finalize)
+                            qsys$finalize()
+                        break
+                    }
+                )
+            }
+
+            # socket connecting ssh_proxy to workers
+            if (events[[4]]$read) {
+                msg = qsys$receive_data(with_checks=FALSE)
+                message("received: ", msg)
+                switch(msg$id,
+                    "WORKER_READY" = {
+                        qsys$send_common_data()
+                    }
+                )
+            }
         }
 
-        # socket connecting ssh_proxy to workers
-        if (events[[4]]$read) {
-            msg = qsys$receive_data(with_checks=FALSE)
-            message("received: ", msg)
-            switch(msg$id,
-                "WORKER_READY" = {
-                    qsys$send_common_data()
-                }
-            )
-        }
-    }
+        message("shutting down and cleaning up")
 
-    message("shutting down and cleaning up")
+    }, error = function(e) {
+        data = list(id=paste("PROXY_ERROR:", conditionMessage(e)))
+        rzmq::send.socket(ctl_socket, data=data)
+    })
 }
