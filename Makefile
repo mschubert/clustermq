@@ -29,6 +29,10 @@ inst/doc/%.md: vignettes/%.rmd
 doc:
 	$(R) "devtools::document()"
 
+.PHONY: deploy
+deploy:
+	$(R) "pkgdown:::deploy_local()"
+
 .PHONY: clean
 clean:
 	${RM} -r inst/doc
