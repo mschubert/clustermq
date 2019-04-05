@@ -45,5 +45,7 @@ cmq_foreach = function(obj, expr, envir, data) {
         stop("foreach .packages currently not supported in clustermq")
     }
 
-    do.call(Q_rows, c(list(df=args_df, fun=fun), data))
+    result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
+    names(result) = paste0("result.", seq_along(result))
+    Reduce(obj$combineInfo$fun, result)
 }
