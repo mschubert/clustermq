@@ -163,10 +163,9 @@ QSys = R6::R6Class("QSys",
             success = self$workers == 0
             if (!quiet)
                 private$summary_stats()
-            if (success)
-                private$is_cleaned_up = TRUE
-            else
-                self$finalize(quiet=quiet || self$workers_running == 0)
+            if (!success)
+                self$finalize(quiet=(quiet || self$workers_running == 0))
+            private$is_cleaned_up = TRUE
             invisible(success)
         }
     ),
@@ -175,7 +174,7 @@ QSys = R6::R6Class("QSys",
         id = function() private$port,
         url = function() private$listen,
         sock = function() private$socket,
-        workers = function() private$workers_total,
+        workers = function() ifelse(private$is_cleaned_up, 0, private$workers_total),
         workers_running = function() private$workers_up,
         data_token = function() private$token,
         data_size = function() utils::object.size(private$common_data),

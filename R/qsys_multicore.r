@@ -32,7 +32,9 @@ MULTICORE = R6::R6Class("MULTICORE",
                 running = names(private$children)
                 if (length(running) > 0) {
                     if (!quiet)
-                        warning("Unclean shutdown for PIDs: ", paste(running, collapse=", "))
+                        warning("Unclean shutdown for PIDs: ",
+                                paste(running, collapse=", "),
+                                immediate.=TRUE)
                     tools::pskill(running, tools::SIGKILL)
                 }
                 private$is_cleaned_up = TRUE

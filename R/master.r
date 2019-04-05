@@ -30,7 +30,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     n_errors = 0
     n_warnings = 0
     shutdown = FALSE
-    clean_exit = TRUE
+    kill_workers = FALSE
 
     on.exit(qsys$finalize())
 
@@ -44,10 +44,14 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
         msg = qsys$receive_data(timeout=timeout)
-        if (is.null(msg)) { # reached timeout
-            clean_exit = FALSE
-            break
+        if (is.null(msg)) { # timeout reached
+            if (shutdown) {
+                kill_workers = TRUE
+                break
+            } else
+                stop("Socket timeout reached, likely due to a worker crash")
         }
+
         pb$tick(length(msg$result),
                 tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
 
@@ -92,10 +96,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
             qsys$send_shutdown_worker()
     }
 
-    if (!clean_exit) {
-        qsys$finalize(quiet=TRUE)
-        on.exit(NULL)
-    } else if (qsys$reusable || qsys$cleanup())
+    if (!kill_workers && (qsys$reusable || qsys$cleanup()))
         on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,

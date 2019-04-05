@@ -61,6 +61,12 @@ test_that("rettype is respected", {
     expect_equal(r, 1:3*2)
 })
 
+test_that("worker timeout throws error", {
+    w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
+    expect_error(expect_warning(
+        Q(Sys.sleep, 3, rettype="numeric", workers=w, timeout=1L)))
+})
+
 test_that("error timeout works", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
@@ -73,8 +79,17 @@ test_that("error timeout works", {
     w = workers(n_jobs=2, qsys_id="multicore", reuse=FALSE)
 
     times = system.time({
-        expect_error(Q(fx, x=c(1,10), workers=w, timeout=10))
+        expect_error(expect_warning(Q(fx, x=c(1,10), workers=w, timeout=10)))
     })
-
     expect_true(times[["elapsed"]] < 5)
+})
+
+test_that("Q with expired workers throws error quickly", {
+    w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
+    w$cleanup()
+
+    times = system.time({
+        expect_error(Q(identity, x=1:3, rettype="numeric", workers=w, timeout=3L))
+    })
+    expect_true(times[["elapsed"]] < 1)
 })
