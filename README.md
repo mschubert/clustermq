@@ -25,7 +25,10 @@ calculations are load-balanced, i.e. workers that get their jobs done faster
 will also receive more function calls to work on. This is especially useful if
 not all calls return after the same time, or one worker has a high load.
 
-[A full user guide is available here.](https://github.com/mschubert/clustermq/wiki)
+Browse the vignettes here:
+
+* [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html)
+* [Technical Documentation](https://mschubert.github.io/clustermq/articles/technicaldocs.html)
 
 Installation
 ------------
