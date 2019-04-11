@@ -11,6 +11,15 @@ test_that("control flow", {
     expect_equal(r, as.list(1:3*2))
 })
 
+test_that("control flow with automatic workers", {
+    skip_if_not(has_localhost)
+    skip_on_os("windows")
+    fx = function(x) x*2
+    options(clustemrq.scheduler = "multicore")
+    r = Q(fx, x=1:3, n_jobs=1, timeout=3L)
+    expect_equal(r, as.list(1:3*2))
+})
+
 test_that("common data", {
     skip_if_not(has_localhost)
     skip_on_os("windows")

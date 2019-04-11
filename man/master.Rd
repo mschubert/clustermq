@@ -20,6 +20,8 @@ master(qsys, iter, rettype = "list", fail_on_error = TRUE,
 defaults to 100 chunks per worker or max. 500 kb per chunk}
 
 \item{timeout}{Maximum time in seconds to wait for worker (default: Inf)}
+
+\item{max_calls_worker}{Maxmimum number of function calls that will be sent to one worker}
 }
 \value{
 A list of whatever `fun` returned
