@@ -5,7 +5,7 @@
 \title{Master controlling the workers}
 \usage{
 master(qsys, iter, rettype = "list", fail_on_error = TRUE,
-  chunk_size = NA, timeout = Inf)
+  chunk_size = NA, timeout = Inf, max_calls_worker = Inf)
 }
 \arguments{
 \item{qsys}{Instance of QSys object}

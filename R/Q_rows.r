@@ -21,7 +21,7 @@
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, chunk_size=NA, timeout=Inf) {
+        log_worker=FALSE, chunk_size=NA, timeout=Inf, max_calls_worker=Inf) {
 
     # check if call args make sense
     if (!is.null(memory))
@@ -47,7 +47,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
 
         workers = workers(n_jobs, data=data, reuse=FALSE, template=template,
-                          log_worker=log_worker)
+                          log_worker=log_worker, max_calls_worker=max_calls_worker)
     } else
         do.call(workers$set_common_data, data)
 

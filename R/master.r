@@ -20,7 +20,7 @@
 #' @return               A list of whatever `fun` returned
 #' @keywords  internal
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
-                  chunk_size=NA, timeout=Inf) {
+                  chunk_size=NA, timeout=Inf, max_calls_worker=Inf) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
@@ -72,10 +72,15 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
         }
 
-        if (!shutdown && msg$token != qsys$data_token) {
+        if (shutdown || (!is.null(msg$n_calls) && msg$n_calls >= max_calls_worker)) {
+            qsys$send_shutdown_worker()
+            next
+        }
+
+        if (msg$token != qsys$data_token) {
             qsys$send_common_data()
 
-        } else if (!shutdown && submit_index[1] <= n_calls) {
+        } else if (submit_index[1] <= n_calls) {
             # if we have work, send it to the worker
             submit_index = submit_index[submit_index <= n_calls]
             qsys$send_job_data(chunk = chunk(iter, submit_index))
@@ -89,11 +94,11 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 submit_index = submit_index[1:chunk_size]
             }
 
-        } else if (!shutdown && qsys$reusable) {
+        } else if (qsys$reusable) {
             qsys$send_wait()
-
-        } else # or else shut it down
+        } else { # or else shut it down
             qsys$send_shutdown_worker()
+        }
     }
 
     if (!kill_workers && (qsys$reusable || qsys$cleanup()))
