@@ -1,3 +1,13 @@
+* 0.8.7
+  * `Q` now has `max_calls_worker` argument to avoid walltime (#110)
+  * Submission messages now list size of common data (drake#800)
+  * All default templates now have an optional `cores` per job field (#123)
+  * `foreach` now treats `.export` (#124) and `.combine` (#126) correctly
+  * New option `clustermq.error.timeout` to not wait for clean shutdown (#134)
+  * SSH command is now specified via a template file (#122)
+  * SSH will now forward errors to the local process (#135)
+  * The Wiki is deprecated, use https://mschubert.github.io/clustermq/ instead
+
 * 0.8.6
   * Progress bar is now shown before any workers start (#107)
   * Socket connections are now authenticated using a session password (#125)
