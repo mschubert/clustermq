@@ -23,6 +23,7 @@ LazyData: true
 Encoding: UTF-8
 Suggests:
     BiocParallel,
+    devtools,
     dplyr,
     foreach,
     iterators,
