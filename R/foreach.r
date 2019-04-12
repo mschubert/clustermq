@@ -29,13 +29,16 @@ cmq_foreach = function(obj, expr, envir, data) {
     it = iterators::iter(obj)
     args_df = do.call(rbind, as.list(it))
 
+    if (is.call(expr) && as.character(expr[[1]]) != "{")
+        obj$export = c(as.character(expr[[1]]), obj$export)
+
     fun = function() NULL
     formals(fun) = stats::setNames(replicate(ncol(args_df), substitute()), obj$argnames)
     body(fun) = expr
 
     # evaluate objects in "export" amd add them to clustermq exports
     if (length(obj$export) > 0) {
-        export = mget(obj$export, envir=envir)
+        export = as.list(mget(obj$export, envir=envir, inherits=TRUE))
         data$export = utils::modifyList(as.list(data$export), export)
     }
 
