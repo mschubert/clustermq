@@ -226,6 +226,12 @@ As [BiocParallel](http://bioconductor.org/packages/release/bioc/html/BiocParalle
 supports `foreach` too, this means we can run all packages that use `BiocParallel`
 on the cluster as well via `DoparParam`.
 
+```{r eval=FALSE}
+library(BiocParallel)
+register(DoparParam()) # after register_dopar_cmq(...)
+bplapply(1:3, sqrt)
+```
+
 ### With `drake`
 
 The [`drake`](https://github.com/ropensci/drake) package enables users to

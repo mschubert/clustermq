@@ -162,7 +162,7 @@ register_dopar_cmq(n_jobs=2, memory=1024) # accepts same arguments as `workers`
 foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
-```{r}
+```{r eval=FALSE}
 library(BiocParallel)
 register(DoparParam()) # after register_dopar_cmq(...)
 bplapply(1:3, sqrt)
