@@ -32,8 +32,10 @@ cmq_foreach = function(obj, expr, envir, data) {
     if (is.call(expr) && as.character(expr[[1]]) != "{")
         obj$export = c(as.character(expr[[1]]), obj$export)
 
-    fun = function() NULL
-    formals(fun) = stats::setNames(replicate(ncol(args_df), substitute()), obj$argnames)
+    fun = function(...) NULL
+    formals(fun) = c(stats::setNames(replicate(ncol(args_df), substitute()),
+                                     obj$argnames),
+                     formals(fun))
     body(fun) = expr
 
     # evaluate objects in "export" amd add them to clustermq exports
