@@ -100,7 +100,11 @@
 <a class="sourceLine" id="cb1-6" title="6"><span class="kw"><a href="reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb1-7" title="7"><span class="co"># list(2,4,6)</span></a></code></pre></div>
 <p>Computations are done <a href="https://github.com/armstrtw/rzmq">entirely on the network</a> and without any temporary files on network-mounted storage, so there is no strain on the file system apart from starting up R once per job. All calculations are load-balanced, i.e. workers that get their jobs done faster will also receive more function calls to work on. This is especially useful if not all calls return after the same time, or one worker has a high load.</p>
-<p><a href="https://github.com/mschubert/clustermq/wiki">A full user guide is available here.</a></p>
+<p>Browse the vignettes here:</p>
+<ul>
+<li><a href="https://mschubert.github.io/clustermq/articles/userguide.html">User Guide</a></li>
+<li><a href="https://mschubert.github.io/clustermq/articles/technicaldocs.html">Technical Documentation</a></li>
+</ul>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -123,24 +127,24 @@
 <h2 class="hasAnchor">
 <a href="#schedulers" class="anchor"></a>Schedulers</h2>
 <p>An HPC cluster’s scheduler ensures that computing jobs are distributed to available worker nodes. Hence, this is what clustermq interfaces with in order to do computations.</p>
-<p>We currently support the <a href="https://github.com/mschubert/clustermq/wiki/Configuration#setting-up-the-scheduler">following schedulers</a> (either locally or via SSH):</p>
+<p>We currently support the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler">following schedulers</a> (either locally or via SSH):</p>
 <ul>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/LSF">LSF</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#lsf">LSF</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/SGE">SGE</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#sge">SGE</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/SLURM">SLURM</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#slurm">SLURM</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/PBS">PBS</a>/<a href="https://github.com/mschubert/clustermq/wiki/Torque">Torque</a> - <em>needs</em> <code><a href="https://www.rdocumentation.org/packages/base/topics/options">options(clustermq.scheduler="PBS"/"Torque")</a></code>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#pbs">PBS</a>/<a href="https://mschubert.github.io/clustermq/articles/userguide.html#torque">Torque</a> - <em>needs</em> <code><a href="https://www.rdocumentation.org/packages/base/topics/options">options(clustermq.scheduler="PBS"/"Torque")</a></code>
 </li>
-<li>via <a href="https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector">SSH</a> - <em>needs</em> <code>options(clustermq.scheduler="ssh", clustermq.ssh.host=&lt;yourhost&gt;)</code>
+<li>via <a href="https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector">SSH</a> - <em>needs</em> <code>options(clustermq.scheduler="ssh", clustermq.ssh.host=&lt;yourhost&gt;)</code>
 </li>
 </ul>
-<p>If you need specific <a href="https://github.com/mschubert/clustermq/wiki/Configuration#compute-environments">computing environments or containers</a>, you can activate them via the scheduler template.</p>
+<p>If you need specific <a href="https://mschubert.github.io/clustermq/articles/userguide.html#environments">computing environments or containers</a>, you can activate them via the scheduler template.</p>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
@@ -168,12 +172,15 @@
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(foreach)</a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="kw"><a href="reference/register_dopar_cmq.html">register_dopar_cmq</a></span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># accepts same arguments as `workers`</span></a>
 <a class="sourceLine" id="cb7-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/foreach/topics/foreach">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(i) <span class="co"># this will be executed as jobs</span></a></code></pre></div>
-<p>More examples are available in <a href="https://github.com/mschubert/clustermq/wiki/Usage">the user guide</a>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(BiocParallel)</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/register">register</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/DoparParam-class">DoparParam</a></span>()) <span class="co"># after register_dopar_cmq(...)</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/bplapply">bplapply</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</a></code></pre></div>
+<p>More examples are available in <a href="https://mschubert.github.io/clustermq/articles/userguide.html">the user guide</a>.</p>
 </div>
 <div id="comparison-to-other-packages" class="section level2">
 <h2 class="hasAnchor">
 <a href="#comparison-to-other-packages" class="anchor"></a>Comparison to other packages</h2>
-<p>There are some packages that provide high-level parallelization of R function calls on a computing cluster. We compared <code>clustermq</code> to <code>BatchJobs</code> and <code>batchtools</code> for processing many short-running jobs, and found it to have approximately 1000x less overhead cost (details <a href="https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages">on the wiki</a>).</p>
+<p>There are some packages that provide high-level parallelization of R function calls on a computing cluster. We compared <code>clustermq</code> to <code>BatchJobs</code> and <code>batchtools</code> for processing many short-running jobs, and found it to have approximately 1000x less overhead cost.</p>
 <p><img src="http://image.ibb.co/cRgYNR/plot.png" alt="Overhead comparison"></p>
 <p>In short, use <code>clustermq</code> if you want:</p>
 <ul>

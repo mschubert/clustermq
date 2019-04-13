@@ -111,7 +111,7 @@ code {
 <div id="base-api-and-schedulers" class="section level3">
 <h3 class="hasAnchor">
 <a href="#base-api-and-schedulers" class="anchor"></a>Base API and schedulers</h3>
-<p>The main worker functions are wrapped in an <code>R6</code> class with the name of <code>QSys</code>. This provides a standardized API to the <a href="https://github.com/mschubert/clustermq/wiki/Message-specification">lower-level messages</a> that are sent via <a href="https://github.com/ropensci/rzmq"><code>rzmq</code></a>.</p>
+<p>The main worker functions are wrapped in an <code>R6</code> class with the name of <code>QSys</code>. This provides a standardized API to the <a href="https://mschubert.github.io/clustermq/articles/technicaldocs.html#zeromq-message-specification">lower-level messages</a> that are sent via <a href="https://github.com/ropensci/rzmq"><code>rzmq</code></a>.</p>
 <p>The base class itself is derived in scheduler classes that add the required functions for submitting and cleaning up jobs:</p>
 <pre><code>+ QSys
   |- Multicore

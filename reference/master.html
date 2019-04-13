@@ -148,7 +148,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>master</span>(<span class='no'>qsys</span>, <span class='no'>iter</span>, <span class='kw'>rettype</span> <span class='kw'>=</span> <span class='st'>"list"</span>, <span class='kw'>fail_on_error</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>Inf</span>)</pre>
+  <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>Inf</span>, <span class='kw'>max_calls_worker</span> <span class='kw'>=</span> <span class='fl'>Inf</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -177,6 +177,10 @@ defaults to 100 chunks per worker or max. 500 kb per chunk</p></td>
     <tr>
       <th>timeout</th>
       <td><p>Maximum time in seconds to wait for worker (default: Inf)</p></td>
+    </tr>
+    <tr>
+      <th>max_calls_worker</th>
+      <td><p>Maxmimum number of function calls that will be sent to one worker</p></td>
     </tr>
     </table>
     
