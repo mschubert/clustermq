@@ -69,18 +69,18 @@ available worker nodes. Hence, this is what clustermq interfaces with in order
 to do computations.
 
 We currently support the [following
-schedulers](https://github.com/mschubert/clustermq/wiki/Configuration#setting-up-the-scheduler)
+schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler)
 (either locally or via SSH):
 
-* [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
-* [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
-* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
-* [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
-* via [SSH](https://github.com/mschubert/clustermq/wiki/Configuration#ssh-connector) -
+* [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
+* [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
+* [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
+* [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
+* via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
 If you need specific [computing environments or
-containers](https://github.com/mschubert/clustermq/wiki/Configuration#compute-environments),
+containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),
 you can activate them via the scheduler template.
 
 Usage
@@ -128,7 +128,7 @@ bplapply(1:3, sqrt)
 ```
 
 More examples are available in [the
-user guide](https://github.com/mschubert/clustermq/wiki/Usage).
+user guide](https://mschubert.github.io/clustermq/articles/userguide.html).
 
 Comparison to other packages
 ----------------------------
@@ -136,7 +136,7 @@ Comparison to other packages
 There are some packages that provide high-level parallelization of R function calls
 on a computing cluster. We compared `clustermq` to `BatchJobs` and `batchtools` for
 processing many short-running jobs, and found it to have approximately 1000x less
-overhead cost (details [on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages)).
+overhead cost.
 
 ![Overhead comparison](http://image.ibb.co/cRgYNR/plot.png)
 

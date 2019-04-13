@@ -35,7 +35,7 @@ library(clustermq)
 
 The main worker functions are wrapped in an `R6` class with the name of `QSys`.
 This provides a standardized API to the [lower-level
-messages](https://github.com/mschubert/clustermq/wiki/Message-specification)
+messages](https://mschubert.github.io/clustermq/articles/technicaldocs.html#zeromq-message-specification)
 that are sent via [`rzmq`](https://github.com/ropensci/rzmq).
 
 The base class itself is derived in scheduler classes that add the required
