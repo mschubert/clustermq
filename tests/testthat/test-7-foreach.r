@@ -45,12 +45,12 @@ test_that(".combine is respected", {
     expect_equal(res, cmp)
 })
 
-test_that("foreach works via BiocParallel", {
-    skip_if_not_installed("BiocParallel")
-
-    BiocParallel::register(BiocParallel::DoparParam())
-    res = BiocParallel::bplapply(1:3, sqrt)
-    cmp = foreach(i=1:3) %do% sqrt(i)
-
-    expect_equal(res, cmp)
-})
+#test_that("foreach works via BiocParallel", {
+#    skip_if_not_installed("BiocParallel")
+#
+#    BiocParallel::register(BiocParallel::DoparParam())
+#    res = BiocParallel::bplapply(1:3, sqrt)
+#    cmp = foreach(i=1:3) %do% sqrt(i)
+#
+#    expect_equal(res, cmp)
+#})
