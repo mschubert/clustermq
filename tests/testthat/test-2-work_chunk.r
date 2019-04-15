@@ -57,7 +57,7 @@ test_that("warning and error handling", {
 test_that("const args", {
     fx = function(a, ..., x=23) a + x
 
-    re = work_chunk(df, fx, const_args=list(x=5))$result
+    re = work_chunk(df, fx, const=list(x=5))$result
     expect_equal(re, setNames(as.list(df$a + 5), 1:3))
 })
 

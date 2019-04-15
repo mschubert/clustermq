@@ -61,7 +61,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     # process calls
     if (class(workers)[1] == "LOCAL") {
         list2env(export, envir=environment(fun))
-        re = work_chunk(df=df, fun=fun, const_args=const, rettype=rettype,
+        re = work_chunk(df=df, fun=fun, const=const, rettype=rettype,
                         common_seed=seed, progress=TRUE)
         summarize_result(re$result, length(re$errors), length(re$warnings),
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)

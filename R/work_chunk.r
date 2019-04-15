@@ -4,13 +4,13 @@
 #'
 #' @param df           A data.frame with call IDs as rownames and arguments as columns
 #' @param fun          The function to call
-#' @param const_args   Constant arguments passed to each call
-#' @param rettype        Return type of function
+#' @param const        Constant arguments passed to each call
+#' @param rettype      Return type of function
 #' @param common_seed  A seed offset common to all function calls
 #' @param progress     Logical indicated whether to display a progress bar
 #' @return             A list of call results (or try-error if they failed)
 #' @keywords internal
-work_chunk = function(df, fun, const_args=list(), rettype="list",
+work_chunk = function(df, fun, const=list(), rettype="list",
                       common_seed=NULL, progress=FALSE) {
     context = new.env()
     context$warnings = list()
@@ -28,7 +28,7 @@ work_chunk = function(df, fun, const_args=list(), rettype="list",
 
         result = withCallingHandlers(
             withRestarts(
-                do.call(fun, c(list(...), const_args)),
+                do.call(fun, c(list(...), const)),
                 muffleStop = function(e) if (rettype == "list")
                     structure(e, class="error")
             ),
