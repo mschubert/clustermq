@@ -4,7 +4,7 @@
 \alias{work_chunk}
 \title{Function to process a chunk of calls}
 \usage{
-work_chunk(df, fun, const_args = list(), rettype = "list",
+work_chunk(df, fun, const = list(), rettype = "list",
   common_seed = NULL, progress = FALSE)
 }
 \arguments{
@@ -12,7 +12,7 @@ work_chunk(df, fun, const_args = list(), rettype = "list",
 
 \item{fun}{The function to call}
 
-\item{const_args}{Constant arguments passed to each call}
+\item{const}{Constant arguments passed to each call}
 
 \item{rettype}{Return type of function}
 
