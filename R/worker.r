@@ -8,7 +8,9 @@
 #' @param verbose  Whether to print debug messages
 #' @keywords internal
 worker = function(master, timeout=600, ..., verbose=TRUE) {
-    if (!verbose)
+    if (verbose)
+        message = function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
+    else
         message = function(...) invisible(NULL)
 
     #TODO: replace this by proper authentication
