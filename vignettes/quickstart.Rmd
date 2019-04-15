@@ -169,7 +169,7 @@ bplapply(1:3, sqrt)
 ```
 
 More examples are available in [the
-user guide](https://mschubert.github.io/clustermq/articles/userguide.html<Paste>).
+user guide](https://mschubert.github.io/clustermq/articles/userguide.html).
 
 ## Usage
 
