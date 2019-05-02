@@ -59,10 +59,13 @@ test_that("full SSH connection", {
     skip_if_not(has_ssh_cmq("localhost"))
 
     # 'LOCAL' mode (default) will not set up required sockets
+    # 'SSH' mode would lead to circular connections
+    # schedulers may have long delay (they start in fresh session, so no path)
     sched = getOption("clustermq.scheduler", qsys_default)
-    skip_if(is.null(sched) || toupper(sched) == "LOCAL",
-            message="options(clustermq.scheduler') can not be 'LOCAL'")
+    skip_if(is.null(sched) || toupper(sched) != "MULTICORE",
+            message="options(clustermq.scheduler') must be 'MULTICORE'")
 
+    options(clustermq.template = "SSH")
     w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE,
                 ssh_host="localhost", node="localhost")
     result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
