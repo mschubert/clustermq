@@ -235,7 +235,7 @@ QSys = R6::R6Class("QSys",
         },
 
         fill_template = function(values) {
-            infuser::infuse(private$template, values)
+            infuser::infuse(private$template, values, strict=TRUE)
         },
 
         summary_stats = function() {
