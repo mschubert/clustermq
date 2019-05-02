@@ -57,6 +57,8 @@ test_that("full SSH connection", {
     skip_on_os("windows")
     skip_if_not(has_localhost)
     skip_if_not(has_ssh_cmq("localhost"))
+    skip_if_not(identical(Sys.getenv("TRAVIS"), "true"),
+                message="this test runs on travis only")
 
     # 'LOCAL' mode (default) will not set up required sockets
     # 'SSH' mode would lead to circular connections
