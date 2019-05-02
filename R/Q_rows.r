@@ -61,6 +61,8 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
     # process calls
     if (class(workers)[1] == "LOCAL") {
         list2env(export, envir=environment(fun))
+        for (pkg in pkgs) # is it possible to attach the package to fun's env?
+            library(pkg, character.only=TRUE)
         re = work_chunk(df=df, fun=fun, const=const, rettype=rettype,
                         common_seed=seed, progress=TRUE)
         summarize_result(re$result, length(re$errors), length(re$warnings),

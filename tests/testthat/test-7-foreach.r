@@ -22,7 +22,8 @@ test_that(".export objects are exported", {
 })
 
 test_that(".packages are loaded", {
-    expect_error(foreach(i=1:3, .packages="testthat") %dopar% sqrt(i))
+    res = foreach(i="a string", .packages="tools") %dopar% { md5sum(i) }
+    expect_equal(unname(res), unname(tools::md5sum("a string")))
 })
 
 test_that(".combine is respected", {

@@ -70,6 +70,8 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                     list2env(msg$export, envir=.GlobalEnv)
                     token = msg$token
                     message("token from msg: ", token)
+                    for (pkg in msg$pkgs)
+                        library(pkg, character.only=TRUE) #TODO: in its own namespace
                     rzmq::send.socket(socket, data=list(id="WORKER_READY",
                                       auth=auth, token=token, n_calls=counter))
                 } else {

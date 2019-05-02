@@ -38,6 +38,16 @@ test_that("export", {
     expect_equal(r, as.list(1:3*2+20))
 })
 
+test_that("load package on worker", {
+    skip_if_not(has_localhost)
+    skip_on_os("windows")
+    fx = function(x) md5sum(x)
+    x = "a string"
+    w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
+    r = Q(fx, x=x, pkgs=c("tools"), workers=w, rettype="character", timeout=3L)
+    expect_equal(r, unname(tools::md5sum(x)))
+})
+
 test_that("seed reproducibility", {
     skip_if_not(has_localhost)
     skip_on_os("windows")

@@ -46,8 +46,7 @@ cmq_foreach = function(obj, expr, envir, data) {
 
     # make sure packages are loaded on the dopar target
     if (length(obj$packages) > 0) {
-#        data$packages = utils::modifyList(as.list(data$packages), as.list(obj$packages))
-        stop("foreach .packages currently not supported in clustermq")
+        data$pkgs = unique(c(data$pkgs, obj$packages))
     }
 
     result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
