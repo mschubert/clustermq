@@ -18,7 +18,7 @@
 #' Q_rows(df, fx, job_size = 1)
 #' # [1] 5
 #' }
-Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
+Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
         log_worker=FALSE, chunk_size=NA, timeout=Inf, max_calls_worker=Inf) {
@@ -36,7 +36,7 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     n_calls = nrow(df)
     seed = as.integer(seed)
     check_args(fun, df, const)
-    data = list(fun=fun, const=const, export=export,
+    data = list(fun=fun, const=const, export=export, pkgs=pkgs,
                 rettype=rettype, common_seed=seed)
 
     # set up workers if none provided

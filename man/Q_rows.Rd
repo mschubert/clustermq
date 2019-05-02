@@ -4,11 +4,11 @@
 \alias{Q_rows}
 \title{Queue function calls defined by rows in a data.frame}
 \usage{
-Q_rows(df, fun, const = list(), export = list(), seed = 128965,
-  memory = NULL, template = list(), n_jobs = NULL, job_size = NULL,
-  rettype = "list", fail_on_error = TRUE, workers = NULL,
-  log_worker = FALSE, chunk_size = NA, timeout = Inf,
-  max_calls_worker = Inf)
+Q_rows(df, fun, const = list(), export = list(), pkgs = c(),
+  seed = 128965, memory = NULL, template = list(), n_jobs = NULL,
+  job_size = NULL, rettype = "list", fail_on_error = TRUE,
+  workers = NULL, log_worker = FALSE, chunk_size = NA,
+  timeout = Inf, max_calls_worker = Inf)
 }
 \arguments{
 \item{df}{data.frame with iterated arguments}
@@ -18,6 +18,8 @@ Q_rows(df, fun, const = list(), export = list(), seed = 128965,
 \item{const}{A list of constant arguments passed to each function call}
 
 \item{export}{List of objects to be exported to the worker}
+
+\item{pkgs}{Character vector of packages to load on the worker}
 
 \item{seed}{A seed to set for each function call}
 
