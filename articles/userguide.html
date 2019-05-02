@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.7</span>
       </span>
     </div>
 
@@ -211,7 +211,7 @@ devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumen
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span>
 <span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6444) ...</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6709) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; [1] 2</span>
 <span class="co">#&gt; </span>
@@ -284,6 +284,9 @@ x =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation
 x =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/foreach/topics/foreach">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(i) <span class="co"># this will be executed as jobs</span>
 <span class="co">#&gt; Submitting 2 worker jobs (ID: 6665) ...</span></code></pre></div>
 <p>As <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html">BiocParallel</a> supports <code>foreach</code> too, this means we can run all packages that use <code>BiocParallel</code> on the cluster as well via <code>DoparParam</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(BiocParallel)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/register">register</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/DoparParam-class">DoparParam</a></span>()) <span class="co"># after register_dopar_cmq(...)</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/bplapply">bplapply</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</code></pre></div>
 </div>
 <div id="with-drake" class="section level3">
 <h3 class="hasAnchor">
@@ -410,7 +413,7 @@ CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save 
 </li>
 <li>Queue: <code>BSUB-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
 <li>Walltime: <code>BSUB-W {{ walltime }}</code>. Set the maximum time a job is allowed to run before being killed. The default here is to disable this line. If you enable it, enter a fixed value or pass the <code>walltime</code> argument to each function call. The way it is written, it will use 6 hours if no arguemnt is given.</li>
-<li>For other options, see <a href="http://www.vub.ac.be/BFUCC/LSF/man/bsub.1.html">the LSF documentation</a> and add them via <code>#BSUB-*</code> (where <code>*</code> represents the argument)</li>
+<li>For other options, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html">the LSF documentation</a> and add them via <code>#BSUB-*</code> (where <code>*</code> represents the argument)</li>
 <li>Do not change the identifiers in curly braces (<code>{{ ... }}</code>), as they are used to fill in the right variables</li>
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>

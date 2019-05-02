@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.7</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@ fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="
 
 <span class="co"># queue the function call on your scheduler</span>
 <span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 7664) ...</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6925) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; [1] 2</span>
 <span class="co">#&gt; </span>
@@ -147,23 +147,23 @@ devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumen
 <h2 class="hasAnchor">
 <a href="#setting-up-the-scheduler-explicitly" class="anchor"></a>Setting up the scheduler explicitly</h2>
 <p>An HPC cluster’s scheduler ensures that computing jobs are distributed to available worker nodes. Hence, this is what clustermq interfaces with in order to do computations.</p>
-<p>We currently support the <a href="https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler">following schedulers</a>:</p>
+<p>We currently support the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler">following schedulers</a>:</p>
 <ul>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/LSF">LSF</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#lsf">LSF</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/SGE">SGE</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#sge">SGE</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/SLURM">SLURM</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#slurm">SLURM</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://github.com/mschubert/clustermq/wiki/PBS">PBS</a>/<a href="https://github.com/mschubert/clustermq/wiki/Torque">Torque</a> - <em>needs SGE scheduler option and custom template</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#pbs">PBS</a>/<a href="https://mschubert.github.io/clustermq/articles/userguide.html#torque">Torque</a> - <em>needs</em> <code><a href="https://www.rdocumentation.org/packages/base/topics/options">options(clustermq.scheduler="PBS"/"Torque")</a></code>
 </li>
 </ul>
-<p>You can also access each of these schedulers from your local machine via the <a href="https://github.com/mschubert/clustermq/wiki/SSH">SSH connector</a>. Results will be returned to your local session.</p>
-<p>If you need specific <a href="https://github.com/mschubert/clustermq/wiki/Environments">computing environments or containers</a>, you can activate them via the scheduler template.</p>
+<p>You can also access each of these schedulers from your local machine via the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector">SSH connector</a>. Results will be returned to your local session.</p>
+<p>If you need specific <a href="https://mschubert.github.io/clustermq/articles/userguide.html#environments">computing environments or containers</a>, you can activate them via the scheduler template.</p>
 </div>
 <div id="examples" class="section level2">
 <h2 class="hasAnchor">
@@ -235,7 +235,10 @@ devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumen
 <span class="co">#&gt; </span>
 <span class="co">#&gt; [[3]]</span>
 <span class="co">#&gt; [1] 1.732051</span></code></pre></div>
-<p>More examples are available in <a href="https://github.com/mschubert/clustermq/wiki/Usage">the user guide</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(BiocParallel)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/register">register</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/DoparParam-class">DoparParam</a></span>()) <span class="co"># after register_dopar_cmq(...)</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/bplapply">bplapply</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</code></pre></div>
+<p>More examples are available in <a href="https://mschubert.github.io/clustermq/articles/userguide.html">the user guide</a>.</p>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
