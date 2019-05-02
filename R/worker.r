@@ -8,7 +8,9 @@
 #' @param verbose  Whether to print debug messages
 #' @keywords internal
 worker = function(master, timeout=600, ..., verbose=TRUE) {
-    if (!verbose)
+    if (verbose)
+        message = function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
+    else
         message = function(...) invisible(NULL)
 
     #TODO: replace this by proper authentication
@@ -49,8 +51,9 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             "DO_CALL" = {
                 result = try(eval(msg$expr, envir=msg$env))
                 message("eval'd: ", msg$expr)
+                counter = counter + 1
                 rzmq::send.socket(socket, data=list(id="WORKER_READY", auth=auth,
-                    token=token, ref=msg$ref, result=result))
+                    token=token, n_calls=counter, ref=msg$ref, result=result))
             },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
@@ -67,7 +70,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                     token = msg$token
                     message("token from msg: ", token)
                     rzmq::send.socket(socket, data=list(id="WORKER_READY",
-                                      auth=auth, token=token))
+                                      auth=auth, token=token, n_calls=counter))
                 } else {
                     msg = paste("wrong field names for DO_SETUP:",
                                 setdiff(names(msg), need))
@@ -97,9 +100,10 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 } else {
                     message("completed ", sprintf(fmt, length(result$result),
                         delta[1], delta[2], delta[3]))
-                    send_data = c(list(id="WORKER_READY", auth=auth, token=token), result)
-                    rzmq::send.socket(socket, send_data)
                     counter = counter + length(result$result)
+                    send_data = c(list(id="WORKER_READY", auth=auth, token=token,
+                                       n_calls=counter), result)
+                    rzmq::send.socket(socket, send_data)
                 }
             },
             "WORKER_WAIT" = {

@@ -28,6 +28,6 @@
     if (is.null(getOption("clustermq.scheduler"))) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
                 "defaulting to ", sQuote(qsys_default))
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/Configuration")
+        packageStartupMessage("--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration")
     }
 }

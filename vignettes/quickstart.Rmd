@@ -94,20 +94,20 @@ available worker nodes. Hence, this is what clustermq interfaces with in order
 to do computations.
 
 We currently support the [following
-schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler):
+schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler):
 
-* [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
-* [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
-* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
-* [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs SGE scheduler option and custom template*
+* [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
+* [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
+* [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
+* [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 
 You can also access each of these schedulers from your local machine via the
-[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH). Results will
-be returned to your local session.
+[SSH connector](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector).
+Results will be returned to your local session.
 
 If you need specific [computing environments or
-containers](https://github.com/mschubert/clustermq/wiki/Environments), you can
-activate them via the scheduler template.
+containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),
+you can activate them via the scheduler template.
 
 ## Examples
 
@@ -162,8 +162,14 @@ register_dopar_cmq(n_jobs=2, memory=1024) # accepts same arguments as `workers`
 foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
+```{r eval=FALSE}
+library(BiocParallel)
+register(DoparParam()) # after register_dopar_cmq(...)
+bplapply(1:3, sqrt)
+```
+
 More examples are available in [the
-user guide](https://github.com/mschubert/clustermq/wiki/Usage).
+user guide](https://mschubert.github.io/clustermq/articles/userguide.html).
 
 ## Usage
 

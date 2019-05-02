@@ -11,6 +11,15 @@ test_that("control flow", {
     expect_equal(r, as.list(1:3*2))
 })
 
+test_that("control flow with automatic workers", {
+    skip_if_not(has_localhost)
+    skip_on_os("windows")
+    fx = function(x) x*2
+    options(clustermq.scheduler = "multicore")
+    r = Q(fx, x=1:3, n_jobs=1, timeout=3L)
+    expect_equal(r, as.list(1:3*2))
+})
+
 test_that("common data", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
@@ -62,6 +71,8 @@ test_that("rettype is respected", {
 })
 
 test_that("worker timeout throws error", {
+    skip_if_not(has_localhost)
+    skip_on_os("windows")
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
     expect_error(expect_warning(
         Q(Sys.sleep, 3, rettype="numeric", workers=w, timeout=1L)))
@@ -85,6 +96,9 @@ test_that("error timeout works", {
 })
 
 test_that("Q with expired workers throws error quickly", {
+    skip_if_not(has_localhost)
+    skip_on_os("windows")
+
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
     w$cleanup()
 

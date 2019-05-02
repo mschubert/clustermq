@@ -226,6 +226,12 @@ As [BiocParallel](http://bioconductor.org/packages/release/bioc/html/BiocParalle
 supports `foreach` too, this means we can run all packages that use `BiocParallel`
 on the cluster as well via `DoparParam`.
 
+```{r eval=FALSE}
+library(BiocParallel)
+register(DoparParam()) # after register_dopar_cmq(...)
+bplapply(1:3, sqrt)
+```
+
 ### With `drake`
 
 The [`drake`](https://github.com/ropensci/drake) package enables users to
@@ -419,8 +425,8 @@ In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
   function call. The way it is written, it will use 6 hours if no arguemnt is
   given.
 * For other options, see [the LSF
-  documentation](http://www.vub.ac.be/BFUCC/LSF/man/bsub.1.html) and add them
-  via `#BSUB-*` (where `*` represents the argument)
+  documentation](https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html)
+  and add them via `#BSUB-*` (where `*` represents the argument)
 * Do not change the identifiers in curly braces (`{{ ... }}`), as they are used
   to fill in the right variables
 

@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
-Version: 0.8.6
+Version: 0.8.7
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Evaluate arbitrary function calls using workers on HPC schedulers
@@ -22,6 +22,7 @@ License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
 Suggests:
+    devtools,
     dplyr,
     foreach,
     iterators,

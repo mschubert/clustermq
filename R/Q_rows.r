@@ -21,7 +21,7 @@
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, chunk_size=NA, timeout=Inf) {
+        log_worker=FALSE, chunk_size=NA, timeout=Inf, max_calls_worker=Inf) {
 
     # check if call args make sense
     if (!is.null(memory))
@@ -61,14 +61,15 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     # process calls
     if (class(workers)[1] == "LOCAL") {
         list2env(export, envir=environment(fun))
-        re = work_chunk(df=df, fun=fun, const_args=const, rettype=rettype,
+        re = work_chunk(df=df, fun=fun, const=const, rettype=rettype,
                         common_seed=seed, progress=TRUE)
         summarize_result(re$result, length(re$errors), length(re$warnings),
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
         if (workers$workers == 0)
             stop("Attempting to use workers object without active workers")
-        master(qsys=workers, iter=df, rettype=rettype, fail_on_error=fail_on_error,
-               chunk_size=chunk_size, timeout=timeout)
+        master(qsys=workers, iter=df, rettype=rettype,
+               fail_on_error=fail_on_error, chunk_size=chunk_size,
+               timeout=timeout, max_calls_worker=max_calls_worker)
     }
 }
