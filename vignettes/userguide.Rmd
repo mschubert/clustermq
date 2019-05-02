@@ -359,7 +359,7 @@ module load {{ bashenv | default_bash_env }}
 # or: source activate {{ conda | default_conda_env_name }}
 # or: your environment activation command
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 This template still needs to be filled, so in the above example you need to
@@ -402,7 +402,7 @@ The option `clustermq.template` should point to a LSF template file like the one
 ##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
@@ -451,7 +451,7 @@ The option `clustermq.template` should point to a SGE template file like the one
 #$ -pe {{ cores | 1 }}             # number of cores to use per job
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 In this file, `#$-*` defines command-line arguments to the `qsub` program.
@@ -492,7 +492,7 @@ one below.
 #SBATCH --cpus-per-task={{ cores | 1 }}
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 In this file, `#SBATCH` defines command-line arguments to the `sbatch` program.
@@ -532,7 +532,7 @@ one below.
 #PBS -j oe
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
@@ -570,7 +570,7 @@ one below.
 #PBS -j oe
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
 In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
