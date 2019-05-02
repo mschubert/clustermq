@@ -211,7 +211,7 @@ devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumen
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span>
 <span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6167) ...</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6444) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; [1] 2</span>
 <span class="co">#&gt; </span>
@@ -374,7 +374,7 @@ module load {{ bashenv <span class="op">|</span><span class="st"> </span>default
 <span class="co"># or: source activate {{ conda | default_conda_env_name }}</span>
 <span class="co"># or: your environment activation command</span>
 ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
+CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
 <p>This template still needs to be filled, so in the above example you need to pass either</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/Q.html">Q</a></span>(..., <span class="dt">template=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">bashenv=</span><span class="st">"my environment name"</span>))</code></pre></div>
 <p>or set it via an <em>.Rprofile</em> option:</p>
@@ -403,7 +403,7 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 ##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
 
 ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
+CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
 <p>In this file, <code>#BSUB-*</code> defines command-line arguments to the <code>bsub</code> program.</p>
 <ul>
 <li>Memory: defined by <code>BSUB-M</code> and <code>BSUB-R</code>. Check your local setup if the memory values supplied are MiB or KiB, default is <code>4096</code> if not requesting memory when calling <code><a href="../reference/Q.html">Q()</a></code>
@@ -434,7 +434,7 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <span class="co">#$ -pe {{ cores | 1 }}             # number of cores to use per job</span>
 
 ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
+CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
 <p>In this file, <code>#$-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>$ -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -461,7 +461,7 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <span class="co">#SBATCH --cpus-per-task={{ cores | 1 }}</span>
 
 ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
+CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
 <p>In this file, <code>#SBATCH</code> defines command-line arguments to the <code>sbatch</code> program.</p>
 <ul>
 <li>Queue: <code>SBATCH --partition default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -486,7 +486,7 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <span class="co">#PBS -j oe</span>
 
 ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
+CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -510,7 +510,7 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <span class="co">#PBS -j oe</span>
 
 ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
+CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
