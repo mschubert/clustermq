@@ -46,6 +46,13 @@ test_that(".combine is respected", {
     expect_equal(res, unname(cmp)) # ignore names for now
 })
 
+test_that("no matrix unlisting (#143)", {
+    fx = function(x) matrix(c(1,2)+x, ncol=1)
+    res = foreach(i=1:3) %dopar% fx(i)
+    cmp = foreach(i=1:3) %do% fx(i)
+    expect_equal(res, cmp)
+})
+
 #test_that("foreach works via BiocParallel", {
 #    skip_if_not_installed("BiocParallel")
 #
