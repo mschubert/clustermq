@@ -51,5 +51,5 @@ cmq_foreach = function(obj, expr, envir, data) {
 
     result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
     names(result) = paste0("result.", seq_along(result))
-    Reduce(obj$combineInfo$fun, result)
+    Reduce(obj$combineInfo$fun, result, init=eval(obj$combineInfo$init))
 }

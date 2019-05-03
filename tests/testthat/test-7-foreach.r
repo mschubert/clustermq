@@ -22,8 +22,10 @@ test_that(".export objects are exported", {
 })
 
 test_that(".packages are loaded", {
+    expect_error(foreach(i="a string") %dopar% { md5sum(i) })
     res = foreach(i="a string", .packages="tools") %dopar% { md5sum(i) }
-    expect_equal(unname(res), unname(tools::md5sum("a string")))
+    cmp = foreach(i="a string") %do% { md5sum(i) }
+    expect_equal(res, cmp)
 })
 
 test_that(".combine is respected", {
@@ -37,13 +39,11 @@ test_that(".combine is respected", {
 
     res = foreach(i=1:3, .combine=cbind) %dopar% sqrt(i)
     cmp = foreach(i=1:3, .combine=cbind) %do% sqrt(i)
-    colnames(res) = colnames(cmp) = NULL # ignore names for now
-    expect_equal(res, cmp)
+    expect_equal(res, unname(cmp)) # ignore names for now
 
     res = foreach(i=1:3, .combine=rbind) %dopar% sqrt(i)
     cmp = foreach(i=1:3, .combine=rbind) %do% sqrt(i)
-    rownames(res) = rownames(cmp) = NULL # ignore names for now
-    expect_equal(res, cmp)
+    expect_equal(res, unname(cmp)) # ignore names for now
 })
 
 #test_that("foreach works via BiocParallel", {
