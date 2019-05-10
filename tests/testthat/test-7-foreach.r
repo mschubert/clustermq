@@ -53,6 +53,22 @@ test_that("no matrix unlisting (#143)", {
     expect_equal(res, cmp)
 })
 
+test_that("automatic export in foreach", {
+    fx = function(x) x + y
+    y = 5
+    res = foreach(x=1:3) %dopar% { x + y }
+    cmp = foreach(x=1:3) %do% { x + y }
+    expect_equal(res, cmp)
+})
+
+test_that("NULL objects are exported", {
+    fx = function(x) is.null(x)
+    y = NULL
+    res = foreach(i=1) %dopar% fx(y)
+    cmp = foreach(i=1) %do% fx(y)
+    expect_equal(res, cmp)
+})
+
 #test_that("foreach works via BiocParallel", {
 #    skip_if_not_installed("BiocParallel")
 #
