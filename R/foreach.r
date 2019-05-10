@@ -50,6 +50,8 @@ cmq_foreach = function(obj, expr, envir, data) {
     }
 
     result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
-    names(result) = paste0("result.", seq_along(result))
-    Reduce(obj$combineInfo$fun, result, init=eval(obj$combineInfo$init))
+
+    accum = foreach::makeAccum(it)
+    accum(result, tags=seq_along(result))
+    result = foreach::getResult(it)
 }

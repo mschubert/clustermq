@@ -39,11 +39,11 @@ test_that(".combine is respected", {
 
     res = foreach(i=1:3, .combine=cbind) %dopar% sqrt(i)
     cmp = foreach(i=1:3, .combine=cbind) %do% sqrt(i)
-    expect_equal(res, unname(cmp)) # ignore names for now
+    expect_equal(res, cmp)
 
     res = foreach(i=1:3, .combine=rbind) %dopar% sqrt(i)
     cmp = foreach(i=1:3, .combine=rbind) %do% sqrt(i)
-    expect_equal(res, unname(cmp)) # ignore names for now
+    expect_equal(res, cmp)
 })
 
 test_that("no matrix unlisting (#143)", {
