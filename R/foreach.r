@@ -3,8 +3,12 @@
 #' @param ...  List of arguments passed to the `Q` function, e.g. n_jobs
 #' @export
 register_dopar_cmq = function(...) {
-    info = function(data, item)
-        switch(item, name="clustermq", version=utils::packageVersion("clustermq"))
+    info = function(data, item) {
+        switch(item,
+               name = "clustermq",
+               version = utils::packageVersion("clustermq"),
+               workers = future::nbrOfWorkers())
+    }
     foreach::setDoPar(cmq_foreach, data=list(...), info=info)
 }
 
@@ -38,10 +42,13 @@ cmq_foreach = function(obj, expr, envir, data) {
                      formals(fun))
     body(fun) = expr
 
-    # evaluate objects in "export" amd add them to clustermq exports
+    # scan 'expr' for exports, eval and add objects ref'd in '.export'
+    export_env = new.env(parent=envir)
+    foreach::getexports(expr, e=export_env, env=envir)
+    obj$export = c(obj$export, ls(export_env))
     if (length(obj$export) > 0) {
-        export = as.list(mget(obj$export, envir=envir, inherits=TRUE))
-        data$export = utils::modifyList(as.list(data$export), export)
+        export = as.list(mget(obj$export, envir=export_env, inherits=TRUE))
+        data$export = utils::modifyList(as.list(data$export), export, keep.null=TRUE)
     }
 
     # make sure packages are loaded on the dopar target
@@ -53,5 +60,5 @@ cmq_foreach = function(obj, expr, envir, data) {
 
     accum = foreach::makeAccum(it)
     accum(result, tags=seq_along(result))
-    result = foreach::getResult(it)
+    foreach::getResult(it)
 }
