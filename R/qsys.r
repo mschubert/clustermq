@@ -244,14 +244,15 @@ QSys = R6::R6Class("QSys",
             keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
             vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
 
-            fill = utils::modifyList(setNames(as.list(vals), keys), values)
-            if (any(is.na(fill)))
+            upd = keys %in% names(values)
+            vals[upd] = unlist(values)[keys[upd]]
+            if (any(is.na(vals)))
                 stop("Template values required but not provided: ",
-                     paste(names(fill)[is.na(fill)], collapse=", "))
+                     paste(unique(keys[is.na(vals)]), collapse=", "))
 
             tmpl = private$template
             for (i in seq_along(matches))
-                tmpl = sub(matches[i], fill[[i]], tmpl, fixed=TRUE)
+                tmpl = sub(matches[i], vals[i], tmpl, fixed=TRUE)
             tmpl
         },
 
