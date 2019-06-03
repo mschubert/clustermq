@@ -70,7 +70,8 @@ QSys = R6::R6Class("QSys",
                 args$token = private$token
             }
             private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
-            private$n_common = length(args)
+            private$size_common = object.size(args)
+            private$n_common = length(args$const) + length(args$export)
             args$token
         },
 
@@ -179,7 +180,7 @@ QSys = R6::R6Class("QSys",
         workers_running = function() private$workers_up,
         data_token = function() private$token,
         data_num = function() private$n_common,
-        data_size = function() utils::object.size(private$common_data),
+        data_size = function() private$size_common,
         reusable = function() private$reuse
     ),
 
@@ -192,6 +193,7 @@ QSys = R6::R6Class("QSys",
         timer = NULL,
         common_data = NULL,
         n_common = 0,
+        size_common = 0,
         token = NA,
         workers_total = 0,
         workers_up = 0,
