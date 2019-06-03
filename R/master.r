@@ -41,7 +41,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
             " common; ", chunk_size, " calls/chunk) ...")
     pb = progress::progress_bar$new(total = n_calls,
             format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
-    pb$tick(0)
+    pb$tick(0, tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
