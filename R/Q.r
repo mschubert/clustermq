@@ -20,6 +20,7 @@
 #'                        defaults to 100 chunks per worker or max. 10 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @param max_calls_worker  Maxmimum number of function calls that will be sent to one worker
+#' @param verbose         Print status messages and progress bar (default: TRUE)
 #' @return                A list of whatever `fun` returned
 #' @export
 #'
@@ -38,7 +39,8 @@
 Q = function(fun, ..., const=list(), export=list(), pkgs=c(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         split_array_by=-1, rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, chunk_size=NA, timeout=Inf, max_calls_worker=Inf) {
+        log_worker=FALSE, chunk_size=NA, timeout=Inf, max_calls_worker=Inf,
+        verbose=TRUE) {
 
     split_arrays = function(x) {
         if (is.array(x))
@@ -65,5 +67,6 @@ Q = function(fun, ..., const=list(), export=list(), pkgs=c(), seed=128965,
            log_worker = log_worker,
            chunk_size = chunk_size,
            timeout = timeout,
-           max_calls_worker = max_calls_worker)
+           max_calls_worker = max_calls_worker,
+           verbose = verbose)
 }

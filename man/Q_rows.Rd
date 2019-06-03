@@ -8,7 +8,7 @@ Q_rows(df, fun, const = list(), export = list(), pkgs = c(),
   seed = 128965, memory = NULL, template = list(), n_jobs = NULL,
   job_size = NULL, rettype = "list", fail_on_error = TRUE,
   workers = NULL, log_worker = FALSE, chunk_size = NA,
-  timeout = Inf, max_calls_worker = Inf)
+  timeout = Inf, max_calls_worker = Inf, verbose = TRUE)
 }
 \arguments{
 \item{df}{data.frame with iterated arguments}
@@ -46,6 +46,8 @@ defaults to 100 chunks per worker or max. 10 kb per chunk}
 \item{timeout}{Maximum time in seconds to wait for worker (default: Inf)}
 
 \item{max_calls_worker}{Maxmimum number of function calls that will be sent to one worker}
+
+\item{verbose}{Print status messages and progress bar (default: TRUE)}
 }
 \description{
 Queue function calls defined by rows in a data.frame

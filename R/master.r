@@ -18,10 +18,11 @@
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @param max_calls_worker  Maxmimum number of function calls that will be sent to one worker
+#' @param verbose        Print progress messages
 #' @return               A list of whatever `fun` returned
 #' @keywords  internal
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
-                  chunk_size=NA, timeout=Inf, max_calls_worker=Inf) {
+                  chunk_size=NA, timeout=Inf, max_calls_worker=Inf, verbose=TRUE) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
@@ -35,13 +36,15 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
     on.exit(qsys$finalize())
 
-    message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
-            " calculations (", qsys$data_num, " objs/",
-            format(qsys$data_size, big.mark=",", units="Mb"),
-            " common; ", chunk_size, " calls/chunk) ...")
-    pb = progress::progress_bar$new(total = n_calls,
-            format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
-    pb$tick(0, tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
+    if (verbose) {
+        message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
+                " calculations (", qsys$data_num, " objs/",
+                format(qsys$data_size, big.mark=",", units="Mb"),
+                " common; ", chunk_size, " calls/chunk) ...")
+        pb = progress::progress_bar$new(total = n_calls,
+                format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
+        pb$tick(0, tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
+    }
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
@@ -54,8 +57,9 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 stop("Socket timeout reached, likely due to a worker crash")
         }
 
-        pb$tick(length(msg$result),
-                tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
+        if (verbose)
+            pb$tick(length(msg$result),
+                    tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
 
         # process the result data if we got some
         if (!is.null(msg$result)) {
@@ -103,7 +107,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
         }
     }
 
-    if (!kill_workers && (qsys$reusable || qsys$cleanup()))
+    if (!kill_workers && (qsys$reusable || qsys$cleanup(quiet=!verbose)))
         on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,

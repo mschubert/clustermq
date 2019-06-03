@@ -6,11 +6,13 @@
 #' @param template    A named list of values to fill in template
 #' @param log_worker  Write a log file for each worker
 #' @param qsys_id     Character string of QSys class to use
+#' @param verbose     Print message about worker startup
 #' @param ...         Additional arguments passed to the qsys constructor
 #' @return            An instance of the QSys class
 #' @export
 workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FALSE,
-                   qsys_id=getOption("clustermq.scheduler", qsys_default), ...) {
+                   qsys_id=getOption("clustermq.scheduler", qsys_default),
+                   verbose=FALSE, ...) {
     if (n_jobs == 0)
         return(get("LOCAL", envir=parent.env(environment()))$new())
 
@@ -24,7 +26,8 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
     }
 
     template$n_jobs = n_jobs
-    message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
+    if (verbose)
+        message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
     do.call(qsys$submit_jobs, template)
     qsys
 }

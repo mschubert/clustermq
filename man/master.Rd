@@ -5,7 +5,8 @@
 \title{Master controlling the workers}
 \usage{
 master(qsys, iter, rettype = "list", fail_on_error = TRUE,
-  chunk_size = NA, timeout = Inf, max_calls_worker = Inf)
+  chunk_size = NA, timeout = Inf, max_calls_worker = Inf,
+  verbose = TRUE)
 }
 \arguments{
 \item{qsys}{Instance of QSys object}
@@ -22,6 +23,8 @@ defaults to 100 chunks per worker or max. 500 kb per chunk}
 \item{timeout}{Maximum time in seconds to wait for worker (default: Inf)}
 
 \item{max_calls_worker}{Maxmimum number of function calls that will be sent to one worker}
+
+\item{verbose}{Print progress messages}
 }
 \value{
 A list of whatever `fun` returned
