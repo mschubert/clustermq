@@ -160,3 +160,12 @@ Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) or
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).
+
+Citation
+--------
+
+This project is part of my academic work. If you like me to continue working
+on research support tools like `clustermq`, please cite the article:
+
+> M Schubert. clustermq enables efficient parallelisation of genomic analyses.
+> *Bioinformatics* (2019). doi:10.1093/bioinformatics/btz284
