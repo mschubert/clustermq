@@ -13,7 +13,6 @@ BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
     R (>= 3.0.2)
 Imports:
-    infuser (>= 0.2.8),
     narray,
     progress,
     purrr,

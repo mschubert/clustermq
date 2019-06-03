@@ -219,7 +219,7 @@ QSys = R6::R6Class("QSys",
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
-            if ("auth" %in% names(infuser::variables_requested(private$template))) {
+            if (grepl("CMQ_AUTH", private$template)) {
                 # note: auth will be obligatory in the future and this check will
                 #   be removed (i.e., filling will fail if no field in template)
                 values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
@@ -235,7 +235,24 @@ QSys = R6::R6Class("QSys",
         },
 
         fill_template = function(values) {
-            infuser::infuse(private$template, values, strict=TRUE)
+            pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
+            match_obj = gregexpr(pattern, private$template, perl=TRUE)
+            matches = regmatches(private$template, match_obj)[[1]]
+
+            no_delim = substr(matches, 3, nchar(matches)-2)
+            kv_str = strsplit(no_delim, "|", fixed=TRUE)
+            keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
+            vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
+
+            fill = utils::modifyList(setNames(as.list(vals), keys), values)
+            if (any(is.na(fill)))
+                stop("Template values required but not provided: ",
+                     paste(names(fill)[is.na(fill)], collapse=", "))
+
+            tmpl = private$template
+            for (i in seq_along(matches))
+                tmpl = sub(matches[i], fill[[i]], tmpl, fixed=TRUE)
+            tmpl
         },
 
         summary_stats = function() {
