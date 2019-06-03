@@ -168,4 +168,5 @@ This project is part of my academic work. If you like me to continue working
 on research support tools like `clustermq`, please cite the article:
 
 > M Schubert. clustermq enables efficient parallelisation of genomic analyses.
-> *Bioinformatics* (2019). doi:10.1093/bioinformatics/btz284
+> *Bioinformatics* (2019).
+> [doi:10.1093/bioinformatics/btz284](https://doi.org/10.1093/bioinformatics/btz284)
