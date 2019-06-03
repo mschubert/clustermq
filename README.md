@@ -165,7 +165,8 @@ Citation
 --------
 
 This project is part of my academic work. If you like me to continue working
-on research support tools like `clustermq`, please cite the article:
+on research support tools like `clustermq`, please cite the article when using
+it for publications:
 
 > M Schubert. clustermq enables efficient parallelisation of genomic analyses.
 > *Bioinformatics* (2019).
