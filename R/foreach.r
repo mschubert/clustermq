@@ -7,7 +7,7 @@ register_dopar_cmq = function(...) {
         switch(item,
                name = "clustermq",
                version = utils::packageVersion("clustermq"),
-               workers = function() n_jobs)
+               workers = NA)
     }
     foreach::setDoPar(cmq_foreach, data=list(...), info=info)
 }
