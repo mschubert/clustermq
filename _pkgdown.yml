@@ -1,15 +1,22 @@
+toc:
+    depth: 2
+
 navbar:
+    type: default
     left:
-        - home
-        - intro
+        - icon: fa-home
+          href: index.html
         - text: User Guide
           href: articles/userguide.html
         - text: Technical Documentation
           href: articles/technicaldocs.html
-        - reference
-        - news
+        - text: Reference
+          href: reference/index.html
+        - text: Changelog
+          href: news/index.html
     right:
-        - github
+        - icon: fa-github fa-lg
+          href: https://github.com/mschubert/clustermq
 
 reference:
     - title: Overview
@@ -22,6 +29,6 @@ reference:
     - title: Manage worker pools
       contents:
           - workers
-    - title: `foreach` support
+    - title: "`foreach` support"
       contents:
           - register_dopar_cmq

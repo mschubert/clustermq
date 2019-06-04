@@ -1,3 +1,10 @@
+# 0.8.8
+
+* `Q`, `Q_rows` have new arguments `verbose` (#111) and `pkgs` (#144)
+* `foreach` backend now uses its dedicated API where possible (#143, #144)
+* Number and size of objects common to all calls now work properly
+* Templates are filled internally and no longer depend on `infuser` package
+
 # 0.8.7
 
 * `Q` now has `max_calls_worker` argument to avoid walltime (#110)
@@ -13,7 +20,7 @@
 
 * Progress bar is now shown before any workers start (#107)
 * Socket connections are now authenticated using a session password (#125)
-* Marked internal functions with @keywords internal
+* Marked internal functions with `@keywords internal`
 * Added vignettes for the _User Guide_ and _Technical Documentation_
 
 # 0.8.5

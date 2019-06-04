@@ -1,12 +1,12 @@
 citHeader("To cite clustermq in publications use:")
 
 citEntry(,
-  entry    = "Article"
+  entry    = "Article",
   title    = "clustermq enables efficient parallelisation of genomic analyses",
   author   = "Michael Schubert",
   journal  = "Bioinformatics",
-  month    =  may,
-  year     =  2019,
+  month    = "May",
+  year     = "2019",
   language = "en",
   doi      = "10.1093/bioinformatics/btz284",
   url      = "https://github.com/mschubert/clustermq",
