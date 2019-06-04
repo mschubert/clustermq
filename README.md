@@ -165,9 +165,9 @@ Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 Citation
 --------
 
-This project is part of my academic work. If you like me to continue working
-on research support tools like `clustermq`, please cite the article when using
-it for publications:
+This project is part of my academic work, for which I will be evaluated on
+citations. If you like me to be able to continue working on research support
+tools like `clustermq`, please cite the article when using it for publications:
 
 > M Schubert. clustermq enables efficient parallelisation of genomic analyses.
 > *Bioinformatics* (2019).

@@ -2,8 +2,8 @@ Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
 Version: 0.8.8
 Authors@R: person('Michael', 'Schubert',
-    role = c('aut', 'cph', 'cre'), email='mschu.dev@gmail.com',
-    comment = c('ORCID=0000-0002-6862-5221'))
+    role = c('aut', 'cre'), email='mschu.dev@gmail.com',
+    comment = c(ORCID='0000-0002-6862-5221'))
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Evaluate arbitrary function calls using workers on HPC schedulers
     in single line of code. All processing is done on the network without
