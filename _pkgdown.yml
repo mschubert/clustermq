@@ -1,5 +1,5 @@
 toc:
-    depth: 2
+    depth: 2 # level 3 currently not distinguishable from 2
 
 navbar:
     type: default
