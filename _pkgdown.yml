@@ -1,0 +1,27 @@
+navbar:
+    left:
+        - home
+        - intro
+        - text: User Guide
+          href: articles/userguide.html
+        - text: Technical Documentation
+          href: articles/technicaldocs.html
+        - reference
+        - news
+    right:
+        - github
+
+reference:
+    - title: Overview
+      contents:
+          - clustermq
+    - title: Run calls on HPC
+      contents:
+          - Q
+          - Q_rows
+    - title: Manage worker pools
+      contents:
+          - workers
+    - title: `foreach` support
+      contents:
+          - register_dopar_cmq
