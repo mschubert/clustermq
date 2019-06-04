@@ -60,7 +60,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.8</span>
       </span>
     </div>
 
@@ -68,33 +68,21 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fa fa-home"></span>
      
   </a>
+</li>
+<li>
+  <a href="../articles/userguide.html">User Guide</a>
+</li>
+<li>
+  <a href="../articles/technicaldocs.html">Technical Documentation</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/quickstart.html">ClusterMQ Quick Start</a>
-    </li>
-    <li>
-      <a href="../articles/technicaldocs.html">ClusterMQ Technical Documentation</a>
-    </li>
-    <li>
-      <a href="../articles/userguide.html">ClusterMQ User Guide</a>
-    </li>
-  </ul>
-</li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -131,7 +119,21 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <h2 id="section-overview" class="hasAnchor"><a href="#section-overview" class="anchor"></a>Overview</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="clustermq.html">clustermq</a></code> </p>
+        </td>
+        <td><p>Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-run-calls-on-hpc" class="hasAnchor"><a href="#section-run-calls-on-hpc" class="anchor"></a>Run calls on HPC</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -147,24 +149,34 @@
           <p><code><a href="Q_rows.html">Q_rows()</a></code> </p>
         </td>
         <td><p>Queue function calls defined by rows in a data.frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="clustermq.html">clustermq</a></code> </p>
-        </td>
-        <td><p>Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="register_dopar_cmq.html">register_dopar_cmq()</a></code> </p>
-        </td>
-        <td><p>Register clustermq as `foreach` parallel handler</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-manage-worker-pools" class="hasAnchor"><a href="#section-manage-worker-pools" class="anchor"></a>Manage worker pools</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="workers.html">workers()</a></code> </p>
         </td>
         <td><p>Creates a pool of workers</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section--foreach-support" class="hasAnchor"><a href="#section--foreach-support" class="anchor"></a>`foreach` support</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="register_dopar_cmq.html">register_dopar_cmq()</a></code> </p>
+        </td>
+        <td><p>Register clustermq as `foreach` parallel handler</p></td>
       </tr>
     </tbody>
     </table>
@@ -173,7 +185,10 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#section-overview">Overview</a></li>
+      <li><a href="#section-run-calls-on-hpc">Run calls on HPC</a></li>
+      <li><a href="#section-manage-worker-pools">Manage worker pools</a></li>
+      <li><a href="#section--foreach-support">`foreach` support</a></li>
     </ul>
   </div>
 </div>
