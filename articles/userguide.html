@@ -199,7 +199,7 @@ code {
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6559) ...</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6176) ...</span></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt; [[1]]</span></a>
 <a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt; [1] 2</span></a>
 <a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt; </span></a>
@@ -516,12 +516,42 @@ code {
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#installation">Installation</a></li>
-      <li><a href="#configuration">Configuration</a></li>
-      <li><a href="#usage">Usage</a></li>
-      <li><a href="#troubleshooting">Troubleshooting</a></li>
+<li>
+<a href="#installation">Installation</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#zeromq">ZeroMQ</a></li>
+      <li><a href="#r-package">R package</a></li>
+      </ul>
+</li>
+      <li>
+<a href="#configuration">Configuration</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#setting-up-the-scheduler">Setting up the scheduler</a></li>
+      <li><a href="#ssh-connector">SSH connector</a></li>
+      </ul>
+</li>
+      <li>
+<a href="#usage">Usage</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#the-q-function">The <code>Q</code> function</a></li>
+      <li><a href="#examples">Examples</a></li>
+      <li><a href="#as-parallel-foreach-backend">As parallel <code>foreach</code> backend</a></li>
+      <li><a href="#with-drake">With <code>drake</code></a></li>
+      </ul>
+</li>
+      <li>
+<a href="#troubleshooting">Troubleshooting</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#debugging-workers">Debugging workers</a></li>
+      <li><a href="#ssh">SSH</a></li>
+      </ul>
+</li>
       <li><a href="#environments">Environments</a></li>
-      <li><a href="#scheduler-templates">Scheduler templates</a></li>
+      <li>
+<a href="#scheduler-templates">Scheduler templates</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#lsf">LSF</a></li>
+      <li><a href="#sge">SGE</a></li>
+      <li><a href="#slurm">SLURM</a></li>
+      <li><a href="#pbs">PBS</a></li>
+      <li><a href="#torque">Torque</a></li>
+      </ul>
+</li>
       </ul>
 </div>
       </div>
