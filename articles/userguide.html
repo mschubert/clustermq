@@ -134,11 +134,11 @@ code {
 <p>By default, we will take whichever scheduler we find and fall back on local processing. This will work in most, but not all cases.</p>
 <p>To set up a scheduler explicitly, see the following links:</p>
 <ul>
-<li><a href="LSF">LSF</a></li>
-<li><a href="SGE">SGE</a></li>
-<li><a href="SLURM">Slurm</a></li>
-<li><a href="Torque">Torque</a></li>
-<li><a href="PBS">PBS</a></li>
+<li><a href="#LSF">LSF</a></li>
+<li><a href="#SGE">SGE</a></li>
+<li><a href="#SLURM">Slurm</a></li>
+<li><a href="#Torque">Torque</a></li>
+<li><a href="#PBS">PBS</a></li>
 <li>if you want another scheduler, <a href="https://github.com/mschubert/clustermq/issues/new">open an issue</a>
 </li>
 </ul>
@@ -199,7 +199,7 @@ code {
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 7629) ...</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 7862) ...</span></a>
 <a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt; [[1]]</span></a>
 <a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt; [1] 2</span></a>
 <a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt; </span></a>
@@ -352,7 +352,7 @@ code {
 <li>
 <a href="https://www.docker.com/">Docker</a>/<a href="https://singularity.lbl.gov/">Singularity</a> containers</li>
 </ul>
-<p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="LSF">LSF</a> scheduler (analogous for others):</p>
+<p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="#LSF">LSF</a> scheduler (analogous for others):</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
 <a class="sourceLine" id="cb18-2" title="2"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr</span></a>
 <a class="sourceLine" id="cb18-3" title="3"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
@@ -375,9 +375,9 @@ code {
 <div id="scheduler-templates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#scheduler-templates" class="anchor"></a>Scheduler templates</h2>
-<div id="lsf" class="section level3">
+<div id="LSF" class="section level3">
 <h3 class="hasAnchor">
-<a href="#lsf" class="anchor"></a>LSF</h3>
+<a href="#LSF" class="anchor"></a>LSF</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
 <a class="sourceLine" id="cb21-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"lsf"</span>,</a>
@@ -405,9 +405,9 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="sge" class="section level3">
+<div id="SGE" class="section level3">
 <h3 class="hasAnchor">
-<a href="#sge" class="anchor"></a>SGE</h3>
+<a href="#SGE" class="anchor"></a>SGE</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
 <a class="sourceLine" id="cb23-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</a>
@@ -432,9 +432,9 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="slurm" class="section level3">
+<div id="SLURM" class="section level3">
 <h3 class="hasAnchor">
-<a href="#slurm" class="anchor"></a>SLURM</h3>
+<a href="#SLURM" class="anchor"></a>SLURM</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
 <a class="sourceLine" id="cb25-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"slurm"</span>,</a>
@@ -459,9 +459,9 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="pbs" class="section level3">
+<div id="PBS" class="section level3">
 <h3 class="hasAnchor">
-<a href="#pbs" class="anchor"></a>PBS</h3>
+<a href="#PBS" class="anchor"></a>PBS</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a PBS template:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
 <a class="sourceLine" id="cb27-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</a>
@@ -484,9 +484,9 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="torque" class="section level3">
+<div id="Torque" class="section level3">
 <h3 class="hasAnchor">
-<a href="#torque" class="anchor"></a>Torque</h3>
+<a href="#Torque" class="anchor"></a>Torque</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a Torque template:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
 <a class="sourceLine" id="cb29-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</a>
