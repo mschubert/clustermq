@@ -89,11 +89,11 @@ processing. This will work in most, but not all cases.
 
 To set up a scheduler explicitly,  see the following links:
 
-* [LSF](LSF)
-* [SGE](SGE)
-* [Slurm](SLURM)
-* [Torque](Torque)
-* [PBS](PBS)
+* [LSF](#LSF)
+* [SGE](#SGE)
+* [Slurm](#SLURM)
+* [Torque](#Torque)
+* [PBS](#PBS)
 * if you want another scheduler, [open an
   issue](https://github.com/mschubert/clustermq/issues/new)
 
@@ -350,7 +350,7 @@ Examples for such environments or containers are:
 
 It should be possible to activate them in the job submission script (i.e., the
 template file). This is widely untested, but would look the following for the
-[LSF](LSF) scheduler (analogous for others):
+[LSF](#LSF) scheduler (analogous for others):
 
 ```r
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
@@ -384,7 +384,7 @@ options(
 
 ## Scheduler templates
 
-### LSF
+### LSF {#LSF}
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -432,7 +432,7 @@ In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### SGE
+### SGE {#SGE}
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -472,7 +472,7 @@ In this file, `#$-*` defines command-line arguments to the `qsub` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### SLURM
+### SLURM {#SLURM}
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -513,7 +513,7 @@ In this file, `#SBATCH` defines command-line arguments to the `sbatch` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### PBS
+### PBS {#PBS}
 
 In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
 PBS template:
@@ -552,7 +552,7 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### Torque
+### Torque {#Torque}
 
 In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
 Torque template:
