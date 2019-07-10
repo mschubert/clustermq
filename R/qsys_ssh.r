@@ -26,7 +26,8 @@ SSH = R6::R6Class("SSH",
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
             # Exchange init messages with proxy
-            poll = rzmq::poll.socket(list(private$proxy_socket), list("read"), timeout=5)
+            poll = rzmq::poll.socket(list(private$proxy_socket), list("read"),
+                                     timeout=getOption("clustermq.ssh.timeout", 5))
             if (!poll[[1]]$read)
                 stop("Remote R process did not respond after 5 seconds. ",
                      "Check your SSH server log.")
