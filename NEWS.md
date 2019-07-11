@@ -1,3 +1,5 @@
+* New option `clustermq.ssh.timeout` to set timeout for SSH proxy startup. (#157)
+
 # 0.8.8
 
 * `Q`, `Q_rows` have new arguments `verbose` (#111) and `pkgs` (#144)

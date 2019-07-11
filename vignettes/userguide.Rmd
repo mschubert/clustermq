@@ -335,6 +335,22 @@ options(clustermq.ssh.log = "~/ssh_proxy.log")
 This will create a log file *on the remote server* that will contain any errors
 that might have occurred during `ssh_proxy` startup.
 
+If the `ssh_proxy` startup fails on your local machine with the error
+
+```
+Remote R process did not respond after 5 seconds. Check your SSH server log.
+```
+
+but the server log does not show any errors, then you can try increasing the
+timeout:
+
+```{r eval=FALSE}
+options(clustermq.ssh.timeout = 10) # or a higher number
+```
+
+This can happens when your SSH startup template includes additional steps
+before starting R, such as activating a module or conda environment.
+
 ## Environments
 
 In some cases, it may be necessary to activate a specific computing environment
