@@ -6,6 +6,20 @@
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
 
+int str2socket(std::string str) {
+    if (str == "ZMQ_REP") {
+        return ZMQ_REP;
+    } else if (str == "ZMQ_REQ") {
+        return ZMQ_REQ;
+    } else if (str == "ZMQ_XREP") {
+        return ZMQ_XREP;
+    } else if (str == "ZMQ_XREQ") {
+        return ZMQ_XREQ;
+    } else {
+        Rf_error(("Invalid socket type: " + str).c_str());
+    }
+}
+
 /* Check for interrupt without long jumping */
 void check_interrupt_fn(void *dummy) {
     R_CheckUserInterrupt();
@@ -25,7 +39,7 @@ SEXP initContext(SEXP threads_) {
 // [[Rcpp::export]]
 SEXP initSocket(SEXP context_, SEXP socket_type_) { // socket_type_ is INT
     Rcpp::XPtr<zmq::context_t> context(context_);
-    auto socket_type = Rcpp::as<int>(socket_type_);
+    auto socket_type = str2socket(Rcpp::as<std::string>(socket_type_));
     auto socket = new zmq::socket_t(*context, socket_type);
     Rcpp::XPtr<zmq::socket_t> socket_(socket, true); // check: does this catch failed allocation?
     return socket_;
@@ -62,7 +76,7 @@ void disconnectSocket(SEXP socket_, SEXP address_) {
 }
 
 // [[Rcpp::export]]
-SEXP pollSocket(SEXP sockets_, SEXP events_, SEXP timeout_) { // events is INT!! (ZMQ_POLLIN|OUT|ERR)
+SEXP pollSocket(SEXP sockets_, SEXP events_, SEXP timeout_=Rcpp::NumericVector(-1)) {
     auto sockets = Rcpp::as<Rcpp::List>(sockets_);
     auto events = Rcpp::as<Rcpp::IntegerVector>(events_);
     auto timeout = Rcpp::as<int>(timeout_);
@@ -102,7 +116,7 @@ SEXP pollSocket(SEXP sockets_, SEXP events_, SEXP timeout_) { // events is INT!!
 }
 
 // [[Rcpp::export]]
-SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
+SEXP receiveSocket(SEXP socket_, SEXP dont_wait_=Rcpp::LogicalVector(false)) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
     auto dont_wait = Rcpp::as<bool>(dont_wait_);
     zmq::message_t message;
@@ -114,7 +128,7 @@ SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
 }
 
 // [[Rcpp::export]]
-void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
+void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_=Rcpp::LogicalVector(false)) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
     if (TYPEOF(data_) != RAWSXP)
         Rf_error("data type must be raw (RAWSXP).\n");
