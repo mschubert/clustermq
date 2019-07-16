@@ -16,8 +16,9 @@ int str2socket(std::string str) {
     } else if (str == "ZMQ_XREQ") {
         return ZMQ_XREQ;
     } else {
-        Rf_error(("Invalid socket type: " + str).c_str());
+        Rcpp::exception(("Invalid socket type: " + str).c_str());
     }
+    return -1;
 }
 
 /* Check for interrupt without long jumping */
@@ -48,7 +49,7 @@ SEXP initSocket(SEXP context_, std::string socket_type_) {
 // [[Rcpp::export]]
 SEXP initMessage(SEXP data_) {
     if (TYPEOF(data_) != RAWSXP) // could serialize + nocopy here
-        Rf_error("initMessage expects type RAWSXP");
+        Rcpp::exception("initMessage expects type RAWSXP");
     auto message = new zmq::message_t(Rf_xlength(data_));
     memcpy(message->data(), RAW(data_), Rf_xlength(data_));
     // no copy below, see first that one copy works
@@ -124,7 +125,7 @@ SEXP receiveSocket(SEXP socket_, bool dont_wait=false) {
 void sendSocket(SEXP socket_, SEXP data_, bool send_more=false) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     if (TYPEOF(data_) != RAWSXP)
-        Rf_error("data type must be raw (RAWSXP).\n");
+        Rcpp::exception("data type must be raw (RAWSXP).\n");
 
     zmq::message_t message(Rf_xlength(data_));
     memcpy(message.data(), RAW(data_), Rf_xlength(data_));
