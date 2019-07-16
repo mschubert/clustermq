@@ -1,5 +1,7 @@
 language: r
 
+dist: xenial
+
 r:
  - release
  - devel
