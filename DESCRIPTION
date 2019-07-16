@@ -15,7 +15,7 @@ Description: Evaluate arbitrary function calls using workers on HPC schedulers
 URL: https://github.com/mschubert/clustermq
 BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
-    R (>= 3.5.2)
+    R (>= 3.4.3)
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Imports:
