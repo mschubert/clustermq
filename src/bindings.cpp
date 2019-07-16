@@ -30,16 +30,16 @@ int pending_interrupt() {
 }
 
 // [[Rcpp::export]]
-SEXP initContext(SEXP threads_) {
-    auto context = new zmq::context_t(Rcpp::as<int>(threads_));
+SEXP initContext(int threads) {
+    auto context = new zmq::context_t(threads);
     Rcpp::XPtr<zmq::context_t> context_(context, true);
     return context_;
 }
 
 // [[Rcpp::export]]
-SEXP initSocket(SEXP context_, SEXP socket_type_) {
+SEXP initSocket(SEXP context_, std::string socket_type_) {
     Rcpp::XPtr<zmq::context_t> context(context_);
-    auto socket_type = str2socket(Rcpp::as<std::string>(socket_type_));
+    auto socket_type = str2socket(socket_type_);
     auto socket = new zmq::socket_t(*context, socket_type);
     Rcpp::XPtr<zmq::socket_t> socket_(socket, true);
     return socket_;
@@ -58,27 +58,26 @@ SEXP initMessage(SEXP data_) {
 }
 
 // [[Rcpp::export]]
-void bindSocket(SEXP socket_, SEXP address_) {
+void bindSocket(SEXP socket_, std::string address) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    socket->bind(Rcpp::as<std::string>(address_));
+    socket->bind(address);
 }
 
 // [[Rcpp::export]]
-void connectSocket(SEXP socket_, SEXP address_) {
+void connectSocket(SEXP socket_, std::string address) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    socket->connect(Rcpp::as<std::string>(address_));
+    socket->connect(address);
 }
 
 // [[Rcpp::export]]
-void disconnectSocket(SEXP socket_, SEXP address_) {
+void disconnectSocket(SEXP socket_, std::string address) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    socket->disconnect(Rcpp::as<std::string>(address_));
+    socket->disconnect(address);
 }
 
 // [[Rcpp::export]]
-SEXP pollSocket(SEXP sockets_, SEXP timeout_) {
+SEXP pollSocket(SEXP sockets_, int timeout=-1) {
     auto sockets = Rcpp::as<Rcpp::List>(sockets_);
-    auto timeout = Rcpp::as<int>(timeout_);
     auto nsock = sockets.length();
 
     auto pitems = std::vector<zmq::pollitem_t>(nsock);
@@ -111,9 +110,8 @@ SEXP pollSocket(SEXP sockets_, SEXP timeout_) {
 }
 
 // [[Rcpp::export]]
-SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
+SEXP receiveSocket(SEXP socket_, bool dont_wait=false) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    auto dont_wait = Rcpp::as<bool>(dont_wait_);
     zmq::message_t message;
     auto success = socket->recv(&message, dont_wait);
 
@@ -123,7 +121,7 @@ SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
 }
 
 // [[Rcpp::export]]
-void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
+void sendSocket(SEXP socket_, SEXP data_, bool send_more=false) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     if (TYPEOF(data_) != RAWSXP)
         Rf_error("data type must be raw (RAWSXP).\n");
@@ -131,7 +129,6 @@ void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
     zmq::message_t message(Rf_xlength(data_));
     memcpy(message.data(), RAW(data_), Rf_xlength(data_));
 
-    auto send_more = Rcpp::as<bool>(send_more_);
     if (send_more)
         socket->send(message, ZMQ_SNDMORE);
     else
@@ -139,11 +136,10 @@ void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
 }
 
 // [[Rcpp::export]]
-void sendMessageObject(SEXP socket_, SEXP message_, SEXP send_more_) {
+void sendMessageObject(SEXP socket_, SEXP message_, bool send_more=false) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     Rcpp::XPtr<zmq::message_t> message(message_);
 
-    auto send_more = Rcpp::as<bool>(send_more_);
     if (send_more)
         socket->send(*message, ZMQ_SNDMORE);
     else

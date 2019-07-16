@@ -6,24 +6,24 @@
 using namespace Rcpp;
 
 // initContext
-SEXP initContext(SEXP threads_);
-RcppExport SEXP _clustermq_initContext(SEXP threads_SEXP) {
+SEXP initContext(int threads);
+RcppExport SEXP _clustermq_initContext(SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type threads_(threads_SEXP);
-    rcpp_result_gen = Rcpp::wrap(initContext(threads_));
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(initContext(threads));
     return rcpp_result_gen;
 END_RCPP
 }
 // initSocket
-SEXP initSocket(SEXP context_, SEXP socket_type_);
+SEXP initSocket(SEXP context_, std::string socket_type_);
 RcppExport SEXP _clustermq_initSocket(SEXP context_SEXP, SEXP socket_type_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type context_(context_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type socket_type_(socket_type_SEXP);
+    Rcpp::traits::input_parameter< std::string >::type socket_type_(socket_type_SEXP);
     rcpp_result_gen = Rcpp::wrap(initSocket(context_, socket_type_));
     return rcpp_result_gen;
 END_RCPP
@@ -40,83 +40,83 @@ BEGIN_RCPP
 END_RCPP
 }
 // bindSocket
-void bindSocket(SEXP socket_, SEXP address_);
-RcppExport SEXP _clustermq_bindSocket(SEXP socket_SEXP, SEXP address_SEXP) {
+void bindSocket(SEXP socket_, std::string address);
+RcppExport SEXP _clustermq_bindSocket(SEXP socket_SEXP, SEXP addressSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type address_(address_SEXP);
-    bindSocket(socket_, address_);
+    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
+    bindSocket(socket_, address);
     return R_NilValue;
 END_RCPP
 }
 // connectSocket
-void connectSocket(SEXP socket_, SEXP address_);
-RcppExport SEXP _clustermq_connectSocket(SEXP socket_SEXP, SEXP address_SEXP) {
+void connectSocket(SEXP socket_, std::string address);
+RcppExport SEXP _clustermq_connectSocket(SEXP socket_SEXP, SEXP addressSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type address_(address_SEXP);
-    connectSocket(socket_, address_);
+    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
+    connectSocket(socket_, address);
     return R_NilValue;
 END_RCPP
 }
 // disconnectSocket
-void disconnectSocket(SEXP socket_, SEXP address_);
-RcppExport SEXP _clustermq_disconnectSocket(SEXP socket_SEXP, SEXP address_SEXP) {
+void disconnectSocket(SEXP socket_, std::string address);
+RcppExport SEXP _clustermq_disconnectSocket(SEXP socket_SEXP, SEXP addressSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type address_(address_SEXP);
-    disconnectSocket(socket_, address_);
+    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
+    disconnectSocket(socket_, address);
     return R_NilValue;
 END_RCPP
 }
 // pollSocket
-SEXP pollSocket(SEXP sockets_, SEXP timeout_);
-RcppExport SEXP _clustermq_pollSocket(SEXP sockets_SEXP, SEXP timeout_SEXP) {
+SEXP pollSocket(SEXP sockets_, int timeout);
+RcppExport SEXP _clustermq_pollSocket(SEXP sockets_SEXP, SEXP timeoutSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sockets_(sockets_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type timeout_(timeout_SEXP);
-    rcpp_result_gen = Rcpp::wrap(pollSocket(sockets_, timeout_));
+    Rcpp::traits::input_parameter< int >::type timeout(timeoutSEXP);
+    rcpp_result_gen = Rcpp::wrap(pollSocket(sockets_, timeout));
     return rcpp_result_gen;
 END_RCPP
 }
 // receiveSocket
-SEXP receiveSocket(SEXP socket_, SEXP dont_wait_);
-RcppExport SEXP _clustermq_receiveSocket(SEXP socket_SEXP, SEXP dont_wait_SEXP) {
+SEXP receiveSocket(SEXP socket_, bool dont_wait);
+RcppExport SEXP _clustermq_receiveSocket(SEXP socket_SEXP, SEXP dont_waitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type dont_wait_(dont_wait_SEXP);
-    rcpp_result_gen = Rcpp::wrap(receiveSocket(socket_, dont_wait_));
+    Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
+    rcpp_result_gen = Rcpp::wrap(receiveSocket(socket_, dont_wait));
     return rcpp_result_gen;
 END_RCPP
 }
 // sendSocket
-void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_);
-RcppExport SEXP _clustermq_sendSocket(SEXP socket_SEXP, SEXP data_SEXP, SEXP send_more_SEXP) {
+void sendSocket(SEXP socket_, SEXP data_, bool send_more);
+RcppExport SEXP _clustermq_sendSocket(SEXP socket_SEXP, SEXP data_SEXP, SEXP send_moreSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type data_(data_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type send_more_(send_more_SEXP);
-    sendSocket(socket_, data_, send_more_);
+    Rcpp::traits::input_parameter< bool >::type send_more(send_moreSEXP);
+    sendSocket(socket_, data_, send_more);
     return R_NilValue;
 END_RCPP
 }
 // sendMessageObject
-void sendMessageObject(SEXP socket_, SEXP message_, SEXP send_more_);
-RcppExport SEXP _clustermq_sendMessageObject(SEXP socket_SEXP, SEXP message_SEXP, SEXP send_more_SEXP) {
+void sendMessageObject(SEXP socket_, SEXP message_, bool send_more);
+RcppExport SEXP _clustermq_sendMessageObject(SEXP socket_SEXP, SEXP message_SEXP, SEXP send_moreSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type message_(message_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type send_more_(send_more_SEXP);
-    sendMessageObject(socket_, message_, send_more_);
+    Rcpp::traits::input_parameter< bool >::type send_more(send_moreSEXP);
+    sendMessageObject(socket_, message_, send_more);
     return R_NilValue;
 END_RCPP
 }
