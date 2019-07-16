@@ -76,15 +76,14 @@ void disconnectSocket(SEXP socket_, SEXP address_) {
 }
 
 // [[Rcpp::export]]
-SEXP pollSocket(SEXP sockets_, SEXP timeout_=Rcpp::NumericVector(-1)) {
+SEXP pollSocket(SEXP sockets_, SEXP timeout_) {
     auto sockets = Rcpp::as<Rcpp::List>(sockets_);
     auto timeout = Rcpp::as<int>(timeout_);
     auto nsock = sockets.length();
 
     auto pitems = std::vector<zmq::pollitem_t>(nsock);
     for (int i = 0; i < nsock; i++) {
-        auto socket = Rcpp::as<Rcpp::XPtr<zmq::socket_t>>(sockets[i]);
-        pitems[i].socket = static_cast<void*>(socket);
+        pitems[i].socket = *Rcpp::as<Rcpp::XPtr<zmq::socket_t>>(sockets[i]);
         pitems[i].events = ZMQ_POLLIN | ZMQ_POLLOUT;
     }
 
@@ -112,7 +111,7 @@ SEXP pollSocket(SEXP sockets_, SEXP timeout_=Rcpp::NumericVector(-1)) {
 }
 
 // [[Rcpp::export]]
-SEXP receiveSocket(SEXP socket_, SEXP dont_wait_=Rcpp::LogicalVector(false)) {
+SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
     auto dont_wait = Rcpp::as<bool>(dont_wait_);
     zmq::message_t message;
@@ -124,7 +123,7 @@ SEXP receiveSocket(SEXP socket_, SEXP dont_wait_=Rcpp::LogicalVector(false)) {
 }
 
 // [[Rcpp::export]]
-void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_=Rcpp::LogicalVector(false)) {
+void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
     if (TYPEOF(data_) != RAWSXP)
         Rf_error("data type must be raw (RAWSXP).\n");
