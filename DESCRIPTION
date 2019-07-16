@@ -23,6 +23,7 @@ Imports:
     progress,
     purrr,
     R6,
+    Rcpp,
     rzmq (>= 0.9.4),
     utils
 License: Apache License (== 2.0) | file LICENSE
@@ -39,4 +40,4 @@ Suggests:
     testthat,
     tools
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 6.1.1.9000
