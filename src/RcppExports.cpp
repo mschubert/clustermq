@@ -73,15 +73,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // pollSocket
-SEXP pollSocket(SEXP sockets_, SEXP events_, SEXP timeout_);
-RcppExport SEXP _clustermq_pollSocket(SEXP sockets_SEXP, SEXP events_SEXP, SEXP timeout_SEXP) {
+SEXP pollSocket(SEXP sockets_, SEXP timeout_);
+RcppExport SEXP _clustermq_pollSocket(SEXP sockets_SEXP, SEXP timeout_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sockets_(sockets_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type events_(events_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type timeout_(timeout_SEXP);
-    rcpp_result_gen = Rcpp::wrap(pollSocket(sockets_, events_, timeout_));
+    rcpp_result_gen = Rcpp::wrap(pollSocket(sockets_, timeout_));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -129,7 +128,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_clustermq_bindSocket", (DL_FUNC) &_clustermq_bindSocket, 2},
     {"_clustermq_connectSocket", (DL_FUNC) &_clustermq_connectSocket, 2},
     {"_clustermq_disconnectSocket", (DL_FUNC) &_clustermq_disconnectSocket, 2},
-    {"_clustermq_pollSocket", (DL_FUNC) &_clustermq_pollSocket, 3},
+    {"_clustermq_pollSocket", (DL_FUNC) &_clustermq_pollSocket, 2},
     {"_clustermq_receiveSocket", (DL_FUNC) &_clustermq_receiveSocket, 2},
     {"_clustermq_sendSocket", (DL_FUNC) &_clustermq_sendSocket, 3},
     {"_clustermq_sendMessageObject", (DL_FUNC) &_clustermq_sendMessageObject, 3},

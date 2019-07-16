@@ -25,15 +25,15 @@ disconnectSocket <- function(socket_, address_) {
     invisible(.Call('_clustermq_disconnectSocket', PACKAGE = 'clustermq', socket_, address_))
 }
 
-pollSocket <- function(sockets_, events_, timeout_) {
-    .Call('_clustermq_pollSocket', PACKAGE = 'clustermq', sockets_, events_, timeout_)
+pollSocket <- function(sockets_, timeout_ = numericVector(-1)) {
+    .Call('_clustermq_pollSocket', PACKAGE = 'clustermq', sockets_, timeout_)
 }
 
-receiveSocket <- function(socket_, dont_wait_) {
+receiveSocket <- function(socket_, dont_wait_ = logicalVector(false)) {
     .Call('_clustermq_receiveSocket', PACKAGE = 'clustermq', socket_, dont_wait_)
 }
 
-sendSocket <- function(socket_, data_, send_more_) {
+sendSocket <- function(socket_, data_, send_more_ = logicalVector(false)) {
     invisible(.Call('_clustermq_sendSocket', PACKAGE = 'clustermq', socket_, data_, send_more_))
 }
 

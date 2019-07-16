@@ -76,20 +76,16 @@ void disconnectSocket(SEXP socket_, SEXP address_) {
 }
 
 // [[Rcpp::export]]
-SEXP pollSocket(SEXP sockets_, SEXP events_, SEXP timeout_=Rcpp::NumericVector(-1)) {
+SEXP pollSocket(SEXP sockets_, SEXP timeout_=Rcpp::NumericVector(-1)) {
     auto sockets = Rcpp::as<Rcpp::List>(sockets_);
-    auto events = Rcpp::as<Rcpp::IntegerVector>(events_);
     auto timeout = Rcpp::as<int>(timeout_);
     auto nsock = sockets.length();
-
-    if (sockets.length() == 0 | sockets.length() != events.length())
-        Rf_error("socket length must be equal events and >= 1");
 
     auto pitems = std::vector<zmq::pollitem_t>(nsock);
     for (int i = 0; i < nsock; i++) {
         auto socket = Rcpp::as<Rcpp::XPtr<zmq::socket_t>>(sockets[i]);
         pitems[i].socket = static_cast<void*>(socket);
-        pitems[i].events = events[i];
+        pitems[i].events = ZMQ_POLLIN | ZMQ_POLLOUT;
     }
 
     int rc = -1;
@@ -109,9 +105,9 @@ SEXP pollSocket(SEXP sockets_, SEXP events_, SEXP timeout_=Rcpp::NumericVector(-
         }
     } while(rc < 0);
 
-    auto result = Rcpp::IntegerVector(nsock);
+    auto result = Rcpp::LogicalVector(nsock);
     for (int i = 0; i < nsock; i++)
-        result[i] = pitems[i].events;
+        result[i] = pitems[i].events != 0;
     return result;
 }
 
