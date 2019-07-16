@@ -13,14 +13,7 @@ before_install:
  - sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc
  - sed -i "3iexport R_LIBS_SITE=$R_LIBS_SITE" ~/.bashrc
  - source ~/.bashrc
-# - sudo apt-get install libzmq3-dev
- - wget https://github.com/zeromq/libzmq/releases/download/v4.2.2/zeromq-4.2.2.tar.gz
- - tar xvf zeromq-4.2.2.tar.gz
- - cd zeromq-4.2.2
- - ./configure --prefix=/usr
- - make
- - sudo make install
- - cd ..
+ - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
  - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
