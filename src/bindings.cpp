@@ -37,11 +37,11 @@ SEXP initContext(SEXP threads_) {
 }
 
 // [[Rcpp::export]]
-SEXP initSocket(SEXP context_, SEXP socket_type_) { // socket_type_ is INT
+SEXP initSocket(SEXP context_, SEXP socket_type_) {
     Rcpp::XPtr<zmq::context_t> context(context_);
     auto socket_type = str2socket(Rcpp::as<std::string>(socket_type_));
     auto socket = new zmq::socket_t(*context, socket_type);
-    Rcpp::XPtr<zmq::socket_t> socket_(socket, true); // check: does this catch failed allocation?
+    Rcpp::XPtr<zmq::socket_t> socket_(socket, true);
     return socket_;
 }
 
@@ -112,10 +112,10 @@ SEXP pollSocket(SEXP sockets_, SEXP timeout_) {
 
 // [[Rcpp::export]]
 SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
+    Rcpp::XPtr<zmq::socket_t> socket(socket_);
     auto dont_wait = Rcpp::as<bool>(dont_wait_);
     zmq::message_t message;
-    auto success = socket->recv(&message, dont_wait); // does this throw on error already?
+    auto success = socket->recv(&message, dont_wait);
 
     SEXP ans = Rf_allocVector(RAWSXP, message.size());
     memcpy(RAW(ans), message.data(), message.size());
@@ -124,7 +124,7 @@ SEXP receiveSocket(SEXP socket_, SEXP dont_wait_) {
 
 // [[Rcpp::export]]
 void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
+    Rcpp::XPtr<zmq::socket_t> socket(socket_);
     if (TYPEOF(data_) != RAWSXP)
         Rf_error("data type must be raw (RAWSXP).\n");
 
@@ -140,8 +140,8 @@ void sendSocket(SEXP socket_, SEXP data_, SEXP send_more_) {
 
 // [[Rcpp::export]]
 void sendMessageObject(SEXP socket_, SEXP message_, SEXP send_more_) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_); // does this check valid pointer?
-    Rcpp::XPtr<zmq::message_t> message(message_); // does this check valid pointer?
+    Rcpp::XPtr<zmq::socket_t> socket(socket_);
+    Rcpp::XPtr<zmq::message_t> message(message_);
 
     auto send_more = Rcpp::as<bool>(send_more_);
     if (send_more)
