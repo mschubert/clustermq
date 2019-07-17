@@ -1,7 +1,7 @@
 context("bindings")
 
 test_that("send data on a round trip", {
-    ctx = initContext(1L)
+    ctx = initContext()
     srv = initSocket(ctx, "ZMQ_REP")
     bindSocket(srv, "inproc://endpoint")
 

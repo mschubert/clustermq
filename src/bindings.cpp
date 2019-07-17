@@ -34,7 +34,7 @@ int pending_interrupt() {
 }
 
 // [[Rcpp::export]]
-SEXP initContext(int threads) {
+SEXP initContext(int threads=1) {
     auto context = new zmq::context_t(threads);
     Rcpp::XPtr<zmq::context_t> context_(context, true);
     return context_;
