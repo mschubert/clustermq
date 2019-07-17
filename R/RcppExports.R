@@ -29,15 +29,11 @@ pollSocket <- function(sockets_, timeout = -1L) {
     .Call('_clustermq_pollSocket', PACKAGE = 'clustermq', sockets_, timeout)
 }
 
-receiveSocket <- function(socket_, dont_wait = FALSE) {
-    .Call('_clustermq_receiveSocket', PACKAGE = 'clustermq', socket_, dont_wait)
+receiveSocket <- function(socket_, dont_wait = FALSE, unserialize = TRUE) {
+    .Call('_clustermq_receiveSocket', PACKAGE = 'clustermq', socket_, dont_wait, unserialize)
 }
 
-sendSocket <- function(socket_, data_, send_more = FALSE) {
-    invisible(.Call('_clustermq_sendSocket', PACKAGE = 'clustermq', socket_, data_, send_more))
-}
-
-sendMessageObject <- function(socket_, message_, send_more = FALSE) {
-    invisible(.Call('_clustermq_sendMessageObject', PACKAGE = 'clustermq', socket_, message_, send_more))
+sendSocket <- function(socket_, data_, dont_wait = FALSE, send_more = FALSE) {
+    invisible(.Call('_clustermq_sendSocket', PACKAGE = 'clustermq', socket_, data_, dont_wait, send_more))
 }
 

@@ -3,15 +3,11 @@
 #include <string>
 #include "zmq.hpp"
 
-// workaround missing "is_trivially_copyable" in g++ < 5.0
-#if __GNUG__ && __GNUC__ < 5
-#define IS_TRIVIALLY_COPYABLE(T) __has_trivial_copy(T)
-#else
-#define IS_TRIVIALLY_COPYABLE(T) std::is_trivially_copyable<T>::value
-#endif
-
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
+
+Rcpp::Function R_serialize("serialize");
+Rcpp::Function R_unserialize("unserialize");
 
 int str2socket(std::string str) {
     if (str == "ZMQ_REP") {
@@ -118,38 +114,43 @@ SEXP pollSocket(SEXP sockets_, int timeout=-1) {
 }
 
 // [[Rcpp::export]]
-SEXP receiveSocket(SEXP socket_, bool dont_wait=false) {
+SEXP receiveSocket(SEXP socket_, bool dont_wait=false, bool unserialize=true) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
+    auto flags = zmq::recv_flags::none;
+    if (dont_wait)
+        flags = flags | zmq::recv_flags::dontwait;
     zmq::message_t message;
-    auto success = socket->recv(&message, dont_wait);
+
+    if (! socket->recv(message, flags))
+        return {}; // EAGAIN: no message in non-blocking mode -> empty result
 
     SEXP ans = Rf_allocVector(RAWSXP, message.size());
     memcpy(RAW(ans), message.data(), message.size());
-    return ans;
+    if (unserialize)
+        return R_unserialize(ans);
+    else
+        return ans;
 }
 
 // [[Rcpp::export]]
-void sendSocket(SEXP socket_, SEXP data_, bool send_more=false) {
+void sendSocket(SEXP socket_, SEXP data_, bool dont_wait=false, bool send_more=false) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    if (TYPEOF(data_) != RAWSXP)
-        Rcpp::exception("data type must be raw (RAWSXP).\n");
-
-    zmq::message_t message(Rf_xlength(data_));
-    memcpy(message.data(), RAW(data_), Rf_xlength(data_));
-
+    auto flags = zmq::send_flags::none;
+    if (dont_wait)
+        flags = flags | zmq::send_flags::dontwait;
     if (send_more)
-        socket->send(message, ZMQ_SNDMORE);
-    else
-        socket->send(message);
-}
+        flags = flags | zmq::send_flags::sndmore;
 
-// [[Rcpp::export]]
-void sendMessageObject(SEXP socket_, SEXP message_, bool send_more=false) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    Rcpp::XPtr<zmq::message_t> message(message_);
+    if (TYPEOF(data_) == EXTPTRSXP) {
+        Rcpp::XPtr<zmq::message_t> message(data_);
+        socket->send(*message, flags);
+    } else {
+        if (TYPEOF(data_) != RAWSXP) {
+            data_ = R_serialize(data_, R_NilValue);
+        }
 
-    if (send_more)
-        socket->send(*message, ZMQ_SNDMORE);
-    else
-        socket->send(*message);
+        zmq::message_t message(Rf_xlength(data_));
+        memcpy(message.data(), RAW(data_), Rf_xlength(data_));
+        socket->send(message, flags);
+    }
 }

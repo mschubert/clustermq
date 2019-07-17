@@ -85,38 +85,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // receiveSocket
-SEXP receiveSocket(SEXP socket_, bool dont_wait);
-RcppExport SEXP _clustermq_receiveSocket(SEXP socket_SEXP, SEXP dont_waitSEXP) {
+SEXP receiveSocket(SEXP socket_, bool dont_wait, bool unserialize);
+RcppExport SEXP _clustermq_receiveSocket(SEXP socket_SEXP, SEXP dont_waitSEXP, SEXP unserializeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
     Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
-    rcpp_result_gen = Rcpp::wrap(receiveSocket(socket_, dont_wait));
+    Rcpp::traits::input_parameter< bool >::type unserialize(unserializeSEXP);
+    rcpp_result_gen = Rcpp::wrap(receiveSocket(socket_, dont_wait, unserialize));
     return rcpp_result_gen;
 END_RCPP
 }
 // sendSocket
-void sendSocket(SEXP socket_, SEXP data_, bool send_more);
-RcppExport SEXP _clustermq_sendSocket(SEXP socket_SEXP, SEXP data_SEXP, SEXP send_moreSEXP) {
+void sendSocket(SEXP socket_, SEXP data_, bool dont_wait, bool send_more);
+RcppExport SEXP _clustermq_sendSocket(SEXP socket_SEXP, SEXP data_SEXP, SEXP dont_waitSEXP, SEXP send_moreSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type data_(data_SEXP);
+    Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
     Rcpp::traits::input_parameter< bool >::type send_more(send_moreSEXP);
-    sendSocket(socket_, data_, send_more);
-    return R_NilValue;
-END_RCPP
-}
-// sendMessageObject
-void sendMessageObject(SEXP socket_, SEXP message_, bool send_more);
-RcppExport SEXP _clustermq_sendMessageObject(SEXP socket_SEXP, SEXP message_SEXP, SEXP send_moreSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type message_(message_SEXP);
-    Rcpp::traits::input_parameter< bool >::type send_more(send_moreSEXP);
-    sendMessageObject(socket_, message_, send_more);
+    sendSocket(socket_, data_, dont_wait, send_more);
     return R_NilValue;
 END_RCPP
 }
@@ -129,9 +119,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_clustermq_connectSocket", (DL_FUNC) &_clustermq_connectSocket, 2},
     {"_clustermq_disconnectSocket", (DL_FUNC) &_clustermq_disconnectSocket, 2},
     {"_clustermq_pollSocket", (DL_FUNC) &_clustermq_pollSocket, 2},
-    {"_clustermq_receiveSocket", (DL_FUNC) &_clustermq_receiveSocket, 2},
-    {"_clustermq_sendSocket", (DL_FUNC) &_clustermq_sendSocket, 3},
-    {"_clustermq_sendMessageObject", (DL_FUNC) &_clustermq_sendMessageObject, 3},
+    {"_clustermq_receiveSocket", (DL_FUNC) &_clustermq_receiveSocket, 3},
+    {"_clustermq_sendSocket", (DL_FUNC) &_clustermq_sendSocket, 4},
     {NULL, NULL, 0}
 };
 
