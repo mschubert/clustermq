@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
-Version: 0.8.8
+Version: 0.8.90
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre', 'cph'),
@@ -15,12 +15,15 @@ Description: Evaluate arbitrary function calls using workers on HPC schedulers
 URL: https://github.com/mschubert/clustermq
 BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
-    R (>= 3.0.2)
+    R (>= 3.5.0)
+LinkingTo: Rcpp
+SystemRequirements: C++11
 Imports:
     narray,
     progress,
     purrr,
     R6,
+    Rcpp,
     rzmq (>= 0.9.4),
     utils
 License: Apache License (== 2.0) | file LICENSE
@@ -37,4 +40,4 @@ Suggests:
     testthat,
     tools
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 6.1.1.9000
