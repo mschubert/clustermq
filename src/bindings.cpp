@@ -34,14 +34,14 @@ int pending_interrupt() {
 }
 
 // [[Rcpp::export]]
-SEXP initContext(int threads=1) {
+SEXP init_context(int threads=1) {
     auto context = new zmq::context_t(threads);
     Rcpp::XPtr<zmq::context_t> context_(context, true);
     return context_;
 }
 
 // [[Rcpp::export]]
-SEXP initSocket(SEXP context_, std::string socket_type_) {
+SEXP init_socket(SEXP context_, std::string socket_type_) {
     Rcpp::XPtr<zmq::context_t> context(context_);
     auto socket_type = str2socket(socket_type_);
     auto socket = new zmq::socket_t(*context, socket_type);
@@ -50,7 +50,7 @@ SEXP initSocket(SEXP context_, std::string socket_type_) {
 }
 
 // [[Rcpp::export]]
-SEXP initMessage(SEXP data_) {
+SEXP init_message(SEXP data_) {
     if (TYPEOF(data_) != RAWSXP) // could use nocopy if we serialize here
         data_ = R_serialize(data_, R_NilValue);
     auto message = new zmq::message_t(Rf_xlength(data_));
@@ -62,25 +62,25 @@ SEXP initMessage(SEXP data_) {
 }
 
 // [[Rcpp::export]]
-void bindSocket(SEXP socket_, std::string address) {
+void bind_socket(SEXP socket_, std::string address) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     socket->bind(address);
 }
 
 // [[Rcpp::export]]
-void connectSocket(SEXP socket_, std::string address) {
+void connect_socket(SEXP socket_, std::string address) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     socket->connect(address);
 }
 
 // [[Rcpp::export]]
-void disconnectSocket(SEXP socket_, std::string address) {
+void disconnect_socket(SEXP socket_, std::string address) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     socket->disconnect(address);
 }
 
 // [[Rcpp::export]]
-SEXP pollSocket(SEXP sockets_, int timeout=-1) {
+SEXP poll_socket(SEXP sockets_, int timeout=-1) {
     auto sockets = Rcpp::as<Rcpp::List>(sockets_);
     auto nsock = sockets.length();
 
@@ -114,7 +114,7 @@ SEXP pollSocket(SEXP sockets_, int timeout=-1) {
 }
 
 // [[Rcpp::export]]
-SEXP receiveSocket(SEXP socket_, bool dont_wait=false, bool unserialize=true) {
+SEXP receive_socket(SEXP socket_, bool dont_wait=false, bool unserialize=true) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     auto flags = zmq::recv_flags::none;
     if (dont_wait)
@@ -133,7 +133,7 @@ SEXP receiveSocket(SEXP socket_, bool dont_wait=false, bool unserialize=true) {
 }
 
 // [[Rcpp::export]]
-void sendSocket(SEXP socket_, SEXP data_, bool dont_wait=false, bool send_more=false) {
+void send_socket(SEXP socket_, SEXP data_, bool dont_wait=false, bool send_more=false) {
     Rcpp::XPtr<zmq::socket_t> socket(socket_);
     auto flags = zmq::send_flags::none;
     if (dont_wait)
