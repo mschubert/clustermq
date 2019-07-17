@@ -51,8 +51,8 @@ SEXP initSocket(SEXP context_, std::string socket_type_) {
 
 // [[Rcpp::export]]
 SEXP initMessage(SEXP data_) {
-    if (TYPEOF(data_) != RAWSXP) // could serialize + nocopy here
-        Rcpp::exception("initMessage expects type RAWSXP");
+    if (TYPEOF(data_) != RAWSXP) // could use nocopy if we serialize here
+        data_ = R_serialize(data_, R_NilValue);
     auto message = new zmq::message_t(Rf_xlength(data_));
     memcpy(message->data(), RAW(data_), Rf_xlength(data_));
     // no copy below, see first that one copy works
@@ -145,9 +145,8 @@ void sendSocket(SEXP socket_, SEXP data_, bool dont_wait=false, bool send_more=f
         Rcpp::XPtr<zmq::message_t> message(data_);
         socket->send(*message, flags);
     } else {
-        if (TYPEOF(data_) != RAWSXP) {
+        if (TYPEOF(data_) != RAWSXP)
             data_ = R_serialize(data_, R_NilValue);
-        }
 
         zmq::message_t message(Rf_xlength(data_));
         memcpy(message.data(), RAW(data_), Rf_xlength(data_));
