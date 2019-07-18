@@ -9,7 +9,7 @@ typedef std::chrono::milliseconds ms;
 Rcpp::Function R_serialize("serialize");
 Rcpp::Function R_unserialize("unserialize");
 
-int str2socket(std::string str) {
+int str2socket_(std::string str) {
     if (str == "ZMQ_REP") {
         return ZMQ_REP;
     } else if (str == "ZMQ_REQ") {
@@ -35,59 +35,47 @@ int pending_interrupt() {
 
 // [[Rcpp::export]]
 SEXP init_context(int threads=1) {
-    auto context = new zmq::context_t(threads);
-    Rcpp::XPtr<zmq::context_t> context_(context, true);
-    return context_;
+    auto context_ = new zmq::context_t(threads);
+    Rcpp::XPtr<zmq::context_t> context(context_, true);
+    return context;
 }
 
 // [[Rcpp::export]]
-SEXP init_socket(SEXP context_, std::string socket_type_) {
-    Rcpp::XPtr<zmq::context_t> context(context_);
-    auto socket_type = str2socket(socket_type_);
-    auto socket = new zmq::socket_t(*context, socket_type);
-    Rcpp::XPtr<zmq::socket_t> socket_(socket, true);
-    return socket_;
+SEXP init_socket(SEXP context, std::string socket_type) {
+    Rcpp::XPtr<zmq::context_t> context_(context);
+    auto socket_type_ = str2socket_(socket_type);
+    auto socket_ = new zmq::socket_t(*context_, socket_type_);
+    Rcpp::XPtr<zmq::socket_t> socket(socket_, true);
+    return socket;
 }
 
 // [[Rcpp::export]]
-SEXP init_message(SEXP data_) {
-    if (TYPEOF(data_) != RAWSXP) // could use nocopy if we serialize here
-        data_ = R_serialize(data_, R_NilValue);
-    auto message = new zmq::message_t(Rf_xlength(data_));
-    memcpy(message->data(), RAW(data_), Rf_xlength(data_));
-    // no copy below, see first that one copy works
-    // zmq::message_t msg(reinterpret_cast<void*>(data_), Rf_xlength(data_), NULL);
-    Rcpp::XPtr<zmq::message_t> message_(message, true);
-    return message_;
+void bind_socket(SEXP socket, std::string address) {
+    Rcpp::XPtr<zmq::socket_t> socket_(socket);
+    socket_->bind(address);
 }
 
 // [[Rcpp::export]]
-void bind_socket(SEXP socket_, std::string address) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    socket->bind(address);
+void connect_socket(SEXP socket, std::string address) {
+    Rcpp::XPtr<zmq::socket_t> socket_(socket);
+    socket_->connect(address);
 }
 
 // [[Rcpp::export]]
-void connect_socket(SEXP socket_, std::string address) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    socket->connect(address);
+void disconnect_socket(SEXP socket, std::string address) {
+    Rcpp::XPtr<zmq::socket_t> socket_(socket);
+    socket_->disconnect(address);
 }
 
 // [[Rcpp::export]]
-void disconnect_socket(SEXP socket_, std::string address) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_);
-    socket->disconnect(address);
-}
-
-// [[Rcpp::export]]
-SEXP poll_socket(SEXP sockets_, int timeout=-1) {
-    auto sockets = Rcpp::as<Rcpp::List>(sockets_);
-    auto nsock = sockets.length();
+SEXP poll_socket(SEXP sockets, int timeout=-1) {
+    auto sockets_ = Rcpp::as<Rcpp::List>(sockets);
+    auto nsock = sockets_.length();
 
     auto pitems = std::vector<zmq::pollitem_t>(nsock);
     for (int i = 0; i < nsock; i++) {
-        pitems[i].socket = *Rcpp::as<Rcpp::XPtr<zmq::socket_t>>(sockets[i]);
-        pitems[i].events = ZMQ_POLLIN | ZMQ_POLLOUT;
+        pitems[i].socket = *Rcpp::as<Rcpp::XPtr<zmq::socket_t>>(sockets_[i]);
+        pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; ssh_proxy XREP/XREQ has 2200
     }
 
     int rc = -1;
@@ -95,7 +83,7 @@ SEXP poll_socket(SEXP sockets_, int timeout=-1) {
     do {
         try {
             rc = zmq::poll(pitems, timeout);
-        } catch(zmq::error_t& e) {
+        } catch(zmq::error_t &e) {
             if (errno != EINTR || pending_interrupt())
                 throw e;
             if (timeout != -1) {
@@ -107,21 +95,21 @@ SEXP poll_socket(SEXP sockets_, int timeout=-1) {
         }
     } while(rc < 0);
 
-    auto result = Rcpp::LogicalVector(nsock);
+    auto result = Rcpp::IntegerVector(nsock);
     for (int i = 0; i < nsock; i++)
-        result[i] = pitems[i].events != 0;
+        result[i] = pitems[i].revents;
     return result;
 }
 
 // [[Rcpp::export]]
-SEXP receive_socket(SEXP socket_, bool dont_wait=false, bool unserialize=true) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_);
+SEXP receive_socket(SEXP socket, bool dont_wait=false, bool unserialize=true) {
+    Rcpp::XPtr<zmq::socket_t> socket_(socket);
     auto flags = zmq::recv_flags::none;
     if (dont_wait)
         flags = flags | zmq::recv_flags::dontwait;
     zmq::message_t message;
 
-    if (! socket->recv(message, flags))
+    if (! socket_->recv(message, flags))
         return {}; // EAGAIN: no message in non-blocking mode -> empty result
 
     SEXP ans = Rf_allocVector(RAWSXP, message.size());
@@ -133,23 +121,18 @@ SEXP receive_socket(SEXP socket_, bool dont_wait=false, bool unserialize=true) {
 }
 
 // [[Rcpp::export]]
-void send_socket(SEXP socket_, SEXP data_, bool dont_wait=false, bool send_more=false) {
-    Rcpp::XPtr<zmq::socket_t> socket(socket_);
+void send_socket(SEXP socket, SEXP data, bool dont_wait=false, bool send_more=false) {
+    Rcpp::XPtr<zmq::socket_t> socket_(socket);
     auto flags = zmq::send_flags::none;
     if (dont_wait)
         flags = flags | zmq::send_flags::dontwait;
     if (send_more)
         flags = flags | zmq::send_flags::sndmore;
 
-    if (TYPEOF(data_) == EXTPTRSXP) {
-        Rcpp::XPtr<zmq::message_t> message(data_);
-        socket->send(*message, flags);
-    } else {
-        if (TYPEOF(data_) != RAWSXP)
-            data_ = R_serialize(data_, R_NilValue);
+    if (TYPEOF(data) != RAWSXP)
+        data = R_serialize(data, R_NilValue);
 
-        zmq::message_t message(Rf_xlength(data_));
-        memcpy(message.data(), RAW(data_), Rf_xlength(data_));
-        socket->send(message, flags);
-    }
+    zmq::message_t message(Rf_xlength(data));
+    memcpy(message.data(), RAW(data), Rf_xlength(data));
+    socket_->send(message, flags);
 }

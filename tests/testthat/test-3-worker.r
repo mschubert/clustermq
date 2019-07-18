@@ -1,8 +1,8 @@
 context("worker")
 
 has_localhost = has_connectivity("localhost")
-context = rzmq::init.context()
-socket = rzmq::init.socket(context, "ZMQ_REP")
+context = init_context()
+socket = init_socket(context, "ZMQ_REP")
 port = bind_avail(socket, 55000:57000, n_tries=10)
 master = paste("tcp://localhost", port, sep=":")
 

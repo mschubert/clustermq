@@ -5,35 +5,31 @@ init_context <- function(threads = 1L) {
     .Call('_clustermq_init_context', PACKAGE = 'clustermq', threads)
 }
 
-init_socket <- function(context_, socket_type_) {
-    .Call('_clustermq_init_socket', PACKAGE = 'clustermq', context_, socket_type_)
+init_socket <- function(context, socket_type) {
+    .Call('_clustermq_init_socket', PACKAGE = 'clustermq', context, socket_type)
 }
 
-init_message <- function(data_) {
-    .Call('_clustermq_init_message', PACKAGE = 'clustermq', data_)
+bind_socket <- function(socket, address) {
+    invisible(.Call('_clustermq_bind_socket', PACKAGE = 'clustermq', socket, address))
 }
 
-bind_socket <- function(socket_, address) {
-    invisible(.Call('_clustermq_bind_socket', PACKAGE = 'clustermq', socket_, address))
+connect_socket <- function(socket, address) {
+    invisible(.Call('_clustermq_connect_socket', PACKAGE = 'clustermq', socket, address))
 }
 
-connect_socket <- function(socket_, address) {
-    invisible(.Call('_clustermq_connect_socket', PACKAGE = 'clustermq', socket_, address))
+disconnect_socket <- function(socket, address) {
+    invisible(.Call('_clustermq_disconnect_socket', PACKAGE = 'clustermq', socket, address))
 }
 
-disconnect_socket <- function(socket_, address) {
-    invisible(.Call('_clustermq_disconnect_socket', PACKAGE = 'clustermq', socket_, address))
+poll_socket <- function(sockets, timeout = -1L) {
+    .Call('_clustermq_poll_socket', PACKAGE = 'clustermq', sockets, timeout)
 }
 
-poll_socket <- function(sockets_, timeout = -1L) {
-    .Call('_clustermq_poll_socket', PACKAGE = 'clustermq', sockets_, timeout)
+receive_socket <- function(socket, dont_wait = FALSE, unserialize = TRUE) {
+    .Call('_clustermq_receive_socket', PACKAGE = 'clustermq', socket, dont_wait, unserialize)
 }
 
-receive_socket <- function(socket_, dont_wait = FALSE, unserialize = TRUE) {
-    .Call('_clustermq_receive_socket', PACKAGE = 'clustermq', socket_, dont_wait, unserialize)
-}
-
-send_socket <- function(socket_, data_, dont_wait = FALSE, send_more = FALSE) {
-    invisible(.Call('_clustermq_send_socket', PACKAGE = 'clustermq', socket_, data_, dont_wait, send_more))
+send_socket <- function(socket, data, dont_wait = FALSE, send_more = FALSE) {
+    invisible(.Call('_clustermq_send_socket', PACKAGE = 'clustermq', socket, data, dont_wait, send_more))
 }
 

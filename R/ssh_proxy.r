@@ -9,29 +9,27 @@
 ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     master_ctl = sprintf("tcp://localhost:%i", ctl)
     master_job = sprintf("tcp://localhost:%i", job)
-    context = rzmq::init.context()
+    context = init_context()
 
     # get address of master (or SSH tunnel)
     message("master ctl listening at: ", master_ctl)
-    fwd_out = rzmq::init.socket(context, "ZMQ_XREQ")
-    re = rzmq::connect.socket(fwd_out, master_job)
-    if (!re)
-        stop("failed to connect to master ctl")
+    fwd_out = init_socket(context, "ZMQ_XREQ")
+    connect_socket(fwd_out, master_job)
 
     # set up local network forward to master (or SSH tunnel)
-    fwd_in = rzmq::init.socket(context, "ZMQ_XREP")
+    fwd_in = init_socket(context, "ZMQ_XREP")
     net_port = bind_avail(fwd_in, 8000:9999)
     net_fwd = sprintf("tcp://%s:%i", host(), net_port)
     message("forwarding local network from: ", net_fwd)
 
     # connect to master
-    ctl_socket = rzmq::init.socket(context, "ZMQ_REQ")
-    rzmq::connect.socket(ctl_socket, master_ctl)
-    rzmq::send.socket(ctl_socket, data=list(id="PROXY_UP"))
+    ctl_socket = init_socket(context, "ZMQ_REQ")
+    connect_socket(ctl_socket, master_ctl)
+    send_socket(ctl_socket, data=list(id="PROXY_UP"))
     message("sent PROXY_UP to master ctl")
 
     # receive common data
-    msg = rzmq::receive.socket(ctl_socket)
+    msg = receive_socket(ctl_socket)
     message("received common data:",
             utils::head(msg$fun), names(msg$const), names(msg$export), msg$seed)
 
@@ -44,28 +42,27 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
         qsys = get(toupper(qsys_id), envir=parent.env(environment()))
         qsys = qsys$new(data=msg, master=net_fwd)
         redirect = list(id="PROXY_READY", data_url=qsys$url, token=qsys$data_token)
-        rzmq::send.socket(ctl_socket, data=redirect)
+        send_socket(ctl_socket, data=redirect)
         message("sent PROXY_READY to master ctl")
 
         while(TRUE) {
-            events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock),
-                                       rep(list("read"), 4), timeout=-1L)
+            events = poll_socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock))
 
             # forwarding messages between workers and master
-            if (events[[1]]$read)
-                rzmq::send.multipart(fwd_out, rzmq::receive.multipart(fwd_in))
-            if (events[[2]]$read)
-                rzmq::send.multipart(fwd_in, rzmq::receive.multipart(fwd_out))
+            if (events[1])
+                send_socket(fwd_out, receive_socket(fwd_in, unserialize=FALSE))
+            if (events[2])
+                send_socket(fwd_in, receive_socket(fwd_out, unserialize=FALSE))
 
             # socket connecting proxy to master
-            if (events[[3]]$read) {
-                msg = rzmq::receive.socket(ctl_socket)
+            if (events[3]) {
+                msg = receive_socket(ctl_socket)
                 message("received: ", msg)
                 switch(msg$id,
                     "PROXY_CMD" = {
                         reply = try(eval(msg$exec))
-                        rzmq::send.socket(ctl_socket,
-                                          data = list(id="PROXY_CMD", reply=reply))
+                        send_socket(ctl_socket,
+                                    data = list(id="PROXY_CMD", reply=reply))
                     },
                     "PROXY_STOP" = {
                         if (msg$finalize)
@@ -76,7 +73,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
             }
 
             # socket connecting ssh_proxy to workers
-            if (events[[4]]$read) {
+            if (events[4]) {
                 msg = qsys$receive_data(with_checks=FALSE)
                 message("received: ", msg)
                 switch(msg$id,
@@ -91,6 +88,6 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
     }, error = function(e) {
         data = list(id=paste("PROXY_ERROR:", conditionMessage(e)))
-        rzmq::send.socket(ctl_socket, data=data)
+        send_socket(ctl_socket, data=data)
     })
 }
