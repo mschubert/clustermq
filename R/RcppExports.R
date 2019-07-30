@@ -29,6 +29,10 @@ receive_socket <- function(socket, dont_wait = FALSE, unserialize = TRUE) {
     .Call('_clustermq_receive_socket', PACKAGE = 'clustermq', socket, dont_wait, unserialize)
 }
 
+receive_multipart <- function(socket, dont_wait = FALSE, unserialize = TRUE) {
+    .Call('_clustermq_receive_multipart', PACKAGE = 'clustermq', socket, dont_wait, unserialize)
+}
+
 send_socket <- function(socket, data, dont_wait = FALSE, send_more = FALSE) {
     invisible(.Call('_clustermq_send_socket', PACKAGE = 'clustermq', socket, data, dont_wait, send_more))
 }

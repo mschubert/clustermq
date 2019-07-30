@@ -29,7 +29,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     connect_socket(socket, master)
     send_socket(socket, data=list(id="WORKER_UP", auth=auth,
                 pkgver=utils::packageVersion("clustermq")))
-	message("WORKER_UP to: ", master)
+    message("WORKER_UP to: ", master)
 
     fmt = "%i in %.2fs [user], %.2fs [system], %.2fs [elapsed]"
     start_time = proc.time()

@@ -86,6 +86,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// receive_multipart
+Rcpp::List receive_multipart(SEXP socket, bool dont_wait, bool unserialize);
+RcppExport SEXP _clustermq_receive_multipart(SEXP socketSEXP, SEXP dont_waitSEXP, SEXP unserializeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
+    Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
+    Rcpp::traits::input_parameter< bool >::type unserialize(unserializeSEXP);
+    rcpp_result_gen = Rcpp::wrap(receive_multipart(socket, dont_wait, unserialize));
+    return rcpp_result_gen;
+END_RCPP
+}
 // send_socket
 void send_socket(SEXP socket, SEXP data, bool dont_wait, bool send_more);
 RcppExport SEXP _clustermq_send_socket(SEXP socketSEXP, SEXP dataSEXP, SEXP dont_waitSEXP, SEXP send_moreSEXP) {
@@ -108,6 +121,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_clustermq_disconnect_socket", (DL_FUNC) &_clustermq_disconnect_socket, 2},
     {"_clustermq_poll_socket", (DL_FUNC) &_clustermq_poll_socket, 2},
     {"_clustermq_receive_socket", (DL_FUNC) &_clustermq_receive_socket, 3},
+    {"_clustermq_receive_multipart", (DL_FUNC) &_clustermq_receive_multipart, 3},
     {"_clustermq_send_socket", (DL_FUNC) &_clustermq_send_socket, 4},
     {NULL, NULL, 0}
 };

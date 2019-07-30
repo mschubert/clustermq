@@ -101,16 +101,22 @@ SEXP poll_socket(SEXP sockets, int timeout=-1) {
     return result;
 }
 
-// [[Rcpp::export]]
-SEXP receive_socket(SEXP socket, bool dont_wait=false, bool unserialize=true) {
+zmq::message_t rcv_msg(SEXP socket, bool dont_wait=false) {
     Rcpp::XPtr<zmq::socket_t> socket_(socket);
     auto flags = zmq::recv_flags::none;
     if (dont_wait)
         flags = flags | zmq::recv_flags::dontwait;
-    zmq::message_t message;
 
-    if (! socket_->recv(message, flags))
-        return {}; // EAGAIN: no message in non-blocking mode -> empty result
+    zmq::message_t message;
+    socket_->recv(message, flags);
+    return message;
+}
+
+// [[Rcpp::export]]
+SEXP receive_socket(SEXP socket, bool dont_wait=false, bool unserialize=true) {
+    auto message = rcv_msg(socket, dont_wait);
+//    if (! socket_->recv(message, flags))
+//        return {}; // EAGAIN: no message in non-blocking mode -> empty result
 
     SEXP ans = Rf_allocVector(RAWSXP, message.size());
     memcpy(RAW(ans), message.data(), message.size());
@@ -118,6 +124,24 @@ SEXP receive_socket(SEXP socket, bool dont_wait=false, bool unserialize=true) {
         return R_unserialize(ans);
     else
         return ans;
+}
+
+// [[Rcpp::export]]
+Rcpp::List receive_multipart(SEXP socket, bool dont_wait=false, bool unserialize=true) {
+    zmq::message_t message;
+    Rcpp::List result;
+    do {
+        message = rcv_msg(socket, dont_wait);
+        SEXP ans = Rf_allocVector(RAWSXP, message.size());
+        memcpy(RAW(ans), message.data(), message.size());
+
+        if (unserialize)
+            result.push_back(R_unserialize(ans));
+        else
+            result.push_back(ans);
+    } while (message.more());
+
+    return result;
 }
 
 // [[Rcpp::export]]
