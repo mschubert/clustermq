@@ -29,10 +29,19 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 #' @param short  whether to use unqualified host name (before first dot)
 #' @return  the host name as character string
 #' @keywords internal
-host = function(short=getOption("clustermq.short.host", TRUE)) {
-    host = Sys.info()["nodename"]
-    if (short)
-        host = strsplit(host, "\\.")[[1]][1]
+host = function(short=getOption("clustermq.short.host", TRUE), interface=getOption("clustermq.network.interface", NULL)) {
+    if is.null(interface)
+        host = Sys.info()["nodename"]
+        if (short)
+            host = strsplit(host, "\\.")[[1]][1]
+    else
+        # If the user has specified an interface name, get the host's IP address
+        # on that particular interface
+        network_interface_details = system2("ifconfig", args=(interface), stdout=TRUE, stderr=FALSE)
+        inet_string = grep(" inet ", network_interface, value=TRUE)
+        inet_vector = strsplit(inet_string, "\\s+")[[1]]
+        pos = match("inet", inet_vector)
+        host = inet_vector[pos+1]
     host
 }
 
