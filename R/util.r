@@ -38,7 +38,7 @@ host = function(short=getOption("clustermq.short.host", TRUE), interface=getOpti
         # If the user has specified an interface name, get the host's IP address
         # on that particular interface
         network_interface_details = system2("ifconfig", args=(interface), stdout=TRUE, stderr=FALSE)
-        inet_string = grep(" inet ", network_interface, value=TRUE)
+        inet_string = grep(" inet ", network_interface_details, value=TRUE)
         inet_vector = strsplit(inet_string, "\\s+")[[1]]
         pos = match("inet", inet_vector)
         host = inet_vector[pos+1]
