@@ -3,7 +3,13 @@ context("foreach")
 foreach = foreach::foreach
 `%dopar%` = foreach::`%dopar%`
 `%do%` = foreach::`%do%`
+getDoParWorkers = foreach::getDoParWorkers
+
 register_dopar_cmq(n_jobs=0)
+
+test_that("foreach::getDoParWorkers() returns n_jobs", {
+    expect_equal(getDoParWorkers(), 2)
+})
 
 test_that("simple foreach registration works", {
     res = foreach(i=1:3) %dopar% sqrt(i)
