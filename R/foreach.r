@@ -3,11 +3,10 @@
 #' @param ...  List of arguments passed to the `Q` function, e.g. n_jobs
 #' @export
 register_dopar_cmq = function(...) {
-    workers <- NA
-    dots <- list(...)
-    if ("n_jobs" %in% names(dots)) {
+    workers = NA
+    dots = list(...)
+    if ("n_jobs" %in% names(dots)) 
       workers <- dots$n_jobs
-    }
     info = function(data, item) {
         switch(item,
                name = "clustermq",
@@ -15,7 +14,6 @@ register_dopar_cmq = function(...) {
                workers = workers)
     }
     foreach::setDoPar(cmq_foreach, data=dots, info=info)
-
 }
 
 #' clustermq foreach handler
