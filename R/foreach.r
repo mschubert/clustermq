@@ -3,10 +3,10 @@
 #' @param ...  List of arguments passed to the `Q` function, e.g. n_jobs
 #' @export
 register_dopar_cmq = function(...) {
-    workers = NA
     dots = list(...)
+    workers = NA
     if ("n_jobs" %in% names(dots)) 
-      workers <- dots$n_jobs
+        workers = dots$n_jobs
     info = function(data, item) {
         switch(item,
                name = "clustermq",
