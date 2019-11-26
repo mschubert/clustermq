@@ -3,7 +3,6 @@ context("foreach")
 foreach = foreach::foreach
 `%dopar%` = foreach::`%dopar%`
 `%do%` = foreach::`%do%`
-
 register_dopar_cmq(n_jobs=0)
 
 test_that("foreach::getDoParWorkers() returns n_jobs", {
