@@ -13,14 +13,20 @@ SGE = R6::R6Class("SGE",
 
         submit_jobs = function(...) {
             opts = private$fill_options(...)
-            private$job_id = opts$job_name
+            private$job_name = opts$job_name
             filled = private$fill_template(opts)
 
-            success = system("qsub", input=filled, ignore.stdout=TRUE)
-            if (success != 0) {
+            output  = system2("qsub", input=filled, stdout = T)
+            
+            status = attr(output, "status")
+            success = (!length(status)) || (status != 0)
+            
+            if (!success) {
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            # The first thing printed to stdout by qsub is the id
+            private$job_id = output[1]
         },
 
         finalize = function(quiet=self$workers_running == 0) {
@@ -33,7 +39,8 @@ SGE = R6::R6Class("SGE",
     ),
 
     private = list(
-        job_id = NULL
+        job_name = NULL,
+        job_id   = NULL
     )
 )
 
