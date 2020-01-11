@@ -2,12 +2,12 @@
 % Please edit documentation in R/util.r
 \name{bind_avail}
 \alias{bind_avail}
-\title{Binds an rzmq to an available port in given range}
+\title{Binds a ZeroMQ socket to an available port in given range}
 \usage{
 bind_avail(socket, range, iface = "tcp://*", n_tries = 100)
 }
 \arguments{
-\item{socket}{An rzmq socket object}
+\item{socket}{An ZeroMQ socket object}
 
 \item{range}{Numbers to consider (e.g. 6000:8000)}
 
@@ -19,6 +19,6 @@ bind_avail(socket, range, iface = "tcp://*", n_tries = 100)
 The port the socket is bound to
 }
 \description{
-Binds an rzmq to an available port in given range
+Binds a ZeroMQ socket to an available port in given range
 }
 \keyword{internal}

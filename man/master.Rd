@@ -4,9 +4,16 @@
 \alias{master}
 \title{Master controlling the workers}
 \usage{
-master(qsys, iter, rettype = "list", fail_on_error = TRUE,
-  chunk_size = NA, timeout = Inf, max_calls_worker = Inf,
-  verbose = TRUE)
+master(
+  qsys,
+  iter,
+  rettype = "list",
+  fail_on_error = TRUE,
+  chunk_size = NA,
+  timeout = Inf,
+  max_calls_worker = Inf,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{qsys}{Instance of QSys object}
