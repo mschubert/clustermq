@@ -6,10 +6,16 @@ recv = function(p, sock, timeout=3L) {
     event = poll_socket(list(sock), timeout=timeout * 1000)
     if (is.null(event))
         return(recv(p, sock, timeout=timeout))
-    else if (event[1])
-        receive_socket(sock)
-    else
-        stop("Timeout reached")
+    else if (event[1]) {
+        re = receive_multipart(sock)
+        if (length(re) == 1)
+            re[[1]]
+        else
+            re
+    } else {
+        msg = parallel::mccollect(p, wait=FALSE)[[1]][1]
+        stop(paste("@bg:", sub("Error in\\s+", "", sub("\n[^$]", "", msg))))
+    }
 }
 
 has_connectivity = function(host, protocol="tcp") {
