@@ -5,7 +5,6 @@
 
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
-
 Rcpp::Function R_serialize("serialize");
 Rcpp::Function R_unserialize("unserialize");
 

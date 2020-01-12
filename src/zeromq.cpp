@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <chrono>
 #include <string>
+#include <unordered_map>
 #include "zmq.hpp"
 
 typedef std::chrono::high_resolution_clock Time;
@@ -13,28 +14,31 @@ class ZeroMQ {
 public:
     ZeroMQ(int threads=1) { ctx = new zmq::context_t(threads); }
     ~ZeroMQ() {
-        disconnect();
+        for (auto kv : sockets)
+            delete sockets[kv.first];
         delete ctx;
     }
 
-    void listen(std::string socket_type, std::string address) {
-        sock = new zmq::socket_t(*ctx, str2socket(socket_type));
+    void listen(std::string address, std::string socket_type="ZMQ_REP", std::string sid="default") {
+        auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
         sock->bind(address);
-        addr = address;
+        sockets.emplace(sid, sock);
+        addrs.emplace(sid, address);
     }
-    void connect(std::string socket_type, std::string address) {
-        sock = new zmq::socket_t(*ctx, str2socket(socket_type));
+    void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
+        auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
         sock->connect(address);
-        addr = address;
+        sockets.emplace(sid, sock);
+        addrs.emplace(sid, address);
     }
-    void disconnect() {
-        if (sock) {
-            delete sock;
-            sock = NULL;
+    void disconnect(std::string sid="default") {
+        if (sockets[sid]) {
+            delete sockets[sid];
+            sockets.erase(sid);
         }
     }
 
-    void send(SEXP data, bool dont_wait=false, bool send_more=false) {
+    void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
         auto flags = zmq::send_flags::none;
         if (dont_wait)
             flags = flags | zmq::send_flags::dontwait;
@@ -46,10 +50,10 @@ public:
 
         zmq::message_t message(Rf_xlength(data));
         memcpy(message.data(), RAW(data), Rf_xlength(data));
-        sock->send(message, flags);
+        sockets[sid]->send(message, flags);
     }
-    SEXP receive(bool dont_wait=false, bool unserialize=true) {
-        auto message = rcv_msg(dont_wait);
+    SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
+        auto message = rcv_msg(sid, dont_wait);
         SEXP ans = Rf_allocVector(RAWSXP, message.size());
         memcpy(RAW(ans), message.data(), message.size());
         if (unserialize)
@@ -57,13 +61,13 @@ public:
         else
             return ans;
     }
-    SEXP poll(int timeout=-1) {
-        auto nsock = 1;
+    Rcpp::IntegerVector poll(std::string sid="default", int timeout=-1) {
+        auto nsock = 1; //todo: length(sid)
 
         auto pitems = std::vector<zmq::pollitem_t>(nsock);
         for (int i = 0; i < nsock; i++) {
-            pitems[i].socket = *sock; // only one socket for now
-            pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; ssh_proxy XREP/XREQ has 2200
+            pitems[i].socket = *sockets[sid]; // only one socket for now
+            pitems[i].events = ZMQ_POLLIN | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
         }
 
         int rc = -1;
@@ -90,9 +94,9 @@ public:
     }
 
 private:
-    std::string addr;
     zmq::context_t *ctx;
-    zmq::socket_t *sock;
+    std::unordered_map<std::string, std::string> addrs;
+    std::unordered_map<std::string, zmq::socket_t*> sockets;
 
     int str2socket(std::string str) {
         if (str == "ZMQ_REP") {
@@ -109,13 +113,13 @@ private:
         return -1;
     }
 
-    zmq::message_t rcv_msg(bool dont_wait=false) {
+    zmq::message_t rcv_msg(std::string sid="default", bool dont_wait=false) {
         auto flags = zmq::recv_flags::none;
         if (dont_wait)
             flags = flags | zmq::recv_flags::dontwait;
 
         zmq::message_t message;
-        sock->recv(message, flags);
+        sockets[sid]->recv(message, flags);
         return message;
     }
 };
@@ -126,7 +130,7 @@ RCPP_MODULE(zmq) {
         .constructor() // .constructor<int>() SIGABRT
         .method("listen", &ZeroMQ::listen)
         .method("connect", &ZeroMQ::connect)
-        .method("disconnect", &ZeroMQ::connect)
+        .method("disconnect", &ZeroMQ::disconnect)
         .method("send", &ZeroMQ::send)
         .method("receive", &ZeroMQ::receive)
         .method("poll", &ZeroMQ::poll)

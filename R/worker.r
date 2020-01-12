@@ -53,12 +53,11 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
-    stop("temporarily unsupported")
-#                    data_socket = init_socket(zmq_context, "ZMQ_REQ")
-#                    connect_socket(data_socket, msg$redirect)
-#                    send_socket(data_socket, data=list(id="WORKER_READY", auth=auth))
-#                    message("WORKER_READY to redirect: ", msg$redirect)
-#                    msg = receive_socket(data_socket)
+                    zmq$connect(msg$redirect, sid="data")
+                    zmq$send(data=list(id="WORKER_READY", auth=auth), sid="data")
+                    message("WORKER_READY to redirect: ", msg$redirect)
+                    msg = zmq$receive(sid="data")
+                    zmq$disconnect(sid="data")
                 }
                 need = c("id", "fun", "const", "export", "pkgs",
                          "rettype", "common_seed", "token")

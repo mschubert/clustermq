@@ -15,23 +15,23 @@ ZeroMQ = R6::R6Class("ZeroMQ",
 #        finalize = function()
 #            private$zmq$destroy(),
 
-        listen = function(address, socket_type="ZMQ_REP")
-            private$zmq$listen(socket_type, address),
+        listen = function(address, socket_type="ZMQ_REP", sid="default")
+            private$zmq$listen(address, socket_type, sid),
 
-        connect = function(address, socket_type="ZMQ_REQ")
-            private$zmq$connect(socket_type, address),
+        connect = function(address, socket_type="ZMQ_REQ", sid="default")
+            private$zmq$connect(address, socket_type, sid),
 
-        disconnect = function()
-            private$zmq$disconnect(),
+        disconnect = function(sid="default")
+            private$zmq$disconnect(sid),
 
-        send = function(data, dont_wait=FALSE, send_more=FALSE)
-            private$zmq$send(data, dont_wait, send_more),
+        send = function(data, sid="default", dont_wait=FALSE, send_more=FALSE)
+            private$zmq$send(data, sid, dont_wait, send_more),
 
-        receive = function(dont_wait=FALSE, unserialize=TRUE)
-            private$zmq$receive(dont_wait, unserialize),
+        receive = function(sid="default", dont_wait=FALSE, unserialize=TRUE)
+            private$zmq$receive(sid, dont_wait, unserialize),
 
-        poll = function(timeout=-1L)
-            private$zmq$poll(timeout)
+        poll = function(sid="default", timeout=-1L)
+            private$zmq$poll(sid, timeout)
     ),
 
     private = list(
