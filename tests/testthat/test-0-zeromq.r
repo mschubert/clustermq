@@ -2,10 +2,10 @@ context("zeromq")
 
 test_that("send data on a round trip", {
     server = ZeroMQ$new()
-    server$listen("tcp://*:56123")
+    port = server$listen()
 
     client = ZeroMQ$new()
-    client$connect("tcp://localhost:56123")
+    client$connect(paste0("tcp://localhost:", port))
 
     client$send("test")
     rcv = server$receive()
@@ -14,10 +14,10 @@ test_that("send data on a round trip", {
 
 test_that("send/receive more", {
     server = ZeroMQ$new()
-    server$listen("tcp://*:56124")
+    port = server$listen()
 
     client = ZeroMQ$new()
-    client$connect("tcp://localhost:56124")
+    client$connect(paste0("tcp://localhost:", port))
 
     client$send("test", send_more=TRUE)
     client$send("test2")
@@ -28,7 +28,7 @@ test_that("send/receive more", {
 
 test_that("multiple sockets", {
     zmq = ZeroMQ$new()
-    zmq$listen("inproc://endpoint", sid="server")
+    zmq$listen2("inproc://endpoint", sid="server")
     zmq$connect("inproc://endpoint", sid="client")
     zmq$send("test3", sid="client")
     rcv = zmq$receive(sid="server")
@@ -37,7 +37,7 @@ test_that("multiple sockets", {
 
 test_that("multiple sockets, explicit disconnect", {
     zmq = ZeroMQ$new()
-    zmq$listen("inproc://endpoint", sid="server")
+    zmq$listen2("inproc://endpoint", sid="server")
     zmq$connect("inproc://endpoint", sid="client")
     zmq$send("test4", sid="client")
     zmq$disconnect(sid="client")

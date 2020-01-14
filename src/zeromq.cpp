@@ -19,17 +19,32 @@ public:
         delete ctx;
     }
 
-    void listen(std::string address, std::string socket_type="ZMQ_REP", std::string sid="default") {
+    void listen2(std::string address, std::string socket_type="ZMQ_REP", std::string sid="default") {
         auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
         sock->bind(address);
         sockets.emplace(sid, sock);
-        addrs.emplace(sid, address);
+    }
+    int listen(Rcpp::IntegerVector range, std::string iface="tcp://*", int n_tries=100,
+            std::string socket_type="ZMQ_REP", std::string sid="default") {
+        auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
+        int i;
+
+        for (i=0; i<range.length(); i++) {
+            std::string address = iface + ":" + std::to_string(range[i]);
+            try {
+                sock->bind(address);
+            } catch(zmq::error_t &e) {}
+
+            sockets.emplace(sid, sock);
+            return range[i];
+        }
+
+        Rf_error("Could not bind port after", i, "tries");
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
         auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
         sock->connect(address);
         sockets.emplace(sid, sock);
-        addrs.emplace(sid, address);
     }
     void disconnect(std::string sid="default") {
         if (sockets[sid]) {
@@ -95,7 +110,6 @@ public:
 
 private:
     zmq::context_t *ctx;
-    std::unordered_map<std::string, std::string> addrs;
     std::unordered_map<std::string, zmq::socket_t*> sockets;
 
     int str2socket(std::string str) {
@@ -129,6 +143,7 @@ RCPP_MODULE(zmq) {
     class_<ZeroMQ>("ZeroMQ_raw")
         .constructor() // .constructor<int>() SIGABRT
         .method("listen", &ZeroMQ::listen)
+        .method("listen2", &ZeroMQ::listen2)
         .method("connect", &ZeroMQ::connect)
         .method("disconnect", &ZeroMQ::disconnect)
         .method("send", &ZeroMQ::send)
