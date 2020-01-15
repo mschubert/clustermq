@@ -35,7 +35,7 @@ public:
                 sock->bind(address);
             } catch(zmq::error_t &e) {
                 if (errno != EADDRINUSE)
-                    throw e;
+                    Rf_error(e.what());
             }
 
             sockets.emplace(sid, sock);
@@ -95,7 +95,7 @@ public:
                 rc = zmq::poll(pitems, timeout);
             } catch(zmq::error_t &e) {
                 if (errno != EINTR || pending_interrupt())
-                    throw e;
+                    Rf_error(e.what());
                 if (timeout != -1) {
                     ms dt = std::chrono::duration_cast<ms>(Time::now() - start);
                     timeout = timeout - dt.count();
