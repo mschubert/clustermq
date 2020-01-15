@@ -24,7 +24,7 @@ public:
         sock->bind(address);
         sockets.emplace(sid, sock);
     }
-    int listen(Rcpp::IntegerVector range, std::string iface="tcp://*", int n_tries=100,
+    int listen(Rcpp::IntegerVector range, std::string iface="tcp://*",
             std::string socket_type="ZMQ_REP", std::string sid="default") {
         auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
         int i;
@@ -33,13 +33,16 @@ public:
             std::string address = iface + ":" + std::to_string(range[i]);
             try {
                 sock->bind(address);
-            } catch(zmq::error_t &e) {}
+            } catch(zmq::error_t &e) {
+                if (errno != EADDRINUSE)
+                    throw e;
+            }
 
             sockets.emplace(sid, sock);
             return range[i];
         }
 
-        Rf_error("Could not bind port after", i, "tries");
+        Rf_error("Could not bind port after ", i, " tries");
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
         auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));

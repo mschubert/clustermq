@@ -20,7 +20,7 @@ ZeroMQ = R6::R6Class("ZeroMQ",
 
         listen = function(range=6000:9999, iface="tcp://*", n_tries=100,
                           socket_type="ZMQ_REP", sid="default")
-            private$zmq$listen(sample(range), iface, n_tries, socket_type, sid),
+            private$zmq$listen(head(sample(range), n_tries), iface, socket_type, sid),
 
         connect = function(address, socket_type="ZMQ_REQ", sid="default")
             private$zmq$connect(address, socket_type, sid),

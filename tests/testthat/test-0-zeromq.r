@@ -1,5 +1,10 @@
 context("zeromq")
 
+test_that("fail on binding invalid endpoint", {
+    server = ZeroMQ$new()
+    expect_error(server$listen(iface="tcp://"))
+})
+
 test_that("send data on a round trip", {
     server = ZeroMQ$new()
     port = server$listen()
