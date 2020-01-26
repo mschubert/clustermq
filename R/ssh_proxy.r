@@ -13,10 +13,10 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
     # get address of master (or SSH tunnel)
     message("master ctl listening at: ", master_ctl)
-    zmq$connect(master_job, socket_type="ZMQ_XREQ", sid="fwd_out")
+    zmq$connect(master_job, socket_type="ZMQ_REQ", sid="fwd_out") # XREQ cur not working
 
     # set up local network forward to master (or SSH tunnel)
-    net_port = zmq$listen(socket_type="ZMQ_XREP", sid="fwd_in")
+    net_port = zmq$listen(socket_type="ZMQ_REP", sid="fwd_in") # XREP cur not working
     net_fwd = sprintf("tcp://%s:%i", host(), net_port)
     message("forwarding local network from: ", net_fwd)
 
@@ -40,6 +40,8 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
         data_url = sprintf("tcp://%s:%i", host(), data_port)
         qsys = get(toupper(qsys_id), envir=parent.env(environment()))
         qsys = qsys$new(data=msg, zmq=zmq, master=net_fwd)
+        on.exit(qsys$cleanup())
+
         redirect = list(id="PROXY_READY", data_url=data_url, token=qsys$data_token)
         zmq$send(data=redirect, sid="ctl")
         message("sent PROXY_READY to master ctl")
@@ -61,8 +63,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
                         zmq$send(list(id="PROXY_CMD", reply=reply), "ctl")
                     },
                     "PROXY_STOP" = {
-                        if (msg$finalize)
-                            qsys$finalize()
+                        zmq$send(list(id="PROXY_STOP"), "ctl")
                         break
                     }
                 )
@@ -83,6 +84,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
     }, error = function(e) {
         data = list(id=paste("PROXY_ERROR:", conditionMessage(e)))
+        message(data)
         zmq$send(data, "ctl")
     })
 }

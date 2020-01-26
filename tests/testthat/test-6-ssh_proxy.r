@@ -17,15 +17,14 @@ test_that("control flow between proxy and master", {
     # startup
     msg = zmq$receive()
     expect_equal(msg$id, "PROXY_UP")
-#    worker_url = msg$worker_url
+    worker_url = msg$worker_url
 
     zmq$send(common_data)
     msg = zmq$receive()
     expect_equal(msg$id, "PROXY_READY")
     expect_true("data_url" %in% names(msg))
     expect_true("token" %in% names(msg))
-#    data_url = msg$data_url
-    token = msg$token
+#    token = msg$token
 
     # command execution
     cmd = quote(Sys.getpid())
@@ -34,13 +33,11 @@ test_that("control flow between proxy and master", {
     expect_equal(msg$id, "PROXY_CMD")
     expect_equal(msg$reply, p$pid)
 
-    # common data
-#    zmq$connect(worker_url, sid="worker")
-#    zmq$send(list(id="WORKER_READY"), sid="worker")
-#    msg = zmq$receive(sid="job") #FIXME: timeout
-#    testthat::expect_equal(msg$id, "DO_SETUP")
-#    testthat::expect_equal(msg$token, token)
-#    testthat::expect_equal(msg[names(common_data)], common_data)
+    # start up worker
+    zmq$connect(worker_url, sid="worker")
+    zmq$send(list(id="WORKER_READY"), sid="worker")
+    msg = zmq$receive(sid="job")
+    testthat::expect_equal(msg$id, "WORKER_READY")
 
     # shutdown
     zmq$send(list(id = "PROXY_STOP"))
