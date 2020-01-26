@@ -17,6 +17,7 @@ Depends:
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Imports:
+    methods,
     narray,
     progress,
     purrr,
