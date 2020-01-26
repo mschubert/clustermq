@@ -15,7 +15,6 @@ SSH = R6::R6Class("SSH",
                 stop("Option 'clustermq.ssh.host' required for SSH but not set")
 
             super$initialize(..., template=template)
-            private$proxy_socket = init_socket(private$zmq_context, "ZMQ_REP")
 
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
@@ -27,19 +26,19 @@ SSH = R6::R6Class("SSH",
 
             # Exchange init messages with proxy
             init_timeout = getOption("clustermq.ssh.timeout", 5) * 1000
-            answer = poll_socket(list(private$proxy_socket), timeout=init_timeout)
+            answer = private$zmq$poll("proxy", timeout=init_timeout)
             if (!answer)
                 stop("Remote R process did not respond after ",
                      init_timeout, " seconds. ",
                      "Check your SSH server log.")
-            msg = receive_socket(private$proxy_socket)
+            msg = private$zmq$receive("proxy")
             if (msg$id != "PROXY_UP")
                 stop("Expected PROXY_UP, received ", sQuote(msg$id))
 
             # send common data to ssh
             message("Sending common data ...")
-            send_socket(private$proxy_socket, data=c(list(id="DO_SETUP"), data))
-            msg = receive_socket(private$proxy_socket)
+            private$zmq$send(c(list(id="DO_SETUP"), data), "proxy")
+            msg = private$zmq$receive("proxy")
             if (msg$id != "PROXY_READY")
                 stop("Expected PROXY_READY, received ", sQuote(msg$id))
 
@@ -63,10 +62,9 @@ SSH = R6::R6Class("SSH",
             # forward the submit_job call via ssh
             call[[1]] = quote(qsys$submit_jobs) #FIXME: only works bc 'qsys' in ssh_proxy
             call[2:length(call)] = evaluated
-            send_socket(private$proxy_socket,
-                        data = list(id="PROXY_CMD", exec=call))
+            private$zmq$send(list(id="PROXY_CMD", exec=call), "proxy")
 
-            msg = receive_socket(private$proxy_socket)
+            msg = private$zmq$receive_socket("proxy")
             if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
 
@@ -82,15 +80,16 @@ SSH = R6::R6Class("SSH",
         finalize = function(quiet = self$workers_running == 0) {
             #TODO: should we handle this with PROXY_CMD for break (and finalize if req'd)??
             if (private$ssh_proxy_running) {
-                send_socket(private$proxy_socket,
-                      data=list(id="PROXY_STOP", finalize=!private$is_cleaned_up))
+                private$zmq$send(
+                    list(id="PROXY_STOP", finalize=!private$is_cleaned_up),
+                    "proxy"
+                )
                 private$ssh_proxy_running = FALSE
             }
         }
     ),
 
 	private = list(
-        proxy_socket = NULL,
         ssh_proxy_running = TRUE,
 
         fill_options = function(ssh_host, ...) {
@@ -100,7 +99,7 @@ SSH = R6::R6Class("SSH",
             #TODO: let user define ports in private$defaults here and respect them
             remote = sample(50000:55000, 2)
             values$ssh_host = ssh_host
-            values$local_port = bind_avail(private$proxy_socket, 11000:13000)
+            values$local_port = private$zmq$listen(sid="proxy")
             values$ctl_port = remote[1]
             values$job_port = remote[2]
             values$fwd_port = private$port

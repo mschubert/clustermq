@@ -68,9 +68,12 @@ public:
 
         zmq::message_t message(Rf_xlength(data));
         memcpy(message.data(), RAW(data), Rf_xlength(data));
+        // TODO: if (sid in avail sockets), otherwise Rf_error
         sockets[sid]->send(message, flags);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
+        // TODO: add timeout option (that polls first, raises error if t/o)
+        // TODO: if (sid in avail sockets), otherwise Rf_error
         auto message = rcv_msg(sid, dont_wait);
         SEXP ans = Rf_allocVector(RAWSXP, message.size());
         memcpy(RAW(ans), message.data(), message.size());
@@ -79,13 +82,13 @@ public:
         else
             return ans;
     }
-    Rcpp::IntegerVector poll(std::string sid="default", int timeout=-1) {
-        auto nsock = 1; //todo: length(sid)
-
+    Rcpp::IntegerVector poll(Rcpp::CharacterVector sids, int timeout=-1) {
+        // TODO: if (sid in avail sockets), otherwise Rf_error
+        auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock);
         for (int i = 0; i < nsock; i++) {
-            pitems[i].socket = *sockets[sid]; // only one socket for now
-            pitems[i].events = ZMQ_POLLIN | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
+            pitems[i].socket = *sockets[Rcpp::as<std::string>(sids[i])];
+            pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
         }
 
         int rc = -1;

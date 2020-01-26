@@ -23,8 +23,8 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     # connect to master
     zmq = ZeroMQ$new() #FIXME: 3L
     zmq$connect(master)
-    zmq$send(data=list(id="WORKER_UP", auth=auth,
-             pkgver=utils::packageVersion("clustermq")))
+    zmq$send(list(id="WORKER_UP", auth=auth,
+                  pkgver=utils::packageVersion("clustermq")))
     message("WORKER_UP to: ", master)
 
     fmt = "%i in %.2fs [user], %.2fs [system], %.2fs [elapsed]"
@@ -48,15 +48,15 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 result = try(eval(msg$expr, envir=msg$env))
                 message("eval'd: ", msg$expr)
                 counter = counter + 1
-                zmq$send(data=list(id="WORKER_READY", auth=auth, token=token,
-                                   n_calls=counter, ref=msg$ref, result=result))
+                zmq$send(list(id="WORKER_READY", auth=auth, token=token,
+                              n_calls=counter, ref=msg$ref, result=result))
             },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
                     zmq$connect(msg$redirect, sid="data")
-                    zmq$send(data=list(id="WORKER_READY", auth=auth), sid="data")
+                    zmq$send(list(id="WORKER_READY", auth=auth), "data")
                     message("WORKER_READY to redirect: ", msg$redirect)
-                    msg = zmq$receive(sid="data")
+                    msg = zmq$receive("data")
                     zmq$disconnect(sid="data")
                 }
                 need = c("id", "fun", "const", "export", "pkgs",
@@ -68,18 +68,18 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                     message("token from msg: ", token)
                     for (pkg in msg$pkgs)
                         library(pkg, character.only=TRUE) #TODO: in its own namespace
-                    zmq$send(data=list(id="WORKER_READY", auth=auth,
-                                       token=token, n_calls=counter))
+                    zmq$send(list(id="WORKER_READY", auth=auth,
+                                  token=token, n_calls=counter))
                 } else {
                     msg = paste("wrong field names for DO_SETUP:",
                                 setdiff(names(msg), need))
-                    zmq$send(data=list(id="WORKER_ERROR", auth=auth, msg=msg))
+                    zmq$send(list(id="WORKER_ERROR", auth=auth, msg=msg))
                 }
             },
             "DO_CHUNK" = {
                 if (!identical(token, msg$token)) {
                     msg = paste("mismatch chunk & common data", token, msg$token)
-                    zmq$send(data=list(id="WORKER_ERROR", auth=auth, msg=msg),
+                    zmq$send(list(id="WORKER_ERROR", auth=auth, msg=msg),
                              send_more=TRUE)
                     message("WORKER_ERROR: ", msg)
                     break
@@ -92,23 +92,23 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 delta = proc.time() - tic
 
                 if ("error" %in% class(result)) {
-                    zmq$send(send_more=TRUE,
-                        data=list(id="WORKER_ERROR", auth=auth, msg=conditionMessage(result)))
+                    zmq$send(
+                        list(id="WORKER_ERROR", auth=auth, msg=conditionMessage(result)),
+                        send_more=TRUE)
                     message("WORKER_ERROR: ", conditionMessage(result))
                     break
                 } else {
                     message("completed ", sprintf(fmt, length(result$result),
                         delta[1], delta[2], delta[3]))
                     counter = counter + length(result$result)
-                    send_data = c(list(id="WORKER_READY", auth=auth, token=token,
-                                       n_calls=counter), result)
-                    zmq$send(send_data)
+                    zmq$send(c(list(id="WORKER_READY", auth=auth, token=token,
+                                       n_calls=counter), result))
                 }
             },
             "WORKER_WAIT" = {
                 message(sprintf("waiting %.2fs", msg$wait))
                 Sys.sleep(msg$wait)
-                zmq$send(data=list(id="WORKER_READY", auth=auth, token=token))
+                zmq$send(list(id="WORKER_READY", auth=auth, token=token))
             },
             "WORKER_STOP" = {
                 break
@@ -119,7 +119,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     run_time = proc.time() - start_time
 
     message("shutting down worker")
-    zmq$send(data = list(
+    zmq$send(list(
         id = "WORKER_DONE",
         time = run_time,
         mem = sum(gc()[,6]),
