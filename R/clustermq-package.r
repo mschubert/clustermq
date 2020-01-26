@@ -25,5 +25,5 @@
 #' @name clustermq
 #' @docType package
 #' @useDynLib clustermq
-#' @import Rcpp
+#' @import Rcpp methods
 NULL
