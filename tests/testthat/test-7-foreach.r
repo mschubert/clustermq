@@ -5,6 +5,10 @@ foreach = foreach::foreach
 `%do%` = foreach::`%do%`
 register_dopar_cmq(n_jobs=0)
 
+test_that("foreach::getDoParWorkers() returns n_jobs", {
+    expect_equal(foreach::getDoParWorkers(), 0)
+})
+
 test_that("simple foreach registration works", {
     res = foreach(i=1:3) %dopar% sqrt(i)
     cmp = foreach(i=1:3) %do% sqrt(i)
