@@ -45,16 +45,14 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
         message("sent PROXY_READY to master ctl")
 
         while(TRUE) {
-            events = zmq$poll(c("fwd_in", "fwd_out", "ctl", "default"))
+            events = zmq$poll(c("fwd_in", "ctl", "default"))
 
             # forwarding messages between workers and master
             if (events[1])
                 zmq$send(zmq$receive("fwd_in", unserialize=FALSE), "fwd_out")
-            if (events[2])
-                zmq$send(zmq$receive("fwd_out", unserialize=FALSE), "fwd_in")
 
             # socket connecting proxy to master
-            if (events[3]) {
+            if (events[2]) {
                 msg = zmq$receive("ctl")
                 message("received: ", msg)
                 switch(msg$id,
@@ -71,7 +69,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
             }
 
             # socket connecting ssh_proxy to workers
-            if (events[4]) {
+            if (events[3]) {
                 msg = qsys$receive_data(with_checks=FALSE)
                 message("received: ", msg)
                 switch(msg$id,
