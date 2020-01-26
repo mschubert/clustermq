@@ -64,7 +64,7 @@ SSH = R6::R6Class("SSH",
             call[2:length(call)] = evaluated
             private$zmq$send(list(id="PROXY_CMD", exec=call), "proxy")
 
-            msg = private$zmq$receive_socket("proxy")
+            msg = private$zmq$receive("proxy")
             if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
 

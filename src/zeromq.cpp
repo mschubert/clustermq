@@ -57,6 +57,7 @@ public:
     }
 
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
+        check_socket(sid);
         auto flags = zmq::send_flags::none;
         if (dont_wait)
             flags = flags | zmq::send_flags::dontwait;
@@ -68,12 +69,10 @@ public:
 
         zmq::message_t message(Rf_xlength(data));
         memcpy(message.data(), RAW(data), Rf_xlength(data));
-        // TODO: if (sid in avail sockets), otherwise Rf_error
         sockets[sid]->send(message, flags);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
-        // TODO: add timeout option (that polls first, raises error if t/o)
-        // TODO: if (sid in avail sockets), otherwise Rf_error
+        check_socket(sid);
         auto message = rcv_msg(sid, dont_wait);
         SEXP ans = Rf_allocVector(RAWSXP, message.size());
         memcpy(RAW(ans), message.data(), message.size());
@@ -83,11 +82,12 @@ public:
             return ans;
     }
     Rcpp::IntegerVector poll(Rcpp::CharacterVector sids, int timeout=-1) {
-        // TODO: if (sid in avail sockets), otherwise Rf_error
         auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock);
         for (int i = 0; i < nsock; i++) {
-            pitems[i].socket = *sockets[Rcpp::as<std::string>(sids[i])];
+            auto socket_id = Rcpp::as<std::string>(sids[i]);
+            check_socket(socket_id);
+            pitems[i].socket = *sockets[socket_id];
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
         }
 
@@ -131,6 +131,11 @@ private:
             Rcpp::exception(("Invalid socket type: " + str).c_str());
         }
         return -1;
+    }
+
+    void check_socket(std::string socket_id) {
+        if (sockets.find(socket_id) == sockets.end())
+            Rf_error("Trying to access non-existing socket: ", socket_id);
     }
 
     zmq::message_t rcv_msg(std::string sid="default", bool dont_wait=false) {
