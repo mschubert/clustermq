@@ -57,7 +57,7 @@ PBS = R6::R6Class("PBS",
     ),
     
     private = list(
-      set_job_id = function() {private$job_id = private$qsub_output[1]}
+      set_job_id = function() {private$job_id = private$qsub_stdout[1]}
     )
 )
 
