@@ -5,9 +5,8 @@
 #PBS -o {{ log_file | /dev/null }}
 #PBS -j oe
 
-# Uncomment if R / zeromq are environement modules
+# Uncomment if R is an environement module
 # module load R
-# module load zeromq
 
 # Uncomment to set the working directory
 # cd {{ workdir | "$PBS_O_WORKDIR" }}

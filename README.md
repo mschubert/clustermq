@@ -77,9 +77,11 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#settin
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
 * [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
-  * **OR** you may use `options(clustermq.scheduler = "sge")` and provide your own template for [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque)
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
+
+Each scheduler will be interfaced [using a default template that can be customized.](https://mschubert.github.io/clustermq/articles/userguide.html
+)
 
 If you need specific [computing environments or
 containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),

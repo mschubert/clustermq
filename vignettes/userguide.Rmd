@@ -568,8 +568,6 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
   in curly braces (`{{ ... }}`), as they are used to fill in the right
   variables.
 
-Or simply set `clustermq.scheduler` to use a default PBS template we have 
-provided as follows:
 
 ```{r eval=FALSE}
 options(clustermq.scheduler = "PBS")
