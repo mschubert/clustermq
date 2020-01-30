@@ -16,17 +16,17 @@ SGE = R6::R6Class("SGE",
             private$job_name = opts$job_name
             filled = private$fill_template(opts)
 
-            output  = system2("qsub", input=filled, stdout = T)
+            private$qsub_stdout  = system2("qsub", input=filled, stdout = T)
             
-            status = attr(output, "status")
+            status = attr(private$qsub_stdout, "status")
             success = (!length(status)) || (status != 0)
             
             if (!success) {
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
-            # The first thing printed to stdout by qsub is the id
-            private$job_id = output[1]
+            
+            private$set_job_id()
         },
 
         finalize = function(quiet=self$workers_running == 0) {
@@ -40,7 +40,10 @@ SGE = R6::R6Class("SGE",
 
     private = list(
         job_name = NULL,
-        job_id   = NULL
+        job_id   = NULL,
+        qsub_stdout = NULL,
+        
+        set_job_id = function() {private$job_id = private$job_name}
     )
 )
 
@@ -51,6 +54,10 @@ PBS = R6::R6Class("PBS",
         initialize = function(..., template=getOption("clustermq.template", "PBS")) {
             super$initialize(..., template=template)
         }
+    ),
+    
+    private = list(
+      set_job_id = function() {private$job_id = private$qsub_output[1]}
     )
 )
 
