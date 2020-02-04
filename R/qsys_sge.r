@@ -16,10 +16,10 @@ SGE = R6::R6Class("SGE",
             private$job_name = opts$job_name
             filled = private$fill_template(opts)
 
-            private$qsub_stdout  = system2("qsub", input=filled, stdout = T)
+            private$qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
             
             status = attr(private$qsub_stdout, "status")
-            success = (!length(status)) || (status != 0)
+            success = (is.null(status) || (status == 0))
             
             if (!success) {
                 print(filled)
@@ -43,7 +43,7 @@ SGE = R6::R6Class("SGE",
         job_id   = NULL,
         qsub_stdout = NULL,
         
-        set_job_id = function() {private$job_id = private$job_name}
+        set_job_id = function() private$job_id = private$job_name
     )
 )
 
@@ -57,12 +57,12 @@ PBS = R6::R6Class("PBS",
     ),
     
     private = list(
-      set_job_id = function() {private$job_id = private$qsub_stdout[1]}
+      set_job_id = function() private$job_id = private$qsub_stdout[1]
     )
 )
 
 TORQUE = R6::R6Class("TORQUE",
-    inherit = SGE,
+    inherit = PBS,
 
     public = list(
         initialize = function(..., template=getOption("clustermq.template", "TORQUE")) {
