@@ -531,12 +531,18 @@ the missing options.
 
 ### PBS {#PBS}
 
-In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
-PBS template:
+In your `~/.Rprofile` on your computing cluster, use the PBS scheduler with the
+default PBS template:
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "pbs")
+```
+
+To customize your PBS template, set `clustermq.template`.
 
 ```{r eval=FALSE}
 options(
-    clustermq.scheduler = "sge",
+    clustermq.scheduler = "pbs",
     clustermq.template = "/path/to/file/below"
 )
 ```
@@ -568,23 +574,24 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
   in curly braces (`{{ ... }}`), as they are used to fill in the right
   variables.
 
-
-```{r eval=FALSE}
-options(clustermq.scheduler = "PBS")
-```
-
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
 ### Torque {#Torque}
 
-In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
-Torque template:
+In your `~/.Rprofile` on your computing cluster, use the Torque scheduler with 
+the default Torque template, as provided by us:
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "Torque")
+```
+
+To customize your Torque template, set `clustermq.template`.
 
 ```{r eval=FALSE}
 options(
-    clustermq.scheduler = "sge",
-    clustermq.template.lsf = "/path/to/file/below"
+    clustermq.scheduler = "Torque",
+    clustermq.template = "/path/to/file/below"
 )
 ```
 
@@ -610,13 +617,6 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
 * For other options, see the Torque documentation. Do not change the
   identifiers in curly braces (`{{ ... }}`), as they are used to fill in the
   right variables.
-
-Or simply set `clustermq.scheduler` to use a default Torque template we have 
-provided as follows:
-
-```{r eval=FALSE}
-options(clustermq.scheduler = "Torque")
-```
 
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
