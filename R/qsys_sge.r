@@ -16,9 +16,9 @@ SGE = R6::R6Class("SGE",
             private$job_name = opts$job_name
             filled = private$fill_template(opts)
 
-            private$qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
+            qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
             
-            status = attr(private$qsub_stdout, "status")
+            status = attr(qsub_stdout, "status")
             success = (is.null(status) || (status == 0))
             
             if (!success) {
@@ -26,7 +26,7 @@ SGE = R6::R6Class("SGE",
                 stop("Job submission failed with error code ", success)
             }
             
-            private$set_job_id()
+            private$set_job_id(qsub_stdout)
         },
 
         finalize = function(quiet=self$workers_running == 0) {
@@ -41,9 +41,10 @@ SGE = R6::R6Class("SGE",
     private = list(
         job_name = NULL,
         job_id   = NULL,
-        qsub_stdout = NULL,
         
-        set_job_id = function() private$job_id = private$job_name
+        # This implementation of set_job_id ignores input argument qsub_stdout
+        # as it can use job_name to refer to jobs in qdel
+        set_job_id = function(qsub_stdout) private$job_id = private$job_name
     )
 )
 
@@ -57,7 +58,7 @@ PBS = R6::R6Class("PBS",
     ),
     
     private = list(
-      set_job_id = function() private$job_id = private$qsub_stdout[1]
+      set_job_id = function(qsub_stdout) private$job_id = qsub_stdout[1]
     )
 )
 
