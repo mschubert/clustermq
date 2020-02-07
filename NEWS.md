@@ -1,4 +1,5 @@
 * New option `clustermq.ssh.timeout` to set timeout for SSH proxy startup. (#157)
+* Fixed default PBS submission template and PBS/Torque documentation (#184) (@mstr3336)
 
 # 0.8.8
 

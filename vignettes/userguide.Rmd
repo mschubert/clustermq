@@ -531,13 +531,19 @@ the missing options.
 
 ### PBS {#PBS}
 
-In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
-PBS template:
+In your `~/.Rprofile` on your computing cluster, use the PBS scheduler with the
+default PBS template:
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "pbs")
+```
+
+To customize your PBS template, set `clustermq.template`.
 
 ```{r eval=FALSE}
 options(
-    clustermq.scheduler = "sge",
-    clustermq.template.lsf = "/path/to/file/below"
+    clustermq.scheduler = "pbs",
+    clustermq.template = "/path/to/file/below"
 )
 ```
 
@@ -546,14 +552,17 @@ one below.
 
 ```{r eval=FALSE}
 #PBS -N {{ job_name }}
-#PBS -l select=1:ncpus={{ cores | 1 }}
-#PBS -l walltime={{ walltime | 1:00:00 }}
-#PBS -q default
+#PBS -J 1-{{ n_jobs }}
+#PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
+#PBS -l walltime={{ walltime | 12:00:00 }}
 #PBS -o {{ log_file | /dev/null }}
 #PBS -j oe
 
+#PBS -q default
+
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+
 ```
 
 In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
@@ -570,13 +579,19 @@ the missing options.
 
 ### Torque {#Torque}
 
-In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
-Torque template:
+In your `~/.Rprofile` on your computing cluster, use the Torque scheduler with 
+the default Torque template, as provided by us:
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "Torque")
+```
+
+To customize your Torque template, set `clustermq.template`.
 
 ```{r eval=FALSE}
 options(
-    clustermq.scheduler = "sge",
-    clustermq.template.lsf = "/path/to/file/below"
+    clustermq.scheduler = "Torque",
+    clustermq.template = "/path/to/file/below"
 )
 ```
 
