@@ -1,5 +1,7 @@
 * New option `clustermq.ssh.timeout` to set timeout for SSH proxy startup. (#157)
 * Fixed default PBS submission template and PBS/Torque documentation (#184) (@mstr3336)
+* Fixed bug in job cleanup for PBS QSys where scheduler would attempt to clean-up workers 
+  using their job name rather than job id (#186) ( @mstr3336 )
 
 # 0.8.8
 
