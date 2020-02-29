@@ -73,7 +73,7 @@ QSys = R6::R6Class("QSys",
             private$size_common = object.size(args)
             common_mb = format(private$size_common, units="Mb")
             if (common_mb > getOption("clustermq.data.warning", 1000))
-                warning("Common data is ", common_mb, " Mb. Recommended limit ",
+                warning("Common data is ", common_mb, ". Recommended limit ",
                         "is ", getOption("clustermq.data.warning"),
                         " (set by clustermq.data.warning option)", immediate.=TRUE)
             private$n_common = length(args$const) + length(args$export)
