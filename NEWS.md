@@ -1,4 +1,9 @@
-* New option `clustermq.ssh.timeout` to set timeout for SSH proxy startup. (#157)
+# 0.8.9
+
+* New option `clustermq.ssh.timeout` for SSH proxy startup (#157) @brendanf
+* New option `clustermq.worker.timeout` for delay before worker shutdown (#188)
+* Fixed PBS/Torque docs, template and cleanup (#184, #186) @mstr3336
+* Warning if common data is very large, set by `clustermq.data.warning` (#189)
 
 # 0.8.8
 

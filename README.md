@@ -80,6 +80,9 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#settin
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
+Each scheduler will be interfaced [using a default template that can be customized.](https://mschubert.github.io/clustermq/articles/userguide.html
+)
+
 If you need specific [computing environments or
 containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),
 you can activate them via the scheduler template.
