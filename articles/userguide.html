@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClusterMQ User Guide • clustermq</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="ClusterMQ User Guide">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.9</span>
       </span>
     </div>
 
@@ -71,7 +72,8 @@
 <!--/.navbar -->
 
       
-      </header><div class="row">
+
+      </header><script src="userguide_files/header-attrs-2.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>ClusterMQ User Guide</h1>
@@ -100,12 +102,12 @@ code {
 <h3 class="hasAnchor">
 <a href="#zeromq" class="anchor"></a>ZeroMQ</h3>
 <p>The <code>rzmq</code> package (which this package depends on) needs the system library ZeroMQ.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># You can skip this step on Windows and macOS, the rzmq binary has it</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="ex">conda</span> install zeromq <span class="co"># Conda</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="ex">pacman</span> -S zeromq <span class="co"># Arch Linux</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># You can skip this step on Windows and macOS, the rzmq binary has it</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="ex">conda</span> install zeromq <span class="co"># Conda</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="ex">pacman</span> -S zeromq <span class="co"># Arch Linux</span></span></code></pre></div>
 <p>More details can be found at the <a href="https://github.com/ropensci/rzmq#installation">rzmq project README</a>.</p>
 </div>
 <div id="r-package" class="section level3">
@@ -113,15 +115,15 @@ code {
 <a href="#r-package" class="anchor"></a>R package</h3>
 <p>The latest stable version is available <a href="https://cran.r-project.org/package=clustermq">on CRAN</a>.</p>
 <p>Alternatively, it is also available on the <a href="https://github.com/mschubert/clustermq"><code>master</code></a> branch of the repository.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># from CRAN</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">'clustermq'</span>)</a>
-<a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="co"># from Github</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="co"># install.packages('devtools')</span></a>
-<a class="sourceLine" id="cb2-6" title="6">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">'mschubert/clustermq'</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># from CRAN</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">'clustermq'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># from Github</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co"># install.packages('devtools')</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">'mschubert/clustermq'</span>)</span></code></pre></div>
 <p>In the <a href="https://github.com/mschubert/clustermq/tree/develop"><code>develop</code></a> branch, we will introduce code changes and new features. These may contain bugs, poor documentation, or other inconveniences. This branch may not install at times. However, <a href="https://github.com/mschubert/clustermq/issues/new">feedback is very welcome</a>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># install.packages('devtools')</span></a>
-<a class="sourceLine" id="cb3-2" title="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">'mschubert/clustermq'</span>, <span class="dt">ref=</span><span class="st">"develop"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># install.packages('devtools')</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">'mschubert/clustermq'</span>, <span class="dt">ref=</span><span class="st">"develop"</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="configuration" class="section level2">
@@ -149,11 +151,11 @@ code {
 <p>There are reasons why you might prefer to not to work on the computing cluster directly but rather on your local machine instead. <a href="https://www.rstudio.com/">RStudio</a> is an excellent local IDE, it’s more responsive than and feature-rich than browser-based solutions (<a href="https://www.rstudio.com/products/rstudio/download-server/">RStudio server</a>, <a href="http://jupyter.org/">Project Jupyter</a>), and it avoids X forwarding issues when you want to look at plots you just made.</p>
 <p>Using this setup, however, you lost access to the computing cluster. Instead, you had to copy your data there, and then submit individual scripts as jobs, aggregating the data in the end again. <code>clustermq</code> is trying to solve this by providing a transparent SSH interface.</p>
 <p>In order to use <code>clustermq</code> from your local machine, the package needs to be installed on both there and on the computing cluster. On the computing cluster, <a href="https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler">set up your scheduler</a> and make sure <code>clustermq</code> runs there without problems. On your local machine, add the following options in your <code>~/.Rprofile</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb4-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"ssh"</span>,</a>
-<a class="sourceLine" id="cb4-3" title="3">    <span class="dt">clustermq.ssh.host =</span> <span class="st">"user@host"</span>, <span class="co"># use your user and host, obviously</span></a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">clustermq.ssh.log =</span> <span class="st">"~/cmq_ssh.log"</span> <span class="co"># log for easier debugging</span></a>
-<a class="sourceLine" id="cb4-5" title="5">)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">"ssh"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="dt">clustermq.ssh.host =</span> <span class="st">"user@host"</span>, <span class="co"># use your user and host, obviously</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="dt">clustermq.ssh.log =</span> <span class="st">"~/cmq_ssh.log"</span> <span class="co"># log for easier debugging</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>)</span></code></pre></div>
 <p>We recommend that you <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server">set up SSH keys</a> for password-less login.</p>
 </div>
 </div>
@@ -197,83 +199,83 @@ code {
 <a href="#examples" class="anchor"></a>Examples</h3>
 <p>The package is designed to distribute arbitrary function calls on HPC worker nodes. There are, however, a couple of caveats to observe as the R session running on a worker does not share your local memory.</p>
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 7862) ...</span></a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt; [[1]]</span></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt; [1] 2</span></a>
-<a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt; [[2]]</span></a>
-<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt; [1] 4</span></a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb5-10" title="10"><span class="co">#&gt; [[3]]</span></a>
-<a class="sourceLine" id="cb5-11" title="11"><span class="co">#&gt; [1] 6</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7744) ...</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">#&gt; [1] 2</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">#&gt; </span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt; [1] 4</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">#&gt; </span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
 <p>Non-iterated arguments are supported by the <code>const</code> argument:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
-<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt; [[1]]</span></a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt; [1] 12</span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt; [[2]]</span></a>
-<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt; [1] 14</span></a>
-<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt; [[3]]</span></a>
-<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt; [1] 16</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; [1] 12</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt; </span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; [1] 14</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt; </span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
 <p>If a function relies on objects in its environment that are not passed as arguments, they can be exported using the <code>export</code> argument:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt; [[1]]</span></a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt; [1] 12</span></a>
-<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt; [[2]]</span></a>
-<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt; [1] 14</span></a>
-<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; [[3]]</span></a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; [1] 16</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#&gt; [1] 12</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt; </span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt; [1] 14</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">#&gt; </span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
 <p>If we want to use a package function we need to load it on the worker using the <code>pkg</code> argument or referencing it with <code>package_name::</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) {</a>
-<a class="sourceLine" id="cb8-2" title="2">    x <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="st">        </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>()</a>
-<a class="sourceLine" id="cb8-5" title="5">}</a>
-<a class="sourceLine" id="cb8-6" title="6"><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(iris), <span class="dt">pkgs=</span><span class="st">"dplyr"</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; Attaching package: 'dplyr'</span></a>
-<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; The following objects are masked from 'package:stats':</span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt;     filter, lag</span></a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt; The following objects are masked from 'package:base':</span></a>
-<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
-<a class="sourceLine" id="cb8-16" title="16"><span class="co">#&gt; [[1]]</span></a>
-<a class="sourceLine" id="cb8-17" title="17"><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></a>
-<a class="sourceLine" id="cb8-18" title="18"><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></a>
-<a class="sourceLine" id="cb8-19" title="19"><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></a>
-<a class="sourceLine" id="cb8-20" title="20"><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></a>
-<a class="sourceLine" id="cb8-21" title="21"><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></a>
-<a class="sourceLine" id="cb8-22" title="22"><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></a>
-<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb8-2"><a href="#cb8-2"></a>    x <span class="op">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="st">        </span><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>()</span>
+<span id="cb8-5"><a href="#cb8-5"></a>}</span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="kw"><a href="../reference/Q.html">Q</a></span>(fx, <span class="dt">x=</span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(iris), <span class="dt">pkgs=</span><span class="st">"dplyr"</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; </span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; </span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; </span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></span></code></pre></div>
 </div>
 <div id="as-parallel-foreach-backend" class="section level3">
 <h3 class="hasAnchor">
 <a href="#as-parallel-foreach-backend" class="anchor"></a>As parallel <code>foreach</code> backend</h3>
-<p>The <a href="https://cran.r-project.org/package=foreach"><code>foreach</code></a> package provides an interface to perform repeated tasks on different backends. While it can perform the function of simple loops using <code>%do%</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(foreach)</a>
-<a class="sourceLine" id="cb9-2" title="2">x =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/foreach/topics/foreach">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%do%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(i)</a></code></pre></div>
-<p>it can also perform these operations in parallel using <code>%dopar%</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">x =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/foreach/topics/foreach">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(i)</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="co">#&gt; Warning: executing %dopar% sequentially: no parallel backend registered</span></a></code></pre></div>
+<p>The <a href="https://cran.r-project.org/package=foreach"><code>foreach</code></a> package provides an interface to perform repeated tasks on different backends. While it can perform the function of simple loops using <code><a href="https://rdrr.io/pkg/foreach/man/foreach.html">%do%</a></code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(foreach)</span>
+<span id="cb9-2"><a href="#cb9-2"></a>x =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%do%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span>(i)</span></code></pre></div>
+<p>it can also perform these operations in parallel using <code><a href="https://rdrr.io/pkg/foreach/man/foreach.html">%dopar%</a></code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>x =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span>(i)</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="co">#&gt; Warning: executing %dopar% sequentially: no parallel backend registered</span></span></code></pre></div>
 <p>The latter allows registering different handlers for parallel execution, where we can use <code>clustermq</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">clustermq<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/clustermq/topics/register_dopar_cmq">register_dopar_cmq</a></span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># this accepts same arguments as `Q`</span></a>
-<a class="sourceLine" id="cb11-2" title="2">x =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/foreach/topics/foreach">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(i) <span class="co"># this will be executed as jobs</span></a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="co">#&gt; Submitting 2 worker jobs (ID: 6665) ...</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>clustermq<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/clustermq/man/register_dopar_cmq.html">register_dopar_cmq</a></span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># this accepts same arguments as `Q`</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>x =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span>(i) <span class="co"># this will be executed as jobs</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="co">#&gt; Submitting 2 worker jobs (ID: 7326) ...</span></span></code></pre></div>
 <p>As <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html">BiocParallel</a> supports <code>foreach</code> too, this means we can run all packages that use <code>BiocParallel</code> on the cluster as well via <code>DoparParam</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(BiocParallel)</a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/register">register</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/DoparParam-class">DoparParam</a></span>()) <span class="co"># after register_dopar_cmq(...)</span></a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/BiocParallel/topics/bplapply">bplapply</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(BiocParallel)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/BiocParallel/man/DoparParam-class.html">DoparParam</a></span>()) <span class="co"># after register_dopar_cmq(...)</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw"><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html">bplapply</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</span></code></pre></div>
 </div>
 <div id="with-drake" class="section level3">
 <h3 class="hasAnchor">
@@ -284,11 +286,11 @@ code {
 <p>drake — or, Data Frames in R for Make — is a general-purpose workflow manager for data-driven tasks. It rebuilds intermediate data objects when their dependencies change, and it skips work when the results are already up to date. Not every runthrough starts from scratch, and completed workflows have tangible evidence of reproducibility. drake also supports scalability, parallel computing, and a smooth user experience when it comes to setting up, deploying, and maintaining data science projects.</p>
 </blockquote>
 <p>It can use <code>clustermq</code> to perform calculations as jobs:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(drake)</a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/drake/topics/load_mtcars_example">load_mtcars_example</a></span>()</a>
-<a class="sourceLine" id="cb13-3" title="3"><span class="co"># clean(destroy = TRUE)</span></a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="co"># options(clustermq.scheduler = "multicore")</span></a>
-<a class="sourceLine" id="cb13-5" title="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/drake/topics/make">make</a></span>(my_plan, <span class="dt">parallelism =</span> <span class="st">"clustermq"</span>, <span class="dt">jobs =</span> <span class="dv">2</span>, <span class="dt">verbose =</span> <span class="dv">4</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(drake)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">load_mtcars_example</span>()</span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="co"># clean(destroy = TRUE)</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co"># options(clustermq.scheduler = "multicore")</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="kw">make</span>(my_plan, <span class="dt">parallelism =</span> <span class="st">"clustermq"</span>, <span class="dt">jobs =</span> <span class="dv">2</span>, <span class="dt">verbose =</span> <span class="dv">4</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="troubleshooting" class="section level2">
@@ -306,7 +308,7 @@ code {
 <li>Probably others</li>
 </ul>
 <p>In this case, it is useful to have the worker(s) create a log file that will also include events that are not reported back. It can be requested using:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw"><a href="../reference/Q.html">Q</a></span>(..., <span class="dt">log_file=</span><span class="st">"/path/to.file"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw"><a href="../reference/Q.html">Q</a></span>(..., <span class="dt">log_file=</span><span class="st">"/path/to.file"</span>)</span></code></pre></div>
 <p>Note that <code>log_file</code> is a template field of your scheduler script, and hence needs to be present there in order for this to work. The default templates all have this field included.</p>
 <p>In order to log each worker separately, some schedulers support wildcards in their log file names. For instance:</p>
 <ul>
@@ -325,18 +327,23 @@ code {
 <p>If the terminal is stuck at</p>
 <pre><code>Connecting &lt;user@host&gt; via SSH ...</code></pre>
 <p>make sure that each step of your SSH connection works by typing the following commands in your <strong>local</strong> terminal and make sure that you don’t get errors or warnings in each step:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb16-1" title="1"><span class="co"># test your ssh login that you set up in ~/.ssh/config</span></a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="co"># if this fails you have not set up SSH correctly</span></a>
-<a class="sourceLine" id="cb16-3" title="3"><span class="fu">ssh</span> <span class="op">&lt;</span>user@host<span class="op">&gt;</span></a>
-<a class="sourceLine" id="cb16-4" title="4"></a>
-<a class="sourceLine" id="cb16-5" title="5"><span class="co"># test port forwarding from 54709 remote to 6687 local (ports are random)</span></a>
-<a class="sourceLine" id="cb16-6" title="6"><span class="co"># if the fails you will not be able to use clustermq via SSH</span></a>
-<a class="sourceLine" id="cb16-7" title="7"><span class="fu">ssh</span> -R 54709:localhost:6687 <span class="op">&lt;</span>user@host<span class="op">&gt;</span> R --vanilla</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># test your ssh login that you set up in ~/.ssh/config</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="co"># if this fails you have not set up SSH correctly</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="fu">ssh</span> <span class="op">&lt;</span>user@host<span class="op">&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a></span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="co"># test port forwarding from 54709 remote to 6687 local (ports are random)</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="co"># if the fails you will not be able to use clustermq via SSH</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="fu">ssh</span> -R 54709:localhost:6687 <span class="op">&lt;</span>user@host<span class="op">&gt;</span> R --vanilla</span></code></pre></div>
 <p>If you get an <code>Command not found: R</code> error, make sure your <code>$PATH</code> is set up correctly in your <code>~/.bash_profile</code> and/or your <code>~/.bashrc</code> (depending on your cluster config you might need either).</p>
 <p>If you get a SSH warning or error try again with <code>ssh -v</code> to enable verbose output.</p>
 <p>If the forward itself works, set the following option in your <code>~/.Rprofile</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">clustermq.ssh.log =</span> <span class="st">"~/ssh_proxy.log"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">clustermq.ssh.log =</span> <span class="st">"~/ssh_proxy.log"</span>)</span></code></pre></div>
 <p>This will create a log file <em>on the remote server</em> that will contain any errors that might have occurred during <code>ssh_proxy</code> startup.</p>
+<p>If the <code>ssh_proxy</code> startup fails on your local machine with the error</p>
+<pre><code>Remote R process did not respond after 5 seconds. Check your SSH server log.</code></pre>
+<p>but the server log does not show any errors, then you can try increasing the timeout:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">clustermq.ssh.timeout =</span> <span class="dv">10</span>) <span class="co"># or a higher number</span></span></code></pre></div>
+<p>This can happens when your SSH startup template includes additional steps before starting R, such as activating a module or conda environment.</p>
 </div>
 </div>
 <div id="environments" class="section level2">
@@ -353,24 +360,24 @@ code {
 <a href="https://www.docker.com/">Docker</a>/<a href="https://singularity.lbl.gov/">Singularity</a> containers</li>
 </ul>
 <p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="#LSF">LSF</a> scheduler (analogous for others):</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
-<a class="sourceLine" id="cb18-2" title="2"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr</span></a>
-<a class="sourceLine" id="cb18-3" title="3"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
-<a class="sourceLine" id="cb18-4" title="4"><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></a>
-<a class="sourceLine" id="cb18-5" title="5"><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></a>
-<a class="sourceLine" id="cb18-6" title="6"><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></a>
-<a class="sourceLine" id="cb18-7" title="7"></a>
-<a class="sourceLine" id="cb18-8" title="8">module load {{ bashenv <span class="op">|</span><span class="st"> </span>default_bash_env }}</a>
-<a class="sourceLine" id="cb18-9" title="9"><span class="co"># or: source activate {{ conda | default_conda_env_name }}</span></a>
-<a class="sourceLine" id="cb18-10" title="10"><span class="co"># or: your environment activation command</span></a>
-<a class="sourceLine" id="cb18-11" title="11">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb18-12" title="12">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a></span>
+<span id="cb20-8"><a href="#cb20-8"></a>module load {{ bashenv <span class="op">|</span><span class="st"> </span>default_bash_env }}</span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="co"># or: source activate {{ conda | default_conda_env_name }}</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="co"># or: your environment activation command</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb20-12"><a href="#cb20-12"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>This template still needs to be filled, so in the above example you need to pass either</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw"><a href="../reference/Q.html">Q</a></span>(..., <span class="dt">template=</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">bashenv=</span><span class="st">"my environment name"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw"><a href="../reference/Q.html">Q</a></span>(..., <span class="dt">template=</span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">bashenv=</span><span class="st">"my environment name"</span>))</span></code></pre></div>
 <p>or set it via an <em>.Rprofile</em> option:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb20-2" title="2">    <span class="dt">clustermq.defaults =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">bashenv=</span><span class="st">"my default env"</span>)</a>
-<a class="sourceLine" id="cb20-3" title="3">)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(</span>
+<span id="cb22-2"><a href="#cb22-2"></a>    <span class="dt">clustermq.defaults =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">bashenv=</span><span class="st">"my default env"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3"></a>)</span></code></pre></div>
 </div>
 <div id="scheduler-templates" class="section level2">
 <h2 class="hasAnchor">
@@ -379,28 +386,28 @@ code {
 <h3 class="hasAnchor">
 <a href="#LSF" class="anchor"></a>LSF</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb21-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"lsf"</span>,</a>
-<a class="sourceLine" id="cb21-3" title="3">    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span></a>
-<a class="sourceLine" id="cb21-4" title="4">)</a></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a LSF template file like the one below.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
-<a class="sourceLine" id="cb22-2" title="2"><span class="co">#BSUB-n {{ cores | 1 }}                 # number of cores to use per job</span></a>
-<a class="sourceLine" id="cb22-3" title="3"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span></a>
-<a class="sourceLine" id="cb22-4" title="4"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
-<a class="sourceLine" id="cb22-5" title="5"><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></a>
-<a class="sourceLine" id="cb22-6" title="6"><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></a>
-<a class="sourceLine" id="cb22-7" title="7"><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></a>
-<a class="sourceLine" id="cb22-8" title="8"></a>
-<a class="sourceLine" id="cb22-9" title="9">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb22-10" title="10">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(</span>
+<span id="cb23-2"><a href="#cb23-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">"lsf"</span>,</span>
+<span id="cb23-3"><a href="#cb23-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span> <span class="co"># if using your own template</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a>)</span></code></pre></div>
+<p>The option <code>clustermq.template</code> should point to a LSF template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="co">#BSUB-n {{ cores | 1 }}                 # number of cores to use per job</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a></span>
+<span id="cb24-9"><a href="#cb24-9"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb24-10"><a href="#cb24-10"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>In this file, <code>#BSUB-*</code> defines command-line arguments to the <code>bsub</code> program.</p>
 <ul>
 <li>Memory: defined by <code>BSUB-M</code> and <code>BSUB-R</code>. Check your local setup if the memory values supplied are MiB or KiB, default is <code>4096</code> if not requesting memory when calling <code><a href="../reference/Q.html">Q()</a></code>
 </li>
 <li>Queue: <code>BSUB-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
 <li>Walltime: <code>BSUB-W {{ walltime }}</code>. Set the maximum time a job is allowed to run before being killed. The default here is to disable this line. If you enable it, enter a fixed value or pass the <code>walltime</code> argument to each function call. The way it is written, it will use 6 hours if no arguemnt is given.</li>
-<li>For other options, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html">the LSF documentation</a> and add them via <code>#BSUB-*</code> (where <code>*</code> represents the argument)</li>
+<li>For other options, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html">the LSF documentation</a> and add them via <code>#BSUB-*</code> (where <code><a href="https://rdrr.io/r/base/Arithmetic.html">*</a></code> represents the argument)</li>
 <li>Do not change the identifiers in curly braces (<code>{{ ... }}</code>), as they are used to fill in the right variables</li>
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
@@ -409,22 +416,22 @@ code {
 <h3 class="hasAnchor">
 <a href="#SGE" class="anchor"></a>SGE</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb23-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</a>
-<a class="sourceLine" id="cb23-3" title="3">    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span></a>
-<a class="sourceLine" id="cb23-4" title="4">)</a></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a SGE template file like the one below.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="co">#$ -N {{ job_name }}               # job name</span></a>
-<a class="sourceLine" id="cb24-2" title="2"><span class="co">#$ -q default                      # submit to queue named "default"</span></a>
-<a class="sourceLine" id="cb24-3" title="3"><span class="co">#$ -j y                            # combine stdout/error in one file</span></a>
-<a class="sourceLine" id="cb24-4" title="4"><span class="co">#$ -o {{ log_file | /dev/null }}   # output file</span></a>
-<a class="sourceLine" id="cb24-5" title="5"><span class="co">#$ -cwd                            # use pwd as work dir</span></a>
-<a class="sourceLine" id="cb24-6" title="6"><span class="co">#$ -V                              # use environment variable</span></a>
-<a class="sourceLine" id="cb24-7" title="7"><span class="co">#$ -t 1-{{ n_jobs }}               # submit jobs as array</span></a>
-<a class="sourceLine" id="cb24-8" title="8"><span class="co">#$ -pe {{ cores | 1 }}             # number of cores to use per job</span></a>
-<a class="sourceLine" id="cb24-9" title="9"></a>
-<a class="sourceLine" id="cb24-10" title="10">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb24-11" title="11">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(</span>
+<span id="cb25-2"><a href="#cb25-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span> <span class="co"># if using your own template</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a>)</span></code></pre></div>
+<p>The option <code>clustermq.template</code> should point to a SGE template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">#$ -N {{ job_name }}               # job name</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="co">#$ -q default                      # submit to queue named "default"</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a><span class="co">#$ -j y                            # combine stdout/error in one file</span></span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="co">#$ -o {{ log_file | /dev/null }}   # output file</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a><span class="co">#$ -cwd                            # use pwd as work dir</span></span>
+<span id="cb26-6"><a href="#cb26-6"></a><span class="co">#$ -V                              # use environment variable</span></span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="co">#$ -t 1-{{ n_jobs }}               # submit jobs as array</span></span>
+<span id="cb26-8"><a href="#cb26-8"></a><span class="co">#$ -pe {{ cores | 1 }}             # number of cores to use per job</span></span>
+<span id="cb26-9"><a href="#cb26-9"></a></span>
+<span id="cb26-10"><a href="#cb26-10"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb26-11"><a href="#cb26-11"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>In this file, <code>#$-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>$ -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -436,22 +443,22 @@ code {
 <h3 class="hasAnchor">
 <a href="#SLURM" class="anchor"></a>SLURM</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb25-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"slurm"</span>,</a>
-<a class="sourceLine" id="cb25-3" title="3">    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span></a>
-<a class="sourceLine" id="cb25-4" title="4">)</a></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a SLURM template file like the one below.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="co">#!/bin/sh</span></a>
-<a class="sourceLine" id="cb26-2" title="2"><span class="co">#SBATCH --job-name={{ job_name }}</span></a>
-<a class="sourceLine" id="cb26-3" title="3"><span class="co">#SBATCH --partition=default</span></a>
-<a class="sourceLine" id="cb26-4" title="4"><span class="co">#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index</span></a>
-<a class="sourceLine" id="cb26-5" title="5"><span class="co">#SBATCH --error={{ log_file | /dev/null }}</span></a>
-<a class="sourceLine" id="cb26-6" title="6"><span class="co">#SBATCH --mem-per-cpu={{ memory | 4096 }}</span></a>
-<a class="sourceLine" id="cb26-7" title="7"><span class="co">#SBATCH --array=1-{{ n_jobs }}</span></a>
-<a class="sourceLine" id="cb26-8" title="8"><span class="co">#SBATCH --cpus-per-task={{ cores | 1 }}</span></a>
-<a class="sourceLine" id="cb26-9" title="9"></a>
-<a class="sourceLine" id="cb26-10" title="10">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb26-11" title="11">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(</span>
+<span id="cb27-2"><a href="#cb27-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">"slurm"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span> <span class="co"># if using your own template</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a>)</span></code></pre></div>
+<p>The option <code>clustermq.template</code> should point to a SLURM template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="co">#SBATCH --job-name={{ job_name }}</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="co">#SBATCH --partition=default</span></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="co">#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a><span class="co">#SBATCH --error={{ log_file | /dev/null }}</span></span>
+<span id="cb28-6"><a href="#cb28-6"></a><span class="co">#SBATCH --mem-per-cpu={{ memory | 4096 }}</span></span>
+<span id="cb28-7"><a href="#cb28-7"></a><span class="co">#SBATCH --array=1-{{ n_jobs }}</span></span>
+<span id="cb28-8"><a href="#cb28-8"></a><span class="co">#SBATCH --cpus-per-task={{ cores | 1 }}</span></span>
+<span id="cb28-9"><a href="#cb28-9"></a></span>
+<span id="cb28-10"><a href="#cb28-10"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb28-11"><a href="#cb28-11"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>In this file, <code>#SBATCH</code> defines command-line arguments to the <code>sbatch</code> program.</p>
 <ul>
 <li>Queue: <code>SBATCH --partition default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -462,21 +469,23 @@ code {
 <div id="PBS" class="section level3">
 <h3 class="hasAnchor">
 <a href="#PBS" class="anchor"></a>PBS</h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a PBS template:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb27-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</a>
-<a class="sourceLine" id="cb27-3" title="3">    <span class="dt">clustermq.template.lsf =</span> <span class="st">"/path/to/file/below"</span></a>
-<a class="sourceLine" id="cb27-4" title="4">)</a></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a PBS template file like the one below.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="co">#PBS -N {{ job_name }}</span></a>
-<a class="sourceLine" id="cb28-2" title="2"><span class="co">#PBS -l select=1:ncpus={{ cores | 1 }}</span></a>
-<a class="sourceLine" id="cb28-3" title="3"><span class="co">#PBS -l walltime={{ walltime | 1:00:00 }}</span></a>
-<a class="sourceLine" id="cb28-4" title="4"><span class="co">#PBS -q default</span></a>
-<a class="sourceLine" id="cb28-5" title="5"><span class="co">#PBS -o {{ log_file | /dev/null }}</span></a>
-<a class="sourceLine" id="cb28-6" title="6"><span class="co">#PBS -j oe</span></a>
-<a class="sourceLine" id="cb28-7" title="7"></a>
-<a class="sourceLine" id="cb28-8" title="8">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb28-9" title="9">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></a></code></pre></div>
+<p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(</span>
+<span id="cb29-2"><a href="#cb29-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">"pbs"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span> <span class="co"># if using your own template</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a>)</span></code></pre></div>
+<p>The option <code>clustermq.template</code> should point to a PBS template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co">#PBS -N {{ job_name }}</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="co">#PBS -J 1-{{ n_jobs }}</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="co">#PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB</span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="co">#PBS -l walltime={{ walltime | 12:00:00 }}</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="co">#PBS -o {{ log_file | /dev/null }}</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a><span class="co">#PBS -j oe</span></span>
+<span id="cb30-7"><a href="#cb30-7"></a></span>
+<span id="cb30-8"><a href="#cb30-8"></a><span class="co">#PBS -q default</span></span>
+<span id="cb30-9"><a href="#cb30-9"></a></span>
+<span id="cb30-10"><a href="#cb30-10"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb30-11"><a href="#cb30-11"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -487,20 +496,19 @@ code {
 <div id="Torque" class="section level3">
 <h3 class="hasAnchor">
 <a href="#Torque" class="anchor"></a>Torque</h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a Torque template:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(</a>
-<a class="sourceLine" id="cb29-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">"sge"</span>,</a>
-<a class="sourceLine" id="cb29-3" title="3">    <span class="dt">clustermq.template.lsf =</span> <span class="st">"/path/to/file/below"</span></a>
-<a class="sourceLine" id="cb29-4" title="4">)</a></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a Torque template file like the one below.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="co">#PBS -N {{ job_name }}</span></a>
-<a class="sourceLine" id="cb30-2" title="2"><span class="co">#PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}</span></a>
-<a class="sourceLine" id="cb30-3" title="3"><span class="co">#PBS -o {{ log_file | /dev/null }}</span></a>
-<a class="sourceLine" id="cb30-4" title="4"><span class="co">#PBS -q default</span></a>
-<a class="sourceLine" id="cb30-5" title="5"><span class="co">#PBS -j oe</span></a>
-<a class="sourceLine" id="cb30-6" title="6"></a>
-<a class="sourceLine" id="cb30-7" title="7">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb30-8" title="8">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></a></code></pre></div>
+<p>In your <code>~/.Rprofile</code> on your computing cluster, use the Torque scheduler with the default template:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">clustermq.scheduler =</span> <span class="st">"Torque"</span>,</span>
+<span id="cb31-2"><a href="#cb31-2"></a>        <span class="dt">clustermq.template =</span> <span class="st">"/path/to/file/below"</span> <span class="co"># if using your own template</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>)</span></code></pre></div>
+<p>The option <code>clustermq.template</code> should point to a Torque template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co">#PBS -N {{ job_name }}</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="co">#PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a><span class="co">#PBS -o {{ log_file | /dev/null }}</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="co">#PBS -q default</span></span>
+<span id="cb32-5"><a href="#cb32-5"></a><span class="co">#PBS -j oe</span></span>
+<span id="cb32-6"><a href="#cb32-6"></a></span>
+<span id="cb32-7"><a href="#cb32-7"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb32-8"><a href="#cb32-8"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -512,6 +520,7 @@ code {
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -529,17 +538,20 @@ code {
 </div>
 
 
+
       <footer><div class="copyright">
-  <p>Developed by Michael Schubert, EMBL.</p>
+  <p>Developed by Michael Schubert.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
