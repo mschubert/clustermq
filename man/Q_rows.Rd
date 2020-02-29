@@ -4,11 +4,26 @@
 \alias{Q_rows}
 \title{Queue function calls defined by rows in a data.frame}
 \usage{
-Q_rows(df, fun, const = list(), export = list(), pkgs = c(),
-  seed = 128965, memory = NULL, template = list(), n_jobs = NULL,
-  job_size = NULL, rettype = "list", fail_on_error = TRUE,
-  workers = NULL, log_worker = FALSE, chunk_size = NA,
-  timeout = Inf, max_calls_worker = Inf, verbose = TRUE)
+Q_rows(
+  df,
+  fun,
+  const = list(),
+  export = list(),
+  pkgs = c(),
+  seed = 128965,
+  memory = NULL,
+  template = list(),
+  n_jobs = NULL,
+  job_size = NULL,
+  rettype = "list",
+  fail_on_error = TRUE,
+  workers = NULL,
+  log_worker = FALSE,
+  chunk_size = NA,
+  timeout = Inf,
+  max_calls_worker = Inf,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{df}{data.frame with iterated arguments}
