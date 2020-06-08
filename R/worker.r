@@ -7,7 +7,8 @@
 #' @param ...      Catch-all to not break older template values (ignored)
 #' @param verbose  Whether to print debug messages
 #' @keywords internal
-worker = function(master, timeout=600, ..., verbose=TRUE) {
+worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
+                  ..., verbose=TRUE) {
     if (verbose)
         message = function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
     else

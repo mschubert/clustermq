@@ -180,7 +180,7 @@ if (w$cleanup())
 
 A loop of a similar structure can be used to extend `clustermq`. As an example,
 [this was done by
-`drake`](https://github.com/ropensci/drake/blob/master/R/backend-clustermq.R) using
+`drake`](https://books.ropensci.org/drake/hpc.html) using
 common data and custom calls only (no iterated chunks).
 
 ## ZeroMQ message specification

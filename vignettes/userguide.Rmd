@@ -407,11 +407,13 @@ In your `~/.Rprofile` on your computing cluster, set the following options:
 ```{r eval=FALSE}
 options(
     clustermq.scheduler = "lsf",
-    clustermq.template = "/path/to/file/below"
+    clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 
-The option `clustermq.template` should point to a LSF template file like the one below.
+The option `clustermq.template` should point to a LSF template file like the
+one below (only needed if you want to supply your own template rather than
+using the default).
 
 ```{r eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
@@ -455,11 +457,13 @@ In your `~/.Rprofile` on your computing cluster, set the following options:
 ```{r eval=FALSE}
 options(
     clustermq.scheduler = "sge",
-    clustermq.template = "/path/to/file/below"
+    clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 
-The option `clustermq.template` should point to a SGE template file like the one below.
+The option `clustermq.template` should point to a SGE template file like the
+one below (only needed if you want to supply your own template rather than
+using the default).
 
 ```{r eval=FALSE}
 #$ -N {{ job_name }}               # job name
@@ -495,12 +499,13 @@ In your `~/.Rprofile` on your computing cluster, set the following options:
 ```{r eval=FALSE}
 options(
     clustermq.scheduler = "slurm",
-    clustermq.template = "/path/to/file/below"
+    clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 
 The option `clustermq.template` should point to a SLURM template file like the
-one below.
+one below (only needed if you want to supply your own template rather than
+using the default).
 
 ```{r eval=FALSE}
 #!/bin/sh
@@ -531,29 +536,32 @@ the missing options.
 
 ### PBS {#PBS}
 
-In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
-PBS template:
+In your `~/.Rprofile` on your computing cluster, set the following options:
 
 ```{r eval=FALSE}
 options(
-    clustermq.scheduler = "sge",
-    clustermq.template.lsf = "/path/to/file/below"
+    clustermq.scheduler = "pbs",
+    clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 
 The option `clustermq.template` should point to a PBS template file like the
-one below.
+one below (only needed if you want to supply your own template rather than
+using the default).
 
 ```{r eval=FALSE}
 #PBS -N {{ job_name }}
-#PBS -l select=1:ncpus={{ cores | 1 }}
-#PBS -l walltime={{ walltime | 1:00:00 }}
-#PBS -q default
+#PBS -J 1-{{ n_jobs }}
+#PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
+#PBS -l walltime={{ walltime | 12:00:00 }}
 #PBS -o {{ log_file | /dev/null }}
 #PBS -j oe
 
+#PBS -q default
+
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+
 ```
 
 In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
@@ -570,18 +578,18 @@ the missing options.
 
 ### Torque {#Torque}
 
-In your `~/.Rprofile` on your computing cluster, use the SGE scheduler with a
-Torque template:
+In your `~/.Rprofile` on your computing cluster, use the Torque scheduler with the
+default template:
 
 ```{r eval=FALSE}
-options(
-    clustermq.scheduler = "sge",
-    clustermq.template.lsf = "/path/to/file/below"
+options(clustermq.scheduler = "Torque",
+        clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 
 The option `clustermq.template` should point to a Torque template file like the
-one below.
+one below (only needed if you want to supply your own template rather than
+using the default).
 
 ```{r eval=FALSE}
 #PBS -N {{ job_name }}
