@@ -1,6 +1,6 @@
-#' Binds an rzmq to an available port in given range
+#' Binds a ZeroMQ socket to an available port in given range
 #'
-#' @param socket   An rzmq socket object
+#' @param socket   An ZeroMQ socket object
 #' @param range    Numbers to consider (e.g. 6000:8000)
 #' @param iface    Interface to listen on
 #' @param n_tries  Number of ports to try in range
@@ -11,12 +11,14 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 
     for (i in 1:n_tries) {
         addr = paste(iface, ports[i], sep=":")
-        utils::capture.output({port_found = rzmq::bind.socket(socket, addr)}, type="message")
-        if (port_found)
+        success = tryCatch({
+            port_found = bind_socket(socket, addr)
+        }, error = function(e) NULL)
+        if (is.null(success))
             break
     }
 
-    if (!port_found)
+    if (!is.null(success))
         stop("Could not bind after ", n_tries, " tries")
 
     ports[i]

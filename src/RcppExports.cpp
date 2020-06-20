@@ -5,122 +5,124 @@
 
 using namespace Rcpp;
 
-// initContext
-SEXP initContext(int threads);
-RcppExport SEXP _clustermq_initContext(SEXP threadsSEXP) {
+// init_context
+SEXP init_context(int threads);
+RcppExport SEXP _clustermq_init_context(SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(initContext(threads));
+    rcpp_result_gen = Rcpp::wrap(init_context(threads));
     return rcpp_result_gen;
 END_RCPP
 }
-// initSocket
-SEXP initSocket(SEXP context_, std::string socket_type_);
-RcppExport SEXP _clustermq_initSocket(SEXP context_SEXP, SEXP socket_type_SEXP) {
+// init_socket
+SEXP init_socket(SEXP context, std::string socket_type);
+RcppExport SEXP _clustermq_init_socket(SEXP contextSEXP, SEXP socket_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type context_(context_SEXP);
-    Rcpp::traits::input_parameter< std::string >::type socket_type_(socket_type_SEXP);
-    rcpp_result_gen = Rcpp::wrap(initSocket(context_, socket_type_));
+    Rcpp::traits::input_parameter< SEXP >::type context(contextSEXP);
+    Rcpp::traits::input_parameter< std::string >::type socket_type(socket_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(init_socket(context, socket_type));
     return rcpp_result_gen;
 END_RCPP
 }
-// initMessage
-SEXP initMessage(SEXP data_);
-RcppExport SEXP _clustermq_initMessage(SEXP data_SEXP) {
+// bind_socket
+void bind_socket(SEXP socket, std::string address);
+RcppExport SEXP _clustermq_bind_socket(SEXP socketSEXP, SEXP addressSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
+    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
+    bind_socket(socket, address);
+    return R_NilValue;
+END_RCPP
+}
+// connect_socket
+void connect_socket(SEXP socket, std::string address);
+RcppExport SEXP _clustermq_connect_socket(SEXP socketSEXP, SEXP addressSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
+    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
+    connect_socket(socket, address);
+    return R_NilValue;
+END_RCPP
+}
+// disconnect_socket
+void disconnect_socket(SEXP socket, std::string address);
+RcppExport SEXP _clustermq_disconnect_socket(SEXP socketSEXP, SEXP addressSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
+    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
+    disconnect_socket(socket, address);
+    return R_NilValue;
+END_RCPP
+}
+// poll_socket
+SEXP poll_socket(SEXP sockets, int timeout);
+RcppExport SEXP _clustermq_poll_socket(SEXP socketsSEXP, SEXP timeoutSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type data_(data_SEXP);
-    rcpp_result_gen = Rcpp::wrap(initMessage(data_));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bindSocket
-void bindSocket(SEXP socket_, std::string address);
-RcppExport SEXP _clustermq_bindSocket(SEXP socket_SEXP, SEXP addressSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
-    bindSocket(socket_, address);
-    return R_NilValue;
-END_RCPP
-}
-// connectSocket
-void connectSocket(SEXP socket_, std::string address);
-RcppExport SEXP _clustermq_connectSocket(SEXP socket_SEXP, SEXP addressSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
-    connectSocket(socket_, address);
-    return R_NilValue;
-END_RCPP
-}
-// disconnectSocket
-void disconnectSocket(SEXP socket_, std::string address);
-RcppExport SEXP _clustermq_disconnectSocket(SEXP socket_SEXP, SEXP addressSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< std::string >::type address(addressSEXP);
-    disconnectSocket(socket_, address);
-    return R_NilValue;
-END_RCPP
-}
-// pollSocket
-SEXP pollSocket(SEXP sockets_, int timeout);
-RcppExport SEXP _clustermq_pollSocket(SEXP sockets_SEXP, SEXP timeoutSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type sockets_(sockets_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type sockets(socketsSEXP);
     Rcpp::traits::input_parameter< int >::type timeout(timeoutSEXP);
-    rcpp_result_gen = Rcpp::wrap(pollSocket(sockets_, timeout));
+    rcpp_result_gen = Rcpp::wrap(poll_socket(sockets, timeout));
     return rcpp_result_gen;
 END_RCPP
 }
-// receiveSocket
-SEXP receiveSocket(SEXP socket_, bool dont_wait, bool unserialize);
-RcppExport SEXP _clustermq_receiveSocket(SEXP socket_SEXP, SEXP dont_waitSEXP, SEXP unserializeSEXP) {
+// receive_socket
+SEXP receive_socket(SEXP socket, bool dont_wait, bool unserialize);
+RcppExport SEXP _clustermq_receive_socket(SEXP socketSEXP, SEXP dont_waitSEXP, SEXP unserializeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
     Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
     Rcpp::traits::input_parameter< bool >::type unserialize(unserializeSEXP);
-    rcpp_result_gen = Rcpp::wrap(receiveSocket(socket_, dont_wait, unserialize));
+    rcpp_result_gen = Rcpp::wrap(receive_socket(socket, dont_wait, unserialize));
     return rcpp_result_gen;
 END_RCPP
 }
-// sendSocket
-void sendSocket(SEXP socket_, SEXP data_, bool dont_wait, bool send_more);
-RcppExport SEXP _clustermq_sendSocket(SEXP socket_SEXP, SEXP data_SEXP, SEXP dont_waitSEXP, SEXP send_moreSEXP) {
+// receive_multipart
+Rcpp::List receive_multipart(SEXP socket, bool dont_wait, bool unserialize);
+RcppExport SEXP _clustermq_receive_multipart(SEXP socketSEXP, SEXP dont_waitSEXP, SEXP unserializeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
+    Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
+    Rcpp::traits::input_parameter< bool >::type unserialize(unserializeSEXP);
+    rcpp_result_gen = Rcpp::wrap(receive_multipart(socket, dont_wait, unserialize));
+    return rcpp_result_gen;
+END_RCPP
+}
+// send_socket
+void send_socket(SEXP socket, SEXP data, bool dont_wait, bool send_more);
+RcppExport SEXP _clustermq_send_socket(SEXP socketSEXP, SEXP dataSEXP, SEXP dont_waitSEXP, SEXP send_moreSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type socket_(socket_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type data_(data_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type socket(socketSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type data(dataSEXP);
     Rcpp::traits::input_parameter< bool >::type dont_wait(dont_waitSEXP);
     Rcpp::traits::input_parameter< bool >::type send_more(send_moreSEXP);
-    sendSocket(socket_, data_, dont_wait, send_more);
+    send_socket(socket, data, dont_wait, send_more);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_clustermq_initContext", (DL_FUNC) &_clustermq_initContext, 1},
-    {"_clustermq_initSocket", (DL_FUNC) &_clustermq_initSocket, 2},
-    {"_clustermq_initMessage", (DL_FUNC) &_clustermq_initMessage, 1},
-    {"_clustermq_bindSocket", (DL_FUNC) &_clustermq_bindSocket, 2},
-    {"_clustermq_connectSocket", (DL_FUNC) &_clustermq_connectSocket, 2},
-    {"_clustermq_disconnectSocket", (DL_FUNC) &_clustermq_disconnectSocket, 2},
-    {"_clustermq_pollSocket", (DL_FUNC) &_clustermq_pollSocket, 2},
-    {"_clustermq_receiveSocket", (DL_FUNC) &_clustermq_receiveSocket, 3},
-    {"_clustermq_sendSocket", (DL_FUNC) &_clustermq_sendSocket, 4},
+    {"_clustermq_init_context", (DL_FUNC) &_clustermq_init_context, 1},
+    {"_clustermq_init_socket", (DL_FUNC) &_clustermq_init_socket, 2},
+    {"_clustermq_bind_socket", (DL_FUNC) &_clustermq_bind_socket, 2},
+    {"_clustermq_connect_socket", (DL_FUNC) &_clustermq_connect_socket, 2},
+    {"_clustermq_disconnect_socket", (DL_FUNC) &_clustermq_disconnect_socket, 2},
+    {"_clustermq_poll_socket", (DL_FUNC) &_clustermq_poll_socket, 2},
+    {"_clustermq_receive_socket", (DL_FUNC) &_clustermq_receive_socket, 3},
+    {"_clustermq_receive_multipart", (DL_FUNC) &_clustermq_receive_multipart, 3},
+    {"_clustermq_send_socket", (DL_FUNC) &_clustermq_send_socket, 4},
     {NULL, NULL, 0}
 };
 

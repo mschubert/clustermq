@@ -7,8 +7,8 @@ test_that("control flow between proxy and master", {
     skip_on_os("windows")
 
     # prerequesites
-    context = rzmq::init.context()
-    socket = rzmq::init.socket(context, "ZMQ_REP")
+    context = init_context()
+    socket = init_socket(context, "ZMQ_REP")
     port = bind_avail(socket, 50000:55000)
     common_data = list(id="DO_SETUP", fun = function(x) x*2,
             const=list(), export=list(), seed=1)
@@ -35,8 +35,8 @@ test_that("control flow between proxy and master", {
     expect_equal(msg$reply, p$pid)
 
     # common data
-    worker = rzmq::init.socket(context, "ZMQ_REQ")
-    rzmq::connect.socket(worker, proxy)
+    worker = init_socket(context, "ZMQ_REQ")
+    connect_socket(worker, proxy)
 
     send(worker, list(id="WORKER_READY"))
     msg = recv(p, worker)
@@ -55,10 +55,10 @@ test_that("control flow between proxy and master", {
 test_that("full SSH connection", {
     skip_on_cran()
     skip_on_os("windows")
-    skip_if_not(has_localhost)
-    skip_if_not(has_ssh_cmq("localhost"))
     skip_if_not(identical(Sys.getenv("TRAVIS"), "true"),
                 message="this test runs on travis only")
+    skip_if_not(has_localhost)
+    skip_if_not(has_ssh_cmq("localhost"))
 
     # 'LOCAL' mode (default) will not set up required sockets
     # 'SSH' mode would lead to circular connections

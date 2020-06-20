@@ -16,8 +16,8 @@ QSys = R6::R6Class("QSys",
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
                               node=host(), protocol="tcp", template=NULL) {
-            private$zmq_context = rzmq::init.context(3L)
-            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
+            private$zmq_context = init_context(3L)
+            private$socket = init_socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("%s://%s:%i", protocol, node, private$port)
             private$timer = proc.time()
@@ -56,7 +56,7 @@ QSys = R6::R6Class("QSys",
             private$send(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
         },
 
-        # Sets the common data as an rzmq message object
+        # Sets the common data as an zeromq message object
         set_common_data = function(...) {
             args = lapply(list(...), force)
 
@@ -69,7 +69,7 @@ QSys = R6::R6Class("QSys",
                 private$token = paste(sample(letters, 5, TRUE), collapse="")
                 args$token = private$token
             }
-            private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
+            private$common_data = serialize(c(list(id="DO_SETUP"), args), NULL)
             private$size_common = object.size(args)
             common_mb = format(private$size_common, units="Mb")
             if (common_mb > getOption("clustermq.data.warning", 1000))
@@ -84,7 +84,7 @@ QSys = R6::R6Class("QSys",
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-            rzmq::send.message.object(private$socket, private$common_data)
+            send_socket(private$socket, private$common_data)
         },
 
         # Send iterated data to one worker
@@ -105,15 +105,14 @@ QSys = R6::R6Class("QSys",
             if (is.infinite(timeout))
                 msec = -1L
             else
-                msec = as.integer(timeout)
+                msec = as.integer(timeout * 1000)
 
-            rcv = rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=msec)
-            if (is.null(rcv[[1]]))
+            rcv = poll_socket(list(private$socket), timeout=msec)
+            if (is.null(rcv))
                 return(self$receive_data(timeout, with_checks=with_checks))
 
-            if (rcv[[1]]$read) { # otherwise timeout reached
-                msg = rzmq::receive.socket(private$socket)
+            if (rcv[1]) { # otherwise timeout reached
+                msg = receive_socket(private$socket)
 
                 if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
                     stop("Authentication provided by worker does not match")
@@ -210,10 +209,8 @@ QSys = R6::R6Class("QSys",
         pkg_warn = utils::packageVersion("clustermq"),
         auth = "",
 
-        send = function(..., serialize=TRUE) {
-            rzmq::send.socket(socket = private$socket,
-                              data = list(...),
-                              serialize = serialize)
+        send = function(...) {
+            send_socket(socket = private$socket, data = list(...))
         },
 
         disconnect_worker = function(msg) {
