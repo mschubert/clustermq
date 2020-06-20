@@ -3,8 +3,11 @@ context("util")
 test_that("template filler", {
     tmpl = "this is my {{ template }}"
     values = list(template = "filled")
+
     filled = fill_template(tmpl, values)
     expect_equal(filled, "this is my filled")
+
+    expect_error(fill_template(tmpl, list(key="unrelated")))
 })
 
 test_that("template default values", {
@@ -16,4 +19,11 @@ test_that("template default values", {
 
     filled2 = fill_template(tmpl, list())
     expect_equal(filled2, "this is my default")
+})
+
+test_that("template required key", {
+    tmpl = "this is my {{ template }}"
+    values = list(template = "filled")
+
+    expect_error(fill_template(tmpl, values, required="missing"))
 })

@@ -38,9 +38,10 @@ host = function(short=getOption("clustermq.short.host", TRUE)) {
 #'
 #' @param template  A character string of a submission template
 #' @param values    A named list of key-value pairs
+#' @param required  Keys that must be present in the template (default: none)
 #' @return          A template where placeholder fields were replaced by values
 #' @keywords internal
-fill_template = function(template, values) {
+fill_template = function(template, values, required=c()) {
     pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
     match_obj = gregexpr(pattern, template, perl=TRUE)
     matches = regmatches(template, match_obj)[[1]]
@@ -49,6 +50,9 @@ fill_template = function(template, values) {
     kv_str = strsplit(no_delim, "|", fixed=TRUE)
     keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
     vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
+    if (! all(required %in% keys))
+        stop("Template keys required but not provided: ",
+             paste(setdiff(required, keys), collapse=", "))
 
     upd = keys %in% names(values)
     vals[upd] = unlist(values)[keys[upd]]
