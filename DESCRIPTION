@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
-Version: 0.8.90
+Version: 0.8.10
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre', 'cph'),
@@ -28,6 +28,7 @@ License: Apache License (== 2.0) | file LICENSE
 LazyData: true
 Encoding: UTF-8
 Suggests:
+    callr,
     devtools,
     dplyr,
     foreach,
@@ -38,4 +39,4 @@ Suggests:
     testthat,
     tools
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1.9000
+RoxygenNote: 7.1.0

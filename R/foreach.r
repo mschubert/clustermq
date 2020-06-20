@@ -5,7 +5,7 @@
 register_dopar_cmq = function(...) {
     dots = list(...)
     workers = NA
-    if ("n_jobs" %in% names(dots)) 
+    if ("n_jobs" %in% names(dots))
         workers = dots$n_jobs
     info = function(data, item) {
         switch(item,

@@ -34,6 +34,7 @@ Mainly so tests pass without setting up a scheduler
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LOCAL$new(..., data = NULL)}\if{html}{\out{</div>}}
@@ -42,6 +43,7 @@ Mainly so tests pass without setting up a scheduler
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set_common_data"></a>}}
+\if{latex}{\out{\hypertarget{method-set_common_data}{}}}
 \subsection{Method \code{set_common_data()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LOCAL$set_common_data(...)}\if{html}{\out{</div>}}
@@ -50,14 +52,16 @@ Mainly so tests pass without setting up a scheduler
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-submit_jobs"></a>}}
+\if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LOCAL$submit_jobs(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LOCAL$submit_jobs(..., verbose = TRUE)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cleanup"></a>}}
+\if{latex}{\out{\hypertarget{method-cleanup}{}}}
 \subsection{Method \code{cleanup()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LOCAL$cleanup(quiet = FALSE, timeout = 3)}\if{html}{\out{</div>}}
@@ -66,6 +70,7 @@ Mainly so tests pass without setting up a scheduler
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

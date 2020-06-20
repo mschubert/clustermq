@@ -35,6 +35,7 @@ Derives from QSys to provide SSH-specific functions
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SSH$new(
@@ -49,14 +50,16 @@ Derives from QSys to provide SSH-specific functions
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-submit_jobs"></a>}}
+\if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SSH$submit_jobs(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SSH$submit_jobs(..., verbose = TRUE)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cleanup"></a>}}
+\if{latex}{\out{\hypertarget{method-cleanup}{}}}
 \subsection{Method \code{cleanup()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SSH$cleanup(quiet = FALSE)}\if{html}{\out{</div>}}
@@ -65,6 +68,7 @@ Derives from QSys to provide SSH-specific functions
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-finalize"></a>}}
+\if{latex}{\out{\hypertarget{method-finalize}{}}}
 \subsection{Method \code{finalize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SSH$finalize(quiet = self$workers_running == 0)}\if{html}{\out{</div>}}
@@ -73,6 +77,7 @@ Derives from QSys to provide SSH-specific functions
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
