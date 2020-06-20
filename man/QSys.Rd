@@ -36,7 +36,8 @@ implementations can rely on the higher level functionality
   master = NULL,
   node = host(),
   protocol = "tcp",
-  template = NULL
+  template = NULL,
+  zmq = NULL
 )}\if{html}{\out{</div>}}
 }
 

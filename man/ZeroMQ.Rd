@@ -13,6 +13,8 @@ only relying on positional arguments.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{ZeroMQ$new()}}
+\item \href{#method-listen2}{\code{ZeroMQ$listen2()}}
 \item \href{#method-listen}{\code{ZeroMQ$listen()}}
 \item \href{#method-connect}{\code{ZeroMQ$connect()}}
 \item \href{#method-disconnect}{\code{ZeroMQ$disconnect()}}
@@ -22,50 +24,80 @@ only relying on positional arguments.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$new()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-listen2"></a>}}
+\if{latex}{\out{\hypertarget{method-listen2}{}}}
+\subsection{Method \code{listen2()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$listen2(address, socket_type = "ZMQ_REP", sid = "default")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-listen"></a>}}
+\if{latex}{\out{\hypertarget{method-listen}{}}}
 \subsection{Method \code{listen()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$listen(address, socket_type = "ZMQ_REP")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$listen(
+  range = 6000:9999,
+  iface = "tcp://*",
+  n_tries = 100,
+  socket_type = "ZMQ_REP",
+  sid = "default"
+)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-connect"></a>}}
+\if{latex}{\out{\hypertarget{method-connect}{}}}
 \subsection{Method \code{connect()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$connect(address, socket_type = "ZMQ_REQ")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$connect(address, socket_type = "ZMQ_REQ", sid = "default")}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-disconnect"></a>}}
+\if{latex}{\out{\hypertarget{method-disconnect}{}}}
 \subsection{Method \code{disconnect()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$disconnect()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$disconnect(sid = "default")}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send"></a>}}
+\if{latex}{\out{\hypertarget{method-send}{}}}
 \subsection{Method \code{send()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$send(data, dont_wait = FALSE, send_more = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$send(data, sid = "default", dont_wait = FALSE, send_more = FALSE)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive"></a>}}
+\if{latex}{\out{\hypertarget{method-receive}{}}}
 \subsection{Method \code{receive()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$receive(dont_wait = FALSE, unserialize = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$receive(sid = "default", dont_wait = FALSE, unserialize = TRUE)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-poll"></a>}}
+\if{latex}{\out{\hypertarget{method-poll}{}}}
 \subsection{Method \code{poll()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$poll(timeout = -1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$poll(sid = "default", timeout = -1L)}\if{html}{\out{</div>}}
 }
 
 }
