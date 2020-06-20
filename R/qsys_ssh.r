@@ -49,7 +49,7 @@ SSH = R6::R6Class("SSH",
                                  token = msg$token)
         },
 
-        submit_jobs = function(...) {
+        submit_jobs = function(..., verbose=TRUE) {
             if (is.null(private$master))
                 stop("Need to call listen_socket() first")
 

@@ -1,6 +1,7 @@
 # 0.8.10
 
 * Template filling will now raise error for missing keys (#174, #198)
+* Submit messages distinguish between local, multicore and HPC (#196)
 
 # 0.8.9
 

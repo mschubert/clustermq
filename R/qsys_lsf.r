@@ -11,11 +11,14 @@ LSF = R6::R6Class("LSF",
             super$initialize(..., template=template)
         },
 
-        submit_jobs = function(...) {
+        submit_jobs = function(..., verbose=TRUE) {
             opts = private$fill_options(...)
             private$job_id = opts$job_name
             filled = fill_template(private$template, opts,
                                    required=c("master", "job_name", "n_jobs"))
+
+            if (verbose)
+                message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_id, ") ...")
 
             success = system("bsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {

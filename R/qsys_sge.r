@@ -11,14 +11,16 @@ SGE = R6::R6Class("SGE",
             super$initialize(..., template=template)
         },
 
-        submit_jobs = function(...) {
+        submit_jobs = function(..., verbose=TRUE) {
             opts = private$fill_options(...)
             private$job_name = opts$job_name
             filled = fill_template(private$template, opts,
                                    required=c("master", "n_jobs"))
 
-            qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
+            if (verbose)
+                message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_name, ") ...")
 
+            qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
             status = attr(qsub_stdout, "status")
             success = (is.null(status) || (status == 0))
 

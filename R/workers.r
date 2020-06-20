@@ -14,7 +14,7 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
                    qsys_id=getOption("clustermq.scheduler", qsys_default),
                    verbose=FALSE, ...) {
     if (n_jobs == 0)
-        return(get("LOCAL", envir=parent.env(environment()))$new())
+        qsys_id = "LOCAL"
 
     gc() # be sure to clean up old rzmq handles (zeromq/libzmq/issues/1108)
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
@@ -25,9 +25,6 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
         template$log_file = paste0("cmq", qsys$id, ".log")
     }
 
-    template$n_jobs = n_jobs
-    if (verbose)
-        message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-    do.call(qsys$submit_jobs, template)
+    do.call(qsys$submit_jobs, c(template, list(n_jobs=n_jobs, verbose=verbose)))
     qsys
 }

@@ -11,7 +11,10 @@ MULTICORE = R6::R6Class("MULTICORE",
             super$initialize(..., node="localhost")
         },
 
-        submit_jobs = function(n_jobs, ...) {
+        submit_jobs = function(n_jobs, ..., verbose=TRUE) {
+            if (verbose)
+                message("Starting ", n_jobs, " cores ...")
+
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
                 p = parallel::mcparallel(cmd, silent=TRUE)
