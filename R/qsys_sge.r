@@ -14,7 +14,7 @@ SGE = R6::R6Class("SGE",
         submit_jobs = function(...) {
             opts = private$fill_options(...)
             private$job_name = opts$job_name
-            filled = private$fill_template(opts)
+            filled = fill_template(private$template, opts)
 
             qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
 
@@ -58,7 +58,7 @@ PBS = R6::R6Class("PBS",
     ),
 
     private = list(
-      set_job_id = function(qsub_stdout) private$job_id = qsub_stdout[1]
+        set_job_id = function(qsub_stdout) private$job_id = qsub_stdout[1]
     )
 )
 

@@ -241,28 +241,6 @@ QSys = R6::R6Class("QSys",
             values
         },
 
-        fill_template = function(values) {
-            pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
-            match_obj = gregexpr(pattern, private$template, perl=TRUE)
-            matches = regmatches(private$template, match_obj)[[1]]
-
-            no_delim = substr(matches, 3, nchar(matches)-2)
-            kv_str = strsplit(no_delim, "|", fixed=TRUE)
-            keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
-            vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
-
-            upd = keys %in% names(values)
-            vals[upd] = unlist(values)[keys[upd]]
-            if (any(is.na(vals)))
-                stop("Template values required but not provided: ",
-                     paste(unique(keys[is.na(vals)]), collapse=", "))
-
-            tmpl = private$template
-            for (i in seq_along(matches))
-                tmpl = sub(matches[i], vals[i], tmpl, fixed=TRUE)
-            tmpl
-        },
-
         summary_stats = function() {
             times = lapply(private$worker_stats, function(w) w$time)
             max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))

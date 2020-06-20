@@ -34,6 +34,33 @@ host = function(short=getOption("clustermq.short.host", TRUE)) {
     host
 }
 
+#' Fill a template string with supplied values
+#'
+#' @param template  A character string of a submission template
+#' @param values    A named list of key-value pairs
+#' @return          A template where placeholder fields were replaced by values
+#' @keywords internal
+fill_template = function(template, values) {
+    pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
+    match_obj = gregexpr(pattern, template, perl=TRUE)
+    matches = regmatches(template, match_obj)[[1]]
+
+    no_delim = substr(matches, 3, nchar(matches)-2)
+    kv_str = strsplit(no_delim, "|", fixed=TRUE)
+    keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
+    vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
+
+    upd = keys %in% names(values)
+    vals[upd] = unlist(values)[keys[upd]]
+    if (any(is.na(vals)))
+        stop("Template values required but not provided: ",
+             paste(unique(keys[is.na(vals)]), collapse=", "))
+
+    for (i in seq_along(matches))
+        template = sub(matches[i], vals[i], template, fixed=TRUE)
+    template
+}
+
 #' Lookup table for return types to vector NAs
 #'
 #' @keywords internal
