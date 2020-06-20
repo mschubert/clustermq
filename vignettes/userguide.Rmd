@@ -660,8 +660,7 @@ the missing options.
 
 ### Torque {#Torque}
 
-In your `~/.Rprofile` on your computing cluster, use the Torque scheduler with the
-default template:
+In your `~/.Rprofile` on your computing cluster, set the following options:
 
 ```{r eval=FALSE}
 options(clustermq.scheduler = "Torque",

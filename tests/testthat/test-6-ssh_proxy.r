@@ -6,47 +6,41 @@ test_that("control flow between proxy and master", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
 
-    # prerequesites
-    context = init_context()
-    socket = init_socket(context, "ZMQ_REP")
-    port = bind_avail(socket, 50000:55000)
+    zmq = ZeroMQ$new()
+    port_ctl = zmq$listen()
+    port_job = zmq$listen(sid="job")
     common_data = list(id="DO_SETUP", fun = function(x) x*2,
             const=list(), export=list(), seed=1)
-    p = parallel::mcparallel(ssh_proxy(port, port, 'multicore'))
+    p = parallel::mcparallel(ssh_proxy(port_ctl, port_job, 'multicore'))
     on.exit(tools::pskill(p$pid, tools::SIGKILL))
 
     # startup
-    msg = recv(p, socket)
+    msg = zmq$receive()
     expect_equal(msg$id, "PROXY_UP")
+    worker_url = msg$worker_url
 
-    send(socket, common_data)
-    msg = recv(p, socket)
+    zmq$send(common_data)
+    msg = zmq$receive()
     expect_equal(msg$id, "PROXY_READY")
     expect_true("data_url" %in% names(msg))
     expect_true("token" %in% names(msg))
-    proxy = msg$data_url
-    token = msg$token
+#    token = msg$token
 
     # command execution
     cmd = quote(Sys.getpid())
-    send(socket, list(id="PROXY_CMD", exec=cmd))
-    msg = recv(p, socket)
+    zmq$send(list(id="PROXY_CMD", exec=cmd))
+    msg = zmq$receive()
     expect_equal(msg$id, "PROXY_CMD")
     expect_equal(msg$reply, p$pid)
 
-    # common data
-    worker = init_socket(context, "ZMQ_REQ")
-    connect_socket(worker, proxy)
-
-    send(worker, list(id="WORKER_READY"))
-    msg = recv(p, worker)
-    testthat::expect_equal(msg$id, "DO_SETUP")
-    testthat::expect_equal(msg$token, token)
-    testthat::expect_equal(msg[names(common_data)], common_data)
+    # start up worker
+    zmq$connect(worker_url, sid="worker")
+    zmq$send(list(id="WORKER_READY"), sid="worker")
+    msg = zmq$receive(sid="job")
+    testthat::expect_equal(msg$id, "WORKER_READY")
 
     # shutdown
-    msg = list(id = "PROXY_STOP")
-    send(socket, msg)
+    zmq$send(list(id = "PROXY_STOP"))
     collect = suppressWarnings(parallel::mccollect(p))
     expect_equal(as.integer(names(collect)), p$pid)
     on.exit(NULL)

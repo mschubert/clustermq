@@ -30,7 +30,7 @@ has_connectivity = function(host, protocol="tcp") {
     client = init_socket(context, "ZMQ_REQ")
     connect_socket(client, master)
     send_socket(client, data=list(id="test"))
-    event = poll_socket(list(server), timeout=1L)
+    event = poll_socket(list(server), timeout=500L)
     if (event[1]) {
         msg = receive_socket(server)
         if (msg == "test")

@@ -15,11 +15,19 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              node=host(), protocol="tcp", template=NULL) {
-            private$zmq_context = init_context(3L)
-            private$socket = init_socket(private$zmq_context, "ZMQ_REP")
-            private$port = bind_avail(private$socket, ports)
-            private$listen = sprintf("%s://%s:%i", protocol, node, private$port)
+                              node=host(), protocol="tcp", template=NULL, zmq=NULL) {
+            if (is.null(zmq) && is.null(master)) {
+                private$zmq = ZeroMQ$new()
+                private$port = private$zmq$listen(ports, sprintf("%s://*", protocol))
+                private$master = sprintf("%s://%s:%i", protocol, node, private$port)
+            } else if (!is.null(zmq) && !is.null(master)) {
+                private$zmq = ZeroMQ$new()
+      #          private$zmq = zmq # using same zmq obj crashes @ mailbox.cpp ?!
+                private$master = master # net_fwd for proxy
+                private$port = as.integer(sub(".*:", "", master))
+            } else
+                stop("zmq and master args need to be both set or not set")
+
             private$timer = proc.time()
             private$reuse = reuse
 
@@ -33,11 +41,6 @@ QSys = R6::R6Class("QSys",
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
-
-            if (is.null(master))
-                private$master = private$listen
-            else
-                private$master = master
 
             if (!is.null(data))
                 do.call(self$set_common_data, data)
@@ -84,7 +87,7 @@ QSys = R6::R6Class("QSys",
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-            send_socket(private$socket, private$common_data)
+            private$zmq$send(private$common_data)
         },
 
         # Send iterated data to one worker
@@ -107,12 +110,12 @@ QSys = R6::R6Class("QSys",
             else
                 msec = as.integer(timeout * 1000)
 
-            rcv = poll_socket(list(private$socket), timeout=msec)
-            if (is.null(rcv))
+            rcv = private$zmq$poll(timeout=msec)
+            if (is.null(rcv)) # non-critical interrupt received
                 return(self$receive_data(timeout, with_checks=with_checks))
 
             if (rcv[1]) { # otherwise timeout reached
-                msg = receive_socket(private$socket)
+                msg = private$zmq$receive()
 
                 if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
                     stop("Authentication provided by worker does not match")
@@ -178,8 +181,6 @@ QSys = R6::R6Class("QSys",
 
     active = list(
         id = function() private$port,
-        url = function() private$listen,
-        sock = function() private$socket,
         workers = function() ifelse(private$is_cleaned_up, 0, private$workers_total),
         workers_running = function() private$workers_up,
         data_token = function() private$token,
@@ -189,11 +190,9 @@ QSys = R6::R6Class("QSys",
     ),
 
     private = list(
-        zmq_context = NULL,
-        socket = NULL,
+        zmq = NULL,
         port = NA,
         master = NULL,
-        listen = NULL,
         timer = NULL,
         common_data = NULL,
         n_common = 0,
@@ -210,7 +209,7 @@ QSys = R6::R6Class("QSys",
         auth = "",
 
         send = function(...) {
-            send_socket(socket = private$socket, data = list(...))
+            private$zmq$send(data = list(...))
         },
 
         disconnect_worker = function(msg) {
