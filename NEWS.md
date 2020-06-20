@@ -1,3 +1,7 @@
+# 0.8.10
+
+* Template filling will now raise error for missing keys (#174, #198)
+
 # 0.8.9
 
 * New option `clustermq.ssh.timeout` for SSH proxy startup (#157) @brendanf

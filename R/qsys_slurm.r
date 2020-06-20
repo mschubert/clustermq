@@ -14,7 +14,8 @@ SLURM = R6::R6Class("SLURM",
         submit_jobs = function(...) {
             opts = private$fill_options(...)
             private$job_id = opts$job_name
-            filled = fill_template(private$template, opts)
+            filled = fill_template(private$template, opts,
+                                   required=c("master", "job_name", "n_jobs"))
 
             success = system("sbatch", input=filled, ignore.stdout=TRUE)
             if (success != 0) {

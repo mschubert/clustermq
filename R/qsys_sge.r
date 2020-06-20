@@ -14,7 +14,8 @@ SGE = R6::R6Class("SGE",
         submit_jobs = function(...) {
             opts = private$fill_options(...)
             private$job_name = opts$job_name
-            filled = fill_template(private$template, opts)
+            filled = fill_template(private$template, opts,
+                                   required=c("master", "n_jobs"))
 
             qsub_stdout  = system2("qsub", input=filled, stdout=TRUE)
 

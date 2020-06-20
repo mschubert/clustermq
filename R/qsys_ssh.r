@@ -19,7 +19,8 @@ SSH = R6::R6Class("SSH",
 
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
-            ssh_cmd = fill_template(private$template, opts)
+            ssh_cmd = fill_template(private$template, opts,
+                required=c("ctl_port", "local_port", "job_port", "fwd_port", "ssh_host"))
 
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", ssh_host))
