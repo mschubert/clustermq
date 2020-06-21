@@ -11,8 +11,8 @@ SGE = R6::R6Class("SGE",
             super$initialize(..., template=template)
         },
 
-        submit_jobs = function(..., verbose=TRUE) {
-            opts = private$fill_options(...)
+        submit_jobs = function(n_jobs, ..., verbose=TRUE) {
+            opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_name = opts$job_name
             filled = fill_template(private$template, opts,
                                    required=c("master", "n_jobs"))

@@ -11,8 +11,8 @@ LSF = R6::R6Class("LSF",
             super$initialize(..., template=template)
         },
 
-        submit_jobs = function(..., verbose=TRUE) {
-            opts = private$fill_options(...)
+        submit_jobs = function(n_jobs, ..., verbose=TRUE) {
+            opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name
             filled = fill_template(private$template, opts,
                                    required=c("master", "job_name", "n_jobs"))
