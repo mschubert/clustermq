@@ -32,10 +32,8 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
 #' @param short  Whether to use unqualified host name (before first dot)
 #' @return       The possible addresses as character vector
 #' @keywords internal
-host = function(node=Sys.info()["nodename"], ports=6000:9999, n=100,
-                short=getOption("clustermq.short.host", TRUE)) {
-    if (short && grepl("[a-zA-Z]", node))
-        node = strsplit(node, "\\.")[[1]][1]
+host = function(node=getOption("clustermq.host", Sys.info()["nodename"]),
+                ports=6000:9999, n=100) {
     utils::head(sample(sprintf("tcp://%s:%i", node, ports)), n)
 }
 

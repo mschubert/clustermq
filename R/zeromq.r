@@ -19,9 +19,12 @@ ZeroMQ = R6::R6Class("ZeroMQ",
             # ZeroMQ allows connecting by node name, but binding must be either
             # a numerical IP or an interfacet name. This is a bit of a hack to
             # seem to allow node-name bindings
-            addrs = sub(Sys.info()["nodename"], "*", addrs, fixed=TRUE)
+            nodename = Sys.info()["nodename"]
+            addrs = sub(nodename, "*", addrs, fixed=TRUE)
             bound = private$zmq$listen(addrs, socket_type, sid)
-            sub("0.0.0.0", Sys.info()["nodename"], bound, fixed=TRUE)
+            if (getOption("clustermq.short.host", TRUE))
+                nodename = strsplit(nodename, "\\.")[[1]][1]
+            sub("0.0.0.0", nodename, bound, fixed=TRUE)
             # Change "all interfaces" to the node name so we can connect to it
         },
 

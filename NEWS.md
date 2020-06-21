@@ -3,9 +3,10 @@
 * We are now using *ZeroMQ* via `Rcpp` in preparation for `v0.9` (#151)
 * New `multiprocess` backend via `callr` instead of forking (#142) FIXME: test case
 * Sending data on sockets is now blocking to avoid excess memory usage (#161)
+* New option `clustermq.host` can specify host IP or network interface name (#170)
 * Template filling will now raise error for missing keys (#174, #198)
 * Local connections are now routed via `127.0.0.1` instead of `localhost` (#192)
-* Submit messages distinguish between local, multicore and HPC (#196)
+* Submit messages are different between local, multicore and HPC (#196)
 
 # 0.8.9
 
