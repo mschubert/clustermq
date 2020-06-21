@@ -5,10 +5,9 @@
 \title{Construct the ZeroMQ host address}
 \usage{
 host(
-  node = Sys.info()["nodename"],
+  node = getOption("clustermq.host", Sys.info()["nodename"]),
   ports = 6000:9999,
-  n = 100,
-  short = getOption("clustermq.short.host", TRUE)
+  n = 100
 )
 }
 \arguments{

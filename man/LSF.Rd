@@ -47,7 +47,7 @@ Derives from QSys to provide LSF-specific functions
 \if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LSF$submit_jobs(..., verbose = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LSF$submit_jobs(n_jobs, ..., verbose = TRUE)}\if{html}{\out{</div>}}
 }
 
 }

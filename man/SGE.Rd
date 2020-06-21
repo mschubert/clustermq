@@ -47,7 +47,7 @@ Derives from QSys to provide SGE-specific functions
 \if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SGE$submit_jobs(..., verbose = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SGE$submit_jobs(n_jobs, ..., verbose = TRUE)}\if{html}{\out{</div>}}
 }
 
 }
