@@ -1,5 +1,5 @@
 ---
-title: "ClusterMQ Technical Documentation"
+title: "Technical Documentation"
 output:
   rmarkdown::html_vignette
 vignette: >

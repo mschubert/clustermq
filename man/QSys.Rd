@@ -30,12 +30,10 @@ implementations can rely on the higher level functionality
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$new(
+  addr = host(),
+  bind = TRUE,
   data = NULL,
   reuse = FALSE,
-  ports = 6000:8000,
-  master = NULL,
-  node = host(),
-  protocol = "tcp",
   template = NULL,
   zmq = NULL
 )}\if{html}{\out{</div>}}

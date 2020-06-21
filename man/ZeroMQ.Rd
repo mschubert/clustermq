@@ -14,7 +14,6 @@ only relying on positional arguments.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{ZeroMQ$new()}}
-\item \href{#method-listen2}{\code{ZeroMQ$listen2()}}
 \item \href{#method-listen}{\code{ZeroMQ$listen()}}
 \item \href{#method-connect}{\code{ZeroMQ$connect()}}
 \item \href{#method-disconnect}{\code{ZeroMQ$disconnect()}}
@@ -33,26 +32,11 @@ only relying on positional arguments.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-listen2"></a>}}
-\if{latex}{\out{\hypertarget{method-listen2}{}}}
-\subsection{Method \code{listen2()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$listen2(address, socket_type = "ZMQ_REP", sid = "default")}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-listen"></a>}}
 \if{latex}{\out{\hypertarget{method-listen}{}}}
 \subsection{Method \code{listen()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$listen(
-  range = 6000:9999,
-  iface = "tcp://*",
-  n_tries = 100,
-  socket_type = "ZMQ_REP",
-  sid = "default"
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ZeroMQ$listen(addrs = host(), socket_type = "ZMQ_REP", sid = "default")}\if{html}{\out{</div>}}
 }
 
 }

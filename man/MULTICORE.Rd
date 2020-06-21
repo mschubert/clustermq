@@ -38,7 +38,7 @@ This makes use of rzmq messaging and sends requests via TCP/IP
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{MULTICORE$new(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{MULTICORE$new(addr = host("127.0.0.1"), ...)}\if{html}{\out{</div>}}
 }
 
 }
