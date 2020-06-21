@@ -7,8 +7,8 @@
 #' @param qsys_id  Character string of QSys class to use
 #' @keywords internal
 ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
-    master_ctl = sprintf("tcp://localhost:%i", ctl)
-    master_job = sprintf("tcp://localhost:%i", job)
+    master_ctl = sprintf("tcp://127.0.0.1:%i", ctl)
+    master_job = sprintf("tcp://127.0.0.1:%i", job)
     zmq = ZeroMQ$new()
 
     # get address of master (or SSH tunnel)
@@ -16,8 +16,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     zmq$connect(master_job, socket_type="ZMQ_REQ", sid="fwd_out") # XREQ cur not working
 
     # set up local network forward to master (or SSH tunnel)
-    net_port = zmq$listen(socket_type="ZMQ_REP", sid="fwd_in") # XREP cur not working
-    net_fwd = sprintf("tcp://%s:%i", host(), net_port)
+    net_fwd = zmq$listen(socket_type="ZMQ_REP", sid="fwd_in") # XREP cur not working
     message("forwarding local network from: ", net_fwd)
 
     # connect to master
@@ -36,10 +35,9 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
         if (toupper(qsys_id) %in% c("LOCAL", "SSH"))
             stop("Remote SSH QSys ", sQuote(qsys_id), " is not allowed")
 
-        data_port = zmq$listen() # common data 'default' socket
-        data_url = sprintf("tcp://%s:%i", host(), data_port)
+        data_url = zmq$listen() # common data 'default' socket
         qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-        qsys = qsys$new(data=msg, zmq=zmq, master=net_fwd)
+        qsys = qsys$new(data=msg, zmq=zmq, addr=net_fwd, bind=FALSE)
         on.exit(qsys$cleanup())
 
         redirect = list(id="PROXY_READY", data_url=data_url, token=qsys$data_token)

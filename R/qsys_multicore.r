@@ -7,8 +7,8 @@ MULTICORE = R6::R6Class("MULTICORE",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
-            super$initialize(..., node="localhost")
+        initialize = function(addr=host("127.0.0.1"), ...) {
+            super$initialize(addr=addr, ...)
         },
 
         submit_jobs = function(n_jobs, ..., verbose=TRUE) {

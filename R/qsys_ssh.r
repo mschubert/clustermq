@@ -100,7 +100,8 @@ SSH = R6::R6Class("SSH",
             #TODO: let user define ports in private$defaults here and respect them
             remote = sample(50000:55000, 2)
             values$ssh_host = ssh_host
-            values$local_port = private$zmq$listen(sid="proxy")
+            bound = private$zmq$listen(sid="proxy")
+            values$local_port = sub(".*:", "", bound)
             values$ctl_port = remote[1]
             values$job_port = remote[2]
             values$fwd_port = private$port

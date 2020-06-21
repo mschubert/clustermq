@@ -11,23 +11,21 @@ QSys = R6::R6Class("QSys",
         #
         # Initializes ZeroMQ and sets and sets up our primary communication socket
         #
+        # @param addr    Vector of possible addresses to bind
+        # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
-        # @param ports   Range of ports to choose from
-        # @param master  rZMQ address of the master (if NULL we create it here)
-        initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              node=host(), protocol="tcp", template=NULL, zmq=NULL) {
-            if (is.null(zmq) && is.null(master)) {
+        initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE, template=NULL, zmq=NULL) {
+            if (is.null(zmq) && bind) {
                 private$zmq = ZeroMQ$new()
-                private$port = private$zmq$listen(ports, sprintf("%s://*", protocol))
-                private$master = sprintf("%s://%s:%i", protocol, node, private$port)
-            } else if (!is.null(zmq) && !is.null(master)) {
+                private$master = private$zmq$listen(addr)
+            } else if (!is.null(zmq) && !bind) {
                 private$zmq = ZeroMQ$new()
       #          private$zmq = zmq # using same zmq obj crashes @ mailbox.cpp ?!
-                private$master = master # net_fwd for proxy
-                private$port = as.integer(sub(".*:", "", master))
+                private$master = addr # net_fwd for proxy
             } else
-                stop("zmq and master args need to be both set or not set")
+                stop("either provide zeromq context or bind port")
 
+            private$port = as.integer(sub(".*:", "", private$master))
             private$timer = proc.time()
             private$reuse = reuse
 

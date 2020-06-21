@@ -1,14 +1,14 @@
 context("proxy")
 
-has_localhost = has_connectivity("localhost")
+has_localhost = has_connectivity("127.0.0.1")
 
 test_that("control flow between proxy and master", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
 
     zmq = ZeroMQ$new()
-    port_ctl = zmq$listen()
-    port_job = zmq$listen(sid="job")
+    port_ctl = as.integer(sub(".*:", "", zmq$listen())) #todo: sure this is always integer?
+    port_job = as.integer(sub(".*:", "", zmq$listen(sid="job")))
     common_data = list(id="DO_SETUP", fun = function(x) x*2,
             const=list(), export=list(), seed=1)
     p = parallel::mcparallel(ssh_proxy(port_ctl, port_job, 'multicore'))

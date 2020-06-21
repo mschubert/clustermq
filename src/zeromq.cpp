@@ -19,29 +19,21 @@ public:
         delete ctx;
     }
 
-    void listen2(std::string address, std::string socket_type="ZMQ_REP", std::string sid="default") {
-        auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
-        sock->bind(address);
-        sockets.emplace(sid, sock);
-    }
-    int listen(Rcpp::IntegerVector range, std::string iface="tcp://*",
-            std::string socket_type="ZMQ_REP", std::string sid="default") {
+    std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
+            std::string sid="default") {
         auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
         int i;
-
-        for (i=0; i<range.length(); i++) {
-            std::string address = iface + ":" + std::to_string(range[i]);
+        for (i=0; i<addrs.length(); i++) {
+            auto addr = Rcpp::as<std::string>(addrs[i]);
             try {
-                sock->bind(address);
+                sock->bind(addr);
             } catch(zmq::error_t &e) {
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
-
             sockets.emplace(sid, sock);
-            return range[i];
+            return addr;
         }
-
         Rf_error("Could not bind port after ", i, " tries");
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
@@ -154,7 +146,6 @@ RCPP_MODULE(zmq) {
     class_<ZeroMQ>("ZeroMQ_raw")
         .constructor() // .constructor<int>() SIGABRT
         .method("listen", &ZeroMQ::listen)
-        .method("listen2", &ZeroMQ::listen2)
         .method("connect", &ZeroMQ::connect)
         .method("disconnect", &ZeroMQ::disconnect)
         .method("send", &ZeroMQ::send)

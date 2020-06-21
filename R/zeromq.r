@@ -15,12 +15,17 @@ ZeroMQ = R6::R6Class("ZeroMQ",
 #        finalize = function()
 #            private$zmq$destroy(),
 
-        listen2 = function(address, socket_type="ZMQ_REP", sid="default")
-            private$zmq$listen2(address, socket_type, sid),
-
-        listen = function(range=6000:9999, iface="tcp://*", n_tries=100,
-                          socket_type="ZMQ_REP", sid="default")
-            private$zmq$listen(head(sample(range), n_tries), iface, socket_type, sid),
+        listen = function(addrs=host(), socket_type="ZMQ_REP", sid="default") {
+            # ZeroMQ allows connecting by node name, but binding must be either
+            # a numerical IP or an interfacet name. This is a bit of a hack to
+            # seem to allow node-name bindings
+            addrs = sub(Sys.info()["nodename"], "*", addrs, fixed=TRUE)
+            bound = private$zmq$listen(addrs, socket_type, sid)
+            sub("*", Sys.info()["nodename"], bound, fixed=TRUE)
+            # We return '*' because we return input string, not the last known
+            # endpoint socket option. This should probably be changed if we
+            # want to allow tcp//...:* to select automatic ports.
+        },
 
         connect = function(address, socket_type="ZMQ_REQ", sid="default")
             private$zmq$connect(address, socket_type, sid),

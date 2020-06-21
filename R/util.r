@@ -24,16 +24,19 @@ bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
     ports[i]
 }
 
-#' Construct the ZeroMQ host
+#' Construct the ZeroMQ host address
 #'
-#' @param short  whether to use unqualified host name (before first dot)
-#' @return  the host name as character string
+#' @param node   Node or device name
+#' @param ports  Range of ports to consider
+#' @param n      How many addresses to return
+#' @param short  Whether to use unqualified host name (before first dot)
+#' @return       The possible addresses as character vector
 #' @keywords internal
-host = function(short=getOption("clustermq.short.host", TRUE)) {
-    host = Sys.info()["nodename"]
-    if (short)
-        host = strsplit(host, "\\.")[[1]][1]
-    host
+host = function(node=Sys.info()["nodename"], ports=6000:9999, n=100,
+                short=getOption("clustermq.short.host", TRUE)) {
+    if (short && grepl("[a-zA-Z]", node))
+        node = strsplit(node, "\\.")[[1]][1]
+    head(sample(sprintf("tcp://%s:%i", node, ports)), n)
 }
 
 #' Fill a template string with supplied values
