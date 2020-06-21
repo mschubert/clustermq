@@ -49,10 +49,8 @@ test_that("control flow between proxy and master", {
 test_that("full SSH connection", {
     skip_on_cran()
     skip_on_os("windows")
-    skip_if_not(identical(Sys.getenv("TRAVIS"), "true"),
-                message="this test runs on travis only")
     skip_if_not(has_localhost)
-    skip_if_not(has_ssh_cmq("localhost"))
+    skip_if_not(has_ssh_cmq("127.0.0.1"))
 
     # 'LOCAL' mode (default) will not set up required sockets
     # 'SSH' mode would lead to circular connections
@@ -63,7 +61,7 @@ test_that("full SSH connection", {
 
     options(clustermq.template = "SSH")
     w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE,
-                ssh_host="localhost", node="localhost")
+                ssh_host="127.0.0.1", addr="tcp://127.0.0.1:*")
     result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
     expect_equal(result, list(42))
 })

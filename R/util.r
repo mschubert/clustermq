@@ -36,7 +36,7 @@ host = function(node=Sys.info()["nodename"], ports=6000:9999, n=100,
                 short=getOption("clustermq.short.host", TRUE)) {
     if (short && grepl("[a-zA-Z]", node))
         node = strsplit(node, "\\.")[[1]][1]
-    head(sample(sprintf("tcp://%s:%i", node, ports)), n)
+    utils::head(sample(sprintf("tcp://%s:%i", node, ports)), n)
 }
 
 #' Fill a template string with supplied values

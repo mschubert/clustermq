@@ -32,7 +32,10 @@ public:
                     Rf_error(e.what());
             }
             sockets.emplace(sid, sock);
-            return addr;
+            char option_value[1024];
+            size_t option_value_len = sizeof(option_value);
+            sock->getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
+            return std::string(option_value);
         }
         Rf_error("Could not bind port after ", i, " tries");
     }

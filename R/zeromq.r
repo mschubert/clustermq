@@ -21,10 +21,8 @@ ZeroMQ = R6::R6Class("ZeroMQ",
             # seem to allow node-name bindings
             addrs = sub(Sys.info()["nodename"], "*", addrs, fixed=TRUE)
             bound = private$zmq$listen(addrs, socket_type, sid)
-            sub("*", Sys.info()["nodename"], bound, fixed=TRUE)
-            # We return '*' because we return input string, not the last known
-            # endpoint socket option. This should probably be changed if we
-            # want to allow tcp//...:* to select automatic ports.
+            sub("0.0.0.0", Sys.info()["nodename"], bound, fixed=TRUE)
+            # Change "all interfaces" to the node name so we can connect to it
         },
 
         connect = function(address, socket_type="ZMQ_REQ", sid="default")
