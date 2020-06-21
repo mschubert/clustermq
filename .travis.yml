@@ -18,8 +18,8 @@ before_install:
  - sudo apt-get install libzmq3-dev
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
- - ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
- - echo "Host localhost
+ - ssh-keyscan -t rsa 127.0.0.1 >> ~/.ssh/known_hosts
+ - echo "Host 127.0.0.1
     IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
  - echo "$(hostname) 127.0.0.1" >> ~/.hosts
 
