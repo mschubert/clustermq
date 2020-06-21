@@ -29,13 +29,13 @@ test_that("qsys_multicore", {
     expect_equal(success, TRUE)
 })
 
-test_that("qsys_multiprocess (callr)", {
-    w = workers(n_jobs=2, qsys_id="multiprocess", reuse=TRUE)
-    r = Q(fx, x=1:3, workers=w, timeout=3L)
-    success = w$cleanup()
-    expect_equal(r, as.list(1:3*2))
-    expect_equal(success, TRUE)
-})
+#test_that("qsys_multiprocess (callr)", {
+#    w = workers(n_jobs=2, qsys_id="multiprocess", reuse=TRUE)
+#    r = Q(fx, x=1:3, workers=w, timeout=3L)
+#    success = w$cleanup()
+#    expect_equal(r, as.list(1:3*2))
+#    expect_equal(success, TRUE)
+#})
 
 test_that("qsys_lsf", {
     skip_on_cran()
