@@ -47,8 +47,7 @@ sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
 ```
 
-Then install the `clustermq` package in R (which automatically installs the
-`rzmq` package as well) from CRAN:
+Then install the `clustermq` package in R from CRAN:
 
 ```r
 install.packages('clustermq')
@@ -80,12 +79,10 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#settin
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
-Each scheduler will be interfaced [using a default template that can be customized.](https://mschubert.github.io/clustermq/articles/userguide.html
-)
-
-If you need specific [computing environments or
-containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),
-you can activate them via the scheduler template.
+Default submission templates are provided and [can be
+customized](https://mschubert.github.io/clustermq/articles/userguide.html#configuration),
+e.g. to activate [compute environments or
+containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments).
 
 Usage
 -----
@@ -121,7 +118,7 @@ we can run those packages on the cluster as well:
 
 ```r
 library(foreach)
-register_dopar_cmq(n_jobs=2, memory=1024) # accepts same arguments as `workers`
+register_dopar_cmq(n_jobs=2, memory=1024) # see `?workers` for arguments
 foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
