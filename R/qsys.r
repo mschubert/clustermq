@@ -60,7 +60,6 @@ QSys = R6::R6Class("QSys",
         # Sets the common data as an zeromq message object
         set_common_data = function(...) {
             args = lapply(list(...), force)
-
             if ("fun" %in% names(args))
                 environment(args$fun) = .GlobalEnv
 
@@ -71,7 +70,7 @@ QSys = R6::R6Class("QSys",
                 args$token = private$token
             }
             private$common_data = serialize(c(list(id="DO_SETUP"), args), NULL)
-            private$size_common = object.size(args)
+            private$size_common = object.size(private$common_data)
             common_mb = format(private$size_common, units="Mb")
             if (common_mb > getOption("clustermq.data.warning", 1000))
                 warning("Common data is ", common_mb, ". Recommended limit ",
