@@ -130,7 +130,7 @@ private:
 
     void check_socket(std::string socket_id) {
         if (sockets.find(socket_id) == sockets.end())
-            Rf_error("Trying to access non-existing socket: ", socket_id);
+            Rf_error("Trying to access non-existing socket: ", socket_id.c_str());
     }
 
     zmq::message_t rcv_msg(std::string sid="default", bool dont_wait=false) {
