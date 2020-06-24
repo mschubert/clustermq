@@ -35,13 +35,14 @@ Installation
 ------------
 
 First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
-system library. Most likely, your package manager will provide this:
+system library. This is probably already installed on your system. If not, your
+package manager will provide it:
 
 ```sh
 # You can skip this step on Windows and macOS, the rzmq binary has it
 # On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on macOS
-conda install zeromq # Conda
+conda install zeromq # Conda, Miniconda
 sudo apt-get install libzmq3-dev # Ubuntu
 sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
@@ -53,12 +54,12 @@ Then install the `clustermq` package in R from CRAN:
 install.packages('clustermq')
 ```
 
-Alternatively you can use `devtools` to install directly from Github:
+Alternatively you can use the `remotes` package to install directly from Github:
 
 ```r
-# install.packages('devtools')
-devtools::install_github('mschubert/clustermq')
-# devtools::install_github('mschubert/clustermq', ref="develop") # dev version
+# install.packages('remotes')
+remotes::install_github('mschubert/clustermq')
+# remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
 Schedulers
@@ -79,7 +80,8 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#settin
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
-Default submission templates are provided and [can be
+Default submission templates [are
+provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
 customized](https://mschubert.github.io/clustermq/articles/userguide.html#configuration),
 e.g. to activate [compute environments or
 containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments).
