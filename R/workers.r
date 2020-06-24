@@ -19,13 +19,7 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
     gc() # be sure to clean up old zmq handles (zeromq/libzmq/issues/1108)
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
     qsys = qsys$new(data=data, reuse=reuse, ...)
-
-    if (log_worker && is.null(template$log_file)) {
-        .Deprecated(msg=paste("'log_worker' is deprecated and will be removed in v0.9.",
-                              "Use template=list(log_file=...) instead"))
-        template$log_file = paste0("cmq", qsys$id, ".log")
-    }
-
-    do.call(qsys$submit_jobs, c(template, list(n_jobs=n_jobs, verbose=verbose)))
+    args = list(n_jobs=n_jobs, log_worker=log_worker, verbose=verbose)
+    do.call(qsys$submit_jobs, c(template, args))
     qsys
 }
