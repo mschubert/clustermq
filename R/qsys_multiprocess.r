@@ -11,12 +11,18 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
             super$initialize(addr=addr, ...)
         },
 
-        submit_jobs = function(n_jobs, ..., verbose=TRUE) {
+        submit_jobs = function(n_jobs, ..., log_file="|", log_worker=FALSE, verbose=TRUE) {
             if (verbose)
                 message("Starting ", n_jobs, " processes ...")
 
+            if (log_worker && log_file == "|")
+                log_file = "cmq-%i.log"
+
             for (i in seq_len(n_jobs)) {
-                cr = callr::r_bg(function(m) clustermq:::worker(m), args=list(m=private$master))
+                log_i = sprintf(log_file, i)
+                cr = callr::r_bg(function(m) clustermq:::worker(m),
+                                 args=list(m=private$master),
+                                 stdout=log_i, stderr=log_i)
                 private$callr[[as.character(cr$get_pid())]] = cr
             }
             private$workers_total = n_jobs

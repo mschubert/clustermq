@@ -11,13 +11,20 @@ MULTICORE = R6::R6Class("MULTICORE",
             super$initialize(addr=addr, ...)
         },
 
-        submit_jobs = function(n_jobs, ..., verbose=TRUE) {
+        submit_jobs = function(n_jobs, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
             if (verbose)
                 message("Starting ", n_jobs, " cores ...")
 
-            cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
+            if (log_worker && is.null(log_file))
+                log_file = "cmq-%i.log"
+
             for (i in seq_len(n_jobs)) {
-                p = parallel::mcparallel(cmd, silent=TRUE)
+                if (is.character(log_file))
+                    log_i = sprintf(log_file, i)
+                else
+                    log_i = NULL
+                cmd = quote(capture.output(clustermq:::worker(private$master), file=log_i))
+                p = parallel::mcparallel(cmd)
                 private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs
