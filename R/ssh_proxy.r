@@ -35,7 +35,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
         if (toupper(qsys_id) %in% c("LOCAL", "SSH"))
             stop("Remote SSH QSys ", sQuote(qsys_id), " is not allowed")
 
-        data_url = zmq$listen() # common data 'default' socket
+        data_url = zmq$listen(sid="default") # common data 'default' socket
         qsys = get(toupper(qsys_id), envir=parent.env(environment()))
         qsys = qsys$new(data=msg, zmq=zmq, addr=net_fwd, bind=FALSE)
         on.exit(qsys$cleanup())

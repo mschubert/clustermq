@@ -19,8 +19,7 @@ QSys = R6::R6Class("QSys",
                 private$zmq = ZeroMQ$new()
                 private$master = private$zmq$listen(addr)
             } else if (!is.null(zmq) && !bind) {
-                private$zmq = ZeroMQ$new()
-      #          private$zmq = zmq # using same zmq obj crashes @ mailbox.cpp ?!
+                private$zmq = zmq # qsys_ssh provides separate object
                 private$master = addr # net_fwd for proxy
             } else
                 stop("either provide zeromq context or bind port")
