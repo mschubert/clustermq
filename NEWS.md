@@ -9,6 +9,7 @@
 * Local connections are now routed via `127.0.0.1` instead of `localhost` (#192)
 * Submit messages are different between local, multicore and HPC (#196)
 * Functions exported by `foreach` now have their environment stripped (#200)
+* Deprecation of `log_worker=T/F` argument is rescinded
 
 # 0.8.9
 

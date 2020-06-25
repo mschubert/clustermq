@@ -290,18 +290,31 @@ In this case, it is useful to have the worker(s) create a log file that will
 also include events that are not reported back. It can be requested using:
 
 ```{r eval=FALSE}
-Q(..., log_file="/path/to.file")
+Q(..., log_worker=TRUE)
 ```
 
-Note that `log_file` is a template field of your scheduler script, and hence
-needs to be present there in order for this to work. The default templates all
-have this field included.
+This will create a file called *<cmq_id>-<array_index>.log* in your current
+working directory, irrespective of which scheduler you use.
+
+You can customize the file name using
+
+```{r eval=FALSE}
+Q(..., template=list(log_file = <yourlog>))
+```
+
+Note that in this case `log_file` is a template field of your scheduler script,
+and hence needs to be present there in order for this to work. The default
+templates all have this field included.
 
 In order to log each worker separately, some schedulers support wildcards in
 their log file names. For instance:
 
+* Multicore/Multiprocess: `log_file="/path/to.file.%i"`
+* SGE: `log_file="/path/to.file.\$TASK_ID"`
 * LSF: `log_file="/path/to.file.%I"`
 * Slurm: `log_file="/path/to.file.%a"`
+* PBS: `log_file="/path/to.file.$PBS_ARRAY_INDEX"`
+* Torque: `log_file="/path/to.file.$PBS_ARRAYID"`
 
 Your scheduler documentation will have more details about the available
 options.
