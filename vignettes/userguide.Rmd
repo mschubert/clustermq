@@ -31,38 +31,47 @@ library(clustermq)
 
 ## Installation
 
+## Setting up the scheduler explicitly
+
+An HPC cluster's scheduler ensures that computing jobs are distributed to
+available worker nodes. Hence, this is what clustermq interfaces with in order
+to do computations.
+
+
+
+## Installation
+
 ### ZeroMQ
 
-The `rzmq` package (which this package depends on) needs the system library
-ZeroMQ.
+First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
+system library. This is probably already installed on your system. If not, your
+package manager will provide it:
 
-```{sh eval=FALSE}
-# You can skip this step on Windows and macOS, the rzmq binary has it
+```{sh, eval=FALSE}
+# You can skip this step on Windows and macOS, the package binary has it
+# On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on macOS
-conda install zeromq # Conda
+conda install zeromq # Conda, Miniconda
 sudo apt-get install libzmq3-dev # Ubuntu
-sudo yum install zeromq3-devel # Fedora
+sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
 ```
-
-More details can be found at the [rzmq project
-README](https://github.com/ropensci/rzmq#installation).
 
 ### R package
 
 The latest stable version is available [on
 CRAN](https://cran.r-project.org/package=clustermq).
 
-Alternatively, it is also available on the
-[`master`](https://github.com/mschubert/clustermq) branch of the repository.
+Alternatively, it is also available on
+[`Github`](https://github.com/mschubert/clustermq).
 
 ```{r eval=FALSE}
 # from CRAN
 install.packages('clustermq')
 
 # from Github
-# install.packages('devtools')
-devtools::install_github('mschubert/clustermq')
+# install.packages('remotes')
+remotes::install_github('mschubert/clustermq')
 ```
 
 In the [`develop`](https://github.com/mschubert/clustermq/tree/develop) branch,
@@ -72,8 +81,8 @@ However, [feedback is very
 welcome](https://github.com/mschubert/clustermq/issues/new).
 
 ```{r eval=FALSE}
-# install.packages('devtools')
-devtools::install_github('mschubert/clustermq', ref="develop")
+# install.packages('remotes')
+remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
 ## Configuration
@@ -87,15 +96,20 @@ order to do computations.
 By default, we will take whichever scheduler we find and fall back on local
 processing. This will work in most, but not all cases.
 
-To set up a scheduler explicitly,  see the following links:
+To set up a scheduler explicitly, see the following links:
 
-* [LSF](#LSF)
-* [SGE](#SGE)
-* [Slurm](#SLURM)
-* [Torque](#Torque)
-* [PBS](#PBS)
+* [LSF](#LSF) - *should work without setup*
+* [SGE](#SGE) - *should work without setup*
+* [SLURM](#SLURM) - *should work without setup*
+* [PBS](#PBS)/[Torque](#TORQUE) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * if you want another scheduler, [open an
   issue](https://github.com/mschubert/clustermq/issues/new)
+
+Default submission templates [are
+provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
+customized](#Configuration),
+e.g. to activate [compute environments or
+containers](#Environments).
 
 ### SSH connector
 

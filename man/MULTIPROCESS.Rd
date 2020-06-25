@@ -4,7 +4,7 @@
 \alias{MULTIPROCESS}
 \title{Process on multiple processes on one machine}
 \description{
-This makes use of rzmq messaging and sends requests via TCP/IP
+Derives from QSys to provide callr-specific functions
 }
 \keyword{internal}
 \section{Super class}{
@@ -47,7 +47,13 @@ This makes use of rzmq messaging and sends requests via TCP/IP
 \if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{MULTIPROCESS$submit_jobs(n_jobs, ..., verbose = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{MULTIPROCESS$submit_jobs(
+  n_jobs,
+  ...,
+  log_file = "|",
+  log_worker = FALSE,
+  verbose = TRUE
+)}\if{html}{\out{</div>}}
 }
 
 }

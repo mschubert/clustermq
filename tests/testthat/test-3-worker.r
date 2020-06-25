@@ -9,7 +9,7 @@ master = paste("tcp://localhost", port, sep=":")
 start_worker = function() {
     skip_if_not(has_localhost)
     skip_on_os("windows")
-    gc() # be sure to clean up old rzmq handles (zeromq/libzmq/issues/1108)
+    gc() # be sure to clean up old ZeroMQ handles (zeromq/libzmq/issues/1108)
     p = parallel::mcparallel(worker(master))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_UP")

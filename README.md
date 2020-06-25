@@ -19,7 +19,7 @@ Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
 
-Computations are done [entirely on the network](https://github.com/armstrtw/rzmq)
+Computations are done [entirely on the network](https://zeromq.org/)
 and without any temporary files on network-mounted storage, so there is no
 strain on the file system apart from starting up R once per job. All
 calculations are load-balanced, i.e. workers that get their jobs done faster
@@ -34,12 +34,12 @@ Browse the vignettes here:
 Installation
 ------------
 
-First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
+First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
 system library. This is probably already installed on your system. If not, your
 package manager will provide it:
 
 ```sh
-# You can skip this step on Windows and macOS, the rzmq binary has it
+# You can skip this step on Windows and macOS, the package binary has it
 # On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on macOS
 conda install zeromq # Conda, Miniconda

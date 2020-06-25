@@ -1,6 +1,6 @@
 #' Process on multiple processes on one machine
 #'
-#' This makes use of rzmq messaging and sends requests via TCP/IP
+#' Derives from QSys to provide callr-specific functions
 #'
 #' @keywords internal
 MULTIPROCESS = R6::R6Class("MULTIPROCESS",

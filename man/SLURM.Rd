@@ -47,7 +47,7 @@ Derives from QSys to provide SLURM-specific functions
 \if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SLURM$submit_jobs(n_jobs, ..., verbose = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SLURM$submit_jobs(n_jobs, ..., log_worker = FALSE, verbose = TRUE)}\if{html}{\out{</div>}}
 }
 
 }
