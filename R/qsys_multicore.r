@@ -23,8 +23,16 @@ MULTICORE = R6::R6Class("MULTICORE",
                     log_i = sprintf(log_file, i)
                 else
                     log_i = NULL
-                cmd = quote(capture.output(clustermq:::worker(private$master), file=log_i))
-                p = parallel::mcparallel(cmd)
+                wrapper = function(m, logfile) {
+                    if (is.null(logfile))
+                        logfile = "/dev/null"
+                    fout = file(logfile, open="wt")
+                    sink(file=fout, type="output")
+                    sink(file=fout, type="message")
+                    on.exit({ sink(type = "message"); sink(type = "output"); close(fout) })
+                    clustermq:::worker(m)
+                }
+                p = parallel::mcparallel(quote(wrapper(private$master, log_i)))
                 private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs
