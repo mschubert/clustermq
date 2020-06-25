@@ -29,7 +29,7 @@ MULTICORE = R6::R6Class("MULTICORE",
                     fout = file(logfile, open="wt")
                     sink(file=fout, type="output")
                     sink(file=fout, type="message")
-                    on.exit({ sink(type = "message"); sink(type = "output"); close(fout) })
+                    on.exit({ sink(type="message"); sink(type="output"); close(fout) })
                     clustermq:::worker(m)
                 }
                 p = parallel::mcparallel(quote(wrapper(private$master, log_i)))
