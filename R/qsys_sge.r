@@ -14,7 +14,9 @@ SGE = R6::R6Class("SGE",
         submit_jobs = function(n_jobs, ..., log_worker=FALSE, verbose=TRUE) {
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_name = opts$job_name
-            if (log_worker && is.null(opts$log_file))
+            if (!is.null(opts$log_file))
+                opts$log_file = normalizePath(opts$log_file, mustWork=FALSE)
+            else if (log_worker)
                 opts$log_file = sprintf("%s-%s.log", private$job_name, private$array_idx)
             filled = fill_template(private$template, opts,
                                    required=c("master", "n_jobs"))
