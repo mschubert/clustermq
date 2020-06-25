@@ -14,16 +14,13 @@ QSys = R6::R6Class("QSys",
         # @param addr    Vector of possible addresses to bind
         # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
-        initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE, template=NULL, zmq=NULL) {
-            if (is.null(zmq) && bind) {
-                private$zmq = ZeroMQ$new()
+        initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE,
+                              template=NULL, zmq=ZeroMQ$new()) {
+            private$zmq = zmq
+            if (bind)
                 private$master = private$zmq$listen(addr)
-            } else if (!is.null(zmq) && !bind) {
-                private$zmq = zmq # qsys_ssh provides separate object
+            else
                 private$master = addr # net_fwd for proxy
-            } else
-                stop("either provide zeromq context or bind port")
-
             private$port = as.integer(sub(".*:", "", private$master))
             private$timer = proc.time()
             private$reuse = reuse
