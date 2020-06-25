@@ -39,7 +39,7 @@ script:
  - R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null
  - ssh 127.0.0.1 'R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null'
  - make test
- - timeout 240 make check
+ - timeout 300 make check
 # - timeout 120 R CMD check --as-cran *.tar.gz
 
 after_failure:
