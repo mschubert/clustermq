@@ -2,7 +2,7 @@ CXX_STD = CXX11
 GCC_VERSION = ${subst gcc,,${COMPILED_BY}}
 RWINLIB = ../windows/zeromq-4.2.1
 
-PKG_CPPFLAGS = -DZMQ_STATIC \
+PKG_CPPFLAGS = -DSTRICT_R_HEADERS -DZMQ_STATIC \
 	-I${RWINLIB}/include -I../inst
 
 PKG_LIBS = \
