@@ -403,17 +403,17 @@ options(
 ### Running master inside containers
 
 If your master process is inside a container, accessing the HPC scheduler is
-more difficult.  Containers, including singularity and docker, isolate the
-processes inside the container from the host.  The *R* process will not be able
+more difficult. Containers, including singularity and docker, isolate the
+processes inside the container from the host. The *R* process will not be able
 to submit a job because the scheduler cannot be found.
 
 Note that the HPC node running the master process must be allowed to submit
-jobs.  Not all HPC systems allow compute nodes to submit jobs.  If that is the
+jobs. Not all HPC systems allow compute nodes to submit jobs. If that is the
 case, you may need to run the master process on the login node, and discuss the
 issue with your system administrator.
 
-If your container is based on the same OS as the HPC, such as CentOS 7, you may
-be able to bind in the scheduler executable to the container.
+If your container is binary compatible with the host, you may be able to bind
+in the scheduler executable to the container.
 
 For example, PBS might look something like:
 
@@ -425,62 +425,29 @@ module load singularity
 SINGULARITYENV_APPEND_PATH=/opt/pbs/bin
 singularity exec --bind /opt/pbs/bin r_image.sif Rscript master_script.R
 ```
+
 A working example of binding SLURM into a CentOS 7 container image from a
 CentOS 7 host is available at
 https://groups.google.com/a/lbl.gov/d/msg/singularity/syLcsIWWzdo/NZvF2Ud2AAAJ
 
-If the container image is based on a different OS, then binding in the
-executable may still fail.  A more general solution is to create a script that
-uses SSH to execute the scheduler on the login node.
-
-1. Make sure an SSH client is installed in the container.
-2. Create a set of passphrase-less SSH keys that only exist on the HPC.
-  A note on security: These SSH keys are not protected by a passphrase.  Anyone
-  who has the private key file can log in as you on the HPC, and there is no
-  passphrase protecting the private key.  Don't create these keys for a login
-  that has admin privileges.  We will reduce the risks by only ever storing the
-  keys in your home directory on the HPC and by restricting the
-  `~/.ssh/authorized_keys` file to only allow logins from within the HPC
-  clusters.  Restricting the keys to only allow ssh logins from within the HPC
-  cluster, and only having a regular user account, means anyone using these
-  keys must already be logged in to the HPC cluster, and probably won't gain
-  much by logging in again as you.  Anyone who can access your ~/.ssh/* files
-  on the cluster probably already has more privileges to the HPC than your
-  account offers.
-
-  To set up the keys, run the following code from a node on the HPC system.
+Alternatively, you can create a script that uses SSH to execute the scheduler
+on the login node. For this, you will need an SSH client in the container,
+[keys set up for password-less login](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server),
+and create a script to call the scheduler on the login node via ssh (e.g.
+`~/bin/qsub` for SGE/PBS/Torque, `bsub` for LSF and `sbatch` for Slurm):
 
 ```{sh eval=FALSE}
-ssh-keygen -f ~/.ssh/id_local_only -q -N ""
-ssh-copy-id -i ~/.ssh/id_local_only loginnode.your.hpc.edu
+#!/bin/bash
+ssh -i ~/.ssh/<your key file> ${PBS_O_HOST:-"no_host_not_in_a_pbs_job"} qsub "$@"
 ```
 
-  Open `~/.ssh/authorized_keys` in a text editor.  Find the line corresponding
-  to the local key you just added.  It will have username@node.on.your.hpc.edu
-  at the end, or a similar name depending on the hostname of the node you ran
-  the `ssh-copy-id` from.  Add `from="*.local"` to the beginning of the line to
-  restrict access to logins originating from within the HPC.  Study
-  `/etc/hosts` to find a good pattern, `"*.local"` may not work for you.
+Make sure the script is executable, and bind/copy it into the container
+somewhere on `$PATH`. Home directories are bound in by default in singularity.
 
-  You should now have a set of keys that allow automated ssh connections from
-  the container to the login node.
-3. Create scripts that call the scheduler on the login node via ssh.
-  Such as `~/bin/qsub`. An example for the PBS `qsub`:
-
-  ```{sh eval=FALSE}
-  #!/bin/bash
-
-  ssh -i ~/.ssh/id_local_only ${PBS_O_HOST:-"no_host_not_in_a_pbs_job"} qsub "$@"
-  ```
-
-  Make sure the script is executable, and bind/copy it into the container
-  somewhere on $PATH.
-
-  ```{sh eval=FALSE}
-  chmod u+x ~/bin/qsub
-  SINGULARITYENV_APPEND_PATH=~/bin
-  ```
-  Home directories are bound in by default in singularity.
+```{sh eval=FALSE}
+chmod u+x ~/bin/qsub
+SINGULARITYENV_APPEND_PATH=~/bin
+```
 
 ## Scheduler templates
 
