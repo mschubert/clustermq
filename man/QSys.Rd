@@ -35,7 +35,7 @@ implementations can rely on the higher level functionality
   data = NULL,
   reuse = FALSE,
   template = NULL,
-  zmq = NULL
+  zmq = ZeroMQ$new()
 )}\if{html}{\out{</div>}}
 }
 

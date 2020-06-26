@@ -73,6 +73,8 @@ We currently support the [following
 schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler)
 (either locally or via SSH):
 
+* [Multiprocess](https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization) -
+  *test your calls and parallelize on cores using* `options(clustermq.scheduler="multiprocess")`
 * [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*

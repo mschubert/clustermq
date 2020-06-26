@@ -31,16 +31,6 @@ library(clustermq)
 
 ## Installation
 
-## Setting up the scheduler explicitly
-
-An HPC cluster's scheduler ensures that computing jobs are distributed to
-available worker nodes. Hence, this is what clustermq interfaces with in order
-to do computations.
-
-
-
-## Installation
-
 ### ZeroMQ
 
 First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
@@ -86,6 +76,19 @@ remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
 ## Configuration
+
+### Local parallelization
+
+While this is not the main focus of the package, you can use it to parallelize
+function calls locally on multiple cores or processes. This can also be useful
+to test your code before submitting it to a scheduler.
+
+* Multiprocess (*recommended*) - Use the `callr` package to run and manage
+  multiple parallel R processes with `options(clustermq.scheduler="multiprocess")`
+* Multicore - Uses the `parallel` package to fork the current R process into
+  multiple threads with `options(clustermq.scheduler="multicore")`. This saves
+  memory but sometimes causes problems (macOS, RStudio) and is not available on
+  Windows.
 
 ### Setting up the scheduler
 
