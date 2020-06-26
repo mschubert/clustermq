@@ -8,6 +8,8 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
 
     public = list(
         initialize = function(addr=host("127.0.0.1"), ...) {
+            if (! requireNamespace("callr", quietly=TRUE))
+                stop("The ", sQuote(callr), " package is required for ", sQuote("multiprocess"))
             super$initialize(addr=addr, ...)
         },
 
