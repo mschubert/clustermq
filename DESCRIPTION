@@ -10,7 +10,7 @@ Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Evaluate arbitrary function calls using workers on HPC schedulers
     in single line of code. All processing is done on the network without
     accessing the file system. Remote schedulers are supported via SSH.
-URL: https://github.com/mschubert/clustermq
+URL: https://mschubert.github.io/clustermq/
 BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
     R (>= 3.5.0)
