@@ -15,7 +15,7 @@ BugReports: https://github.com/mschubert/clustermq/issues
 Depends:
     R (>= 3.5.0)
 LinkingTo: Rcpp
-SystemRequirements: C++11, ZeroMQ
+SystemRequirements: C++11, ZeroMQ (libzmq)
 Imports:
     methods,
     narray,
@@ -35,6 +35,7 @@ Suggests:
     iterators,
     knitr,
     parallel,
+    rmarkdown,
     roxygen2 (>= 5.0.0),
     testthat,
     tools
