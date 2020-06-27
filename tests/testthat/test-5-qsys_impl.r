@@ -1,7 +1,7 @@
 context("qsys implementations")
 
 has_cmq = has_cmq()
-has_network = has_connectivity(host())
+has_network = has_connectivity(Sys.info()["nodename"])
 avail = Sys.which(c("bsub", "qsub", "sbatch", "fake_scheduler.sh"))
 avail = as.list(nchar(avail) != 0)
 fx = function(x) x*2
@@ -28,6 +28,14 @@ test_that("qsys_multicore", {
     expect_equal(r, as.list(1:3*2))
     expect_equal(success, TRUE)
 })
+
+#test_that("qsys_multiprocess (callr)", {
+#    w = workers(n_jobs=2, qsys_id="multiprocess", reuse=TRUE)
+#    r = Q(fx, x=1:3, workers=w, timeout=3L)
+#    success = w$cleanup()
+#    expect_equal(r, as.list(1:3*2))
+#    expect_equal(success, TRUE)
+#})
 
 test_that("qsys_lsf", {
     skip_on_cran()

@@ -40,45 +40,41 @@ fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 ```
 
-Computations are done [entirely on the
-network](https://github.com/armstrtw/rzmq) and without any temporary files on
-network-mounted storage, so there is no strain on the file system apart from
-starting up R once per job. This way, we can also send data and results around
-a lot quicker.
-
-All calculations are load-balanced, i.e. workers that get their jobs done
-faster will also receive more function calls to work on. This is especially
-useful if not all calls return after the same time, or one worker has a high
-load.
+Computations are done [entirely on the network](https://zeromq.org/)
+and without any temporary files on network-mounted storage, so there is no
+strain on the file system apart from starting up R once per job. All
+calculations are load-balanced, i.e. workers that get their jobs done faster
+will also receive more function calls to work on. This is especially useful if
+not all calls return after the same time, or one worker has a high load.
 
 ## Installation
 
-First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
-system library. Most likely, your package manager will provide this:
+First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
+system library. This is probably already installed on your system. If not, your
+package manager will provide it:
 
-```{sh eval=FALSE}
-# You can skip this step on Windows and macOS, the rzmq binary has it
+```{sh, eval=FALSE}
+# You can skip this step on Windows and macOS, the package binary has it
 # On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on macOS
-conda install zeromq # Conda
+conda install zeromq # Conda, Miniconda
 sudo apt-get install libzmq3-dev # Ubuntu
-sudo yum install zeromq3-devel # Fedora
+sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
 ```
 
-Then install the `clustermq` package in R (which automatically installs the
-`rzmq` package as well) from CRAN:
+Then install the `clustermq` package in R from CRAN:
 
-```{r eval=FALSE}
+```{r, eval=FALSE}
 install.packages('clustermq')
 ```
 
-Alternatively you can use `devtools` to install directly from Github:
+Alternatively you can use the `remotes` package to install directly from Github:
 
-```{r eval=FALSE}
-# install.packages('devtools')
-devtools::install_github('mschubert/clustermq')
-# devtools::install_github('mschubert/clustermq', ref="develop") # dev version
+```{r, eval=FALSE}
+# install.packages('remotes')
+remotes::install_github('mschubert/clustermq')
+# remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
 You should be good to go!
@@ -94,20 +90,23 @@ available worker nodes. Hence, this is what clustermq interfaces with in order
 to do computations.
 
 We currently support the [following
-schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler):
+schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler)
+(either locally or via SSH):
 
+* [Multiprocess](https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization) -
+  *test your calls and parallelize on cores using* `options(clustermq.scheduler="multiprocess")`
 * [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
 * [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
+* via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
+*needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
-You can also access each of these schedulers from your local machine via the
-[SSH connector](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector).
-Results will be returned to your local session.
-
-If you need specific [computing environments or
-containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),
-you can activate them via the scheduler template.
+Default submission templates [are
+provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
+customized](https://mschubert.github.io/clustermq/articles/userguide.html#configuration),
+e.g. to activate [compute environments or
+containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments).
 
 ## Examples
 

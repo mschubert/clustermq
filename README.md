@@ -19,7 +19,7 @@ Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
 
-Computations are done [entirely on the network](https://github.com/armstrtw/rzmq)
+Computations are done [entirely on the network](https://zeromq.org/)
 and without any temporary files on network-mounted storage, so there is no
 strain on the file system apart from starting up R once per job. All
 calculations are load-balanced, i.e. workers that get their jobs done faster
@@ -34,32 +34,32 @@ Browse the vignettes here:
 Installation
 ------------
 
-First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
-system library. Most likely, your package manager will provide this:
+First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
+system library. This is probably already installed on your system. If not, your
+package manager will provide it:
 
 ```sh
-# You can skip this step on Windows and macOS, the rzmq binary has it
+# You can skip this step on Windows and macOS, the package binary has it
 # On a computing cluster, we recommend to use Conda or Linuxbrew
 brew install zeromq # Linuxbrew, Homebrew on macOS
-conda install zeromq # Conda
+conda install zeromq # Conda, Miniconda
 sudo apt-get install libzmq3-dev # Ubuntu
 sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
 ```
 
-Then install the `clustermq` package in R (which automatically installs the
-`rzmq` package as well) from CRAN:
+Then install the `clustermq` package in R from CRAN:
 
 ```r
 install.packages('clustermq')
 ```
 
-Alternatively you can use `devtools` to install directly from Github:
+Alternatively you can use the `remotes` package to install directly from Github:
 
 ```r
-# install.packages('devtools')
-devtools::install_github('mschubert/clustermq')
-# devtools::install_github('mschubert/clustermq', ref="develop") # dev version
+# install.packages('remotes')
+remotes::install_github('mschubert/clustermq')
+# remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
 Schedulers
@@ -73,6 +73,8 @@ We currently support the [following
 schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler)
 (either locally or via SSH):
 
+* [Multiprocess](https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization) -
+  *test your calls and parallelize on cores using* `options(clustermq.scheduler="multiprocess")`
 * [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
@@ -80,12 +82,11 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#settin
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
-Each scheduler will be interfaced [using a default template that can be customized.](https://mschubert.github.io/clustermq/articles/userguide.html
-)
-
-If you need specific [computing environments or
-containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments),
-you can activate them via the scheduler template.
+Default submission templates [are
+provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
+customized](https://mschubert.github.io/clustermq/articles/userguide.html#configuration),
+e.g. to activate [compute environments or
+containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments).
 
 Usage
 -----
@@ -121,7 +122,7 @@ we can run those packages on the cluster as well:
 
 ```r
 library(foreach)
-register_dopar_cmq(n_jobs=2, memory=1024) # accepts same arguments as `workers`
+register_dopar_cmq(n_jobs=2, memory=1024) # see `?workers` for arguments
 foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ```
 
@@ -164,6 +165,25 @@ Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) or
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).
+
+Contributing
+------------
+
+We use Github's [Issue Tracker](https://github.com/mschubert/clustermq/issues)
+to coordinate development of `clustermq`. Contributions are welcome and they
+come in many different forms, shapes, and sizes. These include, but are not
+limited to:
+
+* Questions: You are welcome to ask questions if something is not clear in the
+  [User guide](https://mschubert.github.io/clustermq/articles/userguide.html).
+* Bug reports: Let us know if something does not work as expected. Be sure to
+  include a self-contained [Minimal Reproducible
+  Example](https://stackoverflow.com/help/minimal-reproducible-example) that
+  illustrates the behavior.
+* Code contributions: Have a look at the [`good first
+  issue`](https://github.com/mschubert/clustermq/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+  tag. Please discuss anything more complicated before putting a lot of work
+  in, I'm happy to help you get started.
 
 Citation
 --------

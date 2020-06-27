@@ -5,7 +5,7 @@
 register_dopar_cmq = function(...) {
     dots = list(...)
     workers = NA
-    if ("n_jobs" %in% names(dots)) 
+    if ("n_jobs" %in% names(dots))
         workers = dots$n_jobs
     info = function(data, item) {
         switch(item,
@@ -37,9 +37,11 @@ cmq_foreach = function(obj, expr, envir, data) {
     it = iterators::iter(obj)
     args_df = do.call(rbind, as.list(it))
 
+    # if we call a function by name, add it to the export list
     if (is.call(expr) && as.character(expr[[1]]) != "{")
         obj$export = c(as.character(expr[[1]]), obj$export)
 
+    # wrap whatever we call in a function for use with Q(...)
     fun = function(...) NULL
     formals(fun) = c(stats::setNames(replicate(ncol(args_df), substitute()),
                                      obj$argnames),
@@ -49,10 +51,13 @@ cmq_foreach = function(obj, expr, envir, data) {
     # scan 'expr' for exports, eval and add objects ref'd in '.export'
     export_env = new.env(parent=envir)
     foreach::getexports(expr, e=export_env, env=envir)
-    obj$export = c(obj$export, ls(export_env))
+    obj$export = unique(c(obj$export, ls(export_env)))
     if (length(obj$export) > 0) {
         export = as.list(mget(obj$export, envir=export_env, inherits=TRUE))
         data$export = utils::modifyList(as.list(data$export), export, keep.null=TRUE)
+        for (i in seq_along(data$export))
+            if (class(data$export[[i]]) == "function") # strip attached objs
+                environment(data$export[[i]]) = .GlobalEnv
     }
 
     # make sure packages are loaded on the dopar target

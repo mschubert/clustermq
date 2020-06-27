@@ -11,15 +11,17 @@ QSys = R6::R6Class("QSys",
         #
         # Initializes ZeroMQ and sets and sets up our primary communication socket
         #
+        # @param addr    Vector of possible addresses to bind
+        # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
-        # @param ports   Range of ports to choose from
-        # @param master  rZMQ address of the master (if NULL we create it here)
-        initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              node=host(), protocol="tcp", template=NULL) {
-            private$zmq_context = rzmq::init.context(3L)
-            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
-            private$port = bind_avail(private$socket, ports)
-            private$listen = sprintf("%s://%s:%i", protocol, node, private$port)
+        initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE,
+                              template=NULL, zmq=ZeroMQ$new()) {
+            private$zmq = zmq
+            if (bind)
+                private$master = private$zmq$listen(addr)
+            else
+                private$master = addr # net_fwd for proxy
+            private$port = as.integer(sub(".*:", "", private$master))
             private$timer = proc.time()
             private$reuse = reuse
 
@@ -33,11 +35,6 @@ QSys = R6::R6Class("QSys",
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
-
-            if (is.null(master))
-                private$master = private$listen
-            else
-                private$master = master
 
             if (!is.null(data))
                 do.call(self$set_common_data, data)
@@ -56,10 +53,9 @@ QSys = R6::R6Class("QSys",
             private$send(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
         },
 
-        # Sets the common data as an rzmq message object
+        # Sets the common data as an zeromq message object
         set_common_data = function(...) {
             args = lapply(list(...), force)
-
             if ("fun" %in% names(args))
                 environment(args$fun) = .GlobalEnv
 
@@ -69,8 +65,8 @@ QSys = R6::R6Class("QSys",
                 private$token = paste(sample(letters, 5, TRUE), collapse="")
                 args$token = private$token
             }
-            private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
-            private$size_common = object.size(args)
+            private$common_data = serialize(c(list(id="DO_SETUP"), args), NULL)
+            private$size_common = object.size(private$common_data)
             common_mb = format(private$size_common, units="Mb")
             if (common_mb > getOption("clustermq.data.warning", 1000))
                 warning("Common data is ", common_mb, ". Recommended limit ",
@@ -84,7 +80,7 @@ QSys = R6::R6Class("QSys",
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-            rzmq::send.message.object(private$socket, private$common_data)
+            private$zmq$send(private$common_data)
         },
 
         # Send iterated data to one worker
@@ -105,15 +101,14 @@ QSys = R6::R6Class("QSys",
             if (is.infinite(timeout))
                 msec = -1L
             else
-                msec = as.integer(timeout)
+                msec = as.integer(timeout * 1000)
 
-            rcv = rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=msec)
-            if (is.null(rcv[[1]]))
+            rcv = private$zmq$poll(timeout=msec)
+            if (is.null(rcv)) # non-critical interrupt received
                 return(self$receive_data(timeout, with_checks=with_checks))
 
-            if (rcv[[1]]$read) { # otherwise timeout reached
-                msg = rzmq::receive.socket(private$socket)
+            if (rcv[1]) { # otherwise timeout reached
+                msg = private$zmq$receive()
 
                 if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
                     stop("Authentication provided by worker does not match")
@@ -179,8 +174,6 @@ QSys = R6::R6Class("QSys",
 
     active = list(
         id = function() private$port,
-        url = function() private$listen,
-        sock = function() private$socket,
         workers = function() ifelse(private$is_cleaned_up, 0, private$workers_total),
         workers_running = function() private$workers_up,
         data_token = function() private$token,
@@ -190,11 +183,9 @@ QSys = R6::R6Class("QSys",
     ),
 
     private = list(
-        zmq_context = NULL,
-        socket = NULL,
+        zmq = NULL,
         port = NA,
         master = NULL,
-        listen = NULL,
         timer = NULL,
         common_data = NULL,
         n_common = 0,
@@ -210,10 +201,8 @@ QSys = R6::R6Class("QSys",
         pkg_warn = utils::packageVersion("clustermq"),
         auth = "",
 
-        send = function(..., serialize=TRUE) {
-            rzmq::send.socket(socket = private$socket,
-                              data = list(...),
-                              serialize = serialize)
+        send = function(...) {
+            private$zmq$send(data = list(...))
         },
 
         disconnect_worker = function(msg) {
@@ -239,28 +228,6 @@ QSys = R6::R6Class("QSys",
                 values$job_name = paste0("cmq", private$port)
             private$workers_total = values$n_jobs
             values
-        },
-
-        fill_template = function(values) {
-            pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
-            match_obj = gregexpr(pattern, private$template, perl=TRUE)
-            matches = regmatches(private$template, match_obj)[[1]]
-
-            no_delim = substr(matches, 3, nchar(matches)-2)
-            kv_str = strsplit(no_delim, "|", fixed=TRUE)
-            keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
-            vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
-
-            upd = keys %in% names(values)
-            vals[upd] = unlist(values)[keys[upd]]
-            if (any(is.na(vals)))
-                stop("Template values required but not provided: ",
-                     paste(unique(keys[is.na(vals)]), collapse=", "))
-
-            tmpl = private$template
-            for (i in seq_along(matches))
-                tmpl = sub(matches[i], vals[i], tmpl, fixed=TRUE)
-            tmpl
         },
 
         summary_stats = function() {

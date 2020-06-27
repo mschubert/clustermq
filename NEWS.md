@@ -1,3 +1,16 @@
+# 0.8.10
+
+* We are now using _ZeroMQ_ via `Rcpp` in preparation for `v0.9` (#151)
+* New `multiprocess` backend via `callr` instead of forking (#142, #197) FIXME: test case
+* Sending data on sockets is now blocking to avoid excess memory usage (#161)
+* `multicore`, `multiprocess` schedulers now support logging (#169)
+* New option `clustermq.host` can specify host IP or network interface name (#170)
+* Template filling will now raise error for missing keys (#174, #198)
+* Local connections are now routed via `127.0.0.1` instead of `localhost` (#192)
+* Submit messages are different between local, multicore and HPC (#196)
+* Functions exported by `foreach` now have their environment stripped (#200)
+* Deprecation of `log_worker=T/F` argument is rescinded
+
 # 0.8.9
 
 * New option `clustermq.ssh.timeout` for SSH proxy startup (#157) @brendanf

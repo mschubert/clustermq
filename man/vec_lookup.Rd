@@ -4,7 +4,9 @@
 \name{vec_lookup}
 \alias{vec_lookup}
 \title{Lookup table for return types to vector NAs}
-\format{An object of class \code{list} of length 9.}
+\format{
+An object of class \code{list} of length 9.
+}
 \usage{
 vec_lookup
 }

@@ -26,22 +26,23 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$new(
+  addr = host(),
+  bind = TRUE,
   data = NULL,
   reuse = FALSE,
-  ports = 6000:8000,
-  master = NULL,
-  node = host(),
-  protocol = "tcp",
-  template = NULL
+  template = NULL,
+  zmq = ZeroMQ$new()
 )}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-submit_jobs"></a>}}
+\if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$submit_jobs(...)}\if{html}{\out{</div>}}
@@ -50,6 +51,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send_call"></a>}}
+\if{latex}{\out{\hypertarget{method-send_call}{}}}
 \subsection{Method \code{send_call()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$send_call(expr, env = list(), ref = substitute(expr))}\if{html}{\out{</div>}}
@@ -58,6 +60,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set_common_data"></a>}}
+\if{latex}{\out{\hypertarget{method-set_common_data}{}}}
 \subsection{Method \code{set_common_data()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$set_common_data(...)}\if{html}{\out{</div>}}
@@ -66,6 +69,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send_common_data"></a>}}
+\if{latex}{\out{\hypertarget{method-send_common_data}{}}}
 \subsection{Method \code{send_common_data()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$send_common_data()}\if{html}{\out{</div>}}
@@ -74,6 +78,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send_job_data"></a>}}
+\if{latex}{\out{\hypertarget{method-send_job_data}{}}}
 \subsection{Method \code{send_job_data()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$send_job_data(...)}\if{html}{\out{</div>}}
@@ -82,6 +87,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send_wait"></a>}}
+\if{latex}{\out{\hypertarget{method-send_wait}{}}}
 \subsection{Method \code{send_wait()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$send_wait(wait = 0.05 * self$workers_running)}\if{html}{\out{</div>}}
@@ -90,6 +96,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive_data"></a>}}
+\if{latex}{\out{\hypertarget{method-receive_data}{}}}
 \subsection{Method \code{receive_data()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$receive_data(timeout = Inf, with_checks = TRUE)}\if{html}{\out{</div>}}
@@ -98,6 +105,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send_shutdown_worker"></a>}}
+\if{latex}{\out{\hypertarget{method-send_shutdown_worker}{}}}
 \subsection{Method \code{send_shutdown_worker()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$send_shutdown_worker()}\if{html}{\out{</div>}}
@@ -106,6 +114,7 @@ implementations can rely on the higher level functionality
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cleanup"></a>}}
+\if{latex}{\out{\hypertarget{method-cleanup}{}}}
 \subsection{Method \code{cleanup()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{QSys$cleanup(quiet = FALSE, timeout = 5)}\if{html}{\out{</div>}}

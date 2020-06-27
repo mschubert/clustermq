@@ -1,7 +1,7 @@
 #PBS -N {{ job_name }}
 #PBS -J 1-{{ n_jobs }}
 #PBS -l nodes=1:ppn={{ cores | 1 }}:mem={{ memory | 4096 }}MB
-# ppn=P is equivalent to ncpus=P:mpiprocs=P 
+# ppn=P is equivalent to ncpus=P:mpiprocs=P
 # "New" syntax: #PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
 
 #PBS -l walltime={{ walltime | 12:00:00 }}

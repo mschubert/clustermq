@@ -4,7 +4,7 @@
 \alias{MULTICORE}
 \title{Process on multiple cores on one machine}
 \description{
-This makes use of rzmq messaging and sends requests via TCP/IP
+Derives from QSys to provide multicore-specific functions
 }
 \keyword{internal}
 \section{Super class}{
@@ -35,22 +35,31 @@ This makes use of rzmq messaging and sends requests via TCP/IP
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{MULTICORE$new(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{MULTICORE$new(addr = host("127.0.0.1"), ...)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-submit_jobs"></a>}}
+\if{latex}{\out{\hypertarget{method-submit_jobs}{}}}
 \subsection{Method \code{submit_jobs()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{MULTICORE$submit_jobs(n_jobs, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{MULTICORE$submit_jobs(
+  n_jobs,
+  ...,
+  log_worker = FALSE,
+  log_file = NULL,
+  verbose = TRUE
+)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cleanup"></a>}}
+\if{latex}{\out{\hypertarget{method-cleanup}{}}}
 \subsection{Method \code{cleanup()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{MULTICORE$cleanup(quiet = FALSE, timeout = 3)}\if{html}{\out{</div>}}
@@ -59,6 +68,7 @@ This makes use of rzmq messaging and sends requests via TCP/IP
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-finalize"></a>}}
+\if{latex}{\out{\hypertarget{method-finalize}{}}}
 \subsection{Method \code{finalize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{MULTICORE$finalize(quiet = FALSE)}\if{html}{\out{</div>}}
@@ -67,6 +77,7 @@ This makes use of rzmq messaging and sends requests via TCP/IP
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
