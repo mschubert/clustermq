@@ -29,6 +29,7 @@ test_that("qsys_multicore", {
     expect_equal(success, TRUE)
 })
 
+# can not combine with multicore tests: https://github.com/r-lib/processx/issues/236
 #test_that("qsys_multiprocess (callr)", {
 #    w = workers(n_jobs=2, qsys_id="multiprocess", reuse=TRUE)
 #    r = Q(fx, x=1:3, workers=w, timeout=3L)
