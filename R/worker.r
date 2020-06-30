@@ -41,7 +41,7 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
             msg = zmq$receive()
             if (is.null(msg$id)) {
                 # more information if #146, #179, #191 happen again
-                message("msg: ", msg)
+                message("msg: ", paste(names(msg), collapse=", "))
                 next
             }
             delta = proc.time() - tic

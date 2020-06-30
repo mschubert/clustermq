@@ -178,8 +178,8 @@ limited to:
   [User guide](https://mschubert.github.io/clustermq/articles/userguide.html).
 * Bug reports: Let us know if something does not work as expected. Be sure to
   include a self-contained [Minimal Reproducible
-  Example](https://stackoverflow.com/help/minimal-reproducible-example) that
-  illustrates the behavior.
+  Example](https://stackoverflow.com/help/minimal-reproducible-example) and set
+  `log_worker=TRUE`.
 * Code contributions: Have a look at the [`good first
   issue`](https://github.com/mschubert/clustermq/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
   tag. Please discuss anything more complicated before putting a lot of work
