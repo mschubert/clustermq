@@ -120,9 +120,9 @@
       <small>Source: <a href='https://github.com/mschubert/clustermq/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="v-0895" class="section level1">
+    <div id="clustermq-0895" class="section level1">
 <h1 class="page-header" data-toc-text="0.8.95">
-<a href="#v-0895" class="anchor"></a>v 0.8.95<small> 2020-07-01 </small>
+<a href="#clustermq-0895" class="anchor"></a>clustermq 0.8.95<small> 2020-07-01 </small>
 </h1>
 <ul>
 <li>We are now using <em>ZeroMQ</em> via <code>Rcpp</code> in preparation for <code>v0.9</code> (<a href='https://github.com/mschubert/clustermq/issues/151'>#151</a>)</li>
@@ -137,6 +137,30 @@
 <li>Submit messages are different between local, multicore and HPC (<a href='https://github.com/mschubert/clustermq/issues/196'>#196</a>)</li>
 <li>Functions exported by <code>foreach</code> now have their environment stripped (<a href='https://github.com/mschubert/clustermq/issues/200'>#200</a>)</li>
 <li>Deprecation of <code>log_worker=T/F</code> argument is rescinded</li>
+</ul>
+</div>
+    <div id="clustermq-089" class="section level1">
+<h1 class="page-header" data-toc-text="0.8.9">
+<a href="#clustermq-089" class="anchor"></a>clustermq 0.8.9<small> 2020-02-29 </small>
+</h1>
+<ul>
+<li>New option <code>clustermq.ssh.timeout</code> for SSH proxy startup (<a href='https://github.com/mschubert/clustermq/issues/157'>#157</a>) <a href='https://github.com/brendanf'>@brendanf</a></li>
+<li>New option <code>clustermq.worker.timeout</code> for delay before worker shutdown (<a href='https://github.com/mschubert/clustermq/issues/188'>#188</a>)</li>
+<li>Fixed PBS/Torque docs, template and cleanup (<a href='https://github.com/mschubert/clustermq/issues/184'>#184</a>, <a href='https://github.com/mschubert/clustermq/issues/186'>#186</a>) <a href='https://github.com/mstr3336'>@mstr3336</a></li>
+<li>Warning if common data is very large, set by <code>clustermq.data.warning</code> (<a href='https://github.com/mschubert/clustermq/issues/189'>#189</a>)</li>
+</ul>
+</div>
+    <div id="v-088" class="section level1">
+<h1 class="page-header" data-toc-text="0.8.8">
+<a href="#v-088" class="anchor"></a>v 0.8.8<small> 2019-06-05 </small>
+</h1>
+<ul>
+<li>
+<code>Q</code>, <code>Q_rows</code> have new arguments <code>verbose</code> (<a href='https://github.com/mschubert/clustermq/issues/111'>#111</a>) and <code>pkgs</code> (<a href='https://github.com/mschubert/clustermq/issues/144'>#144</a>)</li>
+<li>
+<code>foreach</code> backend now uses its dedicated API where possible (<a href='https://github.com/mschubert/clustermq/issues/143'>#143</a>, <a href='https://github.com/mschubert/clustermq/issues/144'>#144</a>)</li>
+<li>Number and size of objects common to all calls now work properly</li>
+<li>Templates are filled internally and no longer depend on <code>infuser</code> package</li>
 </ul>
 </div>
   </div>
