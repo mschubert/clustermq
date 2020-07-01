@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SSH scheduler functions — SSH • clustermq</title>
+<title>Process on multiple processes on one machine — MULTIPROCESS • clustermq</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="SSH scheduler functions — SSH" />
-<meta property="og:description" content="Derives from QSys to provide SSH-specific functions" />
+<meta property="og:title" content="Process on multiple processes on one machine — MULTIPROCESS" />
+<meta property="og:description" content="Derives from QSys to provide callr-specific functions" />
 
 
 
@@ -117,31 +117,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>SSH scheduler functions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mschubert/clustermq/blob/master/R/qsys_ssh.r'><code>R/qsys_ssh.r</code></a></small>
-    <div class="hidden name"><code>SSH.Rd</code></div>
+    <h1>Process on multiple processes on one machine</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mschubert/clustermq/blob/master/R/qsys_multiprocess.r'><code>R/qsys_multiprocess.r</code></a></small>
+    <div class="hidden name"><code>MULTIPROCESS.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Derives from QSys to provide SSH-specific functions</p>
+    <p>Derives from QSys to provide callr-specific functions</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
 
-    <p><code><a href='QSys.html'>clustermq::QSys</a></code> -&gt; <code>SSH</code></p>
+    <p><code><a href='QSys.html'>clustermq::QSys</a></code> -&gt; <code>MULTIPROCESS</code></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
 <h3>Public methods</h3>
 
 <ul>
-<li><p><a href='#method-new'><code>SSH$new()</code></a></p></li>
-<li><p><a href='#method-submit_jobs'><code>SSH$submit_jobs()</code></a></p></li>
-<li><p><a href='#method-cleanup'><code>SSH$cleanup()</code></a></p></li>
-<li><p><a href='#method-finalize'><code>SSH$finalize()</code></a></p></li>
-<li><p><a href='#method-clone'><code>SSH$clone()</code></a></p></li>
+<li><p><a href='#method-new'><code>MULTIPROCESS$new()</code></a></p></li>
+<li><p><a href='#method-submit_jobs'><code>MULTIPROCESS$submit_jobs()</code></a></p></li>
+<li><p><a href='#method-cleanup'><code>MULTIPROCESS$cleanup()</code></a></p></li>
+<li><p><a href='#method-finalize'><code>MULTIPROCESS$finalize()</code></a></p></li>
+<li><p><a href='#method-clone'><code>MULTIPROCESS$clone()</code></a></p></li>
 </ul>
 <p><details ><summary>Inherited methods</summary>
 <ul>
@@ -159,36 +159,36 @@
 <a id="method-new"></a></p><h3>Method <code>new()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>SSH</span>$<span class='fu'>new</span>(
-  <span class='no'>data</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>ssh_host</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"clustermq.ssh.host"</span>),
-  <span class='kw'>ssh_log</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"clustermq.ssh.log"</span>),
-  <span class='kw'>template</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"clustermq.template"</span>, <span class='st'>"SSH"</span>)
-)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>new</span>(<span class='kw'>addr</span> <span class='kw'>=</span> <span class='fu'><a href='host.html'>host</a></span>(<span class='st'>"127.0.0.1"</span>), <span class='no'>...</span>)</pre><p></div></p>
 
 <p><hr>
 <a id="method-submit_jobs"></a></p><h3>Method <code>submit_jobs()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>SSH</span>$<span class='fu'>submit_jobs</span>(<span class='no'>...</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>submit_jobs</span>(
+  <span class='no'>n_jobs</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>log_file</span> <span class='kw'>=</span> <span class='st'>"|"</span>,
+  <span class='kw'>log_worker</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre><p></div></p>
 
 <p><hr>
 <a id="method-cleanup"></a></p><h3>Method <code>cleanup()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>SSH</span>$<span class='fu'>cleanup</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>cleanup</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre><p></div></p>
 
 <p><hr>
 <a id="method-finalize"></a></p><h3>Method <code>finalize()</code></h3>
 
 <h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>SSH</span>$<span class='fu'>finalize</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='no'>self</span>$<span class='no'>workers_running</span> <span class='kw'>==</span> <span class='fl'>0</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>finalize</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <p><hr>
 <a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>SSH</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
 
 <h3>Arguments</h3>
 <p><div class="arguments"></p><dl'>

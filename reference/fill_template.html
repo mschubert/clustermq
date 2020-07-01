@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a summary of errors and warnings that occurred during processing — summarize_result • clustermq</title>
+<title>Fill a template string with supplied values — fill_template • clustermq</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Print a summary of errors and warnings that occurred during processing — summarize_result" />
-<meta property="og:description" content="Print a summary of errors and warnings that occurred during processing" />
+<meta property="og:title" content="Fill a template string with supplied values — fill_template" />
+<meta property="og:description" content="Fill a template string with supplied values" />
 
 
 
@@ -117,53 +117,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a summary of errors and warnings that occurred during processing</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mschubert/clustermq/blob/master/R/summarize_result.r'><code>R/summarize_result.r</code></a></small>
-    <div class="hidden name"><code>summarize_result.Rd</code></div>
+    <h1>Fill a template string with supplied values</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mschubert/clustermq/blob/master/R/util.r'><code>R/util.r</code></a></small>
+    <div class="hidden name"><code>fill_template.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Print a summary of errors and warnings that occurred during processing</p>
+    <p>Fill a template string with supplied values</p>
     </div>
 
-    <pre class="usage"><span class='fu'>summarize_result</span>(
-  <span class='no'>result</span>,
-  <span class='no'>n_errors</span>,
-  <span class='no'>n_warnings</span>,
-  <span class='no'>cond_msgs</span>,
-  <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>result</span>),
-  <span class='kw'>fail_on_error</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>fill_template</span>(<span class='no'>template</span>, <span class='no'>values</span>, <span class='kw'>required</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>())</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>result</th>
-      <td><p>A list or vector of the processing result</p></td>
+      <th>template</th>
+      <td><p>A character string of a submission template</p></td>
     </tr>
     <tr>
-      <th>n_errors</th>
-      <td><p>How many errors occurred</p></td>
+      <th>values</th>
+      <td><p>A named list of key-value pairs</p></td>
     </tr>
     <tr>
-      <th>n_warnings</th>
-      <td><p>How many warnings occurred</p></td>
-    </tr>
-    <tr>
-      <th>cond_msgs</th>
-      <td><p>Error and warnings messages, we display first 50</p></td>
-    </tr>
-    <tr>
-      <th>at</th>
-      <td><p>How many calls were procesed  up to this point</p></td>
-    </tr>
-    <tr>
-      <th>fail_on_error</th>
-      <td><p>Stop if error(s) occurred</p></td>
+      <th>required</th>
+      <td><p>Keys that must be present in the template (default: none)</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A template where placeholder fields were replaced by values</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

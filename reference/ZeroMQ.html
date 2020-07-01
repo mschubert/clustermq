@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a summary of errors and warnings that occurred during processing — summarize_result • clustermq</title>
+<title>Wrap C++ Rcpp module in R6 to get reliable argument matching — ZeroMQ • clustermq</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,12 @@
 
 
 
-<meta property="og:title" content="Print a summary of errors and warnings that occurred during processing — summarize_result" />
-<meta property="og:description" content="Print a summary of errors and warnings that occurred during processing" />
+<meta property="og:title" content="Wrap C++ Rcpp module in R6 to get reliable argument matching — ZeroMQ" />
+<meta property="og:description" content="This is an R6 wrapper of the C++ class in order to support R argument
+matching. Ideally, Rcpp will at some point support this natively and this
+file will no longer be necessary. Until then, it causes redundancy with
+zeromq.cpp, but this is a small inconvenience and much less error-prone than
+only relying on positional arguments." />
 
 
 
@@ -117,52 +121,78 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a summary of errors and warnings that occurred during processing</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mschubert/clustermq/blob/master/R/summarize_result.r'><code>R/summarize_result.r</code></a></small>
-    <div class="hidden name"><code>summarize_result.Rd</code></div>
+    <h1>Wrap C++ Rcpp module in R6 to get reliable argument matching</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mschubert/clustermq/blob/master/R/zeromq.r'><code>R/zeromq.r</code></a></small>
+    <div class="hidden name"><code>ZeroMQ.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Print a summary of errors and warnings that occurred during processing</p>
+    <p>This is an R6 wrapper of the C++ class in order to support R argument
+matching. Ideally, Rcpp will at some point support this natively and this
+file will no longer be necessary. Until then, it causes redundancy with
+zeromq.cpp, but this is a small inconvenience and much less error-prone than
+only relying on positional arguments.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>summarize_result</span>(
-  <span class='no'>result</span>,
-  <span class='no'>n_errors</span>,
-  <span class='no'>n_warnings</span>,
-  <span class='no'>cond_msgs</span>,
-  <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>result</span>),
-  <span class='kw'>fail_on_error</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>result</th>
-      <td><p>A list or vector of the processing result</p></td>
-    </tr>
-    <tr>
-      <th>n_errors</th>
-      <td><p>How many errors occurred</p></td>
-    </tr>
-    <tr>
-      <th>n_warnings</th>
-      <td><p>How many warnings occurred</p></td>
-    </tr>
-    <tr>
-      <th>cond_msgs</th>
-      <td><p>Error and warnings messages, we display first 50</p></td>
-    </tr>
-    <tr>
-      <th>at</th>
-      <td><p>How many calls were procesed  up to this point</p></td>
-    </tr>
-    <tr>
-      <th>fail_on_error</th>
-      <td><p>Stop if error(s) occurred</p></td>
-    </tr>
-    </table>
+
+    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
+
+    
+<h3>Public methods</h3>
+
+<ul>
+<li><p><a href='#method-new'><code>ZeroMQ$new()</code></a></p></li>
+<li><p><a href='#method-listen'><code>ZeroMQ$listen()</code></a></p></li>
+<li><p><a href='#method-connect'><code>ZeroMQ$connect()</code></a></p></li>
+<li><p><a href='#method-disconnect'><code>ZeroMQ$disconnect()</code></a></p></li>
+<li><p><a href='#method-send'><code>ZeroMQ$send()</code></a></p></li>
+<li><p><a href='#method-receive'><code>ZeroMQ$receive()</code></a></p></li>
+<li><p><a href='#method-poll'><code>ZeroMQ$poll()</code></a></p></li>
+</ul>
+<p><hr>
+<a id="method-new"></a></p><h3>Method <code>new()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>new</span>()</pre><p></div></p>
+
+<p><hr>
+<a id="method-listen"></a></p><h3>Method <code>listen()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>listen</span>(<span class='kw'>addrs</span> <span class='kw'>=</span> <span class='fu'><a href='host.html'>host</a></span>(), <span class='kw'>socket_type</span> <span class='kw'>=</span> <span class='st'>"ZMQ_REP"</span>, <span class='kw'>sid</span> <span class='kw'>=</span> <span class='st'>"default"</span>)</pre><p></div></p>
+
+<p><hr>
+<a id="method-connect"></a></p><h3>Method <code>connect()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>connect</span>(<span class='no'>address</span>, <span class='kw'>socket_type</span> <span class='kw'>=</span> <span class='st'>"ZMQ_REQ"</span>, <span class='kw'>sid</span> <span class='kw'>=</span> <span class='st'>"default"</span>)</pre><p></div></p>
+
+<p><hr>
+<a id="method-disconnect"></a></p><h3>Method <code>disconnect()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>disconnect</span>(<span class='kw'>sid</span> <span class='kw'>=</span> <span class='st'>"default"</span>)</pre><p></div></p>
+
+<p><hr>
+<a id="method-send"></a></p><h3>Method <code>send()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>send</span>(<span class='no'>data</span>, <span class='kw'>sid</span> <span class='kw'>=</span> <span class='st'>"default"</span>, <span class='kw'>dont_wait</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>send_more</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
+
+<p><hr>
+<a id="method-receive"></a></p><h3>Method <code>receive()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>receive</span>(<span class='kw'>sid</span> <span class='kw'>=</span> <span class='st'>"default"</span>, <span class='kw'>dont_wait</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>unserialize</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
+
+<p><hr>
+<a id="method-poll"></a></p><h3>Method <code>poll()</code></h3>
+
+<h3>Usage</h3>
+<p><div class="r"></p><pre><span class='no'>ZeroMQ</span>$<span class='fu'>poll</span>(<span class='kw'>sid</span> <span class='kw'>=</span> <span class='st'>"default"</span>, <span class='kw'>timeout</span> <span class='kw'>=</span> -<span class='fl'>1L</span>)</pre><p></div></p>
+
+
 
 
   </div>
