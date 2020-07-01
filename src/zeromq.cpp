@@ -27,7 +27,7 @@ public:
             auto addr = Rcpp::as<std::string>(addrs[i]);
             try {
                 sock->bind(addr);
-            } catch(zmq::error_t &e) {
+            } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
@@ -91,7 +91,7 @@ public:
         do {
             try {
                 rc = zmq::poll(pitems, timeout);
-            } catch(zmq::error_t &e) {
+            } catch(zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
