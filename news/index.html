@@ -120,6 +120,25 @@
       <small>Source: <a href='https://github.com/mschubert/clustermq/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="v-0895" class="section level1">
+<h1 class="page-header" data-toc-text="0.8.95">
+<a href="#v-0895" class="anchor"></a>v 0.8.95<small> 2020-07-01 </small>
+</h1>
+<ul>
+<li>We are now using <em>ZeroMQ</em> via <code>Rcpp</code> in preparation for <code>v0.9</code> (<a href='https://github.com/mschubert/clustermq/issues/151'>#151</a>)</li>
+<li>New <code>multiprocess</code> backend via <code>callr</code> instead of forking (<a href='https://github.com/mschubert/clustermq/issues/142'>#142</a>, <a href='https://github.com/mschubert/clustermq/issues/197'>#197</a>) FIXME: test case</li>
+<li>Sending data on sockets is now blocking to avoid excess memory usage (<a href='https://github.com/mschubert/clustermq/issues/161'>#161</a>)</li>
+<li>
+<code>multicore</code>, <code>multiprocess</code> schedulers now support logging (<a href='https://github.com/mschubert/clustermq/issues/169'>#169</a>)</li>
+<li>New option <code>clustermq.host</code> can specify host IP or network interface name (<a href='https://github.com/mschubert/clustermq/issues/170'>#170</a>)</li>
+<li>Template filling will now raise error for missing keys (<a href='https://github.com/mschubert/clustermq/issues/174'>#174</a>, <a href='https://github.com/mschubert/clustermq/issues/198'>#198</a>)</li>
+<li>Workers failing with large common data is improved (fixed?) (<a href='https://github.com/mschubert/clustermq/issues/146'>#146</a>, <a href='https://github.com/mschubert/clustermq/issues/179'>#179</a>, <a href='https://github.com/mschubert/clustermq/issues/191'>#191</a>)</li>
+<li>Local connections are now routed via <code>127.0.0.1</code> instead of <code>localhost</code> (<a href='https://github.com/mschubert/clustermq/issues/192'>#192</a>)</li>
+<li>Submit messages are different between local, multicore and HPC (<a href='https://github.com/mschubert/clustermq/issues/196'>#196</a>)</li>
+<li>Functions exported by <code>foreach</code> now have their environment stripped (<a href='https://github.com/mschubert/clustermq/issues/200'>#200</a>)</li>
+<li>Deprecation of <code>log_worker=T/F</code> argument is rescinded</li>
+</ul>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
