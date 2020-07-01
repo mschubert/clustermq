@@ -8,7 +8,7 @@ typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
 extern Rcpp::Function R_serialize;
 extern Rcpp::Function R_unserialize;
-extern int pending_interrupt();
+int pending_interrupt();
 
 class ZeroMQ {
 public:
