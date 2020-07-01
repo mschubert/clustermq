@@ -35,7 +35,7 @@ doc:
 
 .PHONY: deploy
 deploy:
-	$(R) "pkgdown:::deploy_local()"
+	$(R) "pkgdown::deploy_to_branch()"
 
 .PHONY: clean
 clean:
