@@ -44,7 +44,7 @@ public:
     }
 
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
-        check_socket(sid);
+        auto & socket = find_socket(sid);
         auto flags = zmq::send_flags::none;
         if (dont_wait)
             flags = flags | zmq::send_flags::dontwait;
@@ -56,10 +56,9 @@ public:
 
         zmq::message_t message(Rf_xlength(data));
         memcpy(message.data(), RAW(data), Rf_xlength(data));
-        sockets[sid].send(message, flags);
+        socket.send(message, flags);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
-        check_socket(sid);
         auto message = rcv_msg(sid, dont_wait);
         SEXP ans = Rf_allocVector(RAWSXP, message.size());
         memcpy(RAW(ans), message.data(), message.size());
@@ -73,8 +72,7 @@ public:
         auto pitems = std::vector<zmq::pollitem_t>(nsock);
         for (int i = 0; i < nsock; i++) {
             auto socket_id = Rcpp::as<std::string>(sids[i]);
-            check_socket(socket_id);
-            pitems[i].socket = sockets[socket_id];
+            pitems[i].socket = find_socket(socket_id);
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
         }
 
@@ -120,9 +118,11 @@ private:
         return -1;
     }
 
-    void check_socket(std::string socket_id) {
-        if (sockets.find(socket_id) == sockets.end())
+    zmq::socket_t & find_socket(std::string socket_id) {
+        auto socket_iter = sockets.find(socket_id);
+        if (socket_iter == sockets.end())
             Rf_error("Trying to access non-existing socket: ", socket_id.c_str());
+        return socket_iter->second;
     }
 
     zmq::message_t rcv_msg(std::string sid="default", bool dont_wait=false) {
@@ -131,7 +131,8 @@ private:
             flags = flags | zmq::recv_flags::dontwait;
 
         zmq::message_t message;
-        sockets[sid].recv(message, flags);
+        auto & socket = find_socket(sid);
+        socket.recv(message, flags);
         return message;
     }
 };
