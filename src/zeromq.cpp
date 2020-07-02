@@ -13,6 +13,8 @@ int pending_interrupt();
 class ZeroMQ {
 public:
     ZeroMQ(int threads=1) : ctx(threads), sockets() {}
+    ZeroMQ(const ZeroMQ &) = delete;
+    ZeroMQ & operator=(ZeroMQ const &) = delete;
 
     std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
             std::string sid="default") {
