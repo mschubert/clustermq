@@ -9,4 +9,6 @@ src/*.o
 src/*.so
 *.swp
 *.tar.gz
+*.log
 clustermq.Rcheck
+src/Makevars
