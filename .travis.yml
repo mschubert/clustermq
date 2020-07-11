@@ -1,6 +1,8 @@
 language: r
 
-dist: xenial
+os:
+ - linux
+# - osx
 
 r:
  - oldrel
@@ -12,11 +14,16 @@ warnings_are_errors: true
 cache: packages
 
 before_install:
- - sed -i "1iexport PATH=$(dirname $(which R)):$(pwd)/tests/bin:\$PATH" ~/.bashrc
- - sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc
- - sed -i "3iexport R_LIBS_SITE=$R_LIBS_SITE" ~/.bashrc
- - source ~/.bashrc
- - sudo apt-get install libzmq3-dev
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+     sed -i "1iexport PATH=$(dirname $(which R)):$(pwd)/tests/bin:\$PATH" ~/.bashrc;
+     sed -i "2iexport R_LIBS_USER=$R_LIBS_USER" ~/.bashrc;
+     sed -i "3iexport R_LIBS_SITE=$R_LIBS_SITE" ~/.bashrc;
+     source ~/.bashrc;
+     sudo apt-get install libzmq3-dev;
+   elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
+     brew update;
+     brew install zeromq;
+   fi
  - ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
  - ssh-keyscan -t rsa 127.0.0.1 >> ~/.ssh/known_hosts
@@ -28,16 +35,15 @@ before_script:
  - pwd
  - cat ~/.bashrc
  - which R
- - which sbatch
- - ping -c3 $(hostname)
- - ssh 127.0.0.1 'which R; which sbatch; echo $PATH'
- - ssh 127.0.0.1 'R --no-save --no-restore -e ".libPaths()"'
+ - which sbatch || true
+ - ssh 127.0.0.1 'which R; which sbatch; echo $PATH' || true
+ - ssh 127.0.0.1 'R --no-save --no-restore -e ".libPaths()"' || true
 
 script:
  - R CMD build .
  - R CMD INSTALL *.tar.gz
  - R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null
- - ssh 127.0.0.1 'R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null'
+ - ssh 127.0.0.1 'R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null' || true
  - make test
  - timeout 300 make check
 # - timeout 120 R CMD check --as-cran *.tar.gz
