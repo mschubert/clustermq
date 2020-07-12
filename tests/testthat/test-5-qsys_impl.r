@@ -11,7 +11,7 @@ test_that("local, explicit", {
     r = Q(fx, x=1:3, workers=w, timeout=3L)
     success = w$cleanup()
     expect_equal(r, as.list(1:3*2))
-    expect_equal(success, TRUE)
+    expect_true(success)
 })
 
 test_that("local, n_jobs=0", {
@@ -26,7 +26,7 @@ test_that("qsys_multicore", {
     r = Q(fx, x=1:3, workers=w, timeout=3L)
     success = w$cleanup()
     expect_equal(r, as.list(1:3*2))
-    expect_equal(success, TRUE)
+    expect_true(success)
 })
 
 # can not combine with multicore tests: https://github.com/r-lib/processx/issues/236

@@ -4,7 +4,7 @@ has_localhost = has_connectivity("127.0.0.1")
 
 test_that("control flow between proxy and master", {
     skip_if_not(has_localhost)
-    skip_on_os("windows")
+    skip_on_os(c("windows", "solaris"))
 
     zmq = ZeroMQ$new()
     port_ctl = as.integer(sub(".*:", "", zmq$listen())) #todo: sure this is always integer?

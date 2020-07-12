@@ -18,6 +18,8 @@ test_that("send data on a round trip", {
 })
 
 test_that("node hack works", {
+    skip_if_not(has_connectivity(Sys.info()["nodename"]))
+
     server = ZeroMQ$new()
     addr = server$listen(host()) # binding on '*', replacing 0.0.0.0 by node name
     expect_true(grepl(Sys.info()["nodename"], addr, fixed=TRUE))
