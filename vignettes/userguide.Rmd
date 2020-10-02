@@ -47,6 +47,26 @@ sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
 ```
 
+You can also manually install it [from the
+release](https://github.com/zeromq/libzmq/releases), e.g. using
+[zeromq-4.3.3.tar.gz](https://github.com/zeromq/libzmq/releases/download/v4.3.3/zeromq-4.3.3.tar.gz):
+
+
+```{sh, eval=FALSE}
+# tar -xf zeromq-4.3.3.tar.gz
+# cd zeromq-4.3.3
+./configure
+make
+make DESTDIR=/path/for/the/library install
+```
+
+If R and ZeroMQ are not provided by the same package manager you will need to
+let R know where to find the library when installing `clustermq`:
+
+```{sh, eval=FALSE}
+LD_LIBRARY_PATH=/path/for/the/library/lib R -e "install.packages('clustermq')"
+```
+
 ### R package
 
 The latest stable version is available [on
