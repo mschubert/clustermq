@@ -52,7 +52,7 @@ release](https://github.com/zeromq/libzmq/releases), e.g. using
 [zeromq-4.3.3.tar.gz](https://github.com/zeromq/libzmq/releases/download/v4.3.3/zeromq-4.3.3.tar.gz):
 
 
-```{sh, eval=FALSE}
+```{sh eval=FALSE}
 # tar -xf zeromq-4.3.3.tar.gz
 # cd zeromq-4.3.3
 ./configure
@@ -63,7 +63,7 @@ make DESTDIR=/path/for/the/library install
 If R and ZeroMQ are not provided by the same package manager you will need to
 let R know where to find the library when installing `clustermq`:
 
-```{sh, eval=FALSE}
+```{sh eval=FALSE}
 LD_LIBRARY_PATH=/path/for/the/library/lib R -e "install.packages('clustermq')"
 ```
 
@@ -156,7 +156,7 @@ scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
 and make sure `clustermq` runs there without problems. On your local machine,
 add the following options in your `~/.Rprofile`:
 
-```r
+```{r eval=FALSE}
 options(
     clustermq.scheduler = "ssh",
     clustermq.ssh.host = "user@host", # use your user and host, obviously
@@ -422,7 +422,7 @@ It should be possible to activate them in the job submission script (i.e., the
 template file). This is widely untested, but would look the following for the
 [LSF](#LSF) scheduler (analogous for others):
 
-```r
+```{sh eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
 #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr
 #BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
@@ -440,13 +440,13 @@ CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }
 This template still needs to be filled, so in the above example you need to
 pass either
 
-```r
+```{r eval=FALSE}
 Q(..., template=list(bashenv="my environment name"))
 ```
 
 or set it via an *.Rprofile* option:
 
-```r
+```{r eval=FALSE}
 options(
     clustermq.defaults = list(bashenv="my default env")
 )
@@ -518,7 +518,7 @@ The option `clustermq.template` should point to a LSF template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
 #BSUB-n {{ cores | 1 }}                 # number of cores to use per job
 #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index
@@ -568,7 +568,7 @@ The option `clustermq.template` should point to a SGE template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #$ -N {{ job_name }}               # job name
 #$ -q default                      # submit to queue named "default"
 #$ -j y                            # combine stdout/error in one file
@@ -610,7 +610,7 @@ The option `clustermq.template` should point to a SLURM template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #!/bin/sh
 #SBATCH --job-name={{ job_name }}
 #SBATCH --partition=default
@@ -652,7 +652,7 @@ The option `clustermq.template` should point to a PBS template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #PBS -N {{ job_name }}
 #PBS -J 1-{{ n_jobs }}
 #PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
@@ -664,7 +664,6 @@ using the default).
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
-
 ```
 
 In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
@@ -693,7 +692,7 @@ The option `clustermq.template` should point to a Torque template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #PBS -N {{ job_name }}
 #PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}
 #PBS -o {{ log_file | /dev/null }}
