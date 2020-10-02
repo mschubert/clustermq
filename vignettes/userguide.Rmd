@@ -377,7 +377,8 @@ your cluster config you might need either).
 If you get a SSH warning or error try again with `ssh -v` to enable verbose
 output.
 
-If the forward itself works, set the following option in your `~/.Rprofile`:
+If the forward itself works, set the following option *in your local*
+`~/.Rprofile`:
 
 ```{r eval=FALSE}
 options(clustermq.ssh.log = "~/ssh_proxy.log")
