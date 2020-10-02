@@ -74,7 +74,7 @@ implementations can rely on the higher level functionality" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.95</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.95.1</span>
       </span>
     </div>
 
@@ -129,92 +129,6 @@ implementations can rely on the higher level functionality" />
 This should abstract most functions of rZMQ so the scheduler
 implementations can rely on the higher level functionality</p>
     </div>
-
-
-
-    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
-
-    
-<h3>Public methods</h3>
-
-<ul>
-<li><p><a href='#method-new'><code>QSys$new()</code></a></p></li>
-<li><p><a href='#method-submit_jobs'><code>QSys$submit_jobs()</code></a></p></li>
-<li><p><a href='#method-send_call'><code>QSys$send_call()</code></a></p></li>
-<li><p><a href='#method-set_common_data'><code>QSys$set_common_data()</code></a></p></li>
-<li><p><a href='#method-send_common_data'><code>QSys$send_common_data()</code></a></p></li>
-<li><p><a href='#method-send_job_data'><code>QSys$send_job_data()</code></a></p></li>
-<li><p><a href='#method-send_wait'><code>QSys$send_wait()</code></a></p></li>
-<li><p><a href='#method-receive_data'><code>QSys$receive_data()</code></a></p></li>
-<li><p><a href='#method-send_shutdown_worker'><code>QSys$send_shutdown_worker()</code></a></p></li>
-<li><p><a href='#method-cleanup'><code>QSys$cleanup()</code></a></p></li>
-</ul>
-<p><hr>
-<a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>new</span>(
-  <span class='kw'>addr</span> <span class='kw'>=</span> <span class='fu'><a href='host.html'>host</a></span>(),
-  <span class='kw'>bind</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>reuse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>template</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>zmq</span> <span class='kw'>=</span> <span class='no'>ZeroMQ</span>$<span class='fu'>new</span>()
-)</pre><p></div></p>
-
-<p><hr>
-<a id="method-submit_jobs"></a></p><h3>Method <code>submit_jobs()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>submit_jobs</span>(<span class='no'>...</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-send_call"></a></p><h3>Method <code>send_call()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>send_call</span>(<span class='no'>expr</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(), <span class='kw'>ref</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>substitute</a></span>(<span class='no'>expr</span>))</pre><p></div></p>
-
-<p><hr>
-<a id="method-set_common_data"></a></p><h3>Method <code>set_common_data()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>set_common_data</span>(<span class='no'>...</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-send_common_data"></a></p><h3>Method <code>send_common_data()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>send_common_data</span>()</pre><p></div></p>
-
-<p><hr>
-<a id="method-send_job_data"></a></p><h3>Method <code>send_job_data()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>send_job_data</span>(<span class='no'>...</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-send_wait"></a></p><h3>Method <code>send_wait()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>send_wait</span>(<span class='kw'>wait</span> <span class='kw'>=</span> <span class='fl'>0.05</span> * <span class='no'>self</span>$<span class='no'>workers_running</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-receive_data"></a></p><h3>Method <code>receive_data()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>receive_data</span>(<span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>Inf</span>, <span class='kw'>with_checks</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-send_shutdown_worker"></a></p><h3>Method <code>send_shutdown_worker()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>send_shutdown_worker</span>()</pre><p></div></p>
-
-<p><hr>
-<a id="method-cleanup"></a></p><h3>Method <code>cleanup()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>QSys</span>$<span class='fu'>cleanup</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>5</span>)</pre><p></div></p>
 
 
 

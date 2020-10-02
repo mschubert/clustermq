@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.95</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.95.1</span>
       </span>
     </div>
 
@@ -126,75 +126,6 @@
     <p>Derives from QSys to provide callr-specific functions</p>
     </div>
 
-
-
-    <h2 class="hasAnchor" id="super-class"><a class="anchor" href="#super-class"></a>Super class</h2>
-
-    <p><code><a href='QSys.html'>clustermq::QSys</a></code> -&gt; <code>MULTIPROCESS</code></p>
-    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
-
-    
-<h3>Public methods</h3>
-
-<ul>
-<li><p><a href='#method-new'><code>MULTIPROCESS$new()</code></a></p></li>
-<li><p><a href='#method-submit_jobs'><code>MULTIPROCESS$submit_jobs()</code></a></p></li>
-<li><p><a href='#method-cleanup'><code>MULTIPROCESS$cleanup()</code></a></p></li>
-<li><p><a href='#method-finalize'><code>MULTIPROCESS$finalize()</code></a></p></li>
-<li><p><a href='#method-clone'><code>MULTIPROCESS$clone()</code></a></p></li>
-</ul>
-<p><details ><summary>Inherited methods</summary>
-<ul>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="receive_data"><a href='../../clustermq/html/QSys.html#method-receive_data'><code>clustermq::QSys$receive_data()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="send_call"><a href='../../clustermq/html/QSys.html#method-send_call'><code>clustermq::QSys$send_call()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="send_common_data"><a href='../../clustermq/html/QSys.html#method-send_common_data'><code>clustermq::QSys$send_common_data()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="send_job_data"><a href='../../clustermq/html/QSys.html#method-send_job_data'><code>clustermq::QSys$send_job_data()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="send_shutdown_worker"><a href='../../clustermq/html/QSys.html#method-send_shutdown_worker'><code>clustermq::QSys$send_shutdown_worker()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="send_wait"><a href='../../clustermq/html/QSys.html#method-send_wait'><code>clustermq::QSys$send_wait()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="clustermq" data-topic="QSys" data-id="set_common_data"><a href='../../clustermq/html/QSys.html#method-set_common_data'><code>clustermq::QSys$set_common_data()</code></a></span></p></li>
-</ul>
-</details>
-
-<hr>
-<a id="method-new"></a></p><h3>Method <code>new()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>new</span>(<span class='kw'>addr</span> <span class='kw'>=</span> <span class='fu'><a href='host.html'>host</a></span>(<span class='st'>"127.0.0.1"</span>), <span class='no'>...</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-submit_jobs"></a></p><h3>Method <code>submit_jobs()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>submit_jobs</span>(
-  <span class='no'>n_jobs</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>log_file</span> <span class='kw'>=</span> <span class='st'>"|"</span>,
-  <span class='kw'>log_worker</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre><p></div></p>
-
-<p><hr>
-<a id="method-cleanup"></a></p><h3>Method <code>cleanup()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>cleanup</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-finalize"></a></p><h3>Method <code>finalize()</code></h3>
-
-<h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>finalize</span>(<span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
-
-<p><hr>
-<a id="method-clone"></a></p><h3>Method <code>clone()</code></h3>
-<p>The objects of this class are cloneable with this method.</p><h3>Usage</h3>
-<p><div class="r"></p><pre><span class='no'>MULTIPROCESS</span>$<span class='fu'>clone</span>(<span class='kw'>deep</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre><p></div></p>
-
-<h3>Arguments</h3>
-<p><div class="arguments"></p><dl'>
-<dt><code>deep</code></dt><dd><p>Whether to make a deep clone.</p></dd>
-
-</dl><p></div></p>
 
 
 
