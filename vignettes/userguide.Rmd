@@ -400,6 +400,12 @@ your cluster config you might need either).
 If you get a SSH warning or error try again with `ssh -v` to enable verbose
 output.
 
+Next, try and see if you can create the same tunnel from your local R session:
+
+```{r eval=FALSE}
+system("ssh -R 54709:localhost:6687 <user@host> R --vanilla")
+```
+
 If the forward itself works, set the following option *in your local*
 `~/.Rprofile`:
 
