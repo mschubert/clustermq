@@ -153,8 +153,18 @@ In order to use `clustermq` from your local machine, the package needs to be
 installed on both there and on the computing cluster. On the computing cluster,
 [set up your
 scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
-and make sure `clustermq` runs there without problems. On your local machine,
-add the following options in your `~/.Rprofile`:
+and make sure `clustermq` runs there without problems. Note that the *remote
+scheduler* can not be `LOCAL` or `SSH` for this to work.
+
+```{r eval=FALSE}
+# If this is set to 'SSH' or 'LOCAL' (default) you will get the following error:
+#  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys ‘...’ is not allowed’
+options(
+    clustermq.scheduler = "multiprocess" # or multicore, LSF, SGE, Slurm etc.
+)
+```
+
+On your *local machine*, add the following options in your `~/.Rprofile`:
 
 ```{r eval=FALSE}
 options(
