@@ -97,6 +97,20 @@ remotes::install_github('mschubert/clustermq', ref="develop")
 
 ## Configuration
 
+Choose your preferred parallelism using:
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "your scheduler here")
+```
+
+There are three kinds of schedulers:
+
+* `LOCAL` - sequential processing of calls (default if no HPC scheduler found)
+* [Multiple cores on the same machine](#local-parallelization)
+* [HPC schedulers](#setting-up-the-scheduler)
+
+Parallel and HPC schedulers can also be used [via SSH](#ssh-connector).
+
 ### Local parallelization
 
 While this is not the main focus of the package, you can use it to parallelize
@@ -130,7 +144,7 @@ To set up a scheduler explicitly, see the following links:
 
 Default submission templates [are
 provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
-customized](#Configuration),
+customized](#configuration),
 e.g. to activate [compute environments or
 containers](#Environments).
 
@@ -151,14 +165,13 @@ providing a transparent SSH interface.
 
 In order to use `clustermq` from your local machine, the package needs to be
 installed on both there and on the computing cluster. On the computing cluster,
-[set up your
-scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
-and make sure `clustermq` runs there without problems. Note that the *remote
-scheduler* can not be `LOCAL` or `SSH` for this to work.
+[set up your scheduler](#setting-up-the-scheduler) and make sure `clustermq`
+runs there without problems. Note that the *remote scheduler* can not be
+`LOCAL` (default if no HPC scheduler found) or `SSH` for this to work.
 
 ```{r eval=FALSE}
-# If this is set to 'SSH' or 'LOCAL' (default) you will get the following error:
-#  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys ‘...’ is not allowed’
+# If this is set to 'LOCAL' or 'SSH' you will get the following error:
+#  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys is not allowed’
 options(
     clustermq.scheduler = "multiprocess" # or multicore, LSF, SGE, Slurm etc.
 )

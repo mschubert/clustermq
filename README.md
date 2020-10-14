@@ -70,7 +70,7 @@ available worker nodes. Hence, this is what clustermq interfaces with in order
 to do computations.
 
 We currently support the [following
-schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler)
+schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#configuration)
 (either locally or via SSH):
 
 * [Multiprocess](https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization) -
