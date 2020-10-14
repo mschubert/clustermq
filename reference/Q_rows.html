@@ -126,26 +126,26 @@
     <p>Queue function calls defined by rows in a data.frame</p>
     </div>
 
-    <pre class="usage"><span class='fu'>Q_rows</span>(
-  <span class='no'>df</span>,
-  <span class='no'>fun</span>,
-  <span class='kw'>const</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>export</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>pkgs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(),
-  <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>128965</span>,
-  <span class='kw'>memory</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>template</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>n_jobs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>job_size</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rettype</span> <span class='kw'>=</span> <span class='st'>"list"</span>,
-  <span class='kw'>fail_on_error</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>workers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>log_worker</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>timeout</span> <span class='kw'>=</span> <span class='fl'>Inf</span>,
-  <span class='kw'>max_calls_worker</span> <span class='kw'>=</span> <span class='fl'>Inf</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>Q_rows</span><span class='op'>(</span>
+  <span class='va'>df</span>,
+  <span class='va'>fun</span>,
+  const <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  export <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  pkgs <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span>,
+  seed <span class='op'>=</span> <span class='fl'>128965</span>,
+  memory <span class='op'>=</span> <span class='cn'>NULL</span>,
+  template <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  n_jobs <span class='op'>=</span> <span class='cn'>NULL</span>,
+  job_size <span class='op'>=</span> <span class='cn'>NULL</span>,
+  rettype <span class='op'>=</span> <span class='st'>"list"</span>,
+  fail_on_error <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  workers <span class='op'>=</span> <span class='cn'>NULL</span>,
+  log_worker <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  chunk_size <span class='op'>=</span> <span class='cn'>NA</span>,
+  timeout <span class='op'>=</span> <span class='cn'>Inf</span>,
+  max_calls_worker <span class='op'>=</span> <span class='cn'>Inf</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -228,19 +228,20 @@ defaults to 100 chunks per worker or max. 10 kb per chunk</p></td>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Run a simple multiplication for data frame columns x and y on a worker node</span>
-<span class='no'>fx</span> <span class='kw'>=</span> <span class='kw'>function</span> (<span class='no'>x</span>, <span class='no'>y</span>) <span class='no'>x</span> * <span class='no'>y</span>
-<span class='no'>df</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='fl'>10</span>)
-<span class='fu'>Q_rows</span>(<span class='no'>df</span>, <span class='no'>fx</span>, <span class='kw'>job_size</span> <span class='kw'>=</span> <span class='fl'>1</span>)
+<span class='va'>fx</span> <span class='op'>=</span> <span class='kw'>function</span> <span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='va'>x</span> <span class='op'>*</span> <span class='va'>y</span>
+<span class='va'>df</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fl'>5</span>, y <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+<span class='fu'>Q_rows</span><span class='op'>(</span><span class='va'>df</span>, <span class='va'>fx</span>, job_size <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='co'># [1] 50</span>
 
 <span class='co'># Q_rows also matches the names of a data frame with the function arguments</span>
-<span class='no'>fx</span> <span class='kw'>=</span> <span class='kw'>function</span> (<span class='no'>x</span>, <span class='no'>y</span>) <span class='no'>x</span> - <span class='no'>y</span>
-<span class='no'>df</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>y</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>10</span>)
-<span class='fu'>Q_rows</span>(<span class='no'>df</span>, <span class='no'>fx</span>, <span class='kw'>job_size</span> <span class='kw'>=</span> <span class='fl'>1</span>)
+<span class='va'>fx</span> <span class='op'>=</span> <span class='kw'>function</span> <span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='va'>x</span> <span class='op'>-</span> <span class='va'>y</span>
+<span class='va'>df</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='fl'>5</span>, x <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
+<span class='fu'>Q_rows</span><span class='op'>(</span><span class='va'>df</span>, <span class='va'>fx</span>, job_size <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='co'># [1] 5</span>
-}</div></pre>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -256,7 +257,7 @@ defaults to 100 chunks per worker or max. 10 kb per chunk</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

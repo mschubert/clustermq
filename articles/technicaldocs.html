@@ -73,7 +73,7 @@
 
       
 
-      </header><script src="technicaldocs_files/header-attrs-2.3/header-attrs.js"></script><div class="row">
+      </header><script src="technicaldocs_files/header-attrs-2.4/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Technical Documentation</h1>
@@ -111,11 +111,12 @@ code {
     |- Torque
   |- etc.</code></pre>
 <p>A pool of workers can be created using the <code><a href="../reference/workers.html">workers()</a></code> function, which instantiates an object of the corresponding <code>QSys</code>-derived scheduler class. See <code><a href="../reference/workers.html">?workers</a></code> for details.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># start up a pool of three workers using the default scheduler</span>
-<span class="no">w</span> <span class="kw">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span>(<span class="kw">n_jobs</span><span class="kw">=</span><span class="fl">3</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="co"># start up a pool of three workers using the default scheduler</span>
+<span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span><span class="op">(</span>n_jobs<span class="op">=</span><span class="fl">3</span><span class="op">)</span>
 
 <span class="co"># if we make an unclean exit for whatever reason, clean up the jobs</span>
-<span class="fu"><a href="https://rdrr.io/r/base/on.exit.html">on.exit</a></span>(<span class="no">w</span>$<span class="fu">finalize</span>())</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/on.exit.html">on.exit</a></span><span class="op">(</span><span class="va">w</span><span class="op">$</span><span class="fu">finalize</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></pre></div>
 </div>
 <div id="worker-startup" class="section level3">
 <h3 class="hasAnchor">
@@ -124,8 +125,9 @@ code {
 <p>This is achieved by the call to R common to all schedulers:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ex">R</span> --no-save --no-restore -e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>On the master’s side, we wait until a worker connects:</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># this will block until a worker is ready</span>
-<span class="no">msg</span> <span class="kw">=</span> <span class="no">w</span>$<span class="fu">receive_data</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="co"># this will block until a worker is ready</span>
+<span class="va">msg</span> <span class="op">=</span> <span class="va">w</span><span class="op">$</span><span class="fu">receive_data</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 <div id="common-data-and-exports" class="section level3">
 <h3 class="hasAnchor">
@@ -147,19 +149,21 @@ code {
 <li>
 <code>token</code> - character string to identify this data set; this is optional, if an automatically generated token will be returned if none is given</li>
 </ul>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co"># create a reusable, serialized ZeroMQ object with the common data on the master</span>
-<span class="no">w</span>$<span class="fu">set_common_data</span>(<span class="no">fun</span>, <span class="no">const</span>, <span class="no">export</span>, <span class="no">rettype</span>, <span class="no">common_seed</span>, <span class="no">token</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="co"># create a reusable, serialized ZeroMQ object with the common data on the master</span>
+<span class="va">w</span><span class="op">$</span><span class="fu">set_common_data</span><span class="op">(</span><span class="va">fun</span>, <span class="va">const</span>, <span class="va">export</span>, <span class="va">rettype</span>, <span class="va">common_seed</span>, <span class="va">token</span><span class="op">)</span></pre></div>
 <p>Workers that connect to the master will send a list with a field <code>token</code>. This can be used to check if the worker already received the common data it is supposed to work on.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r">if (msg$token != &lt;token&gt;)
-    w$send_common_data()</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="cf">if</span> (msg<span class="op">$</span>token <span class="op">!=</span><span class="st"> </span><span class="er">&lt;</span>token<span class="op">&gt;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>    w<span class="op">$</span><span class="kw">send_common_data</span>()</span></code></pre></div>
 </div>
 <div id="iterated-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#iterated-data" class="anchor"></a>Iterated data</h3>
 <p>If the worker has already received the common data, we can send it a chunk of iterated arguments to work on. These are passed as a list of iterables, e.g. a <code>data.frame</code> with a column for each iterated argument.</p>
 <p>It also needs to have a column with name <code>&lt;space&gt;id&lt;space&gt;</code>, which will be used to identify each call.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">chunk</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">arg1</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">5</span>, <span class="kw">arg2</span><span class="kw">=</span><span class="fl">5</span>:<span class="fl">1</span>, <span class="kw">` id `</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">5</span>)
-<span class="no">w</span>$<span class="fu">send_job_data</span>(<span class="no">chunk</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="va">chunk</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>arg1<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, arg2<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">1</span>, ` id `<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>
+<span class="va">w</span><span class="op">$</span><span class="fu">send_job_data</span><span class="op">(</span><span class="va">chunk</span><span class="op">)</span></pre></div>
 <p>If the worker has finished processing, it will send a message with the field <code>result</code> that is a list, containing:</p>
 <ul>
 <li>
@@ -169,10 +173,11 @@ code {
 <li>
 <code>errors</code> - a list with error messages of individual calls</li>
 </ul>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">msg</span> <span class="kw">=</span> <span class="no">w</span>$<span class="fu">receive_data</span>()
-<span class="kw">if</span> (!<span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span>(<span class="no">msg</span>$<span class="no">result</span>)) {
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="va">msg</span> <span class="op">=</span> <span class="va">w</span><span class="op">$</span><span class="fu">receive_data</span><span class="op">(</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">msg</span><span class="op">$</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="co"># store result here, handle errors/warnings if required</span>
-}</pre></body></html></div>
+<span class="op">}</span></pre></div>
 </div>
 <div id="custom-calls" class="section level3">
 <h3 class="hasAnchor">
@@ -186,30 +191,31 @@ code {
 <li>
 <code>ref</code> - an identifier for the call; will default to the expression itself</li>
 </ul>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">w</span>$<span class="fu">send_call</span>(<span class="no">expr</span>, <span class="kw">env</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">...</span>), <span class="kw">ref</span><span class="kw">=</span><span class="st">"mycall1"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="va">w</span><span class="op">$</span><span class="fu">send_call</span><span class="op">(</span><span class="va">expr</span>, env<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>, ref<span class="op">=</span><span class="st">"mycall1"</span><span class="op">)</span></pre></div>
 </div>
 <div id="main-event-loop" class="section level3">
 <h3 class="hasAnchor">
 <a href="#main-event-loop" class="anchor"></a>Main event loop</h3>
 <p>Putting the above together in an event loop, we get what is essentially implemented in <code>master</code>.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r">w = workers(3)
-on.exit(w$finalize())
-
-while (we have new work to send) {
-    msg = w$receive_data()
-
-    if (!is.null(msg$result))
-        # handle result
-
-    if (msg$token != &lt;token&gt;)
-        w$send_common_data()
-    else
-        w$send_job_data(...)
-}
-
-# if proper cleanup is successful, cancel kill-on-exit
-if (w$cleanup())
-    on.exit()</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>w =<span class="st"> </span><span class="kw">workers</span>(<span class="dv">3</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="kw">on.exit</span>(w<span class="op">$</span><span class="kw">finalize</span>())</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="cf">while</span> (we have new work to send) {</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>    msg =<span class="st"> </span>w<span class="op">$</span><span class="kw">receive_data</span>()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>    <span class="cf">if</span> (<span class="op">!</span><span class="kw">is.null</span>(msg<span class="op">$</span>result))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>        <span class="co"># handle result</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>    <span class="cf">if</span> (msg<span class="op">$</span>token <span class="op">!=</span><span class="st"> </span><span class="er">&lt;</span>token<span class="op">&gt;</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>        w<span class="op">$</span><span class="kw">send_common_data</span>()</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>    <span class="cf">else</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>        w<span class="op">$</span><span class="kw">send_job_data</span>(...)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>}</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a><span class="co"># if proper cleanup is successful, cancel kill-on-exit</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a><span class="cf">if</span> (w<span class="op">$</span><span class="kw">cleanup</span>())</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a>    <span class="kw">on.exit</span>()</span></code></pre></div>
 <p>A loop of a similar structure can be used to extend <code>clustermq</code>. As an example, <a href="https://github.com/ropensci/drake/blob/v7.9.0/R/backend_clustermq.R">this was done by <code>drake</code></a> using common data and custom calls only (no iterated chunks).</p>
 </div>
 </div>
@@ -282,8 +288,9 @@ if (w$cleanup())
 <h4 class="hasAnchor">
 <a href="#master" class="anchor"></a>Master</h4>
 <p>This workflow is handled by the <code><a href="../reference/master.html">master()</a></code> function of <code>clustermq</code>. If you are using <code><a href="../reference/Q.html">Q()</a></code> or <code><a href="../reference/Q_rows.html">Q_rows()</a></code>, this is handled under the hood. Workers created outside of these functions can be reused within <code><a href="../reference/Q.html">Q()</a></code>/<code><a href="../reference/Q_rows.html">Q_rows()</a></code> without knowing any of the internal message structure.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">w</span> <span class="kw">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span>(<span class="no">n_jobs</span>, <span class="no">...</span>)
-<span class="co"># w$cleanup() for a clean shutdown at the end</span></pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span><span class="op">(</span><span class="va">n_jobs</span>, <span class="va">...</span><span class="op">)</span>
+<span class="co"># w$cleanup() for a clean shutdown at the end</span></pre></div>
 <p>The documentation below is to show it is possible to implement a custom control flow, e.g. if you want to evaluate arbitrary expressions on workers instead of defining one function to call and different arguments.</p>
 <div id="do_setup" class="section level5">
 <h5 class="hasAnchor">
@@ -296,10 +303,11 @@ if (w$cleanup())
 <li>Worker will respond with <code>WORKER_READY</code>
 </li>
 </ul>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="co"># create a reusable, serialized ZeroMQ object with the common data on the master</span>
-<span class="no">w</span>$<span class="fu">set_common_data</span>()
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="co"># create a reusable, serialized ZeroMQ object with the common data on the master</span>
+<span class="va">w</span><span class="op">$</span><span class="fu">set_common_data</span><span class="op">(</span><span class="op">)</span>
 <span class="co"># send this object to a worker</span>
-<span class="no">w</span>$<span class="fu">send_common_data</span>()</pre></body></html></div>
+<span class="va">w</span><span class="op">$</span><span class="fu">send_common_data</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 <div id="do_chunk" class="section level5">
 <h5 class="hasAnchor">
@@ -310,7 +318,8 @@ if (w$cleanup())
 <li>Field has to be <code>chunk</code>, a <code>data.frame</code> where each row is a call and columns are arguments</li>
 <li>Row names of <code>chunk</code> are used as call IDs</li>
 </ul>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">w</span>$<span class="fu">send_job_data</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="va">w</span><span class="op">$</span><span class="fu">send_job_data</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 <div id="do_call-new-in-0-8-5" class="section level5">
 <h5 class="hasAnchor">
@@ -319,7 +328,8 @@ if (w$cleanup())
 <li>Evaluate a specific expression on the worker</li>
 <li>Needs fields <code>expr</code> (the expression to be evaluated) and <code>env</code> (list environment to evaluate it in)</li>
 </ul>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">w</span>$<span class="fu">send_call</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="va">w</span><span class="op">$</span><span class="fu">send_call</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 <div id="worker_wait" class="section level5">
 <h5 class="hasAnchor">
@@ -330,7 +340,8 @@ if (w$cleanup())
 <li>Worker will respond with <code>WORKER_READY</code>
 </li>
 </ul>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">w</span>$<span class="fu">send_wait</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="va">w</span><span class="op">$</span><span class="fu">send_wait</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 <div id="worker_stop" class="section level5">
 <h5 class="hasAnchor">
@@ -340,12 +351,14 @@ if (w$cleanup())
 <li>Instruct the worker to exit its main event loop</li>
 <li>This message has no fields</li>
 </ul>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">w</span>$<span class="fu">send_shutdown_worker</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="va">w</span><span class="op">$</span><span class="fu">send_shutdown_worker</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 <div id="disconnect-and-reset-socket-state" class="section level5">
 <h5 class="hasAnchor">
 <a href="#disconnect-and-reset-socket-state" class="anchor"></a>Disconnect and reset socket state</h5>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">w</span>$<span class="fu">disconnect_worker</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit">
+<span class="va">w</span><span class="op">$</span><span class="fu">disconnect_worker</span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 </div>
 </div>
@@ -388,24 +401,24 @@ if (w$cleanup())
 <li><code>WORKER_DONE</code></li>
 </ul>
 <p>These can be implemented the following way:</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r">w$set_common_data(...)
-
-while(work remaining or w$workers_running &gt; 0) {
-    msg = w$receive_data() # wait until a worker is ready
-    if (msg$id == "WORKER_UP") { # treat same as WORKER_READY if no common data
-        w$send_common_data()
-    } else if (msg$id == "WORKER_READY") {
-        if (work remaining)
-            w$send_job_data(data.frame with arguments for all calls of this chunk)
-        else
-            w$send_shutdown_worker()
-        # ..handle your result..
-    } else if (msg$id == "WORKER_DONE") {
-        w$disconnect_worker()
-    } else if (msg$id == "WORKER_ERROR") {
-        stop("processing error")
-    }
-}</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>w<span class="op">$</span><span class="kw">set_common_data</span>(...)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a><span class="cf">while</span>(work remaining or w<span class="op">$</span>workers_running <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a>    msg =<span class="st"> </span>w<span class="op">$</span><span class="kw">receive_data</span>() <span class="co"># wait until a worker is ready</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a>    <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_UP"</span>) { <span class="co"># treat same as WORKER_READY if no common data</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true"></a>        w<span class="op">$</span><span class="kw">send_common_data</span>()</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true"></a>    } <span class="cf">else</span> <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_READY"</span>) {</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true"></a>        <span class="cf">if</span> (work remaining)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true"></a>            w<span class="op">$</span><span class="kw">send_job_data</span>(data.frame with arguments <span class="cf">for</span> all calls of this chunk)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true"></a>        <span class="cf">else</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true"></a>            w<span class="op">$</span><span class="kw">send_shutdown_worker</span>()</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true"></a>        <span class="co"># ..handle your result..</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true"></a>    } <span class="cf">else</span> <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_DONE"</span>) {</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true"></a>        w<span class="op">$</span><span class="kw">disconnect_worker</span>()</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true"></a>    } <span class="cf">else</span> <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_ERROR"</span>) {</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true"></a>        <span class="kw">stop</span>(<span class="st">"processing error"</span>)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true"></a>    }</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true"></a>}</span></code></pre></div>
 </div>
 <div id="evaluating-custom-expressions" class="section level4">
 <h4 class="hasAnchor">
@@ -436,24 +449,24 @@ while(work remaining or w$workers_running &gt; 0) {
 <li><code>WORKER_DONE</code></li>
 </ul>
 <p>These can be implemented the following way:</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r">w$set_common_data(...) # optional, if common data required
-
-while(work remaining or w$workers_running &gt; 0) {
-    msg = w$receive_data() # wait until a worker is ready
-    if (msg$id == "WORKER_UP") { # treat same as WORKER_READY if no common data
-        w$send_common_data()
-    } else if (msg$id == "WORKER_READY") {
-        if (work remaining)
-            w$send_call(expr, env)
-        else
-            w$send_shutdown_worker()
-        # ..handle your result..
-    } else if (msg$id == "WORKER_DONE") {
-        w$disconnect_worker()
-    } else if (msg$id == "WORKER_ERROR") {
-        stop("processing error")
-    }
-}</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a>w<span class="op">$</span><span class="kw">set_common_data</span>(...) <span class="co"># optional, if common data required</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a><span class="cf">while</span>(work remaining or w<span class="op">$</span>workers_running <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>    msg =<span class="st"> </span>w<span class="op">$</span><span class="kw">receive_data</span>() <span class="co"># wait until a worker is ready</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true"></a>    <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_UP"</span>) { <span class="co"># treat same as WORKER_READY if no common data</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true"></a>        w<span class="op">$</span><span class="kw">send_common_data</span>()</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true"></a>    } <span class="cf">else</span> <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_READY"</span>) {</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true"></a>        <span class="cf">if</span> (work remaining)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true"></a>            w<span class="op">$</span><span class="kw">send_call</span>(expr, env)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true"></a>        <span class="cf">else</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true"></a>            w<span class="op">$</span><span class="kw">send_shutdown_worker</span>()</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true"></a>        <span class="co"># ..handle your result..</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true"></a>    } <span class="cf">else</span> <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_DONE"</span>) {</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true"></a>        w<span class="op">$</span><span class="kw">disconnect_worker</span>()</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true"></a>    } <span class="cf">else</span> <span class="cf">if</span> (msg<span class="op">$</span>id <span class="op">==</span><span class="st"> "WORKER_ERROR"</span>) {</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true"></a>        <span class="kw">stop</span>(<span class="st">"processing error"</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true"></a>    }</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true"></a>}</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -474,7 +487,7 @@ while(work remaining or w$workers_running &gt; 0) {
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

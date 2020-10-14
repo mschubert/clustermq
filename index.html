@@ -82,12 +82,13 @@
 <a href="#clustermq-send-r-function-calls-as-cluster-jobs" class="anchor"></a>ClusterMQ: send R function calls as cluster jobs</h1></div>
 
 <p>This package will allow you to send function calls as jobs on a computing cluster with a minimal interface provided by the <code>Q</code> function:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># load the library and create a simple function</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">clustermq</span>)
-<span class="no">fx</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="no">x</span> * <span class="fl">2</span>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="co"># load the library and create a simple function</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/">clustermq</a></span><span class="op">)</span>
+<span class="va">fx</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span>
 
 <span class="co"># queue the function call on your scheduler</span>
-<span class="fu"><a href="reference/Q.html">Q</a></span>(<span class="no">fx</span>, <span class="kw">x</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">n_jobs</span><span class="kw">=</span><span class="fl">1</span>)
+<span class="fu"><a href="reference/Q.html">Q</a></span><span class="op">(</span><span class="va">fx</span>, x<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, n_jobs<span class="op">=</span><span class="fl">1</span><span class="op">)</span>
 <span class="co"># list(2,4,6)</span></pre></div>
 <p>Computations are done <a href="https://zeromq.org/">entirely on the network</a> and without any temporary files on network-mounted storage, so there is no strain on the file system apart from starting up R once per job. All calculations are load-balanced, i.e. workers that get their jobs done faster will also receive more function calls to work on. This is especially useful if not all calls return after the same time, or one worker has a high load.</p>
 <p>Browse the vignettes here:</p>
@@ -107,17 +108,19 @@
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="fu">sudo</span> yum install zeromq-devel <span class="co"># Fedora</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="ex">pacman</span> -S zeromq # Arch Linux</span></code></pre></div>
 <p>Then install the <code>clustermq</code> package in R from CRAN:</p>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">'clustermq'</span>)</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'clustermq'</span><span class="op">)</span></pre></div>
 <p>Alternatively you can use the <code>remotes</code> package to install directly from Github:</p>
-<div class="sourceCode" id="cb4"><pre class="r"><span class="co"># install.packages('remotes')</span>
-<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">'mschubert/clustermq'</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="co"># install.packages('remotes')</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'mschubert/clustermq'</span><span class="op">)</span>
 <span class="co"># remotes::install_github('mschubert/clustermq', ref="develop") # dev version</span></pre></div>
 </div>
 <div id="schedulers" class="section level2">
 <h2 class="hasAnchor">
 <a href="#schedulers" class="anchor"></a>Schedulers</h2>
 <p>An HPC cluster’s scheduler ensures that computing jobs are distributed to available worker nodes. Hence, this is what clustermq interfaces with in order to do computations.</p>
-<p>We currently support the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler">following schedulers</a> (either locally or via SSH):</p>
+<p>We currently support the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#configuration">following schedulers</a> (either locally or via SSH):</p>
 <ul>
 <li>
 <a href="https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization">Multiprocess</a> - <em>test your calls and parallelize on cores using</em> <code><a href="https://rdrr.io/r/base/options.html">options(clustermq.scheduler="multiprocess")</a></code>
@@ -155,19 +158,23 @@
 <code>export</code> - A named list of objects to export to the worker environment</li>
 </ul>
 <p>The documentation for other arguments can be accessed by typing <code><a href="reference/Q.html">?Q</a></code>. Examples of using <code>const</code> and <code>export</code> would be:</p>
-<div class="sourceCode" id="cb5"><pre class="r"><span class="co"># adding a constant argument</span>
-<span class="no">fx</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>, <span class="no">y</span>) <span class="no">x</span> * <span class="fl">2</span> + <span class="no">y</span>
-<span class="fu"><a href="reference/Q.html">Q</a></span>(<span class="no">fx</span>, <span class="kw">x</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">const</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">y</span><span class="kw">=</span><span class="fl">10</span>), <span class="kw">n_jobs</span><span class="kw">=</span><span class="fl">1</span>)</pre></div>
-<div class="sourceCode" id="cb6"><pre class="r"><span class="co"># exporting an object to workers</span>
-<span class="no">fx</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="no">x</span> * <span class="fl">2</span> + <span class="no">y</span>
-<span class="fu"><a href="reference/Q.html">Q</a></span>(<span class="no">fx</span>, <span class="kw">x</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">3</span>, <span class="kw">export</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">y</span><span class="kw">=</span><span class="fl">10</span>), <span class="kw">n_jobs</span><span class="kw">=</span><span class="fl">1</span>)</pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="co"># adding a constant argument</span>
+<span class="va">fx</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">+</span> <span class="va">y</span>
+<span class="fu"><a href="reference/Q.html">Q</a></span><span class="op">(</span><span class="va">fx</span>, x<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, const<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>y<span class="op">=</span><span class="fl">10</span><span class="op">)</span>, n_jobs<span class="op">=</span><span class="fl">1</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="co"># exporting an object to workers</span>
+<span class="va">fx</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">+</span> <span class="va">y</span>
+<span class="fu"><a href="reference/Q.html">Q</a></span><span class="op">(</span><span class="va">fx</span>, x<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, export<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>y<span class="op">=</span><span class="fl">10</span><span class="op">)</span>, n_jobs<span class="op">=</span><span class="fl">1</span><span class="op">)</span></pre></div>
 <p><code>clustermq</code> can also be used as a parallel backend for <a href="https://cran.r-project.org/package=foreach"><code>foreach</code></a>. As this is also used by <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html"><code>BiocParallel</code></a>, we can run those packages on the cluster as well:</p>
-<div class="sourceCode" id="cb7"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">foreach</span>)
-<span class="fu"><a href="reference/register_dopar_cmq.html">register_dopar_cmq</a></span>(<span class="kw">n_jobs</span><span class="kw">=</span><span class="fl">2</span>, <span class="kw">memory</span><span class="kw">=</span><span class="fl">1024</span>) <span class="co"># see `?workers` for arguments</span>
-<span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(<span class="kw">i</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">3</span>) <span class="kw">%dopar%</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span>(<span class="no">i</span>) <span class="co"># this will be executed as jobs</span></pre></div>
-<div class="sourceCode" id="cb8"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">BiocParallel</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/DoparParam-class.html">DoparParam</a></span>()) <span class="co"># after register_dopar_cmq(...)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html">bplapply</a></span>(<span class="fl">1</span>:<span class="fl">3</span>, <span class="no">sqrt</span>)</pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach">foreach</a></span><span class="op">)</span>
+<span class="fu"><a href="reference/register_dopar_cmq.html">register_dopar_cmq</a></span><span class="op">(</span>n_jobs<span class="op">=</span><span class="fl">2</span>, memory<span class="op">=</span><span class="fl">1024</span><span class="op">)</span> <span class="co"># see `?workers` for arguments</span>
+<span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span><span class="op">(</span>i<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">%dopar%</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="co"># this will be executed as jobs</span></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel">BiocParallel</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html">register</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/DoparParam-class.html">DoparParam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># after register_dopar_cmq(...)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/bplapply.html">bplapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="va">sqrt</span><span class="op">)</span></pre></div>
 <p>More examples are available in <a href="https://mschubert.github.io/clustermq/articles/userguide.html">the user guide</a>.</p>
 </div>
 <div id="comparison-to-other-packages" class="section level2">
@@ -264,7 +271,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
