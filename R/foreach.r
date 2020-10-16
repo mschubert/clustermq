@@ -56,7 +56,7 @@ cmq_foreach = function(obj, expr, envir, data) {
         export = as.list(mget(obj$export, envir=export_env, inherits=TRUE))
         data$export = utils::modifyList(as.list(data$export), export, keep.null=TRUE)
         for (i in seq_along(data$export))
-            if (class(data$export[[i]]) == "function") # strip attached objs
+            if (inherits(data$export[[i]], "function")) # strip attached objs
                 environment(data$export[[i]]) = .GlobalEnv
     }
 
