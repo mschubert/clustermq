@@ -32,13 +32,17 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
 
         cleanup = function(quiet=FALSE, timeout=3) {
             success = super$cleanup(quiet=quiet, timeout=timeout)
-            private$callr[sapply(private$callr, function(x) ! x$is_alive())] = NULL
+            dead_workers = sapply(private$callr, function(x) ! x$is_alive())
+            if (length(dead_workers) > 0)
+                private$callr[dead_workers] = NULL
             invisible(success)
         },
 
         finalize = function(quiet=FALSE) {
             if (!private$is_cleaned_up) {
-                private$callr[sapply(private$callr, function(x) ! x$is_alive())] = NULL
+                dead_workers = sapply(private$callr, function(x) ! x$is_alive())
+                if (length(dead_workers) > 0)
+                    private$callr[dead_workers] = NULL
                 if (!quiet && length(private$callr) > 0)
                     warning("Unclean shutdown for PIDs: ",
                             paste(names(private$callr), collapse=", "), immediate.=TRUE)
