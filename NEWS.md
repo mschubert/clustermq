@@ -1,3 +1,7 @@
+# v 0.8.96
+
+* Jobs now error instead of stalling upon unexpected worker disconnect (#150)
+
 # v 0.8.95
 
 * We are now using _ZeroMQ_ via `Rcpp` in preparation for `v0.9` (#151)
