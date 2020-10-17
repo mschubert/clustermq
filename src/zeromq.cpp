@@ -18,7 +18,7 @@ public:
 
     std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
             std::string sid="default") {
-        auto sock = zmq::socket_t(ctx, str2socket(socket_type));
+        auto sock = MonitoredSocket(ctx, str2socket(socket_type), sid);
         int i;
         for (i=0; i<addrs.length(); i++) {
             auto addr = Rcpp::as<std::string>(addrs[i]);
@@ -37,7 +37,7 @@ public:
         Rf_error("Could not bind port after ", i, " tries");
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
-        auto sock = zmq::socket_t(ctx, str2socket(socket_type));
+        auto sock = MonitoredSocket(ctx, str2socket(socket_type), sid);
         sock.connect(address);
         sockets.emplace(sid, std::move(sock));
     }
@@ -71,11 +71,13 @@ public:
     }
     Rcpp::IntegerVector poll(Rcpp::CharacterVector sids, int timeout=-1) {
         auto nsock = sids.length();
-        auto pitems = std::vector<zmq::pollitem_t>(nsock);
+        auto pitems = std::vector<zmq::pollitem_t>(nsock*2);
         for (int i = 0; i < nsock; i++) {
-            auto socket_id = Rcpp::as<std::string>(sids[i]);
-            pitems[i].socket = find_socket(socket_id);
+            MonitoredSocket &sock = find_socket(Rcpp::as<std::string>(sids[i]));
+            pitems[i].socket = sock;
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
+            pitems[i+nsock].socket = sock.mon;
+            pitems[i+nsock].events = ZMQ_POLLIN;
         }
 
         int rc = -1;
@@ -95,6 +97,15 @@ public:
             }
         } while(rc < 0);
 
+        int n_disc = 0;
+        for (int i = 0; i < nsock; i++)
+            if (pitems[i+nsock].revents > 0) {
+                auto msg = get_monitor_event(Rcpp::as<std::string>(sids[i]));
+                n_disc++;
+            }
+        if (n_disc > 0)
+            Rf_error((std::to_string(n_disc) + " peer(s) lost").c_str());
+
         auto result = Rcpp::IntegerVector(nsock);
         for (int i = 0; i < nsock; i++)
             result[i] = pitems[i].revents;
@@ -103,7 +114,20 @@ public:
 
 private:
     zmq::context_t ctx;
-    std::unordered_map<std::string, zmq::socket_t> sockets;
+
+    class MonitoredSocket : public zmq::socket_t {
+    public:
+        MonitoredSocket(zmq::context_t &ctx, int socket_type, std::string sid):
+                zmq::socket_t(ctx, socket_type), mon(ctx, ZMQ_PAIR) {
+            auto mon_addr = "inproc://" + sid;
+            int rc = zmq_socket_monitor(*this, mon_addr.c_str(), ZMQ_EVENT_DISCONNECTED);
+            if (rc < 0) // C API needs return value check
+                Rf_error("failed to create socket monitor");
+            mon.connect(mon_addr);
+        }
+        zmq::socket_t mon;
+    };
+    std::unordered_map<std::string, MonitoredSocket> sockets;
 
     int str2socket(std::string str) {
         if (str == "ZMQ_REP") {
@@ -120,7 +144,7 @@ private:
         return -1;
     }
 
-    zmq::socket_t & find_socket(std::string socket_id) {
+    MonitoredSocket & find_socket(std::string socket_id) {
         auto socket_iter = sockets.find(socket_id);
         if (socket_iter == sockets.end())
             Rf_error("Trying to access non-existing socket: ", socket_id.c_str());
@@ -136,6 +160,18 @@ private:
         auto & socket = find_socket(sid);
         socket.recv(message, flags);
         return message;
+    }
+
+    std::string get_monitor_event(std::string sid) {
+        // receive message to clear, but we know it is disconnect
+        // expand this if we monitor anything else
+        zmq::message_t msg1, msg2;
+        auto & socket = find_socket(sid);
+        // we expect 2 frames: http://api.zeromq.org/4-1:zmq-socket-monitor
+        socket.mon.recv(msg1, zmq::recv_flags::dontwait);
+        socket.mon.recv(msg2, zmq::recv_flags::dontwait);
+        // do something with the info...
+        return std::string();
     }
 };
 

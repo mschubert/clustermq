@@ -41,4 +41,4 @@ Suggests:
     tools
 VignetteBuilder: knitr
 Roxygen: list(r6 = FALSE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
