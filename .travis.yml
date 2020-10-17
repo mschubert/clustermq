@@ -1,13 +1,16 @@
 language: r
 
-os:
- - linux
- - osx
-
-r:
- - oldrel
- - release
- - devel
+jobs:
+ - os: linux
+   r: oldrel
+ - os: linux
+   r: release
+ - os: linux
+   r: devel
+ - os: osx
+   r: oldrel
+ - os: osx
+   r: release
 
 warnings_are_errors: true
 
