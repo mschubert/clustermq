@@ -48,8 +48,9 @@ has_ssh = function(host) {
 }
 
 has_ssh_cmq = function(host) {
-    status = system(paste("ssh", ssh_opts, host, "'R -e \"library(clustermq)\"'"),
-                    wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status = suppressWarnings(
+        system(paste("ssh", ssh_opts, host, "'R -e \"library(clustermq)\"'"),
+               wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE))
     status == 0
 }
 
