@@ -95,7 +95,7 @@ welcome](https://github.com/mschubert/clustermq/issues/new).
 remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
-## Configuration
+## Configuration {#configuration}
 
 Choose your preferred parallelism using:
 
@@ -148,7 +148,7 @@ customized](#configuration),
 e.g. to activate [compute environments or
 containers](#Environments).
 
-### SSH connector
+### SSH connector {#ssh-connector}
 
 There are reasons why you might prefer to not to work on the computing cluster
 directly but rather on your local machine instead.
@@ -315,6 +315,45 @@ load_mtcars_example()
 # options(clustermq.scheduler = "multicore")
 make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
 ```
+
+## Options
+
+The various configurable options are mentioned throughout the documentation, 
+where applicable, however, we list all of the options here for reference.
+
+Options can be set by including a call to `options(<key> = <value>)` in your
+`.Rprofile`, or by calling `options(<key> = <value>)` in a script or
+interactively during a session.
+
+* `clustermq.scheduler` - One of the supported 
+      [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
+      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"slurm"`, `"pbs"`, 
+      `"Torque"`, or `"ssh"` (default is the HPC scheduler found in `$PATH`,
+      otherwise `"LOCAL"`)
+* `clustermq.host` - The name of the node or device for constructing the
+      `ZeroMQ` host address (default is `Sys.info()["nodename"]`)
+* `clustermq.ssh.host` - The user name and host for 
+      [connecting to the HPC via SSH](#ssh-connector) (e.g. `user@host`); we
+      recommend setting up SSH keys for password-less login
+* `clustermq.ssh.log` - Path for a file (on the SSH host) that will be created
+      and populated with logging information regarding the SSH connection 
+      (e.g. `"~/cmq_ssh.log"`); helpful for debugging purposes
+* `clustermq.ssh.timeout` - The amount of time to wait (in seconds) for a SSH
+      start-up connection before timing out (default is 5 seconds)
+* `clustermq.worker.timeout` - The amount of time to wait (in seconds) for
+      master-worker communication before timing out (default is 600 seconds)
+* `clustermq.error.timeout` - The amount of time to wait (in seconds), in case
+      of a worker error, for the remaining workers to finish their computations
+      and shut down cleanly (default is `min(timeout, 30)` seconds)
+* `clustermq.template` - Path to a [template file](#scheduler-templates) for
+      submitting HPC jobs; only necessary if using your own template, otherwise
+      the default template will be used (default depends on
+      `clustermq.scheduler`)
+* `clustermq.data.warning` - The threshold for the size of the common data (in
+      Mb) before `clustermq` throws a warning (default is 1000)
+* `clustermq.defaults` - A named-list of default values for the HPC template;
+      this takes precedence over defaults specified in the template file 
+      (default is an empty list (i.e. `list()`))
 
 ## Troubleshooting
 
@@ -530,7 +569,7 @@ chmod u+x ~/bin/qsub
 SINGULARITYENV_APPEND_PATH=~/bin
 ```
 
-## Scheduler templates
+## Scheduler templates {#scheduler-templates}
 
 ### LSF {#LSF}
 
