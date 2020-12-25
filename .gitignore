@@ -12,3 +12,4 @@ src/*.so
 *.log
 clustermq.Rcheck
 src/Makevars
+.github/*.html
