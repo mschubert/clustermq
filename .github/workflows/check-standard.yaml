@@ -102,6 +102,12 @@ jobs:
           ssh 127.0.0.1 'R --no-save --no-restore -e ".libPaths()"' || true
 #          R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null || true
 
+      - name: make test
+        if: runner.os != 'Windows'
+        run: |
+          R CMD INSTALL .
+          make test
+
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
