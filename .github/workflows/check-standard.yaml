@@ -70,7 +70,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install zeromq
+          brew install zeromq coreutils
+#          echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
 
       - name: Set up local key-based SSH
         if: runner.os != 'Windows' # GHA does not allow empty passphrase on Windows
@@ -106,7 +107,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           R CMD INSTALL .
-          make test
+          timeout 300 make test
 
       - name: Check
         env:
@@ -115,7 +116,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Print logs if failure
-        if: failure()
+        if: failure() && runner.os != 'Windows'
         run: |
           cat ~/*.log
           cat ~/worker.log || true
