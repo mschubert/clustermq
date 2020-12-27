@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - master
+      - develop
   pull_request:
     branches:
       - main
       - master
+      - develop
 
 name: R-CMD-check
 
@@ -70,17 +72,49 @@ jobs:
           brew update
           brew install zeromq
 
+      - name: Set up local key-based SSH
+        if: runner.os != 'Windows' # GHA does not allow empty passphrase on Windows
+        run: |
+          ssh-keygen -t rsa -f ~/.ssh/id_rsa -N "" -q
+          cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+          ssh-keyscan -t rsa 127.0.0.1 >> ~/.ssh/known_hosts
+          echo "Host 127.0.0.1" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "$(hostname) 127.0.0.1" >> ~/.hosts
+          chmod og-rw ~
+
+      - name: Add fake scheduler to PATH
+        run: |
+          echo "$(pwd)/tests/bin" >> $GITHUB_PATH
+          echo "$(dirname $(which R))" >> $GITHUB_PATH
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      - name: Query capabilities
+        run: |
+          which R
+          which sbatch || echo "sbatch not found"
+          ssh 127.0.0.1 'which R; which sbatch; echo $PATH' || true
+          ssh 127.0.0.1 'R --no-save --no-restore -e ".libPaths()"' || true
+#          R --no-save --no-restore -e "message(clustermq:::qsys_default)" > /dev/null || true
+
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
+
+      - name: Print logs if failure
+        if: failure()
+        run: |
+          cat ~/*.log
+          cat ~/worker.log || true
+          cat ~/ssh_proxy.log || true
+          cat clustermq.Rcheck/tests/* || true
 
       - name: Upload check results
         if: failure()
