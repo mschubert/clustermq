@@ -96,13 +96,15 @@ jobs:
           R CMD INSTALL .
 
       - name: Query capabilities
-        if: runner.os != 'Windows' # last line does not recognize -e
+        if: runner.os != 'Windows' # does not recognize -e
         run: |
+          set -x
           which R
           which sbatch || echo "sbatch not found"
           ssh 127.0.0.1 'which R; which sbatch; echo $PATH' || true
-          ssh 127.0.0.1 'R --no-save --no-restore -e ".libPaths()"' || true
-          R --no-save --no-restore -e "message(clustermq:::qsys_default)" || true
+          ssh 127.0.0.1 'R --slave --no-restore -e ".libPaths()"' || true
+          R --slave --no-restore -e "message(clustermq:::qsys_default)" || true
+          ssh 127.0.0.1 'R --slave --no-restore -e "message(clustermq:::qsys_default)"' || true
 
       - name: make test
         if: runner.os != 'Windows'
