@@ -79,21 +79,19 @@ jobs:
           echo "$(hostname) 127.0.0.1" >> ~/.hosts
           chmod og-rw ~
 
-      - name: Add fake scheduler to PATH
-        run: |
-          echo "$(pwd)/tests/bin" >> $GITHUB_PATH
-          echo "$(dirname $(which R))" >> $GITHUB_PATH
-
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
-      - name: Install R package
+      - name: Install R package and add paths
         if: runner.os != 'Windows'
         run: |
           R CMD INSTALL .
+          echo '.libPaths("~/work/_temp/Library")' >> ~/.Rprofile # cmq package in R
+          echo "$(pwd)/tests/bin" >> $GITHUB_PATH # local cmq
+          sed -i -e "1iexport PATH=$(pwd)/tests/bin:\$PATH" ~/.bashrc # ssh cmq
 
       - name: Query capabilities
         if: runner.os != 'Windows' # does not recognize -e
@@ -120,7 +118,8 @@ jobs:
       - name: Print logs if failure
         if: failure() && runner.os != 'Windows'
         run: |
-          cat ~/*.log
+          set -x
+          cat ~/*.log || true
           cat ~/worker.log || true
           cat ~/ssh_proxy.log || true
           cat clustermq.Rcheck/tests/* || true
