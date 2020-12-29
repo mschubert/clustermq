@@ -10,3 +10,4 @@ README\.md
 CITATION
 _pkgdown\.yml
 clustermq_[0-9.]+\.tar\.gz
+^\.github$
