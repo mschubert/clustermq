@@ -91,7 +91,7 @@ jobs:
           R CMD INSTALL .
           echo '.libPaths("~/work/_temp/Library")' >> ~/.Rprofile # cmq package in R
           echo "$(pwd)/tests/bin" >> $GITHUB_PATH # local cmq
-          sed -i -e "1iexport PATH=$(pwd)/tests/bin:\$PATH" ~/.bashrc # ssh cmq
+          sed -i "1iexport PATH=$(pwd)/tests/bin:\$PATH" ~/.bashrc || true # ssh cmq
 
       - name: Query capabilities
         if: runner.os != 'Windows' # does not recognize -e
