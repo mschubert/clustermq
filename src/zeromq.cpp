@@ -1,8 +1,10 @@
 #include <Rcpp.h>
 #include <chrono>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include "zmq.hpp"
+#include "MonitoredSocket.hpp"
 
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
@@ -13,40 +15,52 @@ int pending_interrupt();
 class ZeroMQ {
 public:
     ZeroMQ(int threads=1) : ctx(threads), sockets() {}
+//    ~ZeroMQ() { ctx.close(); } //TODO: destruct all sockets, monitors?
     ZeroMQ(const ZeroMQ &) = delete;
     ZeroMQ & operator=(ZeroMQ const &) = delete;
 
     std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
             std::string sid="default") {
-        auto sock = MonitoredSocket(ctx, str2socket(socket_type), sid);
+        auto ms = MonitoredSocket(ctx, str2socket(socket_type), sid);
         int i;
         for (i=0; i<addrs.length(); i++) {
             auto addr = Rcpp::as<std::string>(addrs[i]);
             try {
-                sock.bind(addr);
+                ms.sock.bind(addr);
             } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
             char option_value[1024];
             size_t option_value_len = sizeof(option_value);
-            sock.getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
-            sockets.emplace(sid, std::move(sock));
+            ms.sock.getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
+            sockets.emplace(sid, std::move(ms));
             return std::string(option_value);
         }
         Rf_error("Could not bind port after ", i, " tries");
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
-        auto sock = MonitoredSocket(ctx, str2socket(socket_type), sid);
-        sock.connect(address);
-        sockets.emplace(sid, std::move(sock));
+        auto ms = MonitoredSocket(ctx, str2socket(socket_type), sid);
+        ms.sock.connect(address);
+        sockets.emplace(sid, std::move(ms));
     }
     void disconnect(std::string sid="default") {
+        auto & ms = find_socket(sid);
+        int linger = 0;
+        ms.sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::cerr << "closing socket\n" << std::flush;
+        ms.sock.close();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::cerr << "closing monitor\n" << std::flush;
+        ms.mon.close();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::cerr << "erasing both\n" << std::flush;
         sockets.erase(sid);
     }
 
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
-        auto & socket = find_socket(sid);
+        auto & ms = find_socket(sid);
         auto flags = zmq::send_flags::none;
         if (dont_wait)
             flags = flags | zmq::send_flags::dontwait;
@@ -58,7 +72,7 @@ public:
 
         zmq::message_t message(Rf_xlength(data));
         memcpy(message.data(), RAW(data), Rf_xlength(data));
-        socket.send(message, flags);
+        ms.sock.send(message, flags);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
         auto message = rcv_msg(sid, dont_wait);
@@ -73,10 +87,10 @@ public:
         auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock*2);
         for (int i = 0; i < nsock; i++) {
-            MonitoredSocket &sock = find_socket(Rcpp::as<std::string>(sids[i]));
-            pitems[i].socket = sock;
+            MonitoredSocket &ms = find_socket(Rcpp::as<std::string>(sids[i]));
+            pitems[i].socket = ms.sock;
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
-            pitems[i+nsock].socket = sock.mon;
+            pitems[i+nsock].socket = ms.mon;
             pitems[i+nsock].events = ZMQ_POLLIN;
         }
 
@@ -97,6 +111,8 @@ public:
             }
         } while(rc < 0);
 
+        //TODO: handle events internally, protected: virtual, and override in ClusterMQ class
+        // remove as much as possible Rcpp from ZeroMQ class (SEXP -> void*, std::string overload?)
         int n_disc = 0;
         for (int i = 0; i < nsock; i++)
             if (pitems[i+nsock].revents > 0) {
@@ -114,19 +130,6 @@ public:
 
 private:
     zmq::context_t ctx;
-
-    class MonitoredSocket : public zmq::socket_t {
-    public:
-        MonitoredSocket(zmq::context_t &ctx, int socket_type, std::string sid):
-                zmq::socket_t(ctx, socket_type), mon(ctx, ZMQ_PAIR) {
-            auto mon_addr = "inproc://" + sid;
-            int rc = zmq_socket_monitor(*this, mon_addr.c_str(), ZMQ_EVENT_DISCONNECTED);
-            if (rc < 0) // C API needs return value check
-                Rf_error("failed to create socket monitor");
-            mon.connect(mon_addr);
-        }
-        zmq::socket_t mon;
-    };
     std::unordered_map<std::string, MonitoredSocket> sockets;
 
     int str2socket(std::string str) {
@@ -157,8 +160,8 @@ private:
             flags = flags | zmq::recv_flags::dontwait;
 
         zmq::message_t message;
-        auto & socket = find_socket(sid);
-        socket.recv(message, flags);
+        auto & ms = find_socket(sid);
+        ms.sock.recv(message, flags);
         return message;
     }
 
@@ -166,10 +169,10 @@ private:
         // receive message to clear, but we know it is disconnect
         // expand this if we monitor anything else
         zmq::message_t msg1, msg2;
-        auto & socket = find_socket(sid);
+        auto & ms = find_socket(sid);
         // we expect 2 frames: http://api.zeromq.org/4-1:zmq-socket-monitor
-        socket.mon.recv(msg1, zmq::recv_flags::dontwait);
-        socket.mon.recv(msg2, zmq::recv_flags::dontwait);
+        ms.mon.recv(msg1, zmq::recv_flags::dontwait);
+        ms.mon.recv(msg2, zmq::recv_flags::dontwait);
         // do something with the info...
         return std::string();
     }

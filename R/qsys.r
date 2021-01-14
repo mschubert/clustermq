@@ -207,6 +207,7 @@ QSys = R6::R6Class("QSys",
 
         disconnect_worker = function(msg) {
             private$send()
+#            private$zmq$disconnect() #FIXME: disconnect worker, don't close socket
             private$workers_up = private$workers_up - 1
             private$workers_total = private$workers_total - 1
             private$worker_stats = c(private$worker_stats, list(msg))
