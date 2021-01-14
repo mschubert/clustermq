@@ -48,13 +48,10 @@ public:
         auto & ms = find_socket(sid);
         int linger = 0;
         ms.sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         std::cerr << "closing socket\n" << std::flush;
         ms.sock.close();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         std::cerr << "closing monitor\n" << std::flush;
         ms.mon.close();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         std::cerr << "erasing both\n" << std::flush;
         sockets.erase(sid);
     }
@@ -75,7 +72,13 @@ public:
         ms.sock.send(message, flags);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
-        auto message = rcv_msg(sid, dont_wait);
+        auto & ms = find_socket(sid);
+        auto flags = zmq::recv_flags::none;
+        if (dont_wait)
+            flags = flags | zmq::recv_flags::dontwait;
+
+        zmq::message_t message;
+        ms.sock.recv(message, flags);
         SEXP ans = Rf_allocVector(RAWSXP, message.size());
         memcpy(RAW(ans), message.data(), message.size());
         if (unserialize)
@@ -87,7 +90,7 @@ public:
         auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock*2);
         for (int i = 0; i < nsock; i++) {
-            MonitoredSocket &ms = find_socket(Rcpp::as<std::string>(sids[i]));
+            MonitoredSocket & ms = find_socket(Rcpp::as<std::string>(sids[i]));
             pitems[i].socket = ms.sock;
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
             pitems[i+nsock].socket = ms.mon;
@@ -96,10 +99,12 @@ public:
 
         int rc = -1;
         auto start = Time::now();
+        int total_sock_ev = 0;
+        auto result = Rcpp::IntegerVector(nsock);
         do {
             try {
                 rc = zmq::poll(pitems, timeout);
-            } catch(zmq::error_t const &e) {
+            } catch(zmq::error_t const & e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
@@ -109,22 +114,22 @@ public:
                         break;
                 }
             }
+
+            //TODO: handle events internally, protected: virtual, and override in ClusterMQ class
+            // remove as much as possible Rcpp from ZeroMQ class (SEXP -> void*, std::string overload?)
+            for (int i = 0; i < nsock; i++) {
+                result[i] = pitems[i].revents;
+                total_sock_ev += pitems[i].revents;
+                if (pitems[i+nsock].revents > 0) {
+                    auto & ms = find_socket(Rcpp::as<std::string>(sids[i])); //fixme: 2x iteration
+                    ms.handle_monitor_event();
+                }
+            }
+            if (total_sock_ev == 0)
+                continue;
+
         } while(rc < 0);
 
-        //TODO: handle events internally, protected: virtual, and override in ClusterMQ class
-        // remove as much as possible Rcpp from ZeroMQ class (SEXP -> void*, std::string overload?)
-        int n_disc = 0;
-        for (int i = 0; i < nsock; i++)
-            if (pitems[i+nsock].revents > 0) {
-                auto msg = get_monitor_event(Rcpp::as<std::string>(sids[i]));
-                n_disc++;
-            }
-        if (n_disc > 0)
-            Rf_error((std::to_string(n_disc) + " peer(s) lost").c_str());
-
-        auto result = Rcpp::IntegerVector(nsock);
-        for (int i = 0; i < nsock; i++)
-            result[i] = pitems[i].revents;
         return result;
     }
 
@@ -152,29 +157,6 @@ private:
         if (socket_iter == sockets.end())
             Rf_error("Trying to access non-existing socket: ", socket_id.c_str());
         return socket_iter->second;
-    }
-
-    zmq::message_t rcv_msg(std::string sid="default", bool dont_wait=false) {
-        auto flags = zmq::recv_flags::none;
-        if (dont_wait)
-            flags = flags | zmq::recv_flags::dontwait;
-
-        zmq::message_t message;
-        auto & ms = find_socket(sid);
-        ms.sock.recv(message, flags);
-        return message;
-    }
-
-    std::string get_monitor_event(std::string sid) {
-        // receive message to clear, but we know it is disconnect
-        // expand this if we monitor anything else
-        zmq::message_t msg1, msg2;
-        auto & ms = find_socket(sid);
-        // we expect 2 frames: http://api.zeromq.org/4-1:zmq-socket-monitor
-        ms.mon.recv(msg1, zmq::recv_flags::dontwait);
-        ms.mon.recv(msg2, zmq::recv_flags::dontwait);
-        // do something with the info...
-        return std::string();
     }
 };
 
