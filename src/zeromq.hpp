@@ -8,8 +8,6 @@
 
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
-extern Rcpp::Function R_serialize;
-extern Rcpp::Function R_unserialize;
 int pending_interrupt();
 
 class ZeroMQ {
@@ -22,22 +20,9 @@ public:
     std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
             std::string sid="default") {
         auto ms = MonitoredSocket(ctx, str2socket(socket_type), sid);
-        int i;
-        for (i=0; i<addrs.length(); i++) {
-            auto addr = Rcpp::as<std::string>(addrs[i]);
-            try {
-                ms.sock.bind(addr);
-            } catch(zmq::error_t const &e) {
-                if (errno != EADDRINUSE)
-                    Rf_error(e.what());
-            }
-            char option_value[1024];
-            size_t option_value_len = sizeof(option_value);
-            ms.sock.getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
-            sockets.emplace(sid, std::move(ms));
-            return std::string(option_value);
-        }
-        Rf_error("Could not bind port after ", i, " tries");
+        auto bound_endpoint = ms.listen(addrs);
+        sockets.emplace(sid, std::move(ms));
+        return bound_endpoint;
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
         auto ms = MonitoredSocket(ctx, str2socket(socket_type), sid);
@@ -46,46 +31,20 @@ public:
     }
     void disconnect(std::string sid="default") {
         auto & ms = find_socket(sid);
-        int linger = 0;
-        ms.sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        std::cerr << "closing socket\n" << std::flush;
-        ms.sock.close();
-        std::cerr << "closing monitor\n" << std::flush;
-        ms.mon.close();
+        ms.disconnect();
         std::cerr << "erasing both\n" << std::flush;
         sockets.erase(sid);
     }
 
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
         auto & ms = find_socket(sid);
-        auto flags = zmq::send_flags::none;
-        if (dont_wait)
-            flags = flags | zmq::send_flags::dontwait;
-        if (send_more)
-            flags = flags | zmq::send_flags::sndmore;
-
-        if (TYPEOF(data) != RAWSXP)
-            data = R_serialize(data, R_NilValue);
-
-        zmq::message_t message(Rf_xlength(data));
-        memcpy(message.data(), RAW(data), Rf_xlength(data));
-        ms.sock.send(message, flags);
+        ms.send(data, dont_wait, send_more);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
         auto & ms = find_socket(sid);
-        auto flags = zmq::recv_flags::none;
-        if (dont_wait)
-            flags = flags | zmq::recv_flags::dontwait;
-
-        zmq::message_t message;
-        ms.sock.recv(message, flags);
-        SEXP ans = Rf_allocVector(RAWSXP, message.size());
-        memcpy(RAW(ans), message.data(), message.size());
-        if (unserialize)
-            return R_unserialize(ans);
-        else
-            return ans;
+        return ms.receive(dont_wait, unserialize);
     }
+
     Rcpp::IntegerVector poll(Rcpp::CharacterVector sids, int timeout=-1) {
         auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock*2);
