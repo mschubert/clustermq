@@ -99,7 +99,7 @@ public:
         mon.recv(msg2, zmq::recv_flags::dontwait);
         // do something with the info...
 
-        Rf_error("unexpected peer disconnect"); // this is the only thing we monitor for now
+        Rf_error("Unexpected peer disconnect: Check your logs"); // this is the only thing we monitor for now
     }
 };
 

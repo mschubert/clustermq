@@ -1,3 +1,5 @@
+loadModule("cmq_worker", TRUE) # CMQWorker C++ class
+
 #' R worker submitted as cluster job
 #'
 #' Do not call this manually, the master will do that
@@ -22,8 +24,7 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
         warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
 
     # connect to master
-    zmq = ZeroMQ$new() #FIXME: 3L
-    zmq$connect(master)
+    zmq = new(CMQWorker, master) # add I/O threads?
     zmq$send(list(id="WORKER_UP", auth=auth,
                   pkgver=utils::packageVersion("clustermq")))
     message("WORKER_UP to: ", master)
@@ -85,7 +86,7 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
             "DO_CHUNK" = {
                 if (!identical(token, msg$token)) {
                     msg = paste("mismatch chunk & common data", token, msg$token)
-                    zmq$send(list(id="WORKER_ERROR", auth=auth, msg=msg),
+                    zmq$send2(list(id="WORKER_ERROR", auth=auth, msg=msg),
                              send_more=TRUE)
                     message("WORKER_ERROR: ", msg)
                     break
@@ -98,7 +99,7 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
                 delta = proc.time() - tic
 
                 if ("error" %in% class(result)) {
-                    zmq$send(
+                    zmq$send2(
                         list(id="WORKER_ERROR", auth=auth, msg=conditionMessage(result)),
                         send_more=TRUE)
                     message("WORKER_ERROR: ", conditionMessage(result))

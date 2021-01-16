@@ -13,46 +13,56 @@ int pending_interrupt();
 class ZeroMQ {
 public:
     ZeroMQ(int threads=1) : ctx(threads), sockets() {}
-//    ~ZeroMQ() { ctx.close(); } //TODO: destruct all sockets, monitors?
+    ~ZeroMQ() {
+        for (auto & it: sockets) {
+            delete it.second;
+        }
+        ctx.close();
+    }
     ZeroMQ(const ZeroMQ &) = delete;
     ZeroMQ & operator=(ZeroMQ const &) = delete;
 
+    // convenience functions to quickly create and add sockets
     std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
             std::string sid="default") {
-        auto ms = MonitoredSocket(ctx, str2socket(socket_type), sid);
-        auto bound_endpoint = ms.listen(addrs);
+        auto * ms = new MonitoredSocket(ctx, str2socket(socket_type), sid);
+        auto bound_endpoint = ms->listen(addrs);
         sockets.emplace(sid, std::move(ms));
         return bound_endpoint;
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
-        auto ms = MonitoredSocket(ctx, str2socket(socket_type), sid);
-        ms.sock.connect(address);
+        auto * ms = new MonitoredSocket(ctx, str2socket(socket_type), sid);
+        ms->sock.connect(address);
         sockets.emplace(sid, std::move(ms));
     }
     void disconnect(std::string sid="default") {
-        auto & ms = find_socket(sid);
-        ms.disconnect();
+        auto * ms = find_socket(sid);
+        ms->disconnect();
+        delete ms;
         std::cerr << "erasing both\n" << std::flush;
         sockets.erase(sid);
     }
-
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
-        auto & ms = find_socket(sid);
-        ms.send(data, dont_wait, send_more);
+        auto * ms = find_socket(sid);
+        ms->send(data, dont_wait, send_more);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
-        auto & ms = find_socket(sid);
-        return ms.receive(dont_wait, unserialize);
+        auto * ms = find_socket(sid);
+        return ms->receive(dont_wait, unserialize);
+    }
+
+    void add_socket(MonitoredSocket * ms, std::string sid="default") {
+        sockets.emplace(sid, std::move(ms));
     }
 
     Rcpp::IntegerVector poll(Rcpp::CharacterVector sids, int timeout=-1) {
         auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock*2);
         for (int i = 0; i < nsock; i++) {
-            MonitoredSocket & ms = find_socket(Rcpp::as<std::string>(sids[i]));
-            pitems[i].socket = ms.sock;
+            auto * ms = find_socket(Rcpp::as<std::string>(sids[i]));
+            pitems[i].socket = ms->sock;
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
-            pitems[i+nsock].socket = ms.mon;
+            pitems[i+nsock].socket = ms->mon;
             pitems[i+nsock].events = ZMQ_POLLIN;
         }
 
@@ -80,8 +90,8 @@ public:
                 result[i] = pitems[i].revents;
                 total_sock_ev += pitems[i].revents;
                 if (pitems[i+nsock].revents > 0) {
-                    auto & ms = find_socket(Rcpp::as<std::string>(sids[i])); //fixme: 2x iteration
-                    ms.handle_monitor_event();
+                    auto * ms = find_socket(Rcpp::as<std::string>(sids[i])); //fixme: 2x iteration
+                    ms->handle_monitor_event();
                 }
             }
             if (total_sock_ev == 0)
@@ -92,9 +102,9 @@ public:
         return result;
     }
 
-private:
+protected:
     zmq::context_t ctx;
-    std::unordered_map<std::string, MonitoredSocket> sockets;
+    std::unordered_map<std::string, MonitoredSocket*> sockets;
 
     int str2socket(std::string str) {
         if (str == "ZMQ_REP") {
@@ -111,7 +121,7 @@ private:
         return -1;
     }
 
-    MonitoredSocket & find_socket(std::string socket_id) {
+    MonitoredSocket * find_socket(std::string socket_id) {
         auto socket_iter = sockets.find(socket_id);
         if (socket_iter == sockets.end())
             Rf_error("Trying to access non-existing socket: ", socket_id.c_str());
