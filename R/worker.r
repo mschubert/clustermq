@@ -86,7 +86,7 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
             "DO_CHUNK" = {
                 if (!identical(token, msg$token)) {
                     msg = paste("mismatch chunk & common data", token, msg$token)
-                    zmq$send2(list(id="WORKER_ERROR", auth=auth, msg=msg),
+                    zmq$send(list(id="WORKER_ERROR", auth=auth, msg=msg),
                              send_more=TRUE)
                     message("WORKER_ERROR: ", msg)
                     break
@@ -99,7 +99,7 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
                 delta = proc.time() - tic
 
                 if ("error" %in% class(result)) {
-                    zmq$send2(
+                    zmq$send(
                         list(id="WORKER_ERROR", auth=auth, msg=conditionMessage(result)),
                         send_more=TRUE)
                     message("WORKER_ERROR: ", conditionMessage(result))

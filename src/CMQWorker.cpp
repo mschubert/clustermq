@@ -27,7 +27,7 @@ public:
     void send2(SEXP data) {
         send(data, "worker", false, false);
     }
-    void send3(SEXP data, bool send_more=false) {
+    void send2(SEXP data, bool send_more=false) {
         send(data, "worker", false, send_more);
     }
     SEXP receive2() {
@@ -46,12 +46,14 @@ private:
 
 RCPP_MODULE(cmq_worker) {
     using namespace Rcpp;
+    void (CMQWorker::*send_1)(SEXP) = &CMQWorker::send2 ;
+    void (CMQWorker::*send_2)(SEXP, bool) = &CMQWorker::send2 ;
     class_<CMQWorker>("CMQWorker")
         .constructor<std::string>()
         .method("main_loop", &CMQWorker::main_loop)
         .method("disconnect", &CMQWorker::disconnect2)
-        .method("send", &CMQWorker::send2)
-        .method("send2", &CMQWorker::send3)
+        .method("send", send_1)
+        .method("send", send_2)
         .method("receive", &CMQWorker::receive2)
         .method("poll", &CMQWorker::poll2)
     ;
