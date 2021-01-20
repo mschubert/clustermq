@@ -113,6 +113,7 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP _rcpp_module_boot_cmq_master();
 RcppExport SEXP _rcpp_module_boot_cmq_worker();
 RcppExport SEXP _rcpp_module_boot_zmq();
 
@@ -126,6 +127,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_clustermq_receive_socket", (DL_FUNC) &_clustermq_receive_socket, 3},
     {"_clustermq_receive_multipart", (DL_FUNC) &_clustermq_receive_multipart, 3},
     {"_clustermq_send_socket", (DL_FUNC) &_clustermq_send_socket, 4},
+    {"_rcpp_module_boot_cmq_master", (DL_FUNC) &_rcpp_module_boot_cmq_master, 0},
     {"_rcpp_module_boot_cmq_worker", (DL_FUNC) &_rcpp_module_boot_cmq_worker, 0},
     {"_rcpp_module_boot_zmq", (DL_FUNC) &_rcpp_module_boot_zmq, 0},
     {NULL, NULL, 0}
