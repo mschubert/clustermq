@@ -11,8 +11,8 @@ class MonitoredSocket {
 public:
     //TODO: add peer tracking of router socket
 //    MonitoredSocket() = delete;
-    MonitoredSocket(zmq::context_t & ctx, int socket_type, std::string sid):
-            sock(ctx, socket_type), mon(ctx, ZMQ_PAIR) {
+    MonitoredSocket(zmq::context_t * ctx, int socket_type, std::string sid):
+            sock(*ctx, socket_type), mon(*ctx, ZMQ_PAIR) {
         auto mon_addr = "inproc://" + sid;
         int rc = zmq_socket_monitor(sock, mon_addr.c_str(), ZMQ_EVENT_DISCONNECTED);
         if (rc < 0) // C API needs return value check

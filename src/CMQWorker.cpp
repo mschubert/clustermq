@@ -4,7 +4,7 @@
 
 class WorkerSocket : public MonitoredSocket {
 public:
-    WorkerSocket(zmq::context_t & ctx, std::string addr):
+    WorkerSocket(zmq::context_t * ctx, std::string addr):
             MonitoredSocket(ctx, ZMQ_REQ, "worker") {
         connect(addr);
     }

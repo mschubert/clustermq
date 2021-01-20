@@ -5,15 +5,17 @@
 class MasterSocket : public MonitoredSocket {
 public:
     MasterSocket(zmq::context_t * ctx, std::string addr):
-            MonitoredSocket(ctx, ZMQ_REQ, "master") {
+            MonitoredSocket(ctx, ZMQ_REP, "master") {
         connect(addr);
     }
 };
 
 class CMQMaster : public ZeroMQ {
 public:
+    CMQMaster(zmq::context_t * ctx): ZeroMQ(ctx) {
+        sock = new MasterSocket(ctx, addr); // ptr deleted by base destructor
+    }
     CMQMaster(std::string addr): sock(new MasterSocket(ctx, addr)) {
-        add_socket(sock, "master"); // ptr deleted by base destructor
     }
 
     // temporary for refactor, Rcpp errors if only defined in base class (or same name)

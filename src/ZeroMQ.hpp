@@ -15,12 +15,14 @@ int pending_interrupt();
 
 class ZeroMQ {
 public:
-    ZeroMQ(int threads=1) : ctx(threads), sockets() {}
+    ZeroMQ(zmq::context_t * ctx_) : ctx(ctx_), sockets() {}
+    ZeroMQ(int threads=1) : ctx(new zmq::context_t(threads)), sockets() {}
     ~ZeroMQ() {
         for (auto & it: sockets) {
             delete it.second;
         }
-        ctx.close();
+        ctx->close();
+        delete ctx;
     }
     ZeroMQ(const ZeroMQ &) = delete;
     ZeroMQ & operator=(ZeroMQ const &) = delete;
@@ -106,7 +108,7 @@ public:
     }
 
 protected:
-    zmq::context_t ctx;
+    zmq::context_t * ctx;
     std::unordered_map<std::string, MonitoredSocket*> sockets;
 
     int str2socket(std::string str) {
