@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 #include "MonitoredSocket.hpp"
-#include "zeromq.hpp"
+#include "ZeroMQ.hpp"
 
 class WorkerSocket : public MonitoredSocket {
 public:
