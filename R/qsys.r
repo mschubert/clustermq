@@ -1,3 +1,5 @@
+loadModule("cmq_master", TRUE) # CMQMaster C++ class
+
 #' Class for basic queuing system functions
 #'
 #' Provides the basic functions needed to communicate between machines
@@ -15,11 +17,18 @@ QSys = R6::R6Class("QSys",
         # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
         initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE,
-                              template=NULL, zmq=ZeroMQ$new()) {
+                              template=NULL, zmq=new(CMQMaster)) {
             private$zmq = zmq
-            if (bind)
-                private$master = private$zmq$listen(addr)
-            else
+            if (bind) {
+                # ZeroMQ allows connecting by node name, but binding must be either
+                # a numerical IP or an interfacet name. This is a bit of a hack to
+                # seem to allow node-name bindings
+                nodename = Sys.info()["nodename"]
+                addr = sub(nodename, "*", addr, fixed=TRUE)
+                bound = private$zmq$listen(addr)
+                # Change "all interfaces" to the node name so we can connect to it
+                private$master = sub("0.0.0.0", nodename, bound, fixed=TRUE)
+            } else
                 private$master = addr # net_fwd for proxy
             private$port = as.integer(sub(".*:", "", private$master))
             private$timer = proc.time()

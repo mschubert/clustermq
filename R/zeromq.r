@@ -22,11 +22,6 @@ ZeroMQ = R6::R6Class("ZeroMQ",
             nodename = Sys.info()["nodename"]
             addrs = sub(nodename, "*", addrs, fixed=TRUE)
             bound = private$zmq$listen(addrs, socket_type, sid)
-            if (!is.null(getOption("clustermq.short.host")))
-                .Deprecated(msg=paste("Option clustermq.short.host is deprecated and will",
-                    "be removed in v0.9. Use clustermq.host=<network interface> instead."))
-            if (getOption("clustermq.short.host", FALSE)) # fails if e.g. 'name.local'
-                nodename = strsplit(nodename, "\\.")[[1]][1]
             sub("0.0.0.0", nodename, bound, fixed=TRUE)
             # Change "all interfaces" to the node name so we can connect to it
         },
