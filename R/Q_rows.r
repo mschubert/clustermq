@@ -26,6 +26,8 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
     # check if call args make sense
     if (!is.null(memory))
         template$memory = memory
+    if (is.character(memory))
+        stop("Expected numeric value for memory")
     if (!is.null(template$memory) && template$memory < 50)
         stop("Worker needs about 23 MB overhead, set memory>=50")
     if (is.na(seed) || length(seed) != 1)
