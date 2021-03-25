@@ -117,3 +117,14 @@ test_that("Q with expired workers throws error quickly", {
     })
     expect_true(times[["elapsed"]] < 1)
 })
+
+test_that("shutdown monitor does not fire on clean disconnects", {
+    skip_if_not(has_localhost)
+    skip_on_os("windows")
+
+    # doing this via a separate call to `workers()` works
+    # so this seems to be a race condition of some sort
+    options(clustermq.scheduler="multicore")
+    res = Q(function(x) Sys.sleep(x), x=c(0,3), n_jobs=2, timeout=5L)
+    expect_equal(res, list(NULL, NULL))
+})
