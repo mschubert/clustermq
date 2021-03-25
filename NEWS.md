@@ -1,3 +1,7 @@
+# head
+
+* Fix bug where max memory reporting by `gc()` may be in different column (#240)
+
 # v 0.8.95
 
 * We are now using _ZeroMQ_ via `Rcpp` in preparation for `v0.9` (#151)
