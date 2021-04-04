@@ -126,12 +126,10 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
     run_time = proc.time() - start_time
 
     message("shutting down worker")
-    gc = gc()
-    max_mb = which(colnames(gc) == "max used") + 1
     zmq$send(list(
         id = "WORKER_DONE",
         time = run_time,
-        mem = sum(gc[,max_mb]),
+        mem = sum(gc()[,"max used"]),
         calls = counter,
         auth = auth
     ))

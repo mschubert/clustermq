@@ -243,17 +243,20 @@ QSys = R6::R6Class("QSys",
         summary_stats = function() {
             times = lapply(private$worker_stats, function(w) w$time)
             max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
+            max_mb = NA_character_
+            if (length(max_mem) == 1) {
+                class(max_mem) = "object_size"
+                max_mb = format(max_mem + 2e8, units="auto") # ~ 200 Mb overhead
+            }
+
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
-
             if (class(wt) != "proc_time")
                 wt = rep(NA, 3)
-            if (length(max_mem) != 1)
-                max_mem = NA
 
-            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
+            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem + 200))
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
         }
     ),
 
