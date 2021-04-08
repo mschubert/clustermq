@@ -19,15 +19,16 @@ public:
             Rf_error("failed to create socket monitor");
         mon.connect(mon_addr);
     }
-//    ~MonitoredSocket() {}
 //    MonitoredSocket(const MonitoredSocket &) = delete;
-/*    ~MonitoredSocket() {
-//        int linger = 0;
-//        sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
+    virtual ~MonitoredSocket() {
+        int linger = 0;
+        sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
+        std::cerr << "closing socket... " << std::flush;
         sock.close();
+        std::cerr << "closing monitor\n" << std::flush;
         mon.close();
     }
-*/
+
     zmq::socket_t sock;
     zmq::socket_t mon;
 
@@ -50,14 +51,6 @@ public:
     }
     inline void connect(std::string address) {
         sock.connect(address);
-    }
-    void disconnect() {
-        int linger = 0;
-        sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        std::cerr << "closing socket\n" << std::flush;
-        sock.close();
-        std::cerr << "closing monitor\n" << std::flush;
-        mon.close();
     }
 
     void send(SEXP data, bool dont_wait=false, bool send_more=false) {
@@ -89,17 +82,12 @@ public:
             return ans;
     }
 
-//private:
-    void handle_monitor_event() {
-        // receive message to clear, but we know it is disconnect
-        // expand this if we monitor anything else
+    virtual void handle_monitor_event() {
+        // deriving class overrides to actually handle
         zmq::message_t msg1, msg2;
-        // we expect 2 frames: http://api.zeromq.org/4-1:zmq-socket-monitor
         mon.recv(msg1, zmq::recv_flags::dontwait);
         mon.recv(msg2, zmq::recv_flags::dontwait);
-        // do something with the info...
-
-        Rf_error("Unexpected peer disconnect: Check your logs"); // this is the only thing we monitor for now
+        std::cerr << "base event received\n";
     }
 };
 

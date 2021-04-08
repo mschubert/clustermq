@@ -5,6 +5,20 @@
 class MasterSocket : public MonitoredSocket {
 public:
     MasterSocket(zmq::context_t * ctx): MonitoredSocket(ctx, ZMQ_REP, "master") {}
+
+    void handle_monitor_event() {
+        // we expect 2 frames: http://api.zeromq.org/4-1:zmq-socket-monitor
+        zmq::message_t msg1, msg2;
+        // first frame in message contains event number and value
+        mon.recv(msg1, zmq::recv_flags::dontwait);
+        // second frame in message contains event address
+        mon.recv(msg2, zmq::recv_flags::dontwait);
+
+        // just print events + address to start things off
+        std::cerr << "derived event received\n";
+//        size_t size2 = 
+//        msg2.data()
+    }
 };
 
 class CMQMaster : public ZeroMQ {

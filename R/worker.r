@@ -137,5 +137,4 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
     message("\nTotal: ", sprintf(fmt, counter, run_time[1], run_time[2], run_time[3]))
     msg = zmq$receive() # empty message
     message("msg: ", msg)
-#    zmq$disconnect()
 }

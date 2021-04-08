@@ -42,7 +42,6 @@ public:
     }
     void disconnect(std::string sid="default") {
         auto * ms = find_socket(sid);
-        ms->disconnect();
         delete ms;
         std::cerr << "erasing both\n" << std::flush;
         sockets.erase(sid);
