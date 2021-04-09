@@ -62,11 +62,12 @@ public:
     Rcpp::IntegerVector poll(Rcpp::CharacterVector sids, int timeout=-1) {
         auto nsock = sids.length();
         auto pitems = std::vector<zmq::pollitem_t>(nsock*2);
+        auto monsocks = std::vector<MonitoredSocket*>(nsock);
         for (int i = 0; i < nsock; i++) {
-            auto * ms = find_socket(Rcpp::as<std::string>(sids[i]));
-            pitems[i].socket = ms->sock;
+            monsocks[i] = find_socket(Rcpp::as<std::string>(sids[i]));
+            pitems[i].socket = monsocks[i]->sock;
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
-            pitems[i+nsock].socket = ms->mon;
+            pitems[i+nsock].socket = monsocks[i]->mon;
             pitems[i+nsock].events = ZMQ_POLLIN;
         }
 
@@ -87,15 +88,12 @@ public:
                 }
             }
 
-            //TODO: handle events internally, protected: virtual, and override in ClusterMQ class
-            // remove as much as possible Rcpp from ZeroMQ class (SEXP -> void*, std::string overload?)
+            //TODO: remove Rcpp from ZeroMQ class (SEXP -> void*, std::string overload?)
             for (int i = 0; i < nsock; i++) {
                 result[i] = pitems[i].revents;
                 total_sock_ev += pitems[i].revents;
-                if (pitems[i+nsock].revents > 0) {
-                    auto * ms = find_socket(Rcpp::as<std::string>(sids[i])); //fixme: 2x iteration
-                    ms->handle_monitor_event();
-                }
+                for (int j = 0; j < pitems[i+nsock].revents; j++)
+                    monsocks[i]->handle_monitor_event();
             }
         } while(total_sock_ev == 0);
 
