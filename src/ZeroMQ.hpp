@@ -70,13 +70,12 @@ public:
             pitems[i+nsock].events = ZMQ_POLLIN;
         }
 
-        int rc = -1;
         auto start = Time::now();
         int total_sock_ev = 0;
         auto result = Rcpp::IntegerVector(nsock);
         do {
             try {
-                rc = zmq::poll(pitems, timeout);
+                zmq::poll(pitems, timeout);
             } catch(zmq::error_t const & e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
@@ -98,10 +97,7 @@ public:
                     ms->handle_monitor_event();
                 }
             }
-            if (total_sock_ev == 0)
-                continue;
-
-        } while(rc < 0);
+        } while(total_sock_ev == 0);
 
         return result;
     }
