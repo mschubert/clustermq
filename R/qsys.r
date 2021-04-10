@@ -59,7 +59,7 @@ QSys = R6::R6Class("QSys",
 
         # Evaluate an arbitrary expression on a worker
         send_call = function(expr, env=list(), ref=substitute(expr)) {
-            private$send(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
+            private$send_work(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
         },
 
         # Sets the common data as an zeromq message object
@@ -89,17 +89,17 @@ QSys = R6::R6Class("QSys",
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-            private$zmq$send(private$common_data)
+            private$zmq$send_work(private$common_data)
         },
 
         # Send iterated data to one worker
         send_job_data = function(...) {
-            private$send(id="DO_CHUNK", token=private$token, ...)
+            private$send_work(id="DO_CHUNK", token=private$token, ...)
         },
 
         # Wait for a total of 50 ms
         send_wait = function(wait=0.05*self$workers_running) {
-            private$send(id="WORKER_WAIT", wait=wait)
+            private$send_work(id="WORKER_WAIT", wait=wait)
         },
 
         # Read data from the socket
@@ -150,7 +150,7 @@ QSys = R6::R6Class("QSys",
 
         # Send shutdown signal to worker
         send_shutdown_worker = function() {
-            private$send(id="WORKER_STOP")
+            private$zmq$send_shutdown(data=list(id="WORKER_STOP"))
         },
 
         # Make sure all resources are closed properly
@@ -212,12 +212,12 @@ QSys = R6::R6Class("QSys",
         pkg_warn = utils::packageVersion("clustermq"),
         auth = "",
 
-        send = function(...) {
-            private$zmq$send(data = list(...))
+        send_work = function(...) {
+            private$zmq$send_work(data = list(...))
         },
 
         disconnect_worker = function(msg) {
-            private$send()
+            private$zmq$send_shutdown(list())
 #            private$zmq$disconnect() #FIXME: disconnect worker, don't close socket
             private$workers_up = private$workers_up - 1
             private$workers_total = private$workers_total - 1

@@ -33,17 +33,22 @@ public:
         return sock->listen(addrs);
     }
     // temporary for refactor, Rcpp errors if only defined in base class (or same name)
-    void disconnect2() {
-        disconnect("master");
+    void send_work(SEXP data) {
+        send_work(data, false);
     }
-    void send2(SEXP data) {
-        send2(data, false);
-    }
-    void send2(SEXP data, bool send_more=false) {
+    void send_work(SEXP data, bool send_more=false) {
+            std::cerr << "setting worker " << cur_s << " active\n";
         peer_active[cur_s] = true;
         send(cur, "master", false, true);
         send_null("master", false, true);
         send(data, "master", false, send_more);
+    }
+    void send_shutdown(SEXP data) {
+            std::cerr << "setting worker " << cur_s << " inactive\n";
+        peer_active[cur_s] = false;
+        send(cur, "master", false, true);
+        send_null("master", false, true);
+        send(data, "master", false, false);
     }
     SEXP receive2() {
         cur = receive("master", false, false);
@@ -52,8 +57,10 @@ public:
         SEXP msg;
         if (rcv_more("master")) {
             msg = receive("master", true, true);
-            peer_active[cur_s] = false;
         } else {
+            std::cerr << "notify disconnect from " << cur_s << "\n";
+            if (peer_active[cur_s])
+                Rf_error("Unexpected worker disconnect: check your logs");
             peer_active.erase(cur_s);
             msg = R_NilValue;
         }
@@ -78,16 +85,17 @@ private:
 
 RCPP_MODULE(cmq_master) {
     using namespace Rcpp;
-    void (CMQMaster::*send_1)(SEXP) = &CMQMaster::send2 ;
-    void (CMQMaster::*send_2)(SEXP, bool) = &CMQMaster::send2 ;
+    void (CMQMaster::*send_1)(SEXP) = &CMQMaster::send_work ;
+    void (CMQMaster::*send_2)(SEXP, bool) = &CMQMaster::send_work ;
+    void (CMQMaster::*send_3)(SEXP) = &CMQMaster::send_shutdown ;
     class_<CMQMaster>("CMQMaster")
         .constructor()
 //        .constructor<zmq::context_t*>()
         .method("main_loop", &CMQMaster::main_loop)
         .method("listen", &CMQMaster::listen2)
-        .method("disconnect", &CMQMaster::disconnect2)
-        .method("send", send_1)
-        .method("send", send_2)
+        .method("send_work", send_1)
+        .method("send_work", send_2)
+        .method("send_shutdown", send_3)
         .method("receive", &CMQMaster::receive2)
         .method("poll", &CMQMaster::poll2)
     ;
