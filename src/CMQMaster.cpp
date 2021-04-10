@@ -47,23 +47,6 @@ public:
         send_null(false, true);
         send(data, false, false);
     }
-    SEXP receive2() {
-        cur = receive(false, false);
-        cur_s = std::string(reinterpret_cast<const char*>(RAW(cur)), Rf_xlength(cur));
-        auto null = receive(false, false);
-        SEXP msg;
-        if (sock.get(zmq::sockopt::rcvmore)) {
-            msg = receive(true, true);
-        } else {
-            std::cerr << "notify disconnect from " << cur_s << "\n";
-            if (peer_active[cur_s])
-                Rf_error("Unexpected worker disconnect: check your logs");
-            peer_active.erase(cur_s);
-            msg = R_NilValue;
-        }
-        std::cerr << peer_active.size() << " peers\n";
-        return msg;
-    }
     Rcpp::IntegerVector poll2(int timeout=-1) {
         return poll(timeout);
     }
@@ -71,15 +54,40 @@ public:
     void main_loop() {
     }
 
+    SEXP poll_recv(int timeout=-1) {
+//        if (peer_active.size() == 0)
+//            Rf_error("Trying to receive data without workers");
+
+        int ev = 0;
+        SEXP msg;
+        do {
+            ev = Rcpp::as<int>(poll(timeout));
+            cur = receive(false, false);
+            cur_s = std::string(reinterpret_cast<const char*>(RAW(cur)), Rf_xlength(cur));
+            auto null = receive(false, false);
+
+            if (sock.get(zmq::sockopt::rcvmore)) {
+                msg = receive(true, true);
+            } else {
+                std::cerr << "notify disconnect from " << cur_s << "\n";
+                if (peer_active[cur_s])
+                    Rf_error("Unexpected worker disconnect: check your logs");
+                peer_active.erase(cur_s);
+                ev = 0;
+            }
+            std::cerr << peer_active.size() << " peers\n";
+        } while (ev == 0);
+
+        return msg;
+    }
+
 private:
-//    MasterSocket * sock;
     zmq::context_t *ctx;
     zmq::socket_t sock;
     SEXP cur;
     std::string cur_s;
-
-    // can track which call ids each peer works on if required
     std::unordered_map<std::string, bool> peer_active;
+    // ^can track which call ids each peer works on if required
 
     void send(SEXP data, bool dont_wait=false, bool send_more=false) {
         auto flags = zmq::send_flags::none;
@@ -151,16 +159,13 @@ private:
 
 RCPP_MODULE(cmq_master) {
     using namespace Rcpp;
-    void (CMQMaster::*send_work)(SEXP) = &CMQMaster::send_work ;
-    void (CMQMaster::*send_shutdown)(SEXP) = &CMQMaster::send_shutdown ;
     class_<CMQMaster>("CMQMaster")
         .constructor()
 //        .constructor<zmq::context_t*>()
         .method("main_loop", &CMQMaster::main_loop)
         .method("listen", &CMQMaster::listen)
-        .method("send_work", send_work)
-        .method("send_shutdown", send_shutdown)
-        .method("receive", &CMQMaster::receive2)
-        .method("poll", &CMQMaster::poll2)
+        .method("send_work", &CMQMaster::send_work)
+        .method("send_shutdown", &CMQMaster::send_shutdown)
+        .method("poll_recv", &CMQMaster::poll_recv)
     ;
 }

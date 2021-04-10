@@ -112,40 +112,32 @@ QSys = R6::R6Class("QSys",
             else
                 msec = as.integer(timeout * 1000)
 
-            rcv = private$zmq$poll(timeout=msec)
-            if (is.null(rcv)) # non-critical interrupt received
-                return(self$receive_data(timeout, with_checks=with_checks))
+            msg = private$zmq$poll_recv(msec)
 
-            if (rcv[1]) { # otherwise timeout reached
-                msg = private$zmq$receive()
-                if (is.null(msg$id)) # router notify
-                    return(self$receive_data(timeout, with_checks=with_checks))
+            if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
+                stop("Authentication provided by worker does not match")
 
-                if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
-                    stop("Authentication provided by worker does not match")
-
-                switch(msg$id,
-                    "WORKER_UP" = {
-                        if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
-                            warning("\nVersion mismatch: master has ", private$pkg_warn,
-                                    ", worker ", msg$pkgver, immediate.=TRUE)
-                        }
-                        private$pkg_warn = NULL
-                        msg$id = "WORKER_READY"
-                        msg$token = "not set"
-                        private$workers_up = private$workers_up + 1
-                    },
-                    "WORKER_DONE" = {
-                        private$disconnect_worker(msg)
-                        if (private$workers_up > 0)
-                            return(self$receive_data(timeout, with_checks=with_checks))
-                        else if (with_checks)
-                            stop("Trying to receive data after work finished")
-                    },
-                    "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
-                )
-                msg
-            }
+            switch(msg$id,
+                "WORKER_UP" = {
+                    if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
+                        warning("\nVersion mismatch: master has ", private$pkg_warn,
+                                ", worker ", msg$pkgver, immediate.=TRUE)
+                    }
+                    private$pkg_warn = NULL
+                    msg$id = "WORKER_READY"
+                    msg$token = "not set"
+                    private$workers_up = private$workers_up + 1
+                },
+                "WORKER_DONE" = {
+                    private$disconnect_worker(msg)
+                    if (private$workers_up > 0)
+                        return(self$receive_data(timeout, with_checks=with_checks))
+                    else if (with_checks)
+                        stop("Trying to receive data after work finished")
+                },
+                "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
+            )
+            msg
         },
 
         # Send shutdown signal to worker
