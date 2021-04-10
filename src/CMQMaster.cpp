@@ -1,5 +1,4 @@
 #include <Rcpp.h>
-#include "MonitoredSocket.hpp"
 #include "ZeroMQ.hpp"
 
 class CMQMaster { // : public ZeroMQ {
@@ -7,12 +6,11 @@ public:
 //    CMQMaster(zmq::context_t *ctx_): ctx(ctx_) {
     CMQMaster(int threads=1): ctx(new zmq::context_t(threads)) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
-        sock.setsockopt(ZMQ_ROUTER_MANDATORY, 1);
-        sock.setsockopt(ZMQ_ROUTER_NOTIFY, ZMQ_NOTIFY_DISCONNECT);
+        sock.set(zmq::sockopt::router_mandatory, 1);
+        sock.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
     }
     ~CMQMaster() {
-        int linger = 0;
-        sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
+        sock.set(zmq::sockopt::linger, 0);
         sock.close();
         ctx->close();
         delete ctx;
@@ -28,10 +26,7 @@ public:
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
-            char option_value[1024];
-            size_t option_value_len = sizeof(option_value);
-            sock.getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
-            return std::string(option_value);
+            return sock.get(zmq::sockopt::last_endpoint);
         }
         Rf_error("Could not bind port after ", i, " tries");
     }
@@ -114,18 +109,18 @@ private:
         pitems[0].events = ZMQ_POLLIN;
 
         auto start = Time::now();
+        auto time_ms = std::chrono::milliseconds(timeout);
         int total_sock_ev = 0;
         auto result = Rcpp::IntegerVector(1);
         do {
             try {
-                zmq::poll(pitems, timeout);
+                zmq::poll(pitems, time_ms);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
-                    ms dt = std::chrono::duration_cast<ms>(Time::now() - start);
-                    timeout = timeout - dt.count();
-                    if (timeout <= 0)
+                    time_ms -= std::chrono::duration_cast<ms>(Time::now() - start);
+                    if (time_ms.count() <= 0)
                         break;
                 }
             }
