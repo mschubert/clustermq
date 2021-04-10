@@ -5,12 +5,10 @@ loadModule("cmq_worker", TRUE) # CMQWorker C++ class
 #' Do not call this manually, the master will do that
 #'
 #' @param master   The master address (tcp://ip:port)
-#' @param timeout  Time until worker shuts down without hearing from master
 #' @param ...      Catch-all to not break older template values (ignored)
 #' @param verbose  Whether to print debug messages
 #' @keywords internal
-worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
-                  ..., verbose=TRUE) {
+worker = function(master, ..., verbose=TRUE) {
     if (verbose)
         message = function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
     else
@@ -36,19 +34,15 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
     token = NA
 
     while(TRUE) {
-        events = zmq$poll(timeout=timeout * 1000)
-        if (events[1]) {
-            tic = proc.time()
-            msg = zmq$receive()
-            if (is.null(msg$id)) {
-                # more information if #146, #179, #191 happen again
-                message("msg: ", paste(names(msg), collapse=", "))
-                next
-            }
-            delta = proc.time() - tic
-            message(sprintf("> %s (%.3fs wait)", msg$id, delta[3]))
-        } else
-            stop("Timeout reached, terminating")
+        tic = proc.time()
+        msg = zmq$receive()
+        if (is.null(msg$id)) {
+            # more information if #146, #179, #191 happen again
+            message("msg: ", paste(names(msg), collapse=", "))
+            next
+        }
+        delta = proc.time() - tic
+        message(sprintf("> %s (%.3fs wait)", msg$id, delta[3]))
 
         switch(msg$id,
             "DO_CALL" = {
@@ -60,11 +54,9 @@ worker = function(master, timeout=getOption("clustermq.worker.timeout", 600),
             },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
-                    zmq$connect(msg$redirect, sid="data")
-                    zmq$send(list(id="WORKER_READY", auth=auth), "data")
                     message("WORKER_READY to redirect: ", msg$redirect)
-                    msg = zmq$receive("data")
-                    zmq$disconnect(sid="data")
+                    req = list(id="WORKER_READY", auth=auth)
+                    msg = zmq$get_data_redirect(msg$redirect, req)
                 }
                 need = c("id", "fun", "const", "export", "pkgs",
                          "rettype", "common_seed", "token")
