@@ -57,6 +57,10 @@ public:
         auto * ms = find_socket(sid);
         return ms->receive(dont_wait, unserialize);
     }
+    bool rcv_more(std::string sid="default") {
+        auto * ms = find_socket(sid);
+        return ms->sock.get(zmq::sockopt::rcvmore);
+    }
 
     void add_socket(MonitoredSocket * ms, std::string sid="default") {
         sockets.emplace(sid, std::move(ms));

@@ -118,6 +118,8 @@ QSys = R6::R6Class("QSys",
 
             if (rcv[1]) { # otherwise timeout reached
                 msg = private$zmq$receive()
+                if (is.null(msg$id)) # router notify
+                    return(self$receive_data(timeout, with_checks=with_checks))
 
                 if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
                     stop("Authentication provided by worker does not match")

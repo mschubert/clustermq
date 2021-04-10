@@ -24,6 +24,8 @@ public:
 //    }
     CMQMaster() {
         sock = new MasterSocket(ctx); // ptr deleted by base destructor
+        sock->sock.setsockopt(ZMQ_ROUTER_MANDATORY, 1);
+        sock->sock.setsockopt(ZMQ_ROUTER_NOTIFY, ZMQ_NOTIFY_DISCONNECT);
         add_socket(sock, "master");
     }
 
@@ -38,14 +40,25 @@ public:
         send2(data, false);
     }
     void send2(SEXP data, bool send_more=false) {
+        peer_active[cur_s] = true;
         send(cur, "master", false, true);
         send_null("master", false, true);
         send(data, "master", false, send_more);
     }
     SEXP receive2() {
         cur = receive("master", false, false);
+        cur_s = std::string(reinterpret_cast<const char*>(RAW(cur)), Rf_xlength(cur));
         auto null = receive("master", false, false);
-        return receive("master", false, true);
+        SEXP msg;
+        if (rcv_more("master")) {
+            msg = receive("master", true, true);
+            peer_active[cur_s] = false;
+        } else {
+            peer_active.erase(cur_s);
+            msg = R_NilValue;
+        }
+        std::cerr << peer_active.size() << " peers\n";
+        return msg;
     }
     Rcpp::IntegerVector poll2(int timeout=-1) {
         return poll("master", timeout);
@@ -57,6 +70,10 @@ public:
 private:
     MasterSocket * sock;
     SEXP cur;
+    std::string cur_s;
+
+    // can track which call ids each peer works on if required
+    std::unordered_map<std::string, bool> peer_active;
 };
 
 RCPP_MODULE(cmq_master) {
