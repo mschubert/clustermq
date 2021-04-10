@@ -24,11 +24,17 @@ public:
     }
 
     void send(SEXP data) {
+        send(data, false);
+    }
+    void send(SEXP data, bool send_more=false) {
+        auto flags = zmq::send_flags::none;
+        if (send_more)
+            flags = flags | zmq::send_flags::sndmore;
         if (TYPEOF(data) != RAWSXP)
             data = R_serialize(data, R_NilValue);
         zmq::message_t content(Rf_xlength(data));
         memcpy(content.data(), RAW(data), Rf_xlength(data));
-        sock.send(content, zmq::send_flags::none);
+        sock.send(content, flags);
     }
     SEXP receive() {
         poll();
@@ -93,11 +99,14 @@ private:
 
 RCPP_MODULE(cmq_worker) {
     using namespace Rcpp;
+    void (CMQWorker::*send_1)(SEXP) = &CMQWorker::send ;
+    void (CMQWorker::*send_2)(SEXP, bool) = &CMQWorker::send ;
     class_<CMQWorker>("CMQWorker")
         .constructor<std::string>()
         .method("main_loop", &CMQWorker::main_loop)
         .method("get_data_redirect", &CMQWorker::get_data_redirect)
-        .method("send", &CMQWorker::send)
+        .method("send", send_1)
+        .method("send", send_2)
         .method("receive", &CMQWorker::receive)
     ;
 }
