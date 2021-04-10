@@ -14,7 +14,7 @@ public:
     MonitoredSocket(zmq::context_t * ctx, int socket_type, std::string sid):
             sock(*ctx, socket_type), mon(*ctx, ZMQ_PAIR) {
         auto mon_addr = "inproc://" + sid;
-        int rc = zmq_socket_monitor(sock, mon_addr.c_str(), ZMQ_EVENT_CONNECTED | ZMQ_EVENT_DISCONNECTED);
+        int rc = zmq_socket_monitor(sock, mon_addr.c_str(), ZMQ_EVENT_ALL);
         if (rc < 0) // C API needs return value check
             Rf_error("failed to create socket monitor");
         mon.connect(mon_addr);
@@ -23,9 +23,7 @@ public:
     virtual ~MonitoredSocket() {
         int linger = 0;
         sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        std::cerr << "closing socket... " << std::flush;
         sock.close();
-        std::cerr << "closing monitor\n" << std::flush;
         mon.close();
     }
 
@@ -67,6 +65,16 @@ public:
         memcpy(message.data(), RAW(data), Rf_xlength(data));
         sock.send(message, flags);
     }
+    void send_null(bool dont_wait=false, bool send_more=false) {
+        auto flags = zmq::send_flags::none;
+        if (dont_wait)
+            flags = flags | zmq::send_flags::dontwait;
+        if (send_more)
+            flags = flags | zmq::send_flags::sndmore;
+
+        zmq::message_t message(0);
+        sock.send(message, flags);
+    }
     SEXP receive(bool dont_wait=false, bool unserialize=true) {
         auto flags = zmq::recv_flags::none;
         if (dont_wait)
@@ -84,10 +92,23 @@ public:
 
     virtual void handle_monitor_event() {
         // deriving class overrides to actually handle
+    }
+
+protected:
+    struct mon_ev {
+        uint16_t event;
+        std::string addr;
+    };
+
+    mon_ev recv_monitor_event() {
         zmq::message_t msg1, msg2;
         mon.recv(msg1, zmq::recv_flags::dontwait);
         mon.recv(msg2, zmq::recv_flags::dontwait);
-        std::cerr << "base event received\n";
+
+        mon_ev ev;
+        ev.event = *static_cast<uint16_t*>(msg1.data());
+        ev.addr = msg2.to_string();
+        return ev;
     }
 };
 

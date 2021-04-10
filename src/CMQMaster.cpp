@@ -4,21 +4,17 @@
 
 class MasterSocket : public MonitoredSocket {
 public:
-    MasterSocket(zmq::context_t * ctx): MonitoredSocket(ctx, ZMQ_REP, "master") {}
+    MasterSocket(zmq::context_t * ctx): MonitoredSocket(ctx, ZMQ_ROUTER, "master") {}
 
+/* we can not link this to the source
     void handle_monitor_event() {
-        // we expect 2 frames: http://api.zeromq.org/4-1:zmq-socket-monitor
-        zmq::message_t msg1, msg2;
-        // first frame in message contains event number and value
-        mon.recv(msg1, zmq::recv_flags::dontwait);
-        // second frame in message contains event address
-        mon.recv(msg2, zmq::recv_flags::dontwait);
-
-        // just print events + address to start things off
-        std::cerr << "derived event received\n";
-//        size_t size2 = 
-//        msg2.data()
-    }
+        auto ev = recv_monitor_event();
+        std::cerr << "recv ev: " << ev.event << " @ " << ev.addr << "\n";
+        if (ev.event == ZMQ_EVENT_HANDSHAKE_SUCCEEDED)
+            std::cerr << "peer accepted\n";
+        if (ev.event == ZMQ_EVENT_DISCONNECTED)
+            std::cerr << "peer disconnected\n";
+    } */
 };
 
 class CMQMaster : public ZeroMQ {
@@ -39,12 +35,16 @@ public:
         disconnect("master");
     }
     void send2(SEXP data) {
-        send(data, "master", false, false);
+        send2(data, false);
     }
     void send2(SEXP data, bool send_more=false) {
+        send(cur, "master", false, true);
+        send_null("master", false, true);
         send(data, "master", false, send_more);
     }
     SEXP receive2() {
+        cur = receive("master", false, false);
+        auto null = receive("master", false, false);
         return receive("master", false, true);
     }
     Rcpp::IntegerVector poll2(int timeout=-1) {
@@ -56,6 +56,7 @@ public:
 
 private:
     MasterSocket * sock;
+    SEXP cur;
 };
 
 RCPP_MODULE(cmq_master) {

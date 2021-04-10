@@ -43,12 +43,15 @@ public:
     void disconnect(std::string sid="default") {
         auto * ms = find_socket(sid);
         delete ms;
-        std::cerr << "erasing both\n" << std::flush;
         sockets.erase(sid);
     }
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
         auto * ms = find_socket(sid);
         ms->send(data, dont_wait, send_more);
+    }
+    void send_null(std::string sid="default", bool dont_wait=false, bool send_more=false) {
+        auto * ms = find_socket(sid);
+        ms->send_null(dont_wait, send_more);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
         auto * ms = find_socket(sid);
