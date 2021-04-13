@@ -31,12 +31,12 @@ public:
         Rf_error("Could not bind port after ", i, " tries");
     }
     void send_work(SEXP data) {
-            std::cerr << "setting worker " << cur << " active\n";
+//            std::cerr << "setting worker " << cur << " active\n";
         peer_active[cur] = true;
         send(data);
     }
     void send_shutdown(SEXP data) {
-            std::cerr << "setting worker " << cur << " inactive\n";
+//            std::cerr << "setting worker " << cur << " inactive\n";
         peer_active[cur] = false;
         send(data);
     }
@@ -69,14 +69,14 @@ public:
                 memcpy(RAW(msg), content.data(), content.size());
                 msg = R_unserialize(msg);
             } else {
-                std::cerr << "notify disconnect from " << cur << "\n";
+//                std::cerr << "notify disconnect from " << cur << "\n";
                 if (peer_active[cur])
                     Rf_error("Unexpected worker disconnect: check your logs");
                 peer_active.erase(cur);
                 ev = 0;
             }
 
-            std::cerr << peer_active.size() << " peers\n";
+//            std::cerr << peer_active.size() << " peers\n";
         } while (ev == 0);
 
         return msg;
