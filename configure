@@ -3,13 +3,13 @@ CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
-PKG_CFLAGS="-fPIC -Ilibzmq/include -Icppzmq"
+PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
 PKG_LIBS="libzmq/src/.libs/libzmq.a"
 
 cd src/libzmq
 if [ ! -f src/.libs/libzmq.a ]; then
   ./autogen.sh
-  CXXFLAGS="$CXXFLAGS -fPIC" ./configure \
+  CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
       --enable-static \
       --enable-drafts \
       --disable-libbsd \
