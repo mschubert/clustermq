@@ -60,7 +60,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install coreutils
+          brew install coreutils automake
 
       - name: Set up local key-based SSH
         if: runner.os != 'Windows' # GHA does not allow empty passphrase on Windows
