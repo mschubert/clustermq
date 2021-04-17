@@ -79,18 +79,19 @@ public:
         }
 
         auto start = Time::now();
+        auto time_ms = std::chrono::milliseconds(timeout);
         int total_sock_ev = 0;
         auto result = Rcpp::IntegerVector(nsock);
         do {
             try {
-                zmq::poll(pitems, timeout);
+                zmq::poll(pitems, time_ms);
             } catch(zmq::error_t const & e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
-                    ms dt = std::chrono::duration_cast<ms>(Time::now() - start);
-                    timeout = timeout - dt.count();
-                    if (timeout <= 0)
+                    time_ms -= std::chrono::duration_cast<ms>(Time::now() - start);
+                    if (time_ms.count() <= 0)
+                        break;
                         break;
                 }
             }

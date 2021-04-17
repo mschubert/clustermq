@@ -21,10 +21,10 @@ public:
     }
 //    MonitoredSocket(const MonitoredSocket &) = delete;
     virtual ~MonitoredSocket() {
-        int linger = 0;
-        sock.setsockopt(ZMQ_LINGER, &linger, sizeof(linger));
-        sock.close();
+        mon.set(zmq::sockopt::linger, 0);
         mon.close();
+        sock.set(zmq::sockopt::linger, 0);
+        sock.close();
     }
 
     zmq::socket_t sock;
@@ -40,10 +40,7 @@ public:
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
-            char option_value[1024];
-            size_t option_value_len = sizeof(option_value);
-            sock.getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
-            return std::string(option_value);
+            return sock.get(zmq::sockopt::last_endpoint);
         }
         Rf_error("Could not bind port after ", i, " tries");
     }

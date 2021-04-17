@@ -79,16 +79,16 @@ SEXP poll_socket(SEXP sockets, int timeout=-1) {
 
     int rc = -1;
     auto start = Time::now();
+    auto time_ms = std::chrono::milliseconds(timeout);
     do {
         try {
-            rc = zmq::poll(pitems, timeout);
+            rc = zmq::poll(pitems, time_ms);
         } catch(zmq::error_t &e) {
             if (errno != EINTR || pending_interrupt())
                 throw e;
             if (timeout != -1) {
-                ms dt = std::chrono::duration_cast<ms>(Time::now() - start);
-                timeout = timeout - dt.count();
-                if (timeout <= 0)
+                time_ms -= std::chrono::duration_cast<ms>(Time::now() - start);
+                if (time_ms.count() <= 0)
                     break;
             }
         }
