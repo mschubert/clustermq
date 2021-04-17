@@ -1,2 +1,3 @@
 #!/bin/sh
-rm -f src/Makevars configure.log autobrew
+rm -f src/Makevars src/*.o src/*.so* src/*.dylib configure.log autobrew
+make -C src/libzmq distclean

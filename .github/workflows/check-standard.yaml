@@ -54,19 +54,11 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install zeromq coreutils
+          brew install coreutils
 
       - name: Set up local key-based SSH
         if: runner.os != 'Windows' # GHA does not allow empty passphrase on Windows
