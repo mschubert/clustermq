@@ -101,7 +101,7 @@ jobs:
       - name: make test
         if: runner.os != 'Windows'
         run: |
-          timeout 300 make test
+          timeout 600 make test
 
       - name: Check
         env:
