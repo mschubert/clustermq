@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
@@ -6,8 +8,8 @@ CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
 PKG_LIBS="libzmq/src/.libs/libzmq.a"
 
-cd src/libzmq
-if [ ! -f src/.libs/libzmq.a ]; then
+if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
+  cd src/libzmq
   ./autogen.sh
   CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
       --enable-static \
@@ -16,7 +18,7 @@ if [ ! -f src/.libs/libzmq.a ]; then
       --disable-libunwind \
       --disable-curve
   make
+  cd -
 fi
-cd -
 
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
