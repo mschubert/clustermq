@@ -27,7 +27,7 @@ has_connectivity = function(host, protocol="tcp") {
     zmq$send(list("test"), sid="client")
     event = zmq$poll(sid="server", timeout=0.5)
     if (event[1]) {
-        msg = zmq$receive(sid="server", dont_wait=TRUE)
+        msg = zmq$receive(sid="server")
         if (msg == "test")
             return(TRUE)
     }
