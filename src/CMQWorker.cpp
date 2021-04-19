@@ -17,7 +17,7 @@ public:
     ~CMQWorker() {
         mon.set(zmq::sockopt::linger, 0);
         mon.close();
-        sock.set(zmq::sockopt::linger, 0);
+        sock.set(zmq::sockopt::linger, 10000);
         sock.close();
         ctx->close();
         delete ctx;
