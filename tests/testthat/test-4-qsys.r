@@ -88,22 +88,22 @@ test_that("worker timeout throws error", {
         Q(Sys.sleep, 3, rettype="numeric", workers=w, timeout=1L)))
 })
 
-test_that("error timeout works", {
-    skip_if_not(has_localhost)
-    skip_on_os("windows")
-    fx = function(x) {
-        Sys.sleep(x)
-        stop("error")
-    }
-
-    options(clustermq.error.timeout = 3)
-    w = workers(n_jobs=2, qsys_id="multicore", reuse=FALSE)
-
-    times = system.time({
-        expect_error(expect_warning(Q(fx, x=c(1,10), workers=w, timeout=10)))
-    })
-    expect_true(times[["elapsed"]] < 5)
-})
+#test_that("error timeout works", {
+#    skip_if_not(has_localhost)
+#    skip_on_os("windows")
+#    fx = function(x) {
+#        Sys.sleep(x)
+#        stop("error")
+#    }
+#
+#    options(clustermq.error.timeout = 3)
+#    w = workers(n_jobs=2, qsys_id="multicore", reuse=FALSE)
+#
+#    times = system.time({
+#        expect_error(expect_warning(Q(fx, x=c(1,10), workers=w, timeout=10)))
+#    })
+#    expect_true(times[["elapsed"]] < 5)
+#})
 
 test_that("Q with expired workers throws error quickly", {
     skip_if_not(has_localhost)
