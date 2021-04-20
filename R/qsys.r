@@ -17,7 +17,7 @@ QSys = R6::R6Class("QSys",
         # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
         initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE,
-                              template=NULL, zmq=new(CMQMaster)) {
+                              template=NULL, zmq=methods::new(CMQMaster)) {
             private$zmq = zmq
             if (bind) {
                 # ZeroMQ allows connecting by node name, but binding must be either

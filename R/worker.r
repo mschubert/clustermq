@@ -22,7 +22,7 @@ worker = function(master, ..., verbose=TRUE) {
         warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
 
     # connect to master
-    zmq = new(CMQWorker, master) # add I/O threads?
+    zmq = methods::new(CMQWorker, master) # add I/O threads?
     zmq$send(list(id="WORKER_UP", auth=auth,
                   pkgver=utils::packageVersion("clustermq")))
     message("WORKER_UP to: ", master)

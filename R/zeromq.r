@@ -10,7 +10,7 @@ loadModule("zmq", TRUE) # ZeroMQ_raw C++ class
 ZeroMQ = R6::R6Class("ZeroMQ",
     public = list(
         initialize = function()
-            private$zmq = new(ZeroMQ_raw),
+            private$zmq = methods::new(ZeroMQ_raw),
 
 #        finalize = function()
 #            private$zmq$destroy(),

@@ -6,15 +6,12 @@
 \usage{
 worker(
   master,
-  timeout = getOption("clustermq.worker.timeout", 600),
   ...,
   verbose = TRUE
 )
 }
 \arguments{
 \item{master}{The master address (tcp://ip:port)}
-
-\item{timeout}{Time until worker shuts down without hearing from master}
 
 \item{...}{Catch-all to not break older template values (ignored)}
 
