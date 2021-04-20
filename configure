@@ -13,10 +13,16 @@ if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   ./autogen.sh
   CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
       --enable-static \
+      --disable-shared \
+      --disable-maintainer-mode \
       --enable-drafts \
       --disable-libbsd \
       --disable-libunwind \
-      --disable-curve
+      --disable-perf \
+      --disable-curve \
+      --disable-curve-keygen \
+      --disable-ws \
+      --disable-radix-tree
   make
   cd -
 fi
