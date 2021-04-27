@@ -36,37 +36,35 @@ test_that("qsys_multicore", {
 #    expect_equal(success, TRUE)
 #})
 
-# has_connectivity makes CI hang, likely because context is not destructed
-# properly -> make C++ util that does this check & takes care of objs
-#test_that("qsys_lsf", {
-#    skip_on_cran()
-#    skip_if_not(with(avail, bsub))
-#    skip_if_not(has_cmq())
-#    skip_if_not(has_connectivity(Sys.info()["nodename"]))
-#    skip_on_os("windows")
-#    w = workers(n_jobs=1, qsys_id="lsf", reuse=FALSE)
-#    r = Q(fx, x=1:3, workers=w, timeout=3L)
-#    expect_equal(r, as.list(1:3*2))
-#})
-#
-#test_that("qsys_sge", {
-#    skip_on_cran()
-#    skip_if_not(with(avail, qsub))
-#    skip_if_not(has_cmq())
-#    skip_if_not(has_connectivity(Sys.info()["nodename"]))
-#    skip_on_os("windows")
-#    w = workers(n_jobs=1, qsys_id="sge", reuse=FALSE)
-#    r = Q(fx, x=1:3, workers=w, timeout=3L)
-#    expect_equal(r, as.list(1:3*2))
-#})
-#
-#test_that("qsys_slurm", {
-#    skip_on_cran()
-#    skip_if_not(with(avail, sbatch))
-#    skip_if_not(has_cmq())
-#    skip_if_not(has_connectivity(Sys.info()["nodename"]))
-#    skip_on_os("windows")
-#    w = workers(n_jobs=1, qsys_id="slurm", reuse=FALSE)
-#    r = Q(fx, x=1:3, workers=w, timeout=3L)
-#    expect_equal(r, as.list(1:3*2))
-#})
+test_that("qsys_lsf", {
+    skip_on_cran()
+    skip_if_not(with(avail, bsub))
+    skip_if_not(has_cmq())
+    skip_if_not(has_connectivity(Sys.info()["nodename"]))
+    skip_on_os("windows")
+    w = workers(n_jobs=1, qsys_id="lsf", reuse=FALSE)
+    r = Q(fx, x=1:3, workers=w, timeout=3L)
+    expect_equal(r, as.list(1:3*2))
+})
+
+test_that("qsys_sge", {
+    skip_on_cran()
+    skip_if_not(with(avail, qsub))
+    skip_if_not(has_cmq())
+    skip_if_not(has_connectivity(Sys.info()["nodename"]))
+    skip_on_os("windows")
+    w = workers(n_jobs=1, qsys_id="sge", reuse=FALSE)
+    r = Q(fx, x=1:3, workers=w, timeout=3L)
+    expect_equal(r, as.list(1:3*2))
+})
+
+test_that("qsys_slurm", {
+    skip_on_cran()
+    skip_if_not(with(avail, sbatch))
+    skip_if_not(has_cmq())
+    skip_if_not(has_connectivity(Sys.info()["nodename"]))
+    skip_on_os("windows")
+    w = workers(n_jobs=1, qsys_id="slurm", reuse=FALSE)
+    r = Q(fx, x=1:3, workers=w, timeout=3L)
+    expect_equal(r, as.list(1:3*2))
+})

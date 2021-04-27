@@ -37,3 +37,7 @@ send_socket <- function(socket, data, dont_wait = FALSE, send_more = FALSE) {
     invisible(.Call('_clustermq_send_socket', PACKAGE = 'clustermq', socket, data, dont_wait, send_more))
 }
 
+has_connectivity <- function(host) {
+    .Call('_clustermq_has_connectivity', PACKAGE = 'clustermq', host)
+}
+
