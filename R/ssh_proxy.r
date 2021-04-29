@@ -3,7 +3,7 @@
 #' Do not call this manually, the SSH qsys will do that
 #'
 #' @param ctl      The port to connect to the master for proxy control
-#' @param job      The port to connect to the master for job control
+#' @param job      The port to connect to the master for job data
 #' @param qsys_id  Character string of QSys class to use
 #' @keywords internal
 ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
