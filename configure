@@ -8,7 +8,14 @@ CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
 PKG_LIBS="libzmq/src/.libs/libzmq.a"
 
-git submodule update --init --recursive
+
+if [ "$(git rev-parse --is-inside-work-tree)" ]; then  
+  git submodule update --init --recursive
+else
+  git clone  https://github.com/zeromq/libzmq.git src/libzmq
+  git clone  https://github.com/zeromq/cppzmq.git src/cppzmq
+fi
+
 
 if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   cd src/libzmq
