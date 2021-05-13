@@ -28,7 +28,7 @@ fi
 if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   cd src/libzmq
 
-  if [ -f ./configure ]; then
+  if [ ! -f ./configure ]; then
     ./autogen.sh
   fi
 
