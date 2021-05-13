@@ -3,7 +3,6 @@ set -e
 
 ZEROMQ_VERSION="4.3.4"
 ZEROMQ_URL="https://github.com/zeromq/libzmq/releases/download/v${ZEROMQ_VERSION}/zeromq-${ZEROMQ_VERSION}.tar.gz"
-#ZEROMQ_URL="https://api.github.com/repos/zeromq/libzmq/tarball/v${ZEROMQ_VERSION}"
 
 CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
@@ -16,7 +15,9 @@ PKG_LIBS="libzmq/src/.libs/libzmq.a"
 if [ "$(git rev-parse --is-inside-work-tree)" ]; then  
   git submodule update --init --recursive
 else
-  #git clone  https://github.com/zeromq/libzmq.git src/libzmq
+  # Since we aren't using submodules, use the tarball release, 
+  # which saves having to run autogen.sh
+
   curl -sL "$ZEROMQ_URL" -o src/libzmq.tar.gz && \
     tar xvzf src/libzmq.tar.gz --strip-components=1 -C src/libzmq && \
     rm src/libzmq.tar.gz
@@ -28,6 +29,8 @@ fi
 if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   cd src/libzmq
 
+  # If installing from the cloned repo, we need to generate ./configure,
+  # but if installing from tarball it should just exist.
   if [ ! -f ./configure ]; then
     ./autogen.sh
   fi
