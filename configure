@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+ZEROMQ_VERSION="4.3.4"
+ZEROMQ_URL="https://github.com/zeromq/libzmq/releases/download/v${ZEROMQ_VERSION}/zeromq-${ZEROMQ_VERSION}.tar.gz"
+
 CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
@@ -8,9 +11,30 @@ CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
 PKG_LIBS="libzmq/src/.libs/libzmq.a"
 
+
+if [ "$(git rev-parse --is-inside-work-tree)" ]; then  
+  git submodule update --init --recursive
+else
+  # Since we aren't using submodules, use the tarball release, 
+  # which saves having to run autogen.sh
+
+  curl -sL "$ZEROMQ_URL" -o src/libzmq.tar.gz && \
+    tar xvzf src/libzmq.tar.gz --strip-components=1 -C src/libzmq && \
+    rm src/libzmq.tar.gz
+
+  git clone  https://github.com/zeromq/cppzmq.git src/cppzmq
+fi
+
+
 if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   cd src/libzmq
-  ./autogen.sh
+
+  # If installing from the cloned repo, we need to generate ./configure,
+  # but if installing from tarball it should just exist.
+  if [ ! -f ./configure ]; then
+    ./autogen.sh
+  fi
+
   CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
       --enable-static \
       --disable-shared \
