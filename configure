@@ -2,7 +2,8 @@
 set -e
 
 ZEROMQ_VERSION="4.3.4"
-ZEROMQ_URL="https://api.github.com/repos/zeromq/libzmq/tarball/v${ZEROMQ_VERSION}"
+ZEROMQ_URL="https://github.com/zeromq/libzmq/releases/download/v${ZEROMQ_VERSION}/zeromq-${ZEROMQ_VERSION}.tar.gz"
+#ZEROMQ_URL="https://api.github.com/repos/zeromq/libzmq/tarball/v${ZEROMQ_VERSION}"
 
 CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
@@ -16,7 +17,7 @@ if [ "$(git rev-parse --is-inside-work-tree)" ]; then
   git submodule update --init --recursive
 else
   #git clone  https://github.com/zeromq/libzmq.git src/libzmq
-  curl "$ZEROMQ_URL" -o src/libzmq.tar.gz && tar xvzf src/libzmq.tar.gz
+  curl -sL "$ZEROMQ_URL" -o src/libzmq.tar.gz && tar xvzf src/libzmq.tar.gz
   git clone  https://github.com/zeromq/cppzmq.git src/cppzmq
 fi
 
