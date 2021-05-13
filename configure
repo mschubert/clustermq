@@ -18,7 +18,7 @@ if [ "$(git rev-parse --is-inside-work-tree)" ]; then
 else
   #git clone  https://github.com/zeromq/libzmq.git src/libzmq
   curl -sL "$ZEROMQ_URL" -o src/libzmq.tar.gz && \
-    tar xvzf -C src/libzmq src/libzmq.tar.gz --strip-components=1 && \
+    tar xvzf src/libzmq.tar.gz --strip-components=1 -C src/libzmq && \
     rm src/libzmq.tar.gz
 
   git clone  https://github.com/zeromq/cppzmq.git src/cppzmq
