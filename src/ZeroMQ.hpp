@@ -92,7 +92,6 @@ public:
                     time_ms -= std::chrono::duration_cast<ms>(Time::now() - start);
                     if (time_ms.count() <= 0)
                         break;
-                        break;
                 }
             }
 
