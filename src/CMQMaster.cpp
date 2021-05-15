@@ -3,8 +3,8 @@
 
 class CMQMaster { // : public ZeroMQ {
 public:
-//    CMQMaster(zmq::context_t *ctx_): ctx(ctx_) {
-    CMQMaster(int threads=1): ctx(new zmq::context_t(threads)) {
+    CMQMaster(int threads=1): CMQMaster(new zmq::context_t(threads)) {}
+    CMQMaster(zmq::context_t *ctx_): ctx(ctx_) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
         sock.set(zmq::sockopt::router_mandatory, 1);
         sock.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);

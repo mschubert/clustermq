@@ -31,7 +31,7 @@ bool has_connectivity(std::string host) {
         if (msg1 == msg2_s)
             success = true;
     } catch(zmq::error_t const &e) {
-        std::cerr << e.what() << "\n";
+//        std::cerr << e.what() << "\n";
         success = false;
     }
 
