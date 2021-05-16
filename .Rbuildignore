@@ -11,7 +11,9 @@
 ^_pkgdown\.yml$
 clustermq_[0-9.]+\.tar\.gz
 ^\.github$
-^src/libzmq/config/.*\.m4$
 ^src/libzmq/\.
+^src/libzmq/config/.*\.m4$
+^src/libzmq/builds/openwrt/Makefile$
+^src/libzmq/Makefile$
 ^src/libzmq/CMakeFiles
 ^src/cppzmq/\.

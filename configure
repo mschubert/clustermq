@@ -10,6 +10,8 @@ if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   cd src/libzmq
 
   if [ ! -f Makefile.in ]; then
+    # remove code format helper and valgrind support that CRAN complains about
+    sed -i '/WITH_CLANG_FORMAT/,/VALGRIND_SUPPRESSIONS_FILES/d' Makefile.am
     ./autogen.sh || die
   fi
 
