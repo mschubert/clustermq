@@ -16,4 +16,7 @@ clustermq_[0-9.]+\.tar\.gz
 ^src/libzmq/builds/openwrt/Makefile$
 ^src/libzmq/Makefile$
 ^src/libzmq/CMakeFiles
+^src/libzmq/external/wepoll
+^src/libzmq/include/zmq_utils.h
+^src/libzmq/src/tweetnacl.c
 ^src/cppzmq/\.
