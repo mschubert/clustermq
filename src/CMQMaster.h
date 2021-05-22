@@ -3,7 +3,9 @@
 
 class CMQMaster { // : public ZeroMQ {
 public:
-    CMQMaster(int threads=1): CMQMaster(new zmq::context_t(threads)) {}
+    CMQMaster(int threads=1): CMQMaster(new zmq::context_t(threads)) {
+        external_context = false;
+    }
     CMQMaster(zmq::context_t *ctx_): ctx(ctx_) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
         sock.set(zmq::sockopt::router_mandatory, 1);
@@ -12,8 +14,10 @@ public:
     ~CMQMaster() {
         sock.set(zmq::sockopt::linger, 0);
         sock.close();
-        ctx->close();
-        delete ctx;
+        if (!external_context) {
+            ctx->close();
+            delete ctx;
+        }
     }
 
     std::string listen(Rcpp::CharacterVector addrs) {
@@ -84,6 +88,7 @@ public:
 
 private:
     zmq::context_t *ctx;
+    bool external_context {true};
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, bool> peer_active;

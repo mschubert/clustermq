@@ -11,8 +11,6 @@ public:
 
         fwd_to_worker = zmq::socket_t(*ctx, ZMQ_REP);
 //        net_fwd = fwd_to_worker.listen();
-
-//        master = CMQMaster(ctx);
     }
     ~CMQProxy() {
         fwd_to_master.set(zmq::sockopt::linger, 0);
@@ -30,7 +28,6 @@ public:
     }
 
 private:
-    CMQMaster master; // needs to be included
     zmq::context_t *ctx;
     zmq::socket_t ctl;
     zmq::socket_t data;
