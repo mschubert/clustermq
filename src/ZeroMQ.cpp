@@ -1,4 +1,4 @@
-#include "ZeroMQ.hpp"
+#include "ZeroMQ.h"
 
 RCPP_MODULE(zmq) {
     using namespace Rcpp;

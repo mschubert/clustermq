@@ -1,5 +1,5 @@
-#ifndef _ZEROMQ_HPP_
-#define _ZEROMQ_HPP_
+#ifndef _ZEROMQ_H_
+#define _ZEROMQ_H_
 
 #include <Rcpp.h>
 #include <chrono>
@@ -134,4 +134,4 @@ protected:
     }
 };
 
-#endif // _ZEROMQ_HPP_
+#endif // _ZEROMQ_H_

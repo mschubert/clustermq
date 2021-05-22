@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "ZeroMQ.hpp"
+#include "ZeroMQ.h"
 
 class CMQMaster { // : public ZeroMQ {
 public:
