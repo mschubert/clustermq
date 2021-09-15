@@ -20,12 +20,10 @@ MULTICORE = R6::R6Class("MULTICORE",
 
             for (i in seq_len(n_jobs)) {
                 if (is.character(log_file))
-                    log_i = sprintf(log_file, i)
+                    log_i = suppressWarnings(sprintf(log_file, i))
                 else
-                    log_i = NULL
+                    log_i = nullfile()
                 wrapper = function(m, logfile) {
-                    if (is.null(logfile))
-                        logfile = "/dev/null"
                     fout = file(logfile, open="wt")
                     sink(file=fout, type="output")
                     sink(file=fout, type="message")
