@@ -6,6 +6,11 @@ CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
 PKG_LIBS="libzmq/src/.libs/libzmq.a"
 
+if [ ! -f src/libzmq/autogen.sh ]; then
+  # the tarball has the submodules, a fresh clone does not
+  git submodule update --init --recursive
+fi
+
 if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
   cd src/libzmq
 
