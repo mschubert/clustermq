@@ -89,6 +89,7 @@ test_that("worker timeout throws error", {
 })
 
 #test_that("error timeout works", {
+#    skip_on_cran()
 #    skip_if_not(has_localhost)
 #    skip_on_os("windows")
 #    fx = function(x) {
@@ -106,6 +107,7 @@ test_that("worker timeout throws error", {
 #})
 
 test_that("Q with expired workers throws error quickly", {
+    skip_on_cran()
     skip_if_not(has_localhost)
     skip_on_os("windows")
 
