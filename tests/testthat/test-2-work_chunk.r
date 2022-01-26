@@ -44,9 +44,8 @@ test_that("warning and error handling", {
     re = work_chunk(data.frame(a=1:6), fx)
     expect_equal(sapply(re$result, class) == "error",
                  setNames(rep(c(FALSE,TRUE), 3), 1:6))
-    expect_equal(unname(unlist(re$result[c(1,3,5)])),
-                 as.integer(names(re$result[c(1,3,5)])),
-                 c(1,3,5))
+    expect_equal(c(1,3,5), unname(unlist(re$result[c(1,3,5)])))
+    expect_equal(c(1,3,5), as.integer(names(re$result[c(1,3,5)])))
     expect_equal(length(re$warnings), 2)
     expect_true(grepl("3", re$warnings[[1]]))
     expect_true(grepl("warning", re$warnings[[1]]))
@@ -63,7 +62,7 @@ test_that("const args", {
 
 test_that("seed reproducibility", {
     fx = function(a, ...) sample(1:1000, 1)
-    
+
     # seed should be set by common + df row name
     expect_equal(work_chunk(df[1:2,], fx, common_seed=123)$result$'2',
                  work_chunk(df[2:3,], fx, common_seed=123)$result$'2')

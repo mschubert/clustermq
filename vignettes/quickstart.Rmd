@@ -226,7 +226,7 @@ Use [`batchtools`](https://github.com/mllg/batchtools) if:
 * don't mind there's no load-balancing at run-time
 
 Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) (or
-[`flowr`](https://github.com/sahilseth/flowr),
+[`flowr`](https://github.com/flow-r/flowr),
 [`remake`](https://github.com/richfitz/remake),
 [`drake`](https://github.com/ropensci/drake)) if:
 
