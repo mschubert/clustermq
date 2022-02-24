@@ -436,19 +436,14 @@ correctly in your `~/.bash_profile` and/or your `~/.bashrc` (depending on
 your cluster config you might need either).
 
 If you get a SSH warning or error try again with `ssh -v` to enable verbose
-output.
-
-Next, try and see if you can create the same tunnel from your local R session:
-
-```{r eval=FALSE}
-system("ssh -R 54709:localhost:6687 <user@host> R --vanilla")
-```
-
-If the forward itself works, set the following option *in your local*
-`~/.Rprofile`:
+output. If the forward itself works, run the following in your local R session
+(ideally also in command-line R, [not only in
+RStudio](https://github.com/mschubert/clustermq/issues/206)):
 
 ```{r eval=FALSE}
-options(clustermq.ssh.log = "~/ssh_proxy.log")
+options(clustermq.scheduler = "ssh",
+        clustermq.ssh.log = "~/ssh_proxy.log")
+Q(identity, x=1, n_jobs=1)
 ```
 
 This will create a log file *on the remote server* that will contain any errors
