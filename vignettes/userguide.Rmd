@@ -465,11 +465,12 @@ but the server log does not show any errors, then you can try increasing the
 timeout:
 
 ```{r eval=FALSE}
-options(clustermq.ssh.timeout = 10) # or a higher number
+options(clustermq.ssh.timeout = 30) # in seconds
 ```
 
-This can happens when your SSH startup template includes additional steps
-before starting R, such as activating a module or conda environment.
+This can happen when your SSH startup template includes additional steps before
+starting R, such as activating a module or conda environment, or having to
+confirm the connection via two-factor authentication.
 
 ## Environments
 
