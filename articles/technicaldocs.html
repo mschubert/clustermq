@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clustermq</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.95.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.96</span>
       </span>
     </div>
 
@@ -39,7 +41,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa-home"></span>
+    <span class="fa fa-home"></span>
      
   </a>
 </li>
@@ -58,8 +60,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mschubert/clustermq">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/mschubert/clustermq" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -73,13 +75,13 @@
 
       
 
-      </header><script src="technicaldocs_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Technical Documentation</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mschubert/clustermq/blob/master/vignettes/technicaldocs.Rmd"><code>vignettes/technicaldocs.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mschubert/clustermq/blob/HEAD/vignettes/technicaldocs.Rmd" class="external-link"><code>vignettes/technicaldocs.Rmd</code></a></small>
       <div class="hidden name"><code>technicaldocs.Rmd</code></div>
 
     </div>
@@ -95,13 +97,13 @@ code {
     border: 0px !important;
 }
 </style>
-<div id="worker-api" class="section level2">
-<h2 class="hasAnchor">
-<a href="#worker-api" class="anchor"></a>Worker API</h2>
-<div id="base-api-and-schedulers" class="section level3">
-<h3 class="hasAnchor">
-<a href="#base-api-and-schedulers" class="anchor"></a>Base API and schedulers</h3>
-<p>The main worker functions are wrapped in an <code>R6</code> class with the name of <code>QSys</code>. This provides a standardized API to the <a href="https://mschubert.github.io/clustermq/articles/technicaldocs.html#zeromq-message-specification">lower-level messages</a> that are sent via <a href="https://zeromq.org/"><code>ZeroMQ</code></a>.</p>
+<div class="section level2">
+<h2 id="worker-api">Worker API<a class="anchor" aria-label="anchor" href="#worker-api"></a>
+</h2>
+<div class="section level3">
+<h3 id="base-api-and-schedulers">Base API and schedulers<a class="anchor" aria-label="anchor" href="#base-api-and-schedulers"></a>
+</h3>
+<p>The main worker functions are wrapped in an <code>R6</code> class with the name of <code>QSys</code>. This provides a standardized API to the <a href="https://mschubert.github.io/clustermq/articles/technicaldocs.html#zeromq-message-specification" class="external-link">lower-level messages</a> that are sent via <a href="https://zeromq.org/" class="external-link"><code>ZeroMQ</code></a>.</p>
 <p>The base class itself is derived in scheduler classes that add the required functions for submitting and cleaning up jobs:</p>
 <pre><code>+ QSys
   |- Multicore
@@ -116,22 +118,22 @@ code {
 <span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span><span class="op">(</span>n_jobs<span class="op">=</span><span class="fl">3</span><span class="op">)</span>
 
 <span class="co"># if we make an unclean exit for whatever reason, clean up the jobs</span>
-<span class="fu"><a href="https://rdrr.io/r/base/on.exit.html">on.exit</a></span><span class="op">(</span><span class="va">w</span><span class="op">$</span><span class="fu">finalize</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></span><span class="op">(</span><span class="va">w</span><span class="op">$</span><span class="fu">finalize</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="worker-startup" class="section level3">
-<h3 class="hasAnchor">
-<a href="#worker-startup" class="anchor"></a>Worker startup</h3>
+<div class="section level3">
+<h3 id="worker-startup">Worker startup<a class="anchor" aria-label="anchor" href="#worker-startup"></a>
+</h3>
 <p>For workers that are started up via a scheduler, we do not know which machine they will run on. This is why we start up every worker with a TCP/IP address of the master socket that will distribute work.</p>
 <p>This is achieved by the call to R common to all schedulers:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> --no-save --no-restore -e <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 <p>On the master’s side, we wait until a worker connects:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># this will block until a worker is ready</span>
 <span class="va">msg</span> <span class="op">=</span> <span class="va">w</span><span class="op">$</span><span class="fu">receive_data</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="common-data-and-exports" class="section level3">
-<h3 class="hasAnchor">
-<a href="#common-data-and-exports" class="anchor"></a>Common data and exports</h3>
+<div class="section level3">
+<h3 id="common-data-and-exports">Common data and exports<a class="anchor" aria-label="anchor" href="#common-data-and-exports"></a>
+</h3>
 <p>Workers will start up without any knowledge of what they should process or how. In order to transfer initial data to the worker, we first create and serialize a list object with the following fields:</p>
 <ul>
 <li>
@@ -156,13 +158,13 @@ code {
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (msg<span class="sc">$</span>token <span class="sc">!=</span> <span class="er">&lt;</span>token<span class="sc">&gt;</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    w<span class="sc">$</span><span class="fu">send_common_data</span>()</span></code></pre></div>
 </div>
-<div id="iterated-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#iterated-data" class="anchor"></a>Iterated data</h3>
+<div class="section level3">
+<h3 id="iterated-data">Iterated data<a class="anchor" aria-label="anchor" href="#iterated-data"></a>
+</h3>
 <p>If the worker has already received the common data, we can send it a chunk of iterated arguments to work on. These are passed as a list of iterables, e.g. a <code>data.frame</code> with a column for each iterated argument.</p>
 <p>It also needs to have a column with name <code>&lt;space&gt;id&lt;space&gt;</code>, which will be used to identify each call.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">chunk</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>arg1<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, arg2<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">1</span>, ` id `<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">chunk</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>arg1<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, arg2<span class="op">=</span><span class="fl">5</span><span class="op">:</span><span class="fl">1</span>, ` id `<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>
 <span class="va">w</span><span class="op">$</span><span class="fu">send_job_data</span><span class="op">(</span><span class="va">chunk</span><span class="op">)</span></code></pre></div>
 <p>If the worker has finished processing, it will send a message with the field <code>result</code> that is a list, containing:</p>
 <ul>
@@ -175,13 +177,13 @@ code {
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">msg</span> <span class="op">=</span> <span class="va">w</span><span class="op">$</span><span class="fu">receive_data</span><span class="op">(</span><span class="op">)</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">msg</span><span class="op">$</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">msg</span><span class="op">$</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="co"># store result here, handle errors/warnings if required</span>
 <span class="op">}</span></code></pre></div>
 </div>
-<div id="custom-calls" class="section level3">
-<h3 class="hasAnchor">
-<a href="#custom-calls" class="anchor"></a>Custom calls</h3>
+<div class="section level3">
+<h3 id="custom-calls">Custom calls<a class="anchor" aria-label="anchor" href="#custom-calls"></a>
+</h3>
 <p>Apart from sending common and iterated data that the worker will process in chunks, it is also possible to send arbitrary calls that it will evaluate. It needs the following fields:</p>
 <ul>
 <li>
@@ -192,11 +194,11 @@ code {
 <code>ref</code> - an identifier for the call; will default to the expression itself</li>
 </ul>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">send_call</span><span class="op">(</span><span class="va">expr</span>, env<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>, ref<span class="op">=</span><span class="st">"mycall1"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">send_call</span><span class="op">(</span><span class="va">expr</span>, env<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>, ref<span class="op">=</span><span class="st">"mycall1"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="main-event-loop" class="section level3">
-<h3 class="hasAnchor">
-<a href="#main-event-loop" class="anchor"></a>Main event loop</h3>
+<div class="section level3">
+<h3 id="main-event-loop">Main event loop<a class="anchor" aria-label="anchor" href="#main-event-loop"></a>
+</h3>
 <p>Putting the above together in an event loop, we get what is essentially implemented in <code>master</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">=</span> <span class="fu">workers</span>(<span class="dv">3</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">on.exit</span>(w<span class="sc">$</span><span class="fu">finalize</span>())</span>
@@ -216,24 +218,24 @@ code {
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co"># if proper cleanup is successful, cancel kill-on-exit</span></span>
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (w<span class="sc">$</span><span class="fu">cleanup</span>())</span>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>()</span></code></pre></div>
-<p>A loop of a similar structure can be used to extend <code>clustermq</code>. As an example, <a href="https://github.com/ropensci/drake/blob/v7.9.0/R/backend_clustermq.R">this was done by <code>drake</code></a> using common data and custom calls only (no iterated chunks).</p>
+<p>A loop of a similar structure can be used to extend <code>clustermq</code>. As an example, <a href="https://github.com/ropensci/drake/blob/v7.9.0/R/backend_clustermq.R" class="external-link">this was done by <code>drake</code></a> using common data and custom calls only (no iterated chunks).</p>
 </div>
 </div>
-<div id="zeromq-message-specification" class="section level2">
-<h2 class="hasAnchor">
-<a href="#zeromq-message-specification" class="anchor"></a>ZeroMQ message specification</h2>
+<div class="section level2">
+<h2 id="zeromq-message-specification">ZeroMQ message specification<a class="anchor" aria-label="anchor" href="#zeromq-message-specification"></a>
+</h2>
 <p>Communication between the <code>master</code> (main event loop) and workers (<code>QSys</code> base class) is organised in <em>messages</em>. These are chunks of serialized data with an <code>id</code> field, and other data that is required for this type of message.</p>
-<div id="messages-per-type" class="section level3">
-<h3 class="hasAnchor">
-<a href="#messages-per-type" class="anchor"></a>Messages per type</h3>
+<div class="section level3">
+<h3 id="messages-per-type">Messages per type<a class="anchor" aria-label="anchor" href="#messages-per-type"></a>
+</h3>
 <p>Below, the message <code>id</code> is listed with the additional fields per message.</p>
-<div id="worker" class="section level4">
-<h4 class="hasAnchor">
-<a href="#worker" class="anchor"></a>Worker</h4>
+<div class="section level4">
+<h4 id="worker">Worker<a class="anchor" aria-label="anchor" href="#worker"></a>
+</h4>
 <p>This workflow is handled by the <code><a href="../reference/worker.html">worker()</a></code> event loop of <code>clustermq</code> (not to be confused with the <code><a href="../reference/workers.html">workers()</a></code> control). It is the function called in every job or thread to interact with the <code><a href="../reference/master.html">master()</a></code>. The event loop is internal, i.e. it is not modifiable and not exported.</p>
-<div id="worker_up" class="section level5">
-<h5 class="hasAnchor">
-<a href="#worker_up" class="anchor"></a><code>WORKER_UP</code>
+<div class="section level5">
+<h5 id="worker_up">
+<code>WORKER_UP</code><a class="anchor" aria-label="anchor" href="#worker_up"></a>
 </h5>
 <ul>
 <li>Message ID indicating worker is accepting data</li>
@@ -241,9 +243,9 @@ code {
 <li>Answer is serialized common data (<code>fun</code>, <code>const</code>, and <code>seed</code>) or <code>redirect</code> (with URL where worker can get data)</li>
 </ul>
 </div>
-<div id="worker_ready" class="section level5">
-<h5 class="hasAnchor">
-<a href="#worker_ready" class="anchor"></a><code>WORKER_READY</code>
+<div class="section level5">
+<h5 id="worker_ready">
+<code>WORKER_READY</code><a class="anchor" aria-label="anchor" href="#worker_ready"></a>
 </h5>
 <ul>
 <li>Message ID indicating worker is accepting chunks</li>
@@ -262,20 +264,20 @@ code {
 </li>
 </ul>
 </div>
-<div id="worker_done" class="section level5">
-<h5 class="hasAnchor">
-<a href="#worker_done" class="anchor"></a><code>WORKER_DONE</code>
+<div class="section level5">
+<h5 id="worker_done">
+<code>WORKER_DONE</code><a class="anchor" aria-label="anchor" href="#worker_done"></a>
 </h5>
 <ul>
 <li>Message ID indicating worker is shutting down</li>
 <li>Worker will send this in response to <code>WORKER_STOP</code>
 </li>
-<li>Field has to be <code>time</code> (from <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time()</a></code>), <code>mem</code> (max memory used) and <code>calls</code> (number of processed calls)</li>
+<li>Field has to be <code>time</code> (from <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>), <code>mem</code> (max memory used) and <code>calls</code> (number of processed calls)</li>
 </ul>
 </div>
-<div id="worker_error" class="section level5">
-<h5 class="hasAnchor">
-<a href="#worker_error" class="anchor"></a><code>WORKER_ERROR</code>
+<div class="section level5">
+<h5 id="worker_error">
+<code>WORKER_ERROR</code><a class="anchor" aria-label="anchor" href="#worker_error"></a>
 </h5>
 <ul>
 <li>Some error occurred in processing flow (not the function calls themselves)</li>
@@ -284,17 +286,17 @@ code {
 </ul>
 </div>
 </div>
-<div id="master" class="section level4">
-<h4 class="hasAnchor">
-<a href="#master" class="anchor"></a>Master</h4>
+<div class="section level4">
+<h4 id="master">Master<a class="anchor" aria-label="anchor" href="#master"></a>
+</h4>
 <p>This workflow is handled by the <code><a href="../reference/master.html">master()</a></code> function of <code>clustermq</code>. If you are using <code><a href="../reference/Q.html">Q()</a></code> or <code><a href="../reference/Q_rows.html">Q_rows()</a></code>, this is handled under the hood. Workers created outside of these functions can be reused within <code><a href="../reference/Q.html">Q()</a></code>/<code><a href="../reference/Q_rows.html">Q_rows()</a></code> without knowing any of the internal message structure.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span><span class="op">(</span><span class="va">n_jobs</span>, <span class="va">...</span><span class="op">)</span>
 <span class="co"># w$cleanup() for a clean shutdown at the end</span></code></pre></div>
 <p>The documentation below is to show it is possible to implement a custom control flow, e.g. if you want to evaluate arbitrary expressions on workers instead of defining one function to call and different arguments.</p>
-<div id="do_setup" class="section level5">
-<h5 class="hasAnchor">
-<a href="#do_setup" class="anchor"></a><code>DO_SETUP</code>
+<div class="section level5">
+<h5 id="do_setup">
+<code>DO_SETUP</code><a class="anchor" aria-label="anchor" href="#do_setup"></a>
 </h5>
 <ul>
 <li>Message contains common data, like the function to call and its arguments</li>
@@ -309,9 +311,9 @@ code {
 <span class="co"># send this object to a worker</span>
 <span class="va">w</span><span class="op">$</span><span class="fu">send_common_data</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="do_chunk" class="section level5">
-<h5 class="hasAnchor">
-<a href="#do_chunk" class="anchor"></a><code>DO_CHUNK</code>
+<div class="section level5">
+<h5 id="do_chunk">
+<code>DO_CHUNK</code><a class="anchor" aria-label="anchor" href="#do_chunk"></a>
 </h5>
 <ul>
 <li>Chunk of iterated arguments for the worker</li>
@@ -321,9 +323,10 @@ code {
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">send_job_data</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="do_call-new-in-0-8-5" class="section level5">
-<h5 class="hasAnchor">
-<a href="#do_call-new-in-0-8-5" class="anchor"></a><code>DO_CALL</code> (new in <code>0.8.5</code>)</h5>
+<div class="section level5">
+<h5 id="do_call-new-in-0-8-5">
+<code>DO_CALL</code> (new in <code>0.8.5</code>)<a class="anchor" aria-label="anchor" href="#do_call-new-in-0-8-5"></a>
+</h5>
 <ul>
 <li>Evaluate a specific expression on the worker</li>
 <li>Needs fields <code>expr</code> (the expression to be evaluated) and <code>env</code> (list environment to evaluate it in)</li>
@@ -331,9 +334,9 @@ code {
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">send_call</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="worker_wait" class="section level5">
-<h5 class="hasAnchor">
-<a href="#worker_wait" class="anchor"></a><code>WORKER_WAIT</code>
+<div class="section level5">
+<h5 id="worker_wait">
+<code>WORKER_WAIT</code><a class="anchor" aria-label="anchor" href="#worker_wait"></a>
 </h5>
 <ul>
 <li>Instruct the worker to wait <code>wait</code> seconds</li>
@@ -343,9 +346,9 @@ code {
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">send_wait</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="worker_stop" class="section level5">
-<h5 class="hasAnchor">
-<a href="#worker_stop" class="anchor"></a><code>WORKER_STOP</code>
+<div class="section level5">
+<h5 id="worker_stop">
+<code>WORKER_STOP</code><a class="anchor" aria-label="anchor" href="#worker_stop"></a>
 </h5>
 <ul>
 <li>Instruct the worker to exit its main event loop</li>
@@ -354,17 +357,17 @@ code {
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">send_shutdown_worker</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="disconnect-and-reset-socket-state" class="section level5">
-<h5 class="hasAnchor">
-<a href="#disconnect-and-reset-socket-state" class="anchor"></a>Disconnect and reset socket state</h5>
+<div class="section level5">
+<h5 id="disconnect-and-reset-socket-state">Disconnect and reset socket state<a class="anchor" aria-label="anchor" href="#disconnect-and-reset-socket-state"></a>
+</h5>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">w</span><span class="op">$</span><span class="fu">disconnect_worker</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="control-flow-stages" class="section level3">
-<h3 class="hasAnchor">
-<a href="#control-flow-stages" class="anchor"></a>Control flow stages</h3>
+<div class="section level3">
+<h3 id="control-flow-stages">Control flow stages<a class="anchor" aria-label="anchor" href="#control-flow-stages"></a>
+</h3>
 <p>The convention here is</p>
 <ul>
 <li>worker &gt; master
@@ -373,9 +376,9 @@ code {
 </ul>
 </li>
 </ul>
-<div id="batch-processing-no-proxy" class="section level4">
-<h4 class="hasAnchor">
-<a href="#batch-processing-no-proxy" class="anchor"></a>Batch processing, no proxy</h4>
+<div class="section level4">
+<h4 id="batch-processing-no-proxy">Batch processing, no proxy<a class="anchor" aria-label="anchor" href="#batch-processing-no-proxy"></a>
+</h4>
 <p>This is the default use case for <code>Q</code>, <code>Q_rows</code>. It will set the common data (<code>DO_SETUP</code>; function to call, constant arguments, exported data, random seed) once and then provide chunks of arguments (<code>DO_CHUNK</code>) as <code>data.frame</code>s for batch processing.</p>
 <ul>
 <li>
@@ -420,9 +423,9 @@ code {
 <span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
-<div id="evaluating-custom-expressions" class="section level4">
-<h4 class="hasAnchor">
-<a href="#evaluating-custom-expressions" class="anchor"></a>Evaluating custom expressions</h4>
+<div class="section level4">
+<h4 id="evaluating-custom-expressions">Evaluating custom expressions<a class="anchor" aria-label="anchor" href="#evaluating-custom-expressions"></a>
+</h4>
 <p>This can be mixed with batch processing, as long as <code>DO_SETUP</code> is called before <code>DO_CHUNK</code> (otherwise it will cause <code>WORKER_ERROR</code> on token mismatch).</p>
 <ul>
 <li>
@@ -483,11 +486,13 @@ code {
 
 
       <footer><div class="copyright">
-  <p>Developed by Michael Schubert.</p>
+  <p></p>
+<p>Developed by Michael Schubert.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -495,6 +500,8 @@ code {
 
   
 
+
+  
 
   </body>
 </html>

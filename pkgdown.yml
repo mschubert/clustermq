@@ -1,9 +1,9 @@
-pandoc: 2.11.2
-pkgdown: 1.6.1
+pandoc: 2.14.2
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   quickstart: quickstart.html
   technicaldocs: technicaldocs.html
   userguide: userguide.html
-last_built: 2020-12-30T21:27Z
+last_built: 2022-02-24T11:29Z
 
