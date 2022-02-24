@@ -120,9 +120,8 @@ to test your code before submitting it to a scheduler.
 * Multiprocess (*recommended*) - Use the `callr` package to run and manage
   multiple parallel R processes with `options(clustermq.scheduler="multiprocess")`
 * Multicore - Uses the `parallel` package to fork the current R process into
-  multiple threads with `options(clustermq.scheduler="multicore")`. This saves
-  memory but sometimes causes problems (macOS, RStudio) and is not available on
-  Windows.
+  multiple threads with `options(clustermq.scheduler="multicore")`. This
+  sometimes causes problems (macOS, RStudio) and is not available on Windows.
 
 ### Setting up the scheduler
 
