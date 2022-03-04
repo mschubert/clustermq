@@ -56,7 +56,115 @@
       <small>Source: <a href="https://github.com/mschubert/clustermq/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-  </main></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.95" id="clustermq-0895">clustermq 0.8.95<a class="anchor" aria-label="anchor" href="#clustermq-0895"></a></h2><p class="text-muted">CRAN release: 2020-07-01</p>
+<ul><li>We are now using <em>ZeroMQ</em> via <code>Rcpp</code> in preparation for <code>v0.9</code> (<a href="https://github.com/mschubert/clustermq/issues/151" class="external-link">#151</a>)</li>
+<li>New <code>multiprocess</code> backend via <code>callr</code> instead of forking (<a href="https://github.com/mschubert/clustermq/issues/142" class="external-link">#142</a>, <a href="https://github.com/mschubert/clustermq/issues/197" class="external-link">#197</a>) FIXME: test case</li>
+<li>Sending data on sockets is now blocking to avoid excess memory usage (<a href="https://github.com/mschubert/clustermq/issues/161" class="external-link">#161</a>)</li>
+<li>
+<code>multicore</code>, <code>multiprocess</code> schedulers now support logging (<a href="https://github.com/mschubert/clustermq/issues/169" class="external-link">#169</a>)</li>
+<li>New option <code>clustermq.host</code> can specify host IP or network interface name (<a href="https://github.com/mschubert/clustermq/issues/170" class="external-link">#170</a>)</li>
+<li>Template filling will now raise error for missing keys (<a href="https://github.com/mschubert/clustermq/issues/174" class="external-link">#174</a>, <a href="https://github.com/mschubert/clustermq/issues/198" class="external-link">#198</a>)</li>
+<li>Workers failing with large common data is improved (fixed?) (<a href="https://github.com/mschubert/clustermq/issues/146" class="external-link">#146</a>, <a href="https://github.com/mschubert/clustermq/issues/179" class="external-link">#179</a>, <a href="https://github.com/mschubert/clustermq/issues/191" class="external-link">#191</a>)</li>
+<li>Local connections are now routed via <code>127.0.0.1</code> instead of <code>localhost</code> (<a href="https://github.com/mschubert/clustermq/issues/192" class="external-link">#192</a>)</li>
+<li>Submit messages are different between local, multicore and HPC (<a href="https://github.com/mschubert/clustermq/issues/196" class="external-link">#196</a>)</li>
+<li>Functions exported by <code>foreach</code> now have their environment stripped (<a href="https://github.com/mschubert/clustermq/issues/200" class="external-link">#200</a>)</li>
+<li>Deprecation of <code>log_worker=T/F</code> argument is rescinded</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.9" id="clustermq-089">clustermq 0.8.9<a class="anchor" aria-label="anchor" href="#clustermq-089"></a></h2><p class="text-muted">CRAN release: 2020-02-29</p>
+<ul><li>New option <code>clustermq.ssh.timeout</code> for SSH proxy startup (<a href="https://github.com/mschubert/clustermq/issues/157" class="external-link">#157</a>) <a href="https://github.com/brendanf" class="external-link">@brendanf</a></li>
+<li>New option <code>clustermq.worker.timeout</code> for delay before worker shutdown (<a href="https://github.com/mschubert/clustermq/issues/188" class="external-link">#188</a>)</li>
+<li>Fixed PBS/Torque docs, template and cleanup (<a href="https://github.com/mschubert/clustermq/issues/184" class="external-link">#184</a>, <a href="https://github.com/mschubert/clustermq/issues/186" class="external-link">#186</a>) <a href="https://github.com/mstr3336" class="external-link">@mstr3336</a></li>
+<li>Warning if common data is very large, set by <code>clustermq.data.warning</code> (<a href="https://github.com/mschubert/clustermq/issues/189" class="external-link">#189</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.8" id="clustermq-088">clustermq 0.8.8<a class="anchor" aria-label="anchor" href="#clustermq-088"></a></h2><p class="text-muted">CRAN release: 2019-06-05</p>
+<ul><li>
+<code>Q</code>, <code>Q_rows</code> have new arguments <code>verbose</code> (<a href="https://github.com/mschubert/clustermq/issues/111" class="external-link">#111</a>) and <code>pkgs</code> (<a href="https://github.com/mschubert/clustermq/issues/144" class="external-link">#144</a>)</li>
+<li>
+<code>foreach</code> backend now uses its dedicated API where possible (<a href="https://github.com/mschubert/clustermq/issues/143" class="external-link">#143</a>, <a href="https://github.com/mschubert/clustermq/issues/144" class="external-link">#144</a>)</li>
+<li>Number and size of objects common to all calls now work properly</li>
+<li>Templates are filled internally and no longer depend on <code>infuser</code> package</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.7" id="clustermq-087">clustermq 0.8.7<a class="anchor" aria-label="anchor" href="#clustermq-087"></a></h2><p class="text-muted">CRAN release: 2019-04-15</p>
+<ul><li>
+<code>Q</code> now has <code>max_calls_worker</code> argument to avoid walltime (<a href="https://github.com/mschubert/clustermq/issues/110" class="external-link">#110</a>)</li>
+<li>Submission messages now list size of common data (drake#800)</li>
+<li>All default templates now have an optional <code>cores</code> per job field (<a href="https://github.com/mschubert/clustermq/issues/123" class="external-link">#123</a>)</li>
+<li>
+<code>foreach</code> now treats <code>.export</code> (<a href="https://github.com/mschubert/clustermq/issues/124" class="external-link">#124</a>) and <code>.combine</code> (<a href="https://github.com/mschubert/clustermq/issues/126" class="external-link">#126</a>) correctly</li>
+<li>New option <code>clustermq.error.timeout</code> to not wait for clean shutdown (<a href="https://github.com/mschubert/clustermq/issues/134" class="external-link">#134</a>)</li>
+<li>SSH command is now specified via a template file (<a href="https://github.com/mschubert/clustermq/issues/122" class="external-link">#122</a>)</li>
+<li>SSH will now forward errors to the local process (<a href="https://github.com/mschubert/clustermq/issues/135" class="external-link">#135</a>)</li>
+<li>The Wiki is deprecated, use <a href="https://mschubert.github.io/clustermq/" class="external-link uri">https://mschubert.github.io/clustermq/</a> instead</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.6" id="clustermq-086">clustermq 0.8.6<a class="anchor" aria-label="anchor" href="#clustermq-086"></a></h2><p class="text-muted">CRAN release: 2019-02-22</p>
+<ul><li>Progress bar is now shown before any workers start (<a href="https://github.com/mschubert/clustermq/issues/107" class="external-link">#107</a>)</li>
+<li>Socket connections are now authenticated using a session password (<a href="https://github.com/mschubert/clustermq/issues/125" class="external-link">#125</a>)</li>
+<li>Marked internal functions with <code>@keywords internal</code>
+</li>
+<li>Added vignettes for the <em>User Guide</em> and <em>Technical Documentation</em>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.5" id="clustermq-085">clustermq 0.8.5<a class="anchor" aria-label="anchor" href="#clustermq-085"></a></h2><p class="text-muted">CRAN release: 2018-09-29</p>
+<ul><li>Added experimental support as parallel foreach backend (<a href="https://github.com/mschubert/clustermq/issues/83" class="external-link">#83</a>)</li>
+<li>Moved templates to package <code>inst/</code> directory (<a href="https://github.com/mschubert/clustermq/issues/85" class="external-link">#85</a>)</li>
+<li>Added <code>send_call</code> to worker to evaluate arbitrary expressions (drake#501; <a href="https://github.com/mschubert/clustermq/issues/86" class="external-link">#86</a>)</li>
+<li>Option <code>clustermq.scheduler</code> is now respected if set after package load (<a href="https://github.com/mschubert/clustermq/issues/88" class="external-link">#88</a>)</li>
+<li>System interrupts are now handled correctly (rzmq#44; <a href="https://github.com/mschubert/clustermq/issues/73" class="external-link">#73</a>, <a href="https://github.com/mschubert/clustermq/issues/93" class="external-link">#93</a>, <a href="https://github.com/mschubert/clustermq/issues/97" class="external-link">#97</a>)</li>
+<li>Number of workers running/total is now shown in progress bar (<a href="https://github.com/mschubert/clustermq/issues/98" class="external-link">#98</a>)</li>
+<li>Unqualified (short) host names are now resolved by default (<a href="https://github.com/mschubert/clustermq/issues/104" class="external-link">#104</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.4" id="clustermq-084">clustermq 0.8.4<a class="anchor" aria-label="anchor" href="#clustermq-084"></a></h2><p class="text-muted">CRAN release: 2018-04-22</p>
+<ul><li>Fix error for <code>qsys$reusable</code> when using <code>n_jobs=0</code>/local processing (<a href="https://github.com/mschubert/clustermq/issues/75" class="external-link">#75</a>)</li>
+<li>Scheduler-specific templates are deprecated. Use <code>clustermq.template</code> instead</li>
+<li>Allow option <code>clustermq.defaults</code> to fill default template values (<a href="https://github.com/mschubert/clustermq/issues/71" class="external-link">#71</a>)</li>
+<li>Errors in worker processing are now shut down cleanly (<a href="https://github.com/mschubert/clustermq/issues/67" class="external-link">#67</a>)</li>
+<li>Progress bar now shows estimated time remaining (<a href="https://github.com/mschubert/clustermq/issues/66" class="external-link">#66</a>)</li>
+<li>Progress bar now also shown when processing locally</li>
+<li>Memory summary now adds estimated memory of R session (<a href="https://github.com/mschubert/clustermq/issues/69" class="external-link">#69</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.3" id="clustermq-083">clustermq 0.8.3<a class="anchor" aria-label="anchor" href="#clustermq-083"></a></h2><p class="text-muted">CRAN release: 2018-01-21</p>
+<ul><li>Support <code>rettype</code> for function calls where return type is known (<a href="https://github.com/mschubert/clustermq/issues/59" class="external-link">#59</a>)</li>
+<li>Reduce memory requirements by processing results when we receive them</li>
+<li>Fix a bug where cleanup, <code>log_worker</code> flag were not working for SGE/SLURM</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.2" id="clustermq-082">clustermq 0.8.2<a class="anchor" aria-label="anchor" href="#clustermq-082"></a></h2><p class="text-muted">CRAN release: 2017-11-30</p>
+<ul><li>Fix a bug where never-started jobs are not cleaned up</li>
+<li>Fix a bug where tests leave processes if port binding fails (<a href="https://github.com/mschubert/clustermq/issues/60" class="external-link">#60</a>)</li>
+<li>Multicore no longer prints worker debug messages (<a href="https://github.com/mschubert/clustermq/issues/61" class="external-link">#61</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.1" id="clustermq-081">clustermq 0.8.1<a class="anchor" aria-label="anchor" href="#clustermq-081"></a></h2><p class="text-muted">CRAN release: 2017-11-27</p>
+<ul><li>Fix performance issues for a high number of function calls (<a href="https://github.com/mschubert/clustermq/issues/56" class="external-link">#56</a>)</li>
+<li>Fix bug where multicore workers were not shut down properly (<a href="https://github.com/mschubert/clustermq/issues/58" class="external-link">#58</a>)</li>
+<li>Fix default templates for SGE, LSF and SLURM (misplaced quote)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.0" id="clustermq-080">clustermq 0.8.0<a class="anchor" aria-label="anchor" href="#clustermq-080"></a></h2><p class="text-muted">CRAN release: 2017-11-11</p>
+<ul><li>Templates changed: <code>clustermq:::worker</code> now takes only master as argument</li>
+<li>Fix a bug where copies of <code>common_data</code> are collected by gc too slowly (<a href="https://github.com/mschubert/clustermq/issues/19" class="external-link">#19</a>)</li>
+<li>Creating <code>workers</code> is now separated from <code>Q</code>, enabling worker reuse (<a href="https://github.com/mschubert/clustermq/issues/45" class="external-link">#45</a>)</li>
+<li>Objects in the function environment must now be <code>export</code>ed explicitly (<a href="https://github.com/mschubert/clustermq/issues/47" class="external-link">#47</a>)</li>
+<li>Messages on the master are now processed in threads (<a href="https://github.com/mschubert/clustermq/issues/42" class="external-link">#42</a>)</li>
+<li>Added <code>multicore</code> qsys using the <code>parallel</code> package (<a href="https://github.com/mschubert/clustermq/issues/49" class="external-link">#49</a>)</li>
+<li>New function <code>Q_rows</code> using data.frame rows as iterated arguments (<a href="https://github.com/mschubert/clustermq/issues/43" class="external-link">#43</a>)</li>
+<li>Jobs will now be submitted as array if possible</li>
+<li>Job summary will now report max memory as reported by <code>gc</code> (<a href="https://github.com/mschubert/clustermq/issues/18" class="external-link">#18</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="clustermq-070">clustermq 0.7.0<a class="anchor" aria-label="anchor" href="#clustermq-070"></a></h2><p class="text-muted">CRAN release: 2017-08-28</p>
+<ul><li>Initial release on CRAN</li>
+</ul></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
