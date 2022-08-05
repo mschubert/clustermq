@@ -1,0 +1,36 @@
+#!/bin/sh
+CXX=$(${R_HOME}/bin/R CMD config CXX)
+CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
+CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
+
+PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
+PKG_LIBS="libzmq/src/.libs/libzmq.a"
+
+if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
+  cd src/libzmq
+
+  if [ ! -f Makefile.in ]; then
+    # remove code format helper and valgrind support that CRAN complains about
+    # sed -i does not work on macOS
+    mv Makefile.am Makefile.am.orig
+    sed '/WITH_CLANG_FORMAT/,/VALGRIND_SUPPRESSIONS_FILES/d' Makefile.am.orig > Makefile.am
+    ./autogen.sh || die
+  fi
+
+  CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
+      --enable-static \
+      --disable-shared \
+      --disable-maintainer-mode \
+      --enable-drafts \
+      --disable-libbsd \
+      --disable-libunwind \
+      --disable-perf \
+      --disable-curve \
+      --disable-curve-keygen \
+      --disable-ws \
+      --disable-radix-tree
+  make || die
+  cd -
+fi
+
+sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars

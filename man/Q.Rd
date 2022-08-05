@@ -4,12 +4,27 @@
 \alias{Q}
 \title{Queue function calls on the cluster}
 \usage{
-Q(fun, ..., const = list(), export = list(), pkgs = c(),
-  seed = 128965, memory = NULL, template = list(), n_jobs = NULL,
-  job_size = NULL, split_array_by = -1, rettype = "list",
-  fail_on_error = TRUE, workers = NULL, log_worker = FALSE,
-  chunk_size = NA, timeout = Inf, max_calls_worker = Inf,
-  verbose = TRUE)
+Q(
+  fun,
+  ...,
+  const = list(),
+  export = list(),
+  pkgs = c(),
+  seed = 128965,
+  memory = NULL,
+  template = list(),
+  n_jobs = NULL,
+  job_size = NULL,
+  split_array_by = -1,
+  rettype = "list",
+  fail_on_error = TRUE,
+  workers = NULL,
+  log_worker = FALSE,
+  chunk_size = NA,
+  timeout = Inf,
+  max_calls_worker = Inf,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{fun}{A function to call}

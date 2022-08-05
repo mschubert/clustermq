@@ -5,4 +5,11 @@ inst/doc
 vignettes/*.R
 vignettes/*.md
 vignettes/.build.timestamp
+src/*.o
+src/*.so
 *.swp
+*.tar.gz
+*.log
+clustermq.Rcheck
+src/Makevars
+.github/*.html

@@ -1,4 +1,5 @@
 #!/bin/bash
-echo "starting $$" > ~/worker.log
-timeout 30 bash < /dev/stdin > ~/worker.log 2>&1 &
-[[ $? == 0 ]] && echo "started $$" >> ~/worker.log
+OUT=/dev/stderr
+echo "starting PID $$" > $OUT
+timeout 30 sh < /dev/stdin >> $OUT 2>&1 &
+[[ $? == 0 ]] && echo "started PID $$" >> $OUT

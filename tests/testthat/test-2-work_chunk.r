@@ -20,7 +20,7 @@ test_that("check call classes", {
     df2$a = list(matrix(1:4, nrow=2))
     fx = function(...) sapply(list(...), class)
 
-    re = setNames(c("matrix", "character", "integer"), c("a", "b", "c"))
+    re = sapply(colnames(df2), function(i) class(df2[[1,i]]))
     expect_equal(work_chunk(df2, fx)$result, setNames(rep(list(re), 3), c(1:3)))
 })
 

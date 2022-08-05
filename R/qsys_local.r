@@ -14,7 +14,9 @@ LOCAL = R6::R6Class("LOCAL",
         set_common_data = function(...) {
         },
 
-        submit_jobs = function(...) {
+        submit_jobs = function(..., verbose=TRUE) {
+            if (verbose)
+                message("Running sequentially ('LOCAL') ...")
         },
 
         cleanup = function(quiet=FALSE, timeout=3) {

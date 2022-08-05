@@ -2,17 +2,27 @@
 % Please edit documentation in R/util.r
 \name{host}
 \alias{host}
-\title{Construct the ZeroMQ host}
+\title{Construct the ZeroMQ host address}
 \usage{
-host(short = getOption("clustermq.short.host", TRUE))
+host(
+  node = getOption("clustermq.host", Sys.info()["nodename"]),
+  ports = 6000:9999,
+  n = 100
+)
 }
 \arguments{
-\item{short}{whether to use unqualified host name (before first dot)}
+\item{node}{Node or device name}
+
+\item{ports}{Range of ports to consider}
+
+\item{n}{How many addresses to return}
+
+\item{short}{Whether to use unqualified host name (before first dot)}
 }
 \value{
-the host name as character string
+The possible addresses as character vector
 }
 \description{
-Construct the ZeroMQ host
+Construct the ZeroMQ host address
 }
 \keyword{internal}

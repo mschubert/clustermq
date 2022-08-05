@@ -3,7 +3,6 @@
 \docType{package}
 \name{clustermq}
 \alias{clustermq}
-\alias{clustermq-package}
 \title{Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)}
 \description{
 Provides the \code{Q} function to send arbitrary function calls to

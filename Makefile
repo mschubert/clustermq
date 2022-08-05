@@ -1,5 +1,5 @@
 .PHONY: all
-all: doc vignettes
+all: rcpp doc vignettes
 
 R = R --no-save --no-restore -e
 BIN = $(abspath $(lastword $(MAKEFILE_LIST))/../tests/bin)
@@ -11,6 +11,10 @@ test:
 .PHONY: check
 check:
 	PATH=$(BIN):$$PATH $(R) "devtools::check()"
+
+.PHONY: rcpp
+rcpp:
+	$(R) "Rcpp::compileAttributes()"
 
 rmd_files=$(wildcard vignettes/*.rmd)
 knit_results=$(patsubst vignettes/%.rmd,inst/doc/%.md,$(rmd_files))
@@ -31,7 +35,7 @@ doc:
 
 .PHONY: deploy
 deploy:
-	$(R) "pkgdown:::deploy_local()"
+	$(R) "pkgdown::deploy_to_branch()"
 
 .PHONY: clean
 clean:

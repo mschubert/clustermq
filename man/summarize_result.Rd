@@ -4,8 +4,14 @@
 \alias{summarize_result}
 \title{Print a summary of errors and warnings that occurred during processing}
 \usage{
-summarize_result(result, n_errors, n_warnings, cond_msgs,
-  at = length(result), fail_on_error = TRUE)
+summarize_result(
+  result,
+  n_errors,
+  n_warnings,
+  cond_msgs,
+  at = length(result),
+  fail_on_error = TRUE
+)
 }
 \arguments{
 \item{result}{A list or vector of the processing result}

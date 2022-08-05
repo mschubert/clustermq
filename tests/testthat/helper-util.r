@@ -1,47 +1,35 @@
 send = function(sock, data) {
-    rzmq::send.socket(sock, data)
+    send_socket(sock, data)
 }
 
 recv = function(p, sock, timeout=3L) {
-    event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
-    if (is.null(event[[1]]))
+    event = poll_socket(list(sock), timeout=timeout * 1000)
+    if (is.null(event))
         return(recv(p, sock, timeout=timeout))
-    else if (event[[1]]$read)
-        rzmq::receive.socket(sock)
-    else
-        stop("Timeout reached")
+    else if (event[1]) {
+        re = receive_multipart(sock)
+        if (length(re) == 1)
+            re[[1]]
+        else
+            re
+    } else {
+        msg = parallel::mccollect(p, wait=FALSE)[[1]][1]
+        stop(paste("@bg:", sub("Error in\\s+", "", sub("\n[^$]", "", msg))))
+    }
 }
 
-has_connectivity = function(host, protocol="tcp") {
-    if (length(host) == 0 || nchar(host) == 0)
-        return(FALSE)
-    context = rzmq::init.context()
-    server = rzmq::init.socket(context, "ZMQ_REP")
-    port = try(bind_avail(server, 55000:57000, n_tries=10))
-    if (class(port) == "try-error")
-        return(FALSE)
-    master = sprintf("%s://%s:%i", protocol, host, port)
-    client = rzmq::init.socket(context, "ZMQ_REQ")
-    rzmq::connect.socket(client, master)
-    rzmq::send.socket(client, data=list(id="test"))
-    event = rzmq::poll.socket(list(server), list("read"), timeout=1L)
-    if (event[[1]]$read) {
-        msg = rzmq::receive.socket(server)
-        if (msg == "test")
-            return(TRUE)
-    }
-    FALSE
-}
+ssh_opts = "-oPasswordAuthentication=no -oChallengeResponseAuthentication=no"
 
 has_ssh = function(host) {
-    status = system(paste("ssh", host, "'exit'"), wait=TRUE,
+    status = system(paste("ssh", ssh_opts, host, "'exit'"), wait=TRUE,
                     ignore.stdout=TRUE, ignore.stderr=TRUE)
     status == 0
 }
 
 has_ssh_cmq = function(host) {
-    status = system(paste("ssh", host, "'R -e \"library(clustermq)\"'"),
-                    wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
+    status = suppressWarnings(
+        system(paste("ssh", ssh_opts, host, "'R -e \"library(clustermq)\"'"),
+               wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE))
     status == 0
 }
 

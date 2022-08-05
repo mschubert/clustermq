@@ -1,3 +1,5 @@
+loadModule("cmq_master", TRUE) # CMQMaster C++ class
+
 #' Class for basic queuing system functions
 #'
 #' Provides the basic functions needed to communicate between machines
@@ -11,15 +13,24 @@ QSys = R6::R6Class("QSys",
         #
         # Initializes ZeroMQ and sets and sets up our primary communication socket
         #
+        # @param addr    Vector of possible addresses to bind
+        # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
-        # @param ports   Range of ports to choose from
-        # @param master  rZMQ address of the master (if NULL we create it here)
-        initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              node=host(), protocol="tcp", template=NULL) {
-            private$zmq_context = rzmq::init.context(3L)
-            private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
-            private$port = bind_avail(private$socket, ports)
-            private$listen = sprintf("%s://%s:%i", protocol, node, private$port)
+        initialize = function(addr=host(), bind=TRUE, data=NULL, reuse=FALSE,
+                              template=NULL, zmq=methods::new(CMQMaster)) {
+            private$zmq = zmq
+            if (bind) {
+                # ZeroMQ allows connecting by node name, but binding must be either
+                # a numerical IP or an interfacet name. This is a bit of a hack to
+                # seem to allow node-name bindings
+                nodename = Sys.info()["nodename"]
+                addr = sub(nodename, "*", addr, fixed=TRUE)
+                bound = private$zmq$listen(addr)
+                # Change "all interfaces" to the node name so we can connect to it
+                private$master = sub("0.0.0.0", nodename, bound, fixed=TRUE)
+            } else
+                private$master = addr # net_fwd for proxy
+            private$port = as.integer(sub(".*:", "", private$master))
             private$timer = proc.time()
             private$reuse = reuse
 
@@ -33,11 +44,6 @@ QSys = R6::R6Class("QSys",
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
-
-            if (is.null(master))
-                private$master = private$listen
-            else
-                private$master = master
 
             if (!is.null(data))
                 do.call(self$set_common_data, data)
@@ -53,13 +59,12 @@ QSys = R6::R6Class("QSys",
 
         # Evaluate an arbitrary expression on a worker
         send_call = function(expr, env=list(), ref=substitute(expr)) {
-            private$send(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
+            private$send_work(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
         },
 
-        # Sets the common data as an rzmq message object
+        # Sets the common data as an zeromq message object
         set_common_data = function(...) {
             args = lapply(list(...), force)
-
             if ("fun" %in% names(args))
                 environment(args$fun) = .GlobalEnv
 
@@ -69,8 +74,13 @@ QSys = R6::R6Class("QSys",
                 private$token = paste(sample(letters, 5, TRUE), collapse="")
                 args$token = private$token
             }
-            private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
-            private$size_common = object.size(args)
+            private$common_data = serialize(c(list(id="DO_SETUP"), args), NULL)
+            private$size_common = object.size(private$common_data)
+            common_mb = format(private$size_common, units="Mb")
+            if (common_mb > getOption("clustermq.data.warning", 1000))
+                warning("Common data is ", common_mb, ". Recommended limit ",
+                        "is ", getOption("clustermq.data.warning"),
+                        " (set by clustermq.data.warning option)", immediate.=TRUE)
             private$n_common = length(args$const) + length(args$export)
             args$token
         },
@@ -79,17 +89,17 @@ QSys = R6::R6Class("QSys",
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-            rzmq::send.message.object(private$socket, private$common_data)
+            private$zmq$send_work(private$common_data)
         },
 
         # Send iterated data to one worker
         send_job_data = function(...) {
-            private$send(id="DO_CHUNK", token=private$token, ...)
+            private$send_work(id="DO_CHUNK", token=private$token, ...)
         },
 
         # Wait for a total of 50 ms
         send_wait = function(wait=0.05*self$workers_running) {
-            private$send(id="WORKER_WAIT", wait=wait)
+            private$send_work(id="WORKER_WAIT", wait=wait)
         },
 
         # Read data from the socket
@@ -100,46 +110,39 @@ QSys = R6::R6Class("QSys",
             if (is.infinite(timeout))
                 msec = -1L
             else
-                msec = as.integer(timeout)
+                msec = as.integer(timeout * 1000)
 
-            rcv = rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=msec)
-            if (is.null(rcv[[1]]))
-                return(self$receive_data(timeout, with_checks=with_checks))
+            msg = private$zmq$poll_recv(msec)
 
-            if (rcv[[1]]$read) { # otherwise timeout reached
-                msg = rzmq::receive.socket(private$socket)
+            if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
+                stop("Authentication provided by worker does not match")
 
-                if (private$auth != "" && (is.null(msg$auth) || msg$auth != private$auth))
-                    stop("Authentication provided by worker does not match")
-
-                switch(msg$id,
-                    "WORKER_UP" = {
-                        if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
-                            warning("\nVersion mismatch: master has ", private$pkg_warn,
-                                    ", worker ", msg$pkgver, immediate.=TRUE)
-                        }
-                        private$pkg_warn = NULL
-                        msg$id = "WORKER_READY"
-                        msg$token = "not set"
-                        private$workers_up = private$workers_up + 1
-                    },
-                    "WORKER_DONE" = {
-                        private$disconnect_worker(msg)
-                        if (private$workers_up > 0)
-                            return(self$receive_data(timeout, with_checks=with_checks))
-                        else if (with_checks)
-                            stop("Trying to receive data after work finished")
-                    },
-                    "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
-                )
-                msg
-            }
+            switch(msg$id,
+                "WORKER_UP" = {
+                    if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
+                        warning("\nVersion mismatch: master has ", private$pkg_warn,
+                                ", worker ", msg$pkgver, immediate.=TRUE)
+                    }
+                    private$pkg_warn = NULL
+                    msg$id = "WORKER_READY"
+                    msg$token = "not set"
+                    private$workers_up = private$workers_up + 1
+                },
+                "WORKER_DONE" = {
+                    private$disconnect_worker(msg)
+                    if (private$workers_up > 0)
+                        return(self$receive_data(timeout, with_checks=with_checks))
+                    else if (with_checks)
+                        stop("Trying to receive data after work finished")
+                },
+                "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
+            )
+            msg
         },
 
         # Send shutdown signal to worker
         send_shutdown_worker = function() {
-            private$send(id="WORKER_STOP")
+            private$zmq$send_shutdown(data=list(id="WORKER_STOP"))
         },
 
         # Make sure all resources are closed properly
@@ -174,8 +177,6 @@ QSys = R6::R6Class("QSys",
 
     active = list(
         id = function() private$port,
-        url = function() private$listen,
-        sock = function() private$socket,
         workers = function() ifelse(private$is_cleaned_up, 0, private$workers_total),
         workers_running = function() private$workers_up,
         data_token = function() private$token,
@@ -185,11 +186,9 @@ QSys = R6::R6Class("QSys",
     ),
 
     private = list(
-        zmq_context = NULL,
-        socket = NULL,
+        zmq = NULL,
         port = NA,
         master = NULL,
-        listen = NULL,
         timer = NULL,
         common_data = NULL,
         n_common = 0,
@@ -205,14 +204,13 @@ QSys = R6::R6Class("QSys",
         pkg_warn = utils::packageVersion("clustermq"),
         auth = "",
 
-        send = function(..., serialize=TRUE) {
-            rzmq::send.socket(socket = private$socket,
-                              data = list(...),
-                              serialize = serialize)
+        send_work = function(...) {
+            private$zmq$send_work(data = list(...))
         },
 
         disconnect_worker = function(msg) {
-            private$send()
+            private$zmq$send_shutdown(list())
+#            private$zmq$disconnect() #FIXME: disconnect worker, don't close socket
             private$workers_up = private$workers_up - 1
             private$workers_total = private$workers_total - 1
             private$worker_stats = c(private$worker_stats, list(msg))
@@ -236,42 +234,23 @@ QSys = R6::R6Class("QSys",
             values
         },
 
-        fill_template = function(values) {
-            pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
-            match_obj = gregexpr(pattern, private$template, perl=TRUE)
-            matches = regmatches(private$template, match_obj)[[1]]
-
-            no_delim = substr(matches, 3, nchar(matches)-2)
-            kv_str = strsplit(no_delim, "|", fixed=TRUE)
-            keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
-            vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
-
-            upd = keys %in% names(values)
-            vals[upd] = unlist(values)[keys[upd]]
-            if (any(is.na(vals)))
-                stop("Template values required but not provided: ",
-                     paste(unique(keys[is.na(vals)]), collapse=", "))
-
-            tmpl = private$template
-            for (i in seq_along(matches))
-                tmpl = sub(matches[i], vals[i], tmpl, fixed=TRUE)
-            tmpl
-        },
-
         summary_stats = function() {
             times = lapply(private$worker_stats, function(w) w$time)
             max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
+            max_mb = NA_character_
+            if (length(max_mem) == 1) {
+                class(max_mem) = "object_size"
+                max_mb = format(max_mem + 2e8, units="auto") # ~ 200 Mb overhead
+            }
+
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
-
             if (class(wt) != "proc_time")
                 wt = rep(NA, 3)
-            if (length(max_mem) != 1)
-                max_mem = NA
 
-            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
+            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem + 200))
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
         }
     ),
 

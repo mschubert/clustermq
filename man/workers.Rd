@@ -4,9 +4,16 @@
 \alias{workers}
 \title{Creates a pool of workers}
 \usage{
-workers(n_jobs, data = NULL, reuse = TRUE, template = list(),
-  log_worker = FALSE, qsys_id = getOption("clustermq.scheduler",
-  qsys_default), verbose = FALSE, ...)
+workers(
+  n_jobs,
+  data = NULL,
+  reuse = TRUE,
+  template = list(),
+  log_worker = FALSE,
+  qsys_id = getOption("clustermq.scheduler", qsys_default),
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{n_jobs}{Number of jobs to submit (0 implies local processing)}

@@ -1,20 +1,38 @@
 #' Process on multiple cores on one machine
 #'
-#' This makes use of rzmq messaging and sends requests via TCP/IP
+#' Derives from QSys to provide multicore-specific functions
 #'
 #' @keywords internal
 MULTICORE = R6::R6Class("MULTICORE",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
-            super$initialize(..., node="localhost")
+        initialize = function(addr=host("127.0.0.1"), ...) {
+            super$initialize(addr=addr, ...)
         },
 
-        submit_jobs = function(n_jobs, ...) {
-            cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
+        submit_jobs = function(n_jobs, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+            if (verbose)
+                message("Starting ", n_jobs, " cores ...")
+
+            if (log_worker && is.null(log_file))
+                log_file = "cmq-%i.log"
+
             for (i in seq_len(n_jobs)) {
-                p = parallel::mcparallel(cmd, silent=TRUE)
+                if (is.character(log_file))
+                    log_i = sprintf(log_file, i)
+                else
+                    log_i = NULL
+                wrapper = function(m, logfile) {
+                    if (is.null(logfile))
+                        logfile = "/dev/null"
+                    fout = file(logfile, open="wt")
+                    sink(file=fout, type="output")
+                    sink(file=fout, type="message")
+                    on.exit({ sink(type="message"); sink(type="output"); close(fout) })
+                    clustermq:::worker(m)
+                }
+                p = parallel::mcparallel(quote(wrapper(private$master, log_i)))
                 private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs

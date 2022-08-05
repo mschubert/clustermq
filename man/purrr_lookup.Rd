@@ -4,7 +4,9 @@
 \name{purrr_lookup}
 \alias{purrr_lookup}
 \title{Lookup table for return types to purrr functions}
-\format{An object of class \code{list} of length 9.}
+\format{
+An object of class \code{list} of length 9.
+}
 \usage{
 purrr_lookup
 }
