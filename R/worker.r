@@ -58,7 +58,7 @@ worker = function(master, ..., verbose=TRUE) {
                     req = list(id="WORKER_READY", auth=auth)
                     msg = zmq$get_data_redirect(msg$redirect, req)
                 }
-                need = c("id", "fun", "const", "export",
+                need = c("id", "fun", "const", "export", "pkgs",
                          "rettype", "common_seed", "token")
                 if (setequal(names(msg), need)) {
                     common_data = msg[setdiff(need, c("id", "export", "pkgs", "token"))]
