@@ -62,10 +62,8 @@ public:
             zmq::message_t identity;
             sock.recv(identity, zmq::recv_flags::none);
             cur = std::string(reinterpret_cast<const char*>(identity.data()), identity.size());
-
             zmq::message_t delimiter;
             sock.recv(delimiter, zmq::recv_flags::none);
-
             if (sock.get(zmq::sockopt::rcvmore)) {
                 zmq::message_t content;
                 sock.recv(content, zmq::recv_flags::none);

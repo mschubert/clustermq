@@ -23,10 +23,10 @@ public:
         delete ctx;
     }
 
-    void send(SEXP data) {
+    void send(SEXP data) { // default args don't work from R
         send(data, false);
     }
-    void send(SEXP data, bool send_more=false) {
+    void send(SEXP data, bool send_more) {
         auto flags = zmq::send_flags::none;
         if (send_more)
             flags = flags | zmq::send_flags::sndmore;
@@ -45,29 +45,16 @@ public:
         return R_unserialize(ans);
     }
 
-    SEXP get_data_redirect(std::string addr, SEXP data) {
-        //todo: this should ideally also be monitored (although short connection)
-        auto rsock = zmq::socket_t(*ctx, ZMQ_REQ);
-        rsock.set(zmq::sockopt::connect_timeout, 10000);
-        rsock.connect(addr);
+    void process_one() {
+        std::vector<zmq::message_t> msgs;
+        auto res = recv_multipart(sock, std::back_inserter(msgs));
 
-        data = R_serialize(data, R_NilValue);
-        zmq::message_t content(Rf_xlength(data));
-        memcpy(content.data(), RAW(data), Rf_xlength(data));
-        rsock.send(content, zmq::send_flags::none);
+        SEXP ans = Rf_allocVector(RAWSXP, msgs[0].size());
+        memcpy(RAW(ans), msgs[0].data(), msgs[0].size());
+        SEXP obj = R_unserialize(ans);
 
-        zmq::message_t msg;
-        rsock.recv(msg, zmq::recv_flags::none);
-        SEXP ans = Rf_allocVector(RAWSXP, msg.size());
-        memcpy(RAW(ans), msg.data(), msg.size());
-
-        rsock.set(zmq::sockopt::linger, 0);
-        rsock.close();
-
-        return R_unserialize(ans);
-    }
-
-    void main_loop() {
+        SEXP eval = Rcpp::Rcpp_eval(obj, Rcpp::Environment::global_env());
+        send(eval);
     }
 
 private:
