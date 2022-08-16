@@ -7,6 +7,7 @@
 #include <thread>
 #include <unordered_map>
 #include "zmq.hpp"
+#include "zmq_addon.hpp"
 #include "MonitoredSocket.hpp"
 
 typedef std::chrono::high_resolution_clock Time;

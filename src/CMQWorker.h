@@ -61,6 +61,7 @@ private:
     zmq::context_t *ctx;
     zmq::socket_t sock;
     zmq::socket_t mon;
+    Rcpp::Environment env;
 
     void poll() {
         auto pitems = std::vector<zmq::pollitem_t>(2);
