@@ -6,10 +6,9 @@ RCPP_MODULE(cmq_master) {
     class_<CMQMaster>("CMQMaster")
         .constructor()
 //        .constructor<zmq::context_t*>()
-        .method("main_loop", &CMQMaster::main_loop)
         .method("listen", &CMQMaster::listen)
-        .method("send_work", &CMQMaster::send_work)
-        .method("send_shutdown", &CMQMaster::send_shutdown)
-        .method("poll_recv", &CMQMaster::poll_recv)
+        .method("recv_one", &CMQMaster::recv_one)
+        .method("send_one", &CMQMaster::send_one)
+        .method("add_env", &CMQMaster::add_env)
     ;
 }

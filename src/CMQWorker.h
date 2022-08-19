@@ -30,30 +30,25 @@ public:
         auto flags = zmq::send_flags::none;
         if (send_more)
             flags = flags | zmq::send_flags::sndmore;
-        if (TYPEOF(data) != RAWSXP)
-            data = R_serialize(data, R_NilValue);
-        zmq::message_t content(Rf_xlength(data));
-        memcpy(content.data(), RAW(data), Rf_xlength(data));
-        sock.send(content, flags);
+        sock.send(r2msg(data), flags);
     }
     SEXP receive() {
         poll();
         zmq::message_t msg;
         sock.recv(msg, zmq::recv_flags::none);
-        SEXP ans = Rf_allocVector(RAWSXP, msg.size());
-        memcpy(RAW(ans), msg.data(), msg.size());
-        return R_unserialize(ans);
+        return msg2r(msg);
     }
 
     void process_one() {
         std::vector<zmq::message_t> msgs;
         auto res = recv_multipart(sock, std::back_inserter(msgs));
+        auto cmd = msg2r(msgs[0]);
 
-        SEXP ans = Rf_allocVector(RAWSXP, msgs[0].size());
-        memcpy(RAW(ans), msgs[0].data(), msgs[0].size());
-        SEXP obj = R_unserialize(ans);
+        //TODO: for index 1..n add SEXPs to env
+//        for ()
+//            env[] = ;
 
-        SEXP eval = Rcpp::Rcpp_eval(obj, Rcpp::Environment::global_env());
+        SEXP eval = Rcpp::Rcpp_eval(cmd, Rcpp::Environment::global_env());
         send(eval);
     }
 
@@ -62,6 +57,27 @@ private:
     zmq::socket_t sock;
     zmq::socket_t mon;
     Rcpp::Environment env;
+
+    zmq::message_t str2msg(std::string str) {
+        zmq::message_t msg(str.length());
+        memcpy(msg.data(), str.data(), str.length());
+        return msg;
+    }
+    zmq::message_t r2msg(SEXP data) {
+        if (TYPEOF(data) != RAWSXP)
+            data = R_serialize(data, R_NilValue);
+        zmq::message_t msg(Rf_xlength(data));
+        memcpy(msg.data(), RAW(data), Rf_xlength(data));
+        return msg;
+    }
+    SEXP msg2r(zmq::message_t &msg, bool unserialize=true) {
+        SEXP ans = Rf_allocVector(RAWSXP, msg.size());
+        memcpy(RAW(ans), msg.data(), msg.size());
+        if (unserialize)
+            return R_unserialize(ans);
+        else
+            return ans;
+    }
 
     void poll() {
         auto pitems = std::vector<zmq::pollitem_t>(2);

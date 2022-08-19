@@ -34,77 +34,76 @@ public:
         }
         Rf_error("Could not bind port after ", i, " tries");
     }
-    void send_work(SEXP data) {
-//            std::cerr << "setting worker " << cur << " active\n";
-        peer_active[cur] = true;
-        send(data);
-    }
-    void send_shutdown(SEXP data) {
-//            std::cerr << "setting worker " << cur << " inactive\n";
-        peer_active[cur] = false;
-        send(data);
-    }
 
-    void main_loop() {
-    }
-
-    SEXP poll_recv(int timeout=-1) {
-//        if (peer_active.size() == 0)
+    SEXP recv_one(int timeout=-1) {
+//        if (peers.size() == 0)
 //            Rf_error("Trying to receive data without workers");
 
-        int ev = 0;
-        SEXP msg;
-        do {
-            ev = Rcpp::as<int>(poll(timeout));
-            if (ev == 0)
-                Rf_error("Socket timeout reached");
+        auto ev = Rcpp::as<int>(poll(timeout));
+        if (ev == 0)
+            Rf_error("Socket timeout reached");
 
-            zmq::message_t identity;
-            sock.recv(identity, zmq::recv_flags::none);
-            cur = std::string(reinterpret_cast<const char*>(identity.data()), identity.size());
-            zmq::message_t delimiter;
-            sock.recv(delimiter, zmq::recv_flags::none);
-            if (sock.get(zmq::sockopt::rcvmore)) {
-                zmq::message_t content;
-                sock.recv(content, zmq::recv_flags::none);
-                msg = Rf_allocVector(RAWSXP, content.size());
-                memcpy(RAW(msg), content.data(), content.size());
-                msg = R_unserialize(msg);
-            } else {
-//                std::cerr << "notify disconnect from " << cur << "\n";
-                if (peer_active[cur])
-                    Rf_error("Unexpected worker disconnect: check your logs");
-                peer_active.erase(cur);
-                ev = 0;
-            }
+        std::vector<zmq::message_t> msgs;
+        auto res = recv_multipart(sock, std::back_inserter(msgs));
 
-//            std::cerr << peer_active.size() << " peers\n";
-        } while (ev == 0);
+        if (msgs.size() < 3)
+            Rf_error("no content received, should not happen?");
 
-        return msg;
+        cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
+        return msg2r(msgs[2]);
+    }
+
+    void send_one(SEXP cmd) {
+        // unserialize, read env
+        // add frams of what's not in env to send
+
+        send(cmd); //TODO: 
+    }
+
+    void add_env(std::string name, SEXP obj) {
+        //todo: how to encode names objs here?
+        auto serial = R_serialize(obj, R_NilValue);
+        env[name] = r2msg(serial);
     }
 
 private:
+    struct worker_t {
+        std::vector<std::string> env;
+        SEXP call {R_NilValue};
+    };
+
     zmq::context_t *ctx;
     bool external_context {true};
     zmq::socket_t sock;
     std::string cur;
-    std::unordered_map<std::string, bool> peer_active;
-    // ^can track which call ids each peer works on if required
+    std::unordered_map<std::string, worker_t> peers;
+    std::unordered_map<std::string, zmq::message_t> env;
 
-    void send(SEXP data) {
-        zmq::message_t identity(cur.length());
-        memcpy(identity.data(), cur.data(), cur.length());
-        sock.send(identity, zmq::send_flags::sndmore);
-
-        zmq::message_t delimiter(0);
-        sock.send(delimiter, zmq::send_flags::sndmore);
-
+    zmq::message_t str2msg(std::string str) {
+        zmq::message_t msg(str.length());
+        memcpy(msg.data(), str.data(), str.length());
+        return msg;
+    }
+    zmq::message_t r2msg(SEXP data) {
         if (TYPEOF(data) != RAWSXP)
             data = R_serialize(data, R_NilValue);
-        zmq::message_t content(Rf_xlength(data));
-        memcpy(content.data(), RAW(data), Rf_xlength(data));
-        sock.send(content, zmq::send_flags::none);
+        zmq::message_t msg(Rf_xlength(data));
+        memcpy(msg.data(), RAW(data), Rf_xlength(data));
+        return msg;
+    }
+    SEXP msg2r(zmq::message_t &msg, bool unserialize=true) {
+        SEXP ans = Rf_allocVector(RAWSXP, msg.size());
+        memcpy(RAW(ans), msg.data(), msg.size());
+        if (unserialize)
+            return R_unserialize(ans);
+        else
+            return ans;
+    }
+
+    void send(SEXP data) {
+        sock.send(str2msg(cur), zmq::send_flags::sndmore);
+        sock.send(zmq::message_t(0), zmq::send_flags::sndmore);
+        sock.send(r2msg(data), zmq::send_flags::none);
     }
     Rcpp::IntegerVector poll(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
