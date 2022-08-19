@@ -10,7 +10,7 @@ do_work = function() {
     w$connect("tcp://127.0.0.1:9998")
 
     m$recv(-1L)
-    m$send(serialize(substitute({ 5 + x }), NULL))
+    m$send(expression(5 + x))
     w$process_one()
 
     m$recv(-1L)
