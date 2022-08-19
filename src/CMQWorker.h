@@ -3,15 +3,16 @@
 
 class CMQWorker { // : public ZeroMQ {
 public:
-    CMQWorker(std::string addr): ctx(new zmq::context_t(1)) {
-        sock = zmq::socket_t(*ctx, ZMQ_REQ);
+    CMQWorker(std::string addr): ctx(zmq::context_t(1)) {
+        sock = zmq::socket_t(ctx, ZMQ_REQ);
         sock.set(zmq::sockopt::connect_timeout, 10000);
         sock.connect(addr);
 
+        //todo: if inproc socket, do not monitor
         int rc = zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED);
         if (rc < 0) // C API needs return value check
             Rf_error("failed to create socket monitor");
-        mon = zmq::socket_t(*ctx, ZMQ_PAIR);
+        mon = zmq::socket_t(ctx, ZMQ_PAIR);
         mon.connect("inproc://monitor");
     }
     ~CMQWorker() {
@@ -19,24 +20,11 @@ public:
         mon.close();
         sock.set(zmq::sockopt::linger, 10000);
         sock.close();
-        ctx->close();
-        delete ctx;
+        ctx.close();
     }
 
-    void send(SEXP data) { // default args don't work from R
-        send(data, false);
-    }
-    void send(SEXP data, bool send_more) {
-        auto flags = zmq::send_flags::none;
-        if (send_more)
-            flags = flags | zmq::send_flags::sndmore;
-        sock.send(r2msg(data), flags);
-    }
-    SEXP receive() {
-        poll();
-        zmq::message_t msg;
-        sock.recv(msg, zmq::recv_flags::none);
-        return msg2r(msg);
+    void ready() {
+        sock.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
 
     void process_one() {
@@ -51,11 +39,11 @@ public:
         }
 
         SEXP eval = Rcpp::Rcpp_eval(cmd, env);
-        send(eval);
+        sock.send(r2msg(eval), zmq::send_flags::none);
     }
 
 private:
-    zmq::context_t *ctx;
+    zmq::context_t ctx;
     zmq::socket_t sock;
     zmq::socket_t mon;
     Rcpp::Environment env {1};

@@ -7,7 +7,7 @@ do_work = function() {
     m$add_env("x", 3)
 
     w = methods::new(CMQWorker, "tcp://127.0.0.1:9998")
-    w$send("wtest")
+    w$ready()
 
     m$recv(-1L)
     m$send(serialize(substitute({ 5 + x }), NULL))
