@@ -35,7 +35,7 @@ public:
         Rf_error("Could not bind port after ", i, " tries");
     }
 
-    SEXP recv_one(int timeout=-1) {
+    SEXP recv(int timeout=-1) {
 //        if (peers.size() == 0)
 //            Rf_error("Trying to receive data without workers");
 
@@ -44,31 +44,47 @@ public:
             Rf_error("Socket timeout reached");
 
         std::vector<zmq::message_t> msgs;
-        auto res = recv_multipart(sock, std::back_inserter(msgs));
+        recv_multipart(sock, std::back_inserter(msgs));
 
         if (msgs.size() < 3)
             Rf_error("no content received, should not happen?");
 
         cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
+        peers[cur].call = R_NilValue;
         return msg2r(msgs[2]);
     }
 
-    void send_one(SEXP cmd) {
-        // unserialize, read env
-        // add frams of what's not in env to send
+    void send(SEXP cmd) {
+        auto &w = peers[cur];
+        std::set<std::string> new_env;
+        std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
+                std::inserter(new_env, new_env.end()));
 
-        send(cmd); //TODO: 
+        zmq::multipart_t mp;
+        mp.push_back(str2msg(cur));
+        mp.push_back(zmq::message_t(0));
+        mp.push_back(r2msg(cmd));
+
+        for (auto &str : new_env) {
+            w.env.insert(str);
+            zmq::message_t msg;
+            msg.copy(env[str]);
+            mp.push_back(std::move(msg));
+        }
+
+        w.call = cmd;
+        mp.send(sock);
     }
 
     void add_env(std::string name, SEXP obj) {
-        //todo: how to encode names objs here?
-        auto serial = R_serialize(obj, R_NilValue);
-        env[name] = r2msg(serial);
+        auto named = Rcpp::List::create(Rcpp::Named(name) = obj);
+        env_names.insert(name);
+        env[name] = r2msg(R_serialize(named, R_NilValue));
     }
 
 private:
     struct worker_t {
-        std::vector<std::string> env;
+        std::set<std::string> env;
         SEXP call {R_NilValue};
     };
 
@@ -78,6 +94,7 @@ private:
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
+    std::set<std::string> env_names;
 
     zmq::message_t str2msg(std::string str) {
         zmq::message_t msg(str.length());
@@ -100,11 +117,6 @@ private:
             return ans;
     }
 
-    void send(SEXP data) {
-        sock.send(str2msg(cur), zmq::send_flags::sndmore);
-        sock.send(zmq::message_t(0), zmq::send_flags::sndmore);
-        sock.send(r2msg(data), zmq::send_flags::none);
-    }
     Rcpp::IntegerVector poll(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
         pitems[0].socket = sock;

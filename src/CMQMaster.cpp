@@ -7,8 +7,8 @@ RCPP_MODULE(cmq_master) {
         .constructor()
 //        .constructor<zmq::context_t*>()
         .method("listen", &CMQMaster::listen)
-        .method("recv_one", &CMQMaster::recv_one)
-        .method("send_one", &CMQMaster::send_one)
+        .method("recv", &CMQMaster::recv)
+        .method("send", &CMQMaster::send)
         .method("add_env", &CMQMaster::add_env)
     ;
 }

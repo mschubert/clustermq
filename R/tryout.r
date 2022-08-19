@@ -9,11 +9,11 @@ do_work = function() {
     w = methods::new(CMQWorker, "tcp://127.0.0.1:9998")
     w$send("wtest")
 
-    m$recv_one(-1L)
-    m$send_one(quote({ 5 + x }))
+    m$recv(-1L)
+    m$send(serialize(substitute({ 5 + x }), NULL))
     w$process_one()
 
-    m$recv_one(-1L)
+    m$recv(-1L)
     # create call, send via master
     # recv on worker, exec
     # send back to master and recv

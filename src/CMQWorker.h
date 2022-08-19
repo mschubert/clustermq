@@ -41,14 +41,16 @@ public:
 
     void process_one() {
         std::vector<zmq::message_t> msgs;
-        auto res = recv_multipart(sock, std::back_inserter(msgs));
+        recv_multipart(sock, std::back_inserter(msgs));
         auto cmd = msg2r(msgs[0]);
 
-        //TODO: for index 1..n add SEXPs to env
-//        for ()
-//            env[] = ;
+        for (auto it=msgs.begin()+1; it<msgs.end(); it++) {
+            Rcpp::List obj = msg2r(*it);
+            std::string name = obj.names();
+            env.assign(name, obj[0]);
+        }
 
-        SEXP eval = Rcpp::Rcpp_eval(cmd, Rcpp::Environment::global_env());
+        SEXP eval = Rcpp::Rcpp_eval(cmd, env);
         send(eval);
     }
 
@@ -56,7 +58,7 @@ private:
     zmq::context_t *ctx;
     zmq::socket_t sock;
     zmq::socket_t mon;
-    Rcpp::Environment env;
+    Rcpp::Environment env {1};
 
     zmq::message_t str2msg(std::string str) {
         zmq::message_t msg(str.length());
