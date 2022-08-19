@@ -6,8 +6,8 @@ do_work = function() {
     addr = m$listen("tcp://*:9998")
     m$add_env("x", 3)
 
-    w = methods::new(CMQWorker, "tcp://127.0.0.1:9998")
-    w$ready()
+    w = methods::new(CMQWorker)
+    w$connect("tcp://127.0.0.1:9998")
 
     m$recv(-1L)
     m$send(serialize(substitute({ 5 + x }), NULL))

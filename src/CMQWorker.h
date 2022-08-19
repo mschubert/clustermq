@@ -3,12 +3,8 @@
 
 class CMQWorker { // : public ZeroMQ {
 public:
-    CMQWorker(std::string addr): ctx(zmq::context_t(1)) {
+    CMQWorker(): ctx(zmq::context_t(1)) {
         sock = zmq::socket_t(ctx, ZMQ_REQ);
-        sock.set(zmq::sockopt::connect_timeout, 10000);
-        sock.connect(addr);
-
-        //todo: if inproc socket, do not monitor
         int rc = zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED);
         if (rc < 0) // C API needs return value check
             Rf_error("failed to create socket monitor");
@@ -23,7 +19,9 @@ public:
         ctx.close();
     }
 
-    void ready() {
+    void connect(std::string addr) {
+        sock.set(zmq::sockopt::connect_timeout, 10000);
+        sock.connect(addr);
         sock.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
 
