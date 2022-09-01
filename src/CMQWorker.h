@@ -38,10 +38,9 @@ public:
 
         for (auto it=msgs.begin()+2; it<msgs.end(); it++) {
             Rcpp::List obj = msg2r(*it);
-            if (obj.hasAttribute("names"))
-                env.assign(obj.names(), obj[0]);
-            else
-                ; //Rcpp::Rcpp_eval(.Call("library", obj[0]), env);
+            env.assign(obj.names(), obj[0]);
+            if (Rcpp::as<std::string>(obj.names()).compare(0, 8, "package:") == 0)
+                load_pkg(obj[0]);
         }
 
         SEXP eval = Rcpp::Rcpp_eval(cmd, env);
@@ -55,6 +54,7 @@ private:
     zmq::socket_t sock;
     zmq::socket_t mon;
     Rcpp::Environment env {1};
+    Rcpp::Function load_pkg {"library"};
 
     zmq::message_t str2msg(std::string str) {
         zmq::message_t msg(str.length());

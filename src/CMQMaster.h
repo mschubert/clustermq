@@ -82,7 +82,9 @@ public:
         env_names.insert(name);
         env[name] = r2msg(R_serialize(named, R_NilValue));
     }
-    //TODO: packages? {recv'd: list obj w/o name}
+    void add_pkg(Rcpp::CharacterVector pkg) {
+        add_env("package:" + Rcpp::as<std::string>(pkg), pkg);
+    }
 
 private:
     struct worker_t {
@@ -98,7 +100,6 @@ private:
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
-    std::set<std::string> pkg;
 
     zmq::message_t int2msg(int val) {
         zmq::message_t msg(sizeof(int));
