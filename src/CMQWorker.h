@@ -3,12 +3,14 @@
 
 class CMQWorker { // : public ZeroMQ {
 public:
-    CMQWorker(): ctx(zmq::context_t(1)) {
-        sock = zmq::socket_t(ctx, ZMQ_REQ);
-        int rc = zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED);
-        if (rc < 0) // C API needs return value check
+    CMQWorker(): CMQWorker(new zmq::context_t(1)) {
+        external_context = false;
+    }
+    CMQWorker(zmq::context_t *ctx_): ctx(ctx_) {
+        sock = zmq::socket_t(*ctx, ZMQ_REQ);
+        if (zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
             Rf_error("failed to create socket monitor");
-        mon = zmq::socket_t(ctx, ZMQ_PAIR);
+        mon = zmq::socket_t(*ctx, ZMQ_PAIR);
         mon.connect("inproc://monitor");
     }
     ~CMQWorker() {
@@ -16,7 +18,10 @@ public:
         mon.close();
         sock.set(zmq::sockopt::linger, 10000);
         sock.close();
-        ctx.close();
+        if (!external_context) {
+            ctx->close();
+            delete ctx;
+        }
     }
 
     void connect(std::string addr) {
@@ -28,12 +33,8 @@ public:
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
-
         auto status = *static_cast<wlife_t*>(msgs[0].data());
-        if (status == wlife_t::shutdown) {
-            // send "done" here + summary stats as before?
-            return false;
-        }
+        auto cmd = msg2r(msgs[1]);
 
         for (auto it=msgs.begin()+2; it<msgs.end(); it++) {
             Rcpp::List obj = msg2r(*it);
@@ -43,14 +44,14 @@ public:
                 ; //Rcpp::Rcpp_eval(.Call("library", obj[0]), env);
         }
 
-        auto cmd = msg2r(msgs[1]);
         SEXP eval = Rcpp::Rcpp_eval(cmd, env);
         sock.send(r2msg(eval), zmq::send_flags::none);
-        return true;
+        return status == wlife_t::active;
     }
 
 private:
-    zmq::context_t ctx;
+    bool external_context {true};
+    zmq::context_t *ctx;
     zmq::socket_t sock;
     zmq::socket_t mon;
     Rcpp::Environment env {1};
