@@ -63,6 +63,7 @@ public:
         zmq::multipart_t mp;
         mp.push_back(str2msg(cur));
         mp.push_back(zmq::message_t(0));
+        mp.push_back(int2msg(wlife_t::active));
         mp.push_back(r2msg(cmd));
 
         for (auto &str : new_env) {
@@ -81,21 +82,29 @@ public:
         env_names.insert(name);
         env[name] = r2msg(R_serialize(named, R_NilValue));
     }
+    //TODO: packages? {recv'd: list obj w/o name}
 
 private:
     struct worker_t {
         std::set<std::string> env;
         SEXP call {R_NilValue};
+        wlife_t status;
     };
 
-    zmq::context_t *ctx;
     bool external_context {true};
+    zmq::context_t *ctx;
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
+    std::set<std::string> pkg;
 
+    zmq::message_t int2msg(int val) {
+        zmq::message_t msg(sizeof(int));
+        memcpy(msg.data(), &val, sizeof(int));
+        return msg;
+    }
     zmq::message_t str2msg(std::string str) {
         zmq::message_t msg(str.length());
         memcpy(msg.data(), str.data(), str.length());

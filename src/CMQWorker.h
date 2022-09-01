@@ -25,19 +25,28 @@ public:
         sock.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
 
-    void process_one() {
+    bool process_one() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
-        auto cmd = msg2r(msgs[0]);
 
-        for (auto it=msgs.begin()+1; it<msgs.end(); it++) {
-            Rcpp::List obj = msg2r(*it);
-            std::string name = obj.names();
-            env.assign(name, obj[0]);
+        auto status = *static_cast<wlife_t*>(msgs[0].data());
+        if (status == wlife_t::shutdown) {
+            // send "done" here + summary stats as before?
+            return false;
         }
 
+        for (auto it=msgs.begin()+2; it<msgs.end(); it++) {
+            Rcpp::List obj = msg2r(*it);
+            if (obj.hasAttribute("names"))
+                env.assign(obj.names(), obj[0]);
+            else
+                ; //Rcpp::Rcpp_eval(.Call("library", obj[0]), env);
+        }
+
+        auto cmd = msg2r(msgs[1]);
         SEXP eval = Rcpp::Rcpp_eval(cmd, env);
         sock.send(r2msg(eval), zmq::send_flags::none);
+        return true;
     }
 
 private:

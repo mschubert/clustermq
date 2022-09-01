@@ -10,6 +10,12 @@
 #include "zmq_addon.hpp"
 #include "MonitoredSocket.hpp"
 
+enum wlife_t {
+    active,
+    shutdown,
+    error,
+    done
+};
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
 int pending_interrupt();
