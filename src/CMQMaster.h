@@ -26,13 +26,13 @@ public:
             auto addr = Rcpp::as<std::string>(addrs[i]);
             try {
                 sock.bind(addr);
-                return sock.get(zmq::sockopt::last_endpoint); // binding twice will return "" !??
+                return sock.get(zmq::sockopt::last_endpoint);
             } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
         }
-        Rf_error("Could not bind port after ", i, " tries");
+        Rf_error("Could not bind port to any address in provided pool");
     }
 
     SEXP recv(int timeout=-1) {
