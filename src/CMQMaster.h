@@ -143,9 +143,11 @@ private:
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
-                    time_ms -= std::chrono::duration_cast<ms>(Time::now() - start);
+                    auto now = Time::now()
+                    time_ms -= std::chrono::duration_cast<ms>(now - start);
                     if (time_ms.count() <= 0)
                         break;
+                    start = now;
                 }
             }
             result[0] = pitems[0].revents;
