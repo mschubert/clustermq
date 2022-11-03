@@ -30,7 +30,7 @@ SSH = R6::R6Class("SSH",
             answer = private$zmq$poll("proxy", timeout=init_timeout)
             if (!answer)
                 stop("Remote R process did not respond after ",
-                     init_timeout, " seconds. ",
+                     init_timeout/1000, " seconds. ",
                      "Check your SSH server log.")
             msg = private$zmq$receive("proxy")
             if (msg$id != "PROXY_UP")

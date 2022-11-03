@@ -2,7 +2,7 @@ ClusterMQ: send R function calls as cluster jobs
 ================================================
 
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
-[![Build Status](https://github.com/mschubert/clustermq/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/mschubert/clustermq/actions)
+[![Build Status](https://github.com/mschubert/clustermq/workflows/R-check/badge.svg?branch=master)](https://github.com/mschubert/clustermq/actions)
 [![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](http://cran.rstudio.com/web/packages/clustermq/index.html)
 [![DOI](https://zenodo.org/badge/DOI/10.1093/bioinformatics/btz284.svg)](https://doi.org/10.1093/bioinformatics/btz284)
 

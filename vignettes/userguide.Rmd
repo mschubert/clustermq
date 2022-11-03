@@ -120,9 +120,8 @@ to test your code before submitting it to a scheduler.
 * Multiprocess (*recommended*) - Use the `callr` package to run and manage
   multiple parallel R processes with `options(clustermq.scheduler="multiprocess")`
 * Multicore - Uses the `parallel` package to fork the current R process into
-  multiple threads with `options(clustermq.scheduler="multicore")`. This saves
-  memory but sometimes causes problems (macOS, RStudio) and is not available on
-  Windows.
+  multiple threads with `options(clustermq.scheduler="multicore")`. This
+  sometimes causes problems (macOS, RStudio) and is not available on Windows.
 
 ### Setting up the scheduler
 
@@ -318,25 +317,25 @@ make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
 
 ## Options
 
-The various configurable options are mentioned throughout the documentation, 
+The various configurable options are mentioned throughout the documentation,
 where applicable, however, we list all of the options here for reference.
 
 Options can be set by including a call to `options(<key> = <value>)` in your
 `.Rprofile`, or by calling `options(<key> = <value>)` in a script or
 interactively during a session.
 
-* `clustermq.scheduler` - One of the supported 
+* `clustermq.scheduler` - One of the supported
       [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
-      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"slurm"`, `"pbs"`, 
+      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"slurm"`, `"pbs"`,
       `"Torque"`, or `"ssh"` (default is the HPC scheduler found in `$PATH`,
       otherwise `"LOCAL"`)
 * `clustermq.host` - The name of the node or device for constructing the
       `ZeroMQ` host address (default is `Sys.info()["nodename"]`)
-* `clustermq.ssh.host` - The user name and host for 
+* `clustermq.ssh.host` - The user name and host for
       [connecting to the HPC via SSH](#ssh-connector) (e.g. `user@host`); we
       recommend setting up SSH keys for password-less login
 * `clustermq.ssh.log` - Path for a file (on the SSH host) that will be created
-      and populated with logging information regarding the SSH connection 
+      and populated with logging information regarding the SSH connection
       (e.g. `"~/cmq_ssh.log"`); helpful for debugging purposes
 * `clustermq.ssh.timeout` - The amount of time to wait (in seconds) for a SSH
       start-up connection before timing out (default is 5 seconds)
@@ -352,7 +351,7 @@ interactively during a session.
 * `clustermq.data.warning` - The threshold for the size of the common data (in
       Mb) before `clustermq` throws a warning (default is 1000)
 * `clustermq.defaults` - A named-list of default values for the HPC template;
-      this takes precedence over defaults specified in the template file 
+      this takes precedence over defaults specified in the template file
       (default is an empty list (i.e. `list()`))
 
 ## Troubleshooting
@@ -433,23 +432,19 @@ ssh -R 54709:localhost:6687 <user@host> R --vanilla
 ```
 
 If you get an `Command not found: R` error, make sure your `$PATH` is set up
-correctly in your `~/.bash_profile` and/or your `~/.bashrc` (depending on
-your cluster config you might need either).
+correctly in your `~/.bash_profile` and/or your `~/.bashrc` (depending on your
+cluster config you might need either). You may also need to modify your [SSH
+template](#ssh-template) to load R as a module or conda environment.
 
 If you get a SSH warning or error try again with `ssh -v` to enable verbose
-output.
-
-Next, try and see if you can create the same tunnel from your local R session:
-
-```{r eval=FALSE}
-system("ssh -R 54709:localhost:6687 <user@host> R --vanilla")
-```
-
-If the forward itself works, set the following option *in your local*
-`~/.Rprofile`:
+output. If the forward itself works, run the following in your local R session
+(ideally also in command-line R, [not only in
+RStudio](https://github.com/mschubert/clustermq/issues/206)):
 
 ```{r eval=FALSE}
-options(clustermq.ssh.log = "~/ssh_proxy.log")
+options(clustermq.scheduler = "ssh",
+        clustermq.ssh.log = "~/ssh_proxy.log")
+Q(identity, x=1, n_jobs=1)
 ```
 
 This will create a log file *on the remote server* that will contain any errors
@@ -465,11 +460,12 @@ but the server log does not show any errors, then you can try increasing the
 timeout:
 
 ```{r eval=FALSE}
-options(clustermq.ssh.timeout = 10) # or a higher number
+options(clustermq.ssh.timeout = 30) # in seconds
 ```
 
-This can happens when your SSH startup template includes additional steps
-before starting R, such as activating a module or conda environment.
+This can happen when your SSH startup template includes additional steps before
+starting R, such as activating a module or conda environment, or having to
+confirm the connection via two-factor authentication.
 
 ## Environments
 
@@ -782,3 +778,32 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
 
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
+
+### SSH {#ssh-template}
+
+While SSH is not a scheduler, we can access remote schedulers via SSH. If you
+want to use it, first make sure that your real scheduler is running when
+manually connecting to the HPC environment.
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "ssh",
+		clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
+        clustermq.ssh.log = "~/ssh_proxy.log", # log file on your HPC
+        clustermq.ssh.timeout = 30, # if changing the default connection timeout
+        clustermq.template = "/path/to/file/below" # if using your own template
+)
+```
+
+The default template is shown below. If `R` is not in your HPC `$PATH`, you may
+need to specify its path or [load the required bash modules/conda
+environments](https://github.com/mschubert/clustermq/issues/281).
+
+```{sh eval=FALSE}
+ssh -o "ExitOnForwardFailure yes" -f \
+    -R {{ ctl_port }}:localhost:{{ local_port }} \
+    -R {{ job_port }}:localhost:{{ fwd_port }} \
+    {{ ssh_host }} \
+    "R --no-save --no-restore -e \
+        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})' \
+        > {{ ssh_log | /dev/null }} 2>&1"
+```
