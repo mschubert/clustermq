@@ -78,6 +78,8 @@ public:
     }
 
     void add_env(std::string name, SEXP obj) {
+        for (auto &w : peers)
+            w.second.env.erase(name);
         auto named = Rcpp::List::create(Rcpp::Named(name) = obj);
         env_names.insert(name);
         env[name] = r2msg(R_serialize(named, R_NilValue));
@@ -143,7 +145,7 @@ private:
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
-                    auto now = Time::now()
+                    auto now = Time::now();
                     time_ms -= std::chrono::duration_cast<ms>(now - start);
                     if (time_ms.count() <= 0)
                         break;
