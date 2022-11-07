@@ -5,8 +5,9 @@ RCPP_MODULE(cmq_master) {
     using namespace Rcpp;
     class_<CMQMaster>("CMQMaster")
         .constructor()
-//        .constructor<zmq::context_t*>()
+        .constructor<SEXP>()
         .method("listen", &CMQMaster::listen)
+        .method("close", &CMQMaster::close)
         .method("recv", &CMQMaster::recv)
         .method("send", &CMQMaster::send)
         .method("add_env", &CMQMaster::add_env)

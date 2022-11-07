@@ -3,6 +3,19 @@
 #include "zmq.hpp"
 
 // [[Rcpp::export]]
+SEXP zmq_context(int threads=1) {
+    auto *ctx = new zmq::context_t(threads);
+    Rcpp::XPtr<zmq::context_t> p(ctx, true);
+    return p;
+}
+
+// [[Rcpp::export]]
+void ctx_close(SEXP ctx_) {
+    auto ctx = Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_);
+    ctx->close();
+}
+
+// [[Rcpp::export]]
 bool has_connectivity(std::string host) {
     bool success = false;
     zmq::context_t ctx;

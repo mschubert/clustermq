@@ -3,32 +3,40 @@
 
 class CMQWorker { // : public ZeroMQ {
 public:
-    CMQWorker(): CMQWorker(new zmq::context_t(1)) {
+    CMQWorker(): ctx(new zmq::context_t(1)) {
         external_context = false;
     }
-    CMQWorker(zmq::context_t *ctx_): ctx(ctx_) {
+    CMQWorker(SEXP ctx_): ctx(Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_)) {}
+    ~CMQWorker() { close(); }
+
+    void connect(std::string addr) {
         sock = zmq::socket_t(*ctx, ZMQ_REQ);
         if (zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
             Rf_error("failed to create socket monitor");
         mon = zmq::socket_t(*ctx, ZMQ_PAIR);
         mon.connect("inproc://monitor");
-    }
-    ~CMQWorker() {
-        mon.set(zmq::sockopt::linger, 0);
-        mon.close();
-        sock.set(zmq::sockopt::linger, 10000);
-        sock.close();
-        if (!external_context) {
-            ctx->close();
-            delete ctx;
-        }
-    }
 
-    void connect(std::string addr) {
         sock.set(zmq::sockopt::connect_timeout, 10000);
         sock.connect(addr);
         sock.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
+    void close() {
+        if (mon.handle() != nullptr) {
+            mon.set(zmq::sockopt::linger, 0);
+            mon.close();
+        }
+        if (sock.handle() != nullptr) {
+            sock.set(zmq::sockopt::linger, 10000);
+            sock.close();
+        }
+        if (!external_context) {
+            ctx->close();
+            delete ctx;
+            ctx = nullptr;
+        }
+    }
+//todo: separate close func? (+ make sure 2nd close is no-op)
+//todo: start writing tests for eval w/ inproc
 
     bool process_one() {
         std::vector<zmq::message_t> msgs;

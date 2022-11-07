@@ -117,6 +117,27 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// zmq_context
+SEXP zmq_context(int threads);
+RcppExport SEXP _clustermq_zmq_context(SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(zmq_context(threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ctx_close
+void ctx_close(SEXP ctx_);
+RcppExport SEXP _clustermq_ctx_close(SEXP ctx_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type ctx_(ctx_SEXP);
+    ctx_close(ctx_);
+    return R_NilValue;
+END_RCPP
+}
 // has_connectivity
 bool has_connectivity(std::string host);
 RcppExport SEXP _clustermq_has_connectivity(SEXP hostSEXP) {
@@ -144,6 +165,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_clustermq_receive_socket", (DL_FUNC) &_clustermq_receive_socket, 3},
     {"_clustermq_receive_multipart", (DL_FUNC) &_clustermq_receive_multipart, 3},
     {"_clustermq_send_socket", (DL_FUNC) &_clustermq_send_socket, 4},
+    {"_clustermq_zmq_context", (DL_FUNC) &_clustermq_zmq_context, 1},
+    {"_clustermq_ctx_close", (DL_FUNC) &_clustermq_ctx_close, 1},
     {"_clustermq_has_connectivity", (DL_FUNC) &_clustermq_has_connectivity, 1},
     {"_rcpp_module_boot_cmq_master", (DL_FUNC) &_rcpp_module_boot_cmq_master, 0},
     {"_rcpp_module_boot_cmq_proxy", (DL_FUNC) &_rcpp_module_boot_cmq_proxy, 0},

@@ -3,24 +3,17 @@
 
 class CMQMaster { // : public ZeroMQ {
 public:
-    CMQMaster(int threads=1): CMQMaster(new zmq::context_t(threads)) {
+    CMQMaster(int threads=1): ctx(new zmq::context_t(threads)) {
         external_context = false;
     }
-    CMQMaster(zmq::context_t *ctx_): ctx(ctx_) {
+    CMQMaster(SEXP ctx_): ctx(Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_)) {}
+    ~CMQMaster() { close(); }
+
+    std::string listen(Rcpp::CharacterVector addrs) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
         sock.set(zmq::sockopt::router_mandatory, 1);
         sock.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
-    }
-    ~CMQMaster() {
-        sock.set(zmq::sockopt::linger, 0);
-        sock.close();
-        if (!external_context) {
-            ctx->close();
-            delete ctx;
-        }
-    }
 
-    std::string listen(Rcpp::CharacterVector addrs) {
         int i;
         for (i=0; i<addrs.length(); i++) {
             auto addr = Rcpp::as<std::string>(addrs[i]);
@@ -33,6 +26,18 @@ public:
             }
         }
         Rf_error("Could not bind port to any address in provided pool");
+    }
+
+    void close() {
+        if (sock.handle() != nullptr) {
+            sock.set(zmq::sockopt::linger, 0);
+            sock.close();
+        }
+        if (!external_context) {
+            ctx->close();
+            delete ctx;
+            ctx = nullptr;
+        }
     }
 
     SEXP recv(int timeout=-1) {
