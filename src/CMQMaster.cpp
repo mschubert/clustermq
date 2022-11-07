@@ -11,5 +11,6 @@ RCPP_MODULE(cmq_master) {
         .method("recv", &CMQMaster::recv)
         .method("send", &CMQMaster::send)
         .method("add_env", &CMQMaster::add_env)
+        .method("add_pkg", &CMQMaster::add_pkg)
     ;
 }
