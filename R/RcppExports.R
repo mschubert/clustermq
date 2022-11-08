@@ -37,6 +37,14 @@ send_socket <- function(socket, data, dont_wait = FALSE, send_more = FALSE) {
     invisible(.Call('_clustermq_send_socket', PACKAGE = 'clustermq', socket, data, dont_wait, send_more))
 }
 
+zmq_context <- function(threads = 1L) {
+    .Call('_clustermq_zmq_context', PACKAGE = 'clustermq', threads)
+}
+
+ctx_close <- function(ctx_) {
+    invisible(.Call('_clustermq_ctx_close', PACKAGE = 'clustermq', ctx_))
+}
+
 has_connectivity <- function(host) {
     .Call('_clustermq_has_connectivity', PACKAGE = 'clustermq', host)
 }
