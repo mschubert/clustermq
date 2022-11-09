@@ -5,7 +5,7 @@ RCPP_MODULE(cmq_master) {
     using namespace Rcpp;
     class_<CMQMaster>("CMQMaster")
         .constructor()
-        .constructor<SEXP>()
+        .method("context", &CMQMaster::context)
         .method("listen", &CMQMaster::listen)
         .method("close", &CMQMaster::close)
         .method("recv", &CMQMaster::recv)

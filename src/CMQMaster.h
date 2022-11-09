@@ -1,13 +1,15 @@
 #include <Rcpp.h>
 #include "common.h"
 
-class CMQMaster { // : public ZeroMQ {
+class CMQMaster {
 public:
-    CMQMaster(int threads=1): ctx(new zmq::context_t(threads)) {
-        external_context = false;
-    }
-    CMQMaster(SEXP ctx_): ctx(Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_)) {}
+    CMQMaster(): ctx(new zmq::context_t(3)) {}
     ~CMQMaster() { close(); }
+
+    SEXP context() {
+        Rcpp::XPtr<zmq::context_t> p(ctx, true);
+        return p;
+    }
 
     std::string listen(Rcpp::CharacterVector addrs) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
@@ -33,9 +35,8 @@ public:
             sock.set(zmq::sockopt::linger, 0);
             sock.close();
         }
-        if (!external_context) {
+        if (ctx != nullptr) {
             ctx->close();
-            delete ctx;
             ctx = nullptr;
         }
     }
@@ -100,7 +101,6 @@ private:
         wlife_t status;
     };
 
-    bool external_context {true};
     zmq::context_t *ctx;
     zmq::socket_t sock;
     std::string cur;

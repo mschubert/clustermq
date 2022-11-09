@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include "common.h"
 
-class CMQWorker { // : public ZeroMQ {
+class CMQWorker {
 public:
     CMQWorker(): ctx(new zmq::context_t(1)) {
         external_context = false;

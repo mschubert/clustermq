@@ -1,9 +1,8 @@
 context("worker usage")
 
 test_that("worker evaluation", {
-    ctx = zmq_context()
-    m = methods::new(CMQMaster, ctx)
-    w = methods::new(CMQWorker, ctx)
+    m = methods::new(CMQMaster)
+    w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     w$connect(addr)
 
@@ -17,13 +16,11 @@ test_that("worker evaluation", {
 
     w$close()
     m$close()
-    ctx_close(ctx)
 })
 
 test_that("export variable to worker", {
-    ctx = zmq_context()
-    m = methods::new(CMQMaster, ctx)
-    w = methods::new(CMQWorker, ctx)
+    m = methods::new(CMQMaster)
+    w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     w$connect(addr)
 
@@ -44,13 +41,11 @@ test_that("export variable to worker", {
 
     w$close()
     m$close()
-    ctx_close(ctx)
 })
 
 test_that("load package on worker", {
-    ctx = zmq_context()
-    m = methods::new(CMQMaster, ctx)
-    w = methods::new(CMQWorker, ctx)
+    m = methods::new(CMQMaster)
+    w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     w$connect(addr)
 
@@ -66,5 +61,4 @@ test_that("load package on worker", {
 
     w$close()
     m$close()
-    ctx_close(ctx)
 })
