@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "ZeroMQ.h"
+#include "common.h"
 #include "CMQMaster.h"
 
 class CMQProxy {

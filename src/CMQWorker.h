@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "ZeroMQ.h"
+#include "common.h"
 
 class CMQWorker { // : public ZeroMQ {
 public:
@@ -20,6 +20,7 @@ public:
         sock.connect(addr);
         sock.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
+
     void close() {
         if (mon.handle() != nullptr) {
             mon.set(zmq::sockopt::linger, 0);
@@ -35,17 +36,15 @@ public:
             ctx = nullptr;
         }
     }
-//todo: separate close func? (+ make sure 2nd close is no-op)
-//todo: start writing tests for eval w/ inproc
 
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
         auto status = *static_cast<wlife_t*>(msgs[0].data());
-        auto cmd = msg2r(msgs[1]);
+        auto cmd = msg2r(msgs[1], true);
 
         for (auto it=msgs.begin()+2; it<msgs.end(); it++) {
-            Rcpp::List obj = msg2r(*it);
+            Rcpp::List obj = msg2r(*it, true);
             env.assign(obj.names(), obj[0]);
             if (Rcpp::as<std::string>(obj.names()).compare(0, 8, "package:") == 0)
                 load_pkg(obj[0]);
@@ -63,27 +62,6 @@ private:
     zmq::socket_t mon;
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
-
-    zmq::message_t str2msg(std::string str) {
-        zmq::message_t msg(str.length());
-        memcpy(msg.data(), str.data(), str.length());
-        return msg;
-    }
-    zmq::message_t r2msg(SEXP data) {
-        if (TYPEOF(data) != RAWSXP)
-            data = R_serialize(data, R_NilValue);
-        zmq::message_t msg(Rf_xlength(data));
-        memcpy(msg.data(), RAW(data), Rf_xlength(data));
-        return msg;
-    }
-    SEXP msg2r(zmq::message_t &msg, bool unserialize=true) {
-        SEXP ans = Rf_allocVector(RAWSXP, msg.size());
-        memcpy(RAW(ans), msg.data(), msg.size());
-        if (unserialize)
-            return R_unserialize(ans);
-        else
-            return ans;
-    }
 
     void poll() {
         auto pitems = std::vector<zmq::pollitem_t>(2);

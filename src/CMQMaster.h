@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "ZeroMQ.h"
+#include "common.h"
 
 class CMQMaster { // : public ZeroMQ {
 public:
@@ -56,7 +56,7 @@ public:
 
         cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
         peers[cur].call = R_NilValue;
-        return msg2r(msgs[2]);
+        return msg2r(msgs[2], true);
     }
 
     void send(SEXP cmd) {
@@ -107,32 +107,6 @@ private:
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
-
-    zmq::message_t int2msg(int val) {
-        zmq::message_t msg(sizeof(int));
-        memcpy(msg.data(), &val, sizeof(int));
-        return msg;
-    }
-    zmq::message_t str2msg(std::string str) {
-        zmq::message_t msg(str.length());
-        memcpy(msg.data(), str.data(), str.length());
-        return msg;
-    }
-    zmq::message_t r2msg(SEXP data) {
-        if (TYPEOF(data) != RAWSXP)
-            data = R_serialize(data, R_NilValue);
-        zmq::message_t msg(Rf_xlength(data));
-        memcpy(msg.data(), RAW(data), Rf_xlength(data));
-        return msg;
-    }
-    SEXP msg2r(zmq::message_t &msg, bool unserialize=true) {
-        SEXP ans = Rf_allocVector(RAWSXP, msg.size());
-        memcpy(RAW(ans), msg.data(), msg.size());
-        if (unserialize)
-            return R_unserialize(ans);
-        else
-            return ans;
-    }
 
     Rcpp::IntegerVector poll(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);

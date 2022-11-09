@@ -9,7 +9,7 @@ ssh_proxy(ctl, job, qsys_id = qsys_default)
 \arguments{
 \item{ctl}{The port to connect to the master for proxy control}
 
-\item{job}{The port to connect to the master for job control}
+\item{job}{The port to connect to the master for job data}
 
 \item{qsys_id}{Character string of QSys class to use}
 }

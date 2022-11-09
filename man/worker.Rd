@@ -4,11 +4,7 @@
 \alias{worker}
 \title{R worker submitted as cluster job}
 \usage{
-worker(
-  master,
-  ...,
-  verbose = TRUE
-)
+worker(master, ..., verbose = TRUE)
 }
 \arguments{
 \item{master}{The master address (tcp://ip:port)}
