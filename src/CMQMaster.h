@@ -52,12 +52,14 @@ public:
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
 
-        if (msgs.size() < 3)
+        if (msgs.size() < 4)
             Rf_error("no content received, should not happen?");
 
         cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
+        peers[cur].status = *static_cast<wlife_t*>(msgs[2].data());
+        // if status == wlife_t::stop then handle disconnect event internally (+keep polling)
         peers[cur].call = R_NilValue;
-        return msg2r(msgs[2], true);
+        return msg2r(msgs[3], true);
     }
 
     void send(SEXP cmd) {
@@ -69,7 +71,8 @@ public:
         zmq::multipart_t mp;
         mp.push_back(str2msg(cur));
         mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(wlife_t::active));
+        mp.push_back(int2msg(wlife_t::active)); //todo: active only if more work; be able to set inactive w/o task
+    // should probably also have the poll+recv handle internal events (eg. disc worker) + normal timeout poll after
         mp.push_back(r2msg(cmd));
 
         for (auto &str : new_env) {
@@ -101,7 +104,7 @@ private:
         wlife_t status;
     };
 
-    zmq::context_t *ctx;
+    zmq::context_t *ctx {nullptr};
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;

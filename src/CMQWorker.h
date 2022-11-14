@@ -18,6 +18,7 @@ public:
 
         sock.set(zmq::sockopt::connect_timeout, 10000);
         sock.connect(addr);
+        sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
         sock.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
 
@@ -51,13 +52,15 @@ public:
         }
 
         SEXP eval = Rcpp::Rcpp_eval(cmd, env);
+        sock.send(int2msg(status), zmq::send_flags::sndmore);
         sock.send(r2msg(eval), zmq::send_flags::none);
+    // R result should have: reference which cmd was completed; calling handlers(?)
         return status == wlife_t::active;
     }
 
 private:
     bool external_context {true};
-    zmq::context_t *ctx;
+    zmq::context_t *ctx {nullptr};
     zmq::socket_t sock;
     zmq::socket_t mon;
     Rcpp::Environment env {1};
