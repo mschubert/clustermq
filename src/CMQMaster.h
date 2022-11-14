@@ -45,20 +45,7 @@ public:
 //        if (peers.size() == 0)
 //            Rf_error("Trying to receive data without workers");
 
-        auto ev = Rcpp::as<int>(poll(timeout));
-        if (ev == 0)
-            Rf_error("Socket timeout reached");
-
-        std::vector<zmq::message_t> msgs;
-        recv_multipart(sock, std::back_inserter(msgs));
-
-        if (msgs.size() < 4)
-            Rf_error("no content received, should not happen?");
-
-        cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
-        peers[cur].status = *static_cast<wlife_t*>(msgs[2].data());
-        // if status == wlife_t::stop then handle disconnect event internally (+keep polling)
-        peers[cur].call = R_NilValue;
+        auto msgs = poll_recv(timeout);
         return msg2r(msgs[3], true);
     }
 
@@ -111,15 +98,14 @@ private:
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
 
-    Rcpp::IntegerVector poll(int timeout=-1) {
+    std::vector<zmq::message_t> poll_recv(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
         pitems[0].socket = sock;
         pitems[0].events = ZMQ_POLLIN;
 
         auto start = Time::now();
         auto time_ms = std::chrono::milliseconds(timeout);
-        int total_sock_ev = 0;
-        auto result = Rcpp::IntegerVector(1);
+        std::vector<zmq::message_t> msgs;
         do {
             try {
                 zmq::poll(pitems, time_ms);
@@ -130,14 +116,24 @@ private:
                     auto now = Time::now();
                     time_ms -= std::chrono::duration_cast<ms>(now - start);
                     if (time_ms.count() <= 0)
-                        break;
+                        Rf_error("socket timeout reached");
                     start = now;
                 }
             }
-            result[0] = pitems[0].revents;
-            total_sock_ev += pitems[0].revents;
-        } while (total_sock_ev == 0);
+            if (pitems[0].revents == 0) continue;
 
-        return result;
+            // receive, handle internally or return result
+            recv_multipart(sock, std::back_inserter(msgs));
+            if (msgs.size() != 4)
+                Rf_error("unexpected message format, should not happen?");
+
+            cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
+            peers[cur].status = *static_cast<wlife_t*>(msgs[2].data());
+            // if status == wlife_t::stop then handle disconnect event internally (+keep polling)
+            peers[cur].call = R_NilValue;
+
+        } while (false);
+
+        return msgs;
     }
 };
