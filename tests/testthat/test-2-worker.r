@@ -6,10 +6,10 @@ test_that("worker evaluation", {
     addr = m$listen("inproc://endpoint")
     w$connect(addr)
 
-    m$recv(-1L)
+    m$recv(0L)
     m$send(expression(5 * 2), TRUE)
     status = w$process_one()
-    result = m$recv(-1L)
+    result = m$recv(0L)
 
     expect_true(status)
     expect_equal(result, 10)
@@ -25,17 +25,17 @@ test_that("export variable to worker", {
     w$connect(addr)
 
     m$add_env("x", 3)
-    m$recv(-1L)
+    m$recv(0L)
     m$send(expression(5 + x), TRUE)
     status = w$process_one()
-    result = m$recv(-1L)
+    result = m$recv(0L)
     expect_true(status)
     expect_equal(result, 8)
 
     m$add_env("x", 5)
     m$send(expression(5 + x), TRUE)
     status = w$process_one()
-    result = m$recv(-1L)
+    result = m$recv(0L)
     expect_true(status)
     expect_equal(result, 10)
 
@@ -51,10 +51,10 @@ test_that("load package on worker", {
 
     m$add_pkg("parallel")
 
-    m$recv(-1L)
+    m$recv(0L)
     m$send(expression(splitIndices(1, 1)[[1]]), TRUE)
     status = w$process_one()
-    result = m$recv(-1L)
+    result = m$recv(0L)
 
     expect_true(status)
     expect_equal(result, 1)
