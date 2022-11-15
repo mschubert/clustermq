@@ -1,5 +1,12 @@
 context("worker usage")
 
+test_that("timeouts are triggered correctly", {
+    m = methods::new(CMQMaster)
+    addr = m$listen("inproc://endpoint")
+    expect_error(m$recv(0L))
+    m$close()
+})
+
 test_that("worker evaluation", {
     m = methods::new(CMQMaster)
     w = methods::new(CMQWorker, m$context())

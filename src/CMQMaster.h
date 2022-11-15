@@ -120,20 +120,22 @@ private:
         auto start = Time::now();
         auto time_ms = std::chrono::milliseconds(timeout);
         std::vector<zmq::message_t> msgs;
-        do {
+        while (true) {
             try {
                 zmq::poll(pitems, time_ms);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
-                if (timeout != -1) {
-                    auto now = Time::now();
-                    time_ms -= std::chrono::duration_cast<ms>(now - start);
-                    if (time_ms.count() <= 0)
-                        Rf_error("socket timeout reached");
-                    start = now;
-                }
             }
+
+            if (timeout != -1) {
+                auto now = Time::now();
+                time_ms -= std::chrono::duration_cast<ms>(now - start);
+                if (time_ms.count() <= 0)
+                    Rf_error("socket timeout reached");
+                start = now;
+            }
+
             if (pitems[0].revents == 0)
                 continue;
 
@@ -145,15 +147,14 @@ private:
             auto &w = peers[cur];
             w.status = *static_cast<wlife_t*>(msgs[2].data());
             w.call = R_NilValue;
-            if (w.status == wlife_t::shutdown) {
-                on_shutdown.push_back(msg2r(msgs[3], true));
-                send(R_NilValue, false);
-                peers.erase(cur);
-                msgs.clear();
-                continue;
-            }
+            if (w.status != wlife_t::shutdown)
+                break;
 
-        } while (false);
+            on_shutdown.push_back(msg2r(msgs[3], true));
+            send(R_NilValue, false);
+            peers.erase(cur);
+            msgs.clear();
+        };
 
         return msgs;
     }
