@@ -9,17 +9,25 @@ public:
     CMQWorker(SEXP ctx_): ctx(Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_)) {}
     ~CMQWorker() { close(); }
 
-    void connect(std::string addr) {
+    void connect(std::string addr, int timeout=10000) {
         sock = zmq::socket_t(*ctx, ZMQ_REQ);
-        if (zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
-            Rf_error("failed to create socket monitor");
-        mon = zmq::socket_t(*ctx, ZMQ_PAIR);
-        mon.connect("inproc://monitor");
+        sock.set(zmq::sockopt::connect_timeout, timeout);
+        sock.set(zmq::sockopt::immediate, 1);
 
-        sock.set(zmq::sockopt::connect_timeout, 10000);
-        sock.connect(addr);
-        sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
-        sock.send(r2msg(R_NilValue), zmq::send_flags::none);
+        if (mon.handle() == nullptr) {
+            if (zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
+                Rf_error("failed to create socket monitor");
+            mon = zmq::socket_t(*ctx, ZMQ_PAIR);
+            mon.connect("inproc://monitor");
+        }
+
+        try {
+            sock.connect(addr);
+            sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
+            sock.send(r2msg(R_NilValue), zmq::send_flags::none);
+        } catch (zmq::error_t const &e) {
+            Rf_error(e.what());
+        }
     }
 
     void close() {
