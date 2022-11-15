@@ -49,7 +49,11 @@ public:
         return msg2r(msgs[3], true);
     }
 
-    void send(SEXP cmd) {
+    void send(SEXP cmd, bool more) {
+        auto status = wlife_t::active;
+        if (!more)
+            status = wlife_t::shutdown;
+
         auto &w = peers[cur];
         std::set<std::string> new_env;
         std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
@@ -58,8 +62,7 @@ public:
         zmq::multipart_t mp;
         mp.push_back(str2msg(cur));
         mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(wlife_t::active)); //todo: active only if more work; be able to set inactive w/o task
-    // should probably also have the poll+recv handle internal events (eg. disc worker) + normal timeout poll after
+        mp.push_back(int2msg(status));
         mp.push_back(r2msg(cmd));
 
         for (auto &str : new_env) {
@@ -84,6 +87,16 @@ public:
         add_env("package:" + Rcpp::as<std::string>(pkg), pkg);
     }
 
+    Rcpp::List cleanup(int timeout=5000) {
+        env.clear();
+        poll_recv(timeout);
+        close();
+        Rcpp::List re(on_shutdown.size());
+        for (int i=0; i<on_shutdown.size(); i++)
+            re[i] = std::move(on_shutdown[i]);
+        return re;
+    }
+
 private:
     struct worker_t {
         std::set<std::string> env;
@@ -97,6 +110,7 @@ private:
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
+    std::vector<SEXP> on_shutdown;
 
     std::vector<zmq::message_t> poll_recv(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
@@ -120,17 +134,24 @@ private:
                     start = now;
                 }
             }
-            if (pitems[0].revents == 0) continue;
+            if (pitems[0].revents == 0)
+                continue;
 
-            // receive, handle internally or return result
             recv_multipart(sock, std::back_inserter(msgs));
             if (msgs.size() != 4)
-                Rf_error("unexpected message format, should not happen?");
+                Rf_error("unexpected message format");
 
             cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
-            peers[cur].status = *static_cast<wlife_t*>(msgs[2].data());
-            // if status == wlife_t::stop then handle disconnect event internally (+keep polling)
-            peers[cur].call = R_NilValue;
+            auto &w = peers[cur];
+            w.status = *static_cast<wlife_t*>(msgs[2].data());
+            w.call = R_NilValue;
+            if (w.status == wlife_t::shutdown) {
+                on_shutdown.push_back(msg2r(msgs[3], true));
+                send(R_NilValue, false);
+                peers.erase(cur);
+                msgs.clear();
+                continue;
+            }
 
         } while (false);
 
