@@ -11,6 +11,7 @@ public:
 
     void connect(std::string addr, int timeout=10000) {
         sock = zmq::socket_t(*ctx, ZMQ_REQ);
+        // timeout would need ZMQ_RECONNECT_STOP_CONN_REFUSED (draft, no C++ yet) to work
         sock.set(zmq::sockopt::connect_timeout, timeout);
         sock.set(zmq::sockopt::immediate, 1);
 
