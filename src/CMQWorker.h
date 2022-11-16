@@ -47,6 +47,27 @@ public:
         }
     }
 
+    void poll() {
+        auto pitems = std::vector<zmq::pollitem_t>(2);
+        pitems[0].socket = sock;
+        pitems[0].events = ZMQ_POLLIN;
+        pitems[1].socket = mon;
+        pitems[1].events = ZMQ_POLLIN;
+
+        int total_sock_ev = 0;
+        do {
+            try {
+                zmq::poll(pitems, std::chrono::duration<long int>::max());
+            } catch (zmq::error_t const &e) {
+                if (errno != EINTR || pending_interrupt())
+                    Rf_error(e.what());
+            }
+            if (pitems[1].revents > 0)
+                Rf_error("Unexpected peer disconnect");
+            total_sock_ev = pitems[0].revents;
+        } while (total_sock_ev == 0);
+    }
+
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
@@ -74,25 +95,4 @@ private:
     zmq::socket_t mon;
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
-
-    void poll() {
-        auto pitems = std::vector<zmq::pollitem_t>(2);
-        pitems[0].socket = sock;
-        pitems[0].events = ZMQ_POLLIN;
-        pitems[1].socket = mon;
-        pitems[1].events = ZMQ_POLLIN;
-
-        int total_sock_ev = 0;
-        do {
-            try {
-                zmq::poll(pitems, std::chrono::duration<long int>::max());
-            } catch (zmq::error_t const &e) {
-                if (errno != EINTR || pending_interrupt())
-                    Rf_error(e.what());
-            }
-            if (pitems[1].revents > 0)
-                Rf_error("Unexpected peer disconnect");
-            total_sock_ev = pitems[0].revents;
-        } while (total_sock_ev == 0);
-    }
 };

@@ -8,6 +8,7 @@ RCPP_MODULE(cmq_worker) {
         .constructor<SEXP>()
         .method("connect", &CMQWorker::connect)
         .method("close", &CMQWorker::close)
+        .method("poll", &CMQWorker::poll)
         .method("process_one", &CMQWorker::process_one)
     ;
 }

@@ -74,3 +74,21 @@ test_that("load package on worker", {
     w$close()
     m$close()
 })
+
+test_that("worker R API", {
+    skip_on_cran()
+    skip_on_os("windows")
+#    skip_if_not(has_connectivity("localhost")) # -> this or inproc w/ passing context
+
+    m = methods::new(CMQMaster)
+    addr = m$listen(sprintf("tcp://127.0.0.1:%i", 6680:6690))
+
+    p = parallel::mcparallel(worker(addr))
+    m$recv(1000L)
+    m$send(expression(5 + 1), FALSE)
+    res = m$cleanup(1000L)
+    pc = parallel::mccollect(p)
+
+    expect_equal(res[[1]], 6)
+    expect_equal(pc[[1]], NULL)
+})
