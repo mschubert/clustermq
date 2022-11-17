@@ -78,12 +78,14 @@ test_that("load package on worker", {
 test_that("worker R API", {
     skip_on_cran()
     skip_on_os("windows")
-#    skip_if_not(has_connectivity("localhost")) # -> this or inproc w/ passing context
+    skip_if_not(has_connectivity("127.0.0.1")) # -> this or inproc w/ passing context
 
     m = methods::new(CMQMaster)
     addr = m$listen(sprintf("tcp://127.0.0.1:%i", 6680:6690))
+#    addr = m$listen("inproc://endpoint") # mailbox.cpp assertion error
 
     p = parallel::mcparallel(worker(addr))
+#    p = parallel::mcparallel(worker(addr, context=m$context()))
     m$recv(1000L)
     m$send(expression(5 + 1), FALSE)
     res = m$cleanup(1000L)

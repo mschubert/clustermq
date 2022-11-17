@@ -7,8 +7,9 @@ loadModule("cmq_worker", TRUE) # CMQWorker C++ class
 #' @param master   The master address (tcp://ip:port)
 #' @param ...      Catch-all to not break older template values (ignored)
 #' @param verbose  Whether to print debug messages
+#' @param context  ZeroMQ context (for internal testing)
 #' @keywords internal
-worker = function(master, ..., verbose=TRUE) {
+worker = function(master, ..., verbose=TRUE, context=NULL) {
     if (verbose)
         message = function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
     else
@@ -22,9 +23,12 @@ worker = function(master, ..., verbose=TRUE) {
         warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
 
     # connect to master
-    w = methods::new(CMQWorker)
-    w$connect(master, 10000L)
+    if (is.null(context))
+        w = methods::new(CMQWorker)
+    else
+        w = methods::new(CMQWorker, context)
     message("connecting to: ", master)
+    w$connect(master, 10000L)
 
     start_time = proc.time()
     counter = 0
