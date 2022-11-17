@@ -30,9 +30,9 @@ public:
         Rf_error("Could not bind port to any address in provided pool");
     }
 
-    void close() {
+    void close(int timeout=0) {
         if (sock.handle() != nullptr) {
-            sock.set(zmq::sockopt::linger, 0);
+            sock.set(zmq::sockopt::linger, timeout);
             sock.close();
         }
         if (ctx != nullptr) {
@@ -91,7 +91,7 @@ public:
         env.clear();
         if (peers.size() > 0)
             poll_recv(timeout);
-        close();
+        close(timeout);
         Rcpp::List re(on_shutdown.size());
         for (int i=0; i<on_shutdown.size(); i++)
             re[i] = std::move(on_shutdown[i]);

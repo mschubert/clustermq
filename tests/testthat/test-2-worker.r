@@ -4,7 +4,7 @@ test_that("timeouts are triggered correctly", {
     m = methods::new(CMQMaster)
     addr = m$listen("inproc://endpoint")
     expect_error(m$recv(0L))
-    m$close()
+    m$close(0L)
 
 # connection timeout not working (needs ZMQ_RECONNECT_STOP_CONN_REFUSED in draft)
 #    w = methods::new(CMQWorker)
@@ -27,7 +27,7 @@ test_that("worker evaluation", {
     expect_equal(result, 10)
 
     w$close()
-    m$close()
+    m$close(0L)
 })
 
 test_that("export variable to worker", {
@@ -52,7 +52,7 @@ test_that("export variable to worker", {
     expect_equal(result, 10)
 
     w$close()
-    m$close()
+    m$close(0L)
 })
 
 test_that("load package on worker", {
@@ -72,7 +72,7 @@ test_that("load package on worker", {
     expect_equal(result, 1)
 
     w$close()
-    m$close()
+    m$close(0L)
 })
 
 test_that("worker R API", {
