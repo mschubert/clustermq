@@ -89,7 +89,8 @@ public:
 
     Rcpp::List cleanup(int timeout=5000) {
         env.clear();
-        poll_recv(timeout);
+        if (peers.size() > 0)
+            poll_recv(timeout);
         close();
         Rcpp::List re(on_shutdown.size());
         for (int i=0; i<on_shutdown.size(); i++)
@@ -117,9 +118,9 @@ private:
         pitems[0].socket = sock;
         pitems[0].events = ZMQ_POLLIN;
 
-        auto start = Time::now();
-        auto time_ms = std::chrono::milliseconds(timeout);
         std::vector<zmq::message_t> msgs;
+        auto time_ms = std::chrono::milliseconds(timeout);
+        auto start = Time::now();
         while (true) {
             try {
                 zmq::poll(pitems, time_ms);
@@ -128,16 +129,14 @@ private:
                     Rf_error(e.what());
             }
 
-            if (timeout != -1) {
+            if (pitems[0].revents == 0) {
                 auto now = Time::now();
                 time_ms -= std::chrono::duration_cast<ms>(now - start);
-                if (time_ms.count() <= 0)
-                    Rf_error("socket timeout reached");
                 start = now;
-            }
-
-            if (pitems[0].revents == 0)
+                if (timeout != -1 && time_ms.count() <= 0)
+                    Rf_error("socket timeout reached");
                 continue;
+            }
 
             recv_multipart(sock, std::back_inserter(msgs));
             if (msgs.size() != 4)
@@ -154,6 +153,8 @@ private:
             send(R_NilValue, false);
             peers.erase(cur);
             msgs.clear();
+            if (peers.size() == 0)
+                break;
         };
 
         return msgs;

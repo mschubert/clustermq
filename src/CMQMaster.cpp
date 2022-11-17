@@ -7,6 +7,7 @@ RCPP_MODULE(cmq_master) {
         .constructor()
         .method("context", &CMQMaster::context)
         .method("listen", &CMQMaster::listen)
+        .method("cleanup", &CMQMaster::cleanup)
         .method("close", &CMQMaster::close)
         .method("recv", &CMQMaster::recv)
         .method("send", &CMQMaster::send)
