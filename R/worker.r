@@ -43,9 +43,6 @@ worker = function(master, ..., verbose=TRUE, context=NULL) {
     }
 
     message("shutting down worker")
-    # either receive null message or disconnect
-    try(w$poll())
-
     run_time = proc.time() - start_time
     fmt = "%i in %.2fs [user], %.2fs [system], %.2fs [elapsed]"
     message("\nTotal: ", sprintf(fmt, counter, run_time[1], run_time[2], run_time[3]))
