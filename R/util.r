@@ -97,3 +97,11 @@ purrr_lookup = list(
     "int" = purrr::pmap_int,
     "chr" = purrr::pmap_chr
 )
+
+#' Wraps an error in a condition object
+#'
+#' @keywords internal
+wrap_error = function(call) {
+    structure(class = c("worker_error", "condition"),
+              list(message=geterrmessage(), call=call));
+}

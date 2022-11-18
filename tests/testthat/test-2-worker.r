@@ -75,6 +75,26 @@ test_that("load package on worker", {
     m$close(0L)
 })
 
+test_that("errors are sent back to master", {
+    skip("this works interactively but evaluates the error on testthat")
+
+    m = methods::new(CMQMaster)
+    w = methods::new(CMQWorker, m$context())
+    addr = m$listen("inproc://endpoint")
+    w$connect(addr, 0L)
+
+    m$recv(0L)
+    m$send(expression(stop("errmsg")), TRUE)
+    status = w$process_one()
+    result = m$recv(0L)
+
+    expect_true(status)
+    expect_true(inherits(result, c("condition", "worker_error")))
+
+    w$close()
+    m$close(0L)
+})
+
 test_that("worker R API", {
     skip_on_cran()
     skip_on_os("windows")

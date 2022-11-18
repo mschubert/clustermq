@@ -81,10 +81,13 @@ public:
                 load_pkg(obj[0]);
         }
 
-        SEXP eval = Rcpp::Rcpp_eval(cmd, env);
+        int err = 0;
+        SEXP eval = PROTECT(R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
+        if (err)
+            eval = wrap_error(cmd);
         sock.send(int2msg(status), zmq::send_flags::sndmore);
         sock.send(r2msg(eval), zmq::send_flags::none);
-    // R result should have: reference which cmd was completed; calling handlers(?)
+        UNPROTECT(1);
         return status == wlife_t::active;
     }
 
@@ -95,4 +98,5 @@ private:
     zmq::socket_t mon;
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
+    Rcpp::Function wrap_error {"wrap_error"};
 };
