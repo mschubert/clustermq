@@ -5,8 +5,6 @@ loadModule("cmq_master", TRUE) # CMQMaster C++ class
 #' Provides the basic functions needed to communicate between machines
 #' This should abstract most functions of rZMQ so the scheduler
 #' implementations can rely on the higher level functionality
-#'
-#' @keywords internal
 Pool = R6::R6Class("Pool",
     public = list(
         initialize = function(addr=host()) {
@@ -18,14 +16,16 @@ Pool = R6::R6Class("Pool",
             addr = sub(nodename, "*", addr, fixed=TRUE)
             bound = private$master$listen(addr)
             private$addr = sub("0.0.0.0", nodename, bound, fixed=TRUE)
+            private$timer = proc.time()
         },
 
         print = function() {
             cat(sprintf("<clustermq> worker pool with %i member(s)\n", length(private$workers)))
         },
 
-        add = function() {
-            # add workers
+        add = function(qsys, n) {
+            private$workers = qsys$new(addr=private$addr)
+            private$workers$submit_jobs(n)
         },
 
         env = function(...) {
@@ -47,7 +47,7 @@ Pool = R6::R6Class("Pool",
             private$master$send(cmd, TRUE)
         },
         send_shutdown = function() {
-            #TODO: make ..starttime.. available in the worker's .GlobalEnv
+            # ..starttime.. in worker() .GlobalEnv
             private$master$send(expression(proc.time() - ..starttime..), FALSE)
         },
         send_wait = function(wait=50) {
@@ -55,11 +55,12 @@ Pool = R6::R6Class("Pool",
         },
 
         recv = function() {
-            private$master$recv()
+            private$master$recv(-1L)
         },
 
         cleanup = function(timeout=5000) {
             stats = private$master$cleanup(timeout)
+            private$workers$cleanup()
 
             times = stats #TODO: mem stats
             # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
@@ -82,12 +83,14 @@ Pool = R6::R6Class("Pool",
 
     private = list(
         finalize = function() {
-            private$master$close()
+            private$workers$cleanup()
+            private$master$close(0L)
         },
 
         master = NULL,
         addr = NULL,
-        workers = list()
+        workers = NULL,
+        timer = NULL
     ),
 
     cloneable = FALSE

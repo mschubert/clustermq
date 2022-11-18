@@ -16,10 +16,9 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
     if (n_jobs == 0)
         qsys_id = "LOCAL"
 
-    gc() # be sure to clean up old zmq handles (zeromq/libzmq/issues/1108)
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-    qsys = qsys$new(data=data, reuse=reuse, ...)
-    args = list(n_jobs=n_jobs, log_worker=log_worker, verbose=verbose)
-    do.call(qsys$submit_jobs, c(template, args))
-    qsys
+
+    p = Pool$new()
+    p$add(qsys, n_jobs)
+    p
 }

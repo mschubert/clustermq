@@ -37,9 +37,8 @@ MULTICORE = R6::R6Class("MULTICORE",
         },
 
         cleanup = function(quiet=FALSE, timeout=3) {
-            success = super$cleanup(quiet=quiet, timeout=timeout)
-            private$collect_children(wait=success, timeout=timeout)
-            invisible(success && length(private$children) == 0)
+            private$collect_children(wait=TRUE, timeout=timeout)
+            invisible(length(private$children) == 0)
         },
 
         finalize = function(quiet=FALSE) {

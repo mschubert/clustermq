@@ -16,10 +16,9 @@ QSys = R6::R6Class("QSys",
         # @param addr    Vector of possible addresses to bind
         # @param bind    Whether to bind 'addr' or just refer to it
         # @param data    List with elements: fun, const, export, seed
-        initialize = function(master, template=NULL) {
-            private$master = master
+        initialize = function(addr, template=NULL) {
+            private$master = addr
             private$port = as.integer(sub(".*:", "", private$master))
-            private$timer = proc.time()
 
             if (!is.null(template)) {
                 if (!file.exists(template))
@@ -31,9 +30,6 @@ QSys = R6::R6Class("QSys",
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
-
-            if (!is.null(data))
-                do.call(self$set_common_data, data)
         },
 
         # Submits jobs to the cluster system
@@ -47,7 +43,9 @@ QSys = R6::R6Class("QSys",
 
     private = list(
         master = NULL,
+        port = NULL,
         template = NULL,
+        workers_total = NULL,
         defaults = list(),
 
         fill_options = function(...) {

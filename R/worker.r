@@ -17,6 +17,7 @@ worker = function(master, ..., verbose=TRUE, context=NULL) {
 
     #TODO: replace this by proper authentication
     auth = Sys.getenv("CMQ_AUTH")
+    ..starttime.. <<- proc.time()
 
     message("Master: ", master)
     if (length(list(...)) > 0)
