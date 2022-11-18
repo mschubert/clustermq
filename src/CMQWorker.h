@@ -83,8 +83,10 @@ public:
 
         int err = 0;
         SEXP eval = PROTECT(R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
-        if (err)
+        if (err) {
+            Rcpp::Function wrap_error {"wrap_error"};
             eval = wrap_error(cmd);
+        }
         sock.send(int2msg(status), zmq::send_flags::sndmore);
         sock.send(r2msg(eval), zmq::send_flags::none);
         UNPROTECT(1);
@@ -98,5 +100,4 @@ private:
     zmq::socket_t mon;
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
-    Rcpp::Function wrap_error {"wrap_error"};
 };
