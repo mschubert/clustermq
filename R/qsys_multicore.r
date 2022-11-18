@@ -7,7 +7,7 @@ MULTICORE = R6::R6Class("MULTICORE",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr=host("127.0.0.1"), ...) {
+        initialize = function(addr, ...) {
             super$initialize(addr=addr, ...)
         },
 

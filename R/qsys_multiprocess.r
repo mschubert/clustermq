@@ -7,7 +7,7 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr=host("127.0.0.1"), ...) {
+        initialize = function(addr, ...) {
             if (! requireNamespace("callr", quietly=TRUE))
                 stop("The ", sQuote(callr), " package is required for ", sQuote("multiprocess"))
             super$initialize(addr=addr, ...)
@@ -34,11 +34,9 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
         },
 
         cleanup = function(quiet=FALSE, timeout=3) {
-            success = super$cleanup(quiet=quiet, timeout=timeout)
             dead_workers = sapply(private$callr, function(x) ! x$is_alive())
             if (length(dead_workers) > 0)
                 private$callr[dead_workers] = NULL
-            invisible(success)
         },
 
         finalize = function(quiet=FALSE) {

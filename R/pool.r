@@ -23,9 +23,9 @@ Pool = R6::R6Class("Pool",
             cat(sprintf("<clustermq> worker pool with %i member(s)\n", length(private$workers)))
         },
 
-        add = function(qsys, n) {
-            private$workers = qsys$new(addr=private$addr)
-            private$workers$submit_jobs(n)
+        add = function(qsys, n, ...) {
+            self$workers = qsys$new(addr=private$addr)
+            self$workers$submit_jobs(n, ...)
         },
 
         env = function(...) {
@@ -60,7 +60,7 @@ Pool = R6::R6Class("Pool",
 
         cleanup = function(timeout=5000) {
             stats = private$master$cleanup(timeout)
-            private$workers$cleanup()
+            self$workers$cleanup()
 
             times = stats #TODO: mem stats
             # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
@@ -78,7 +78,9 @@ Pool = R6::R6Class("Pool",
             fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
-        }
+        },
+
+        workers = NULL
     ),
 
     private = list(
@@ -89,7 +91,6 @@ Pool = R6::R6Class("Pool",
 
         master = NULL,
         addr = NULL,
-        workers = NULL,
         timer = NULL
     ),
 
