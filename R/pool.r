@@ -85,7 +85,7 @@ Pool = R6::R6Class("Pool",
 
     private = list(
         finalize = function() {
-            private$workers$cleanup()
+            self$workers$cleanup()
             private$master$close(0L)
         },
 

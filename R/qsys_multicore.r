@@ -40,9 +40,8 @@ MULTICORE = R6::R6Class("MULTICORE",
             private$collect_children(wait=TRUE, timeout=timeout)
             invisible(length(private$children) == 0)
         },
-
         finalize = function(quiet=FALSE) {
-            if (!private$is_cleaned_up) {
+#            if (!private$is_cleaned_up) {
                 private$collect_children(wait=FALSE, timeout=0)
                 running = names(private$children)
                 if (length(running) > 0) {
@@ -52,9 +51,10 @@ MULTICORE = R6::R6Class("MULTICORE",
                                 immediate.=TRUE)
                     tools::pskill(running, tools::SIGKILL)
                 }
-                private$is_cleaned_up = TRUE
-            }
+#                private$is_cleaned_up = TRUE
+#            }
         }
+
     ),
 
     private = list(
