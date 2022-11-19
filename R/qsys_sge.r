@@ -34,14 +34,6 @@ SGE = R6::R6Class("SGE",
             }
 
             private$set_job_id(qsub_stdout)
-        },
-
-        finalize = function(quiet=self$workers_running == 0) {
-            if (!private$is_cleaned_up) {
-                system(paste("qdel", private$job_id),
-                       ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
-                private$is_cleaned_up = TRUE
-            }
         }
     ),
 
@@ -52,7 +44,15 @@ SGE = R6::R6Class("SGE",
 
         # This implementation of set_job_id ignores input argument qsub_stdout
         # as it can use job_name to refer to jobs in qdel
-        set_job_id = function(qsub_stdout) private$job_id = private$job_name
+        set_job_id = function(qsub_stdout) private$job_id = private$job_name,
+
+        finalize = function(quiet=self$workers_running == 0) {
+            if (!private$is_cleaned_up) {
+                system(paste("qdel", private$job_id),
+                       ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
+                private$is_cleaned_up = TRUE
+            }
+        }
     )
 )
 

@@ -29,7 +29,11 @@ LSF = R6::R6Class("LSF",
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
-        },
+        }
+    ),
+
+    private = list(
+        job_id = NULL,
 
         finalize = function(quiet=self$workers_running == 0) {
             if (!private$is_cleaned_up) {
@@ -38,9 +42,5 @@ LSF = R6::R6Class("LSF",
                 private$is_cleaned_up = TRUE
             }
         }
-    ),
-
-    private = list(
-        job_id = NULL
     )
 )

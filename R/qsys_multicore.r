@@ -39,7 +39,19 @@ MULTICORE = R6::R6Class("MULTICORE",
         cleanup = function(quiet=FALSE, timeout=3) {
             private$collect_children(wait=TRUE, timeout=timeout)
             invisible(length(private$children) == 0)
+        }
+    ),
+
+    private = list(
+        collect_children = function(...) {
+            pids = as.integer(names(private$children))
+            res = suppressWarnings(parallel::mccollect(pids, ...))
+            finished = intersect(names(private$children), names(res))
+            private$children[finished] = NULL
         },
+
+        children = list(),
+
         finalize = function(quiet=FALSE) {
 #            if (!private$is_cleaned_up) {
                 private$collect_children(wait=FALSE, timeout=0)
@@ -54,17 +66,5 @@ MULTICORE = R6::R6Class("MULTICORE",
 #                private$is_cleaned_up = TRUE
 #            }
         }
-
-    ),
-
-    private = list(
-        collect_children = function(...) {
-            pids = as.integer(names(private$children))
-            res = suppressWarnings(parallel::mccollect(pids, ...))
-            finished = intersect(names(private$children), names(res))
-            private$children[finished] = NULL
-        },
-
-        children = list()
     )
 )

@@ -34,7 +34,8 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     shutdown = FALSE
     kill_workers = FALSE
 
-    on.exit(pool$finalize())
+    if (!pool$reusable)
+        on.exit(pool$cleanup())
 
     if (verbose) {
         message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
@@ -94,9 +95,6 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
             pool$send_shutdown()
         }
     }
-
-    if (!kill_workers && (pool$reusable || pool$cleanup())) #quiet=!verbose)))
-        on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)

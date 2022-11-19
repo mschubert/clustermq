@@ -76,17 +76,6 @@ SSH = R6::R6Class("SSH",
             success = super$cleanup(quiet=quiet)
             self$finalize()
             success
-        },
-
-        finalize = function(quiet = self$workers_running == 0) {
-            #TODO: should we handle this with PROXY_CMD for break (and finalize if req'd)??
-            if (private$ssh_proxy_running) {
-                private$zmq$send(
-                    list(id="PROXY_STOP", finalize=!private$is_cleaned_up),
-                    "proxy"
-                )
-                private$ssh_proxy_running = FALSE
-            }
         }
     ),
 
@@ -106,6 +95,17 @@ SSH = R6::R6Class("SSH",
             values$job_port = remote[2]
             values$fwd_port = private$port
             values
+        },
+
+        finalize = function(quiet = self$workers_running == 0) {
+            #TODO: should we handle this with PROXY_CMD for break (and finalize if req'd)??
+            if (private$ssh_proxy_running) {
+                private$zmq$send(
+                    list(id="PROXY_STOP", finalize=!private$is_cleaned_up),
+                    "proxy"
+                )
+                private$ssh_proxy_running = FALSE
+            }
         }
 	)
 )
