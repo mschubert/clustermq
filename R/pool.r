@@ -7,7 +7,7 @@ loadModule("cmq_master", TRUE) # CMQMaster C++ class
 #' implementations can rely on the higher level functionality
 Pool = R6::R6Class("Pool",
     public = list(
-        initialize = function(addr=host()) {
+        initialize = function(addr=sample(host())) {
             private$master = methods::new(CMQMaster)
             # ZeroMQ allows connecting by node name, but binding must be either
             # a numerical IP or an interfacet name. This is a bit of a hack to

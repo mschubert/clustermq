@@ -16,7 +16,7 @@ MULTICORE = R6::R6Class("MULTICORE",
                 message("Starting ", n_jobs, " cores ...")
 
             if (log_worker && is.null(log_file))
-                log_file = "cmq-%i.log"
+                log_file = sprintf("cmq%i-%%i.log", private$port)
 
             for (i in seq_len(n_jobs)) {
                 if (is.character(log_file))
