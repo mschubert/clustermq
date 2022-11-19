@@ -11,9 +11,6 @@ LOCAL = R6::R6Class("LOCAL",
             super$initialize(..., data=data)
         },
 
-        set_common_data = function(...) {
-        },
-
         submit_jobs = function(..., verbose=TRUE) {
             if (verbose)
                 message("Running sequentially ('LOCAL') ...")

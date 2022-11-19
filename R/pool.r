@@ -7,7 +7,7 @@ loadModule("cmq_master", TRUE) # CMQMaster C++ class
 #' implementations can rely on the higher level functionality
 Pool = R6::R6Class("Pool",
     public = list(
-        initialize = function(addr=sample(host())) {
+        initialize = function(addr=sample(host()), reuse=TRUE) {
             private$master = methods::new(CMQMaster)
             # ZeroMQ allows connecting by node name, but binding must be either
             # a numerical IP or an interfacet name. This is a bit of a hack to
@@ -17,6 +17,7 @@ Pool = R6::R6Class("Pool",
             bound = private$master$listen(addr)
             private$addr = sub("0.0.0.0", nodename, bound, fixed=TRUE)
             private$timer = proc.time()
+            private$reuse = reuse
         },
 
         print = function() {
@@ -38,12 +39,19 @@ Pool = R6::R6Class("Pool",
         },
 
         pkg = function(...) {
-            args = list(...)
+            args = as.list(...)
             for (elm in args)
                 private$master$add_pkg(elm)
         },
 
-        send = function(cmd) {
+        send = function(cmd, ...) {
+            env = list(...)
+            for (i in seq_along(cmd[[1]])) {
+                name = cmd[[1]][[i]]
+                if (is.name(name) && as.character(name) %in% names(env))
+                    cmd[[1]][[i]] = env[[as.character(name)]]
+            }
+
             private$master$send(cmd, TRUE)
         },
         send_shutdown = function() {
@@ -60,7 +68,7 @@ Pool = R6::R6Class("Pool",
 
         cleanup = function(timeout=5000) {
             stats = private$master$cleanup(timeout)
-            self$workers$cleanup()
+            success = self$workers$cleanup()
 
             times = stats #TODO: mem stats
             # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
@@ -78,9 +86,19 @@ Pool = R6::R6Class("Pool",
             fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
+
+            invisible(success)
         },
 
         workers = NULL
+    ),
+
+    active = list(
+        workers_total = function() -1,
+        workers_running = function() -1,
+        data_num = function() -1,
+        data_size = function() -1,
+        reusable = function() private$reuse
     ),
 
     private = list(
@@ -91,7 +109,8 @@ Pool = R6::R6Class("Pool",
 
         master = NULL,
         addr = NULL,
-        timer = NULL
+        timer = NULL,
+        reuse = NULL
     ),
 
     cloneable = FALSE

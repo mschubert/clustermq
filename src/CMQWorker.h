@@ -84,7 +84,8 @@ public:
         int err = 0;
         SEXP eval = PROTECT(R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
         if (err) {
-            Rcpp::Function wrap_error {"wrap_error"};
+            auto cmq = Rcpp::Environment::namespace_env("clustermq");
+            Rcpp::Function wrap_error = cmq["wrap_error"];
             eval = wrap_error(cmd);
         }
         sock.send(int2msg(status), zmq::send_flags::sndmore);
