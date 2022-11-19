@@ -89,8 +89,10 @@ public:
 
     Rcpp::List cleanup(int timeout=5000) {
         env.clear();
-        if (peers.size() > 0)
+        if (peers.size() > 0) {
+            sock.set(zmq::sockopt::router_mandatory, 0);
             poll_recv(timeout);
+        }
         close(timeout);
         Rcpp::List re(on_shutdown.size());
         for (int i=0; i<on_shutdown.size(); i++)
