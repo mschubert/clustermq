@@ -1,29 +1,3 @@
-#' Binds a ZeroMQ socket to an available port in given range
-#'
-#' @param socket   An ZeroMQ socket object
-#' @param range    Numbers to consider (e.g. 6000:8000)
-#' @param iface    Interface to listen on
-#' @param n_tries  Number of ports to try in range
-#' @return         The port the socket is bound to
-#' @keywords internal
-bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
-    ports = sample(range, n_tries)
-
-    for (i in 1:n_tries) {
-        addr = paste(iface, ports[i], sep=":")
-        success = tryCatch({
-            port_found = bind_socket(socket, addr)
-        }, error = function(e) NULL)
-        if (is.null(success))
-            break
-    }
-
-    if (!is.null(success))
-        stop("Could not bind after ", n_tries, " tries")
-
-    ports[i]
-}
-
 #' Construct the ZeroMQ host address
 #'
 #' @param node   Node or device name
