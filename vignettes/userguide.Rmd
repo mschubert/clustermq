@@ -151,11 +151,11 @@ containers](#Environments).
 
 There are reasons why you might prefer to not to work on the computing cluster
 directly but rather on your local machine instead.
-[RStudio](https://www.rstudio.com/) is an excellent local IDE, it's more
-responsive than and feature-rich than browser-based solutions ([RStudio
-server](https://www.rstudio.com/products/rstudio/download-server/), [Project
-Jupyter](https://jupyter.org/)), and it avoids X forwarding issues when you want
-to look at plots you just made.
+[RStudio](https://posit.co/products/open-source/rstudio/) is an excellent local
+IDE, it's more responsive than and feature-rich than browser-based solutions
+([RStudio server](https://posit.co/products/open-source/rstudio-server/),
+[Project Jupyter](https://jupyter.org/)), and it avoids X forwarding issues
+when you want to look at plots you just made.
 
 Using this setup, however, you lost access to the computing cluster. Instead,
 you had to copy your data there, and then submit individual scripts as jobs,
@@ -478,7 +478,7 @@ container.
 
 Examples for such environments or containers are:
 
-* [Bash module](http://modules.sourceforge.net/) environments
+* [Bash module](https://modules.sourceforge.net/) environments
 * [Conda](https://conda.io/) environments
 * [Docker](https://www.docker.com/)/[Singularity](https://singularity.lbl.gov/) containers
 
@@ -652,7 +652,7 @@ In this file, `#$-*` defines command-line arguments to the `qsub` program.
   likely not exist on your system, so choose the right name (or comment out
   this line with an additional `#`)
 * For other options, see [the SGE
-  documentation](http://gridscheduler.sourceforge.net/htmlman/manuals.html). Do
+  documentation](https://gridscheduler.sourceforge.net/htmlman/manuals.html). Do
   not change the identifiers in curly braces (`{{ ... }}`), as they are used to
   fill in the right variables.
 
