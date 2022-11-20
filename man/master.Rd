@@ -5,7 +5,7 @@
 \title{Master controlling the workers}
 \usage{
 master(
-  qsys,
+  pool,
   iter,
   rettype = "list",
   fail_on_error = TRUE,
@@ -16,7 +16,7 @@ master(
 )
 }
 \arguments{
-\item{qsys}{Instance of QSys object}
+\item{pool}{Instance of Pool object}
 
 \item{iter}{Objects to be iterated in each function call}
 
