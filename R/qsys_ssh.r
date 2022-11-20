@@ -66,7 +66,7 @@ SSH = R6::R6Class("SSH",
             private$zmq$send(list(id="PROXY_CMD", exec=call), "proxy")
 
             msg = private$zmq$receive("proxy")
-            if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
+            if (msg$id != "PROXY_CMD" || inherits(msg$reply, "try-error"))
                 stop(msg)
 
             private$workers_total = list(...)[["n_jobs"]] #TODO: find cleaner way to handle this

@@ -81,7 +81,7 @@ Pool = R6::R6Class("Pool",
 
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
-            if (class(wt) != "proc_time")
+            if (! inherits(wt, "proc_time"))
                 wt = rep(NA, 3)
 
             fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
