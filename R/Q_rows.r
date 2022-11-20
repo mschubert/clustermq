@@ -62,7 +62,7 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
     chunk_size = max(chunk_size, 1)
 
     # process calls
-    if (class(workers)[1] == "LOCAL") {
+    if (inherits(workers$workers, "LOCAL")) {
         list2env(export, envir=environment(fun))
         for (pkg in pkgs) # is it possible to attach the package to fun's env?
             library(pkg, character.only=TRUE)
