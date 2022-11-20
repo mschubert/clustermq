@@ -12,6 +12,8 @@ test_that("starting and stopping multicore", {
 })
 
 test_that("multiprocess", {
+    skip("https://github.com/r-lib/processx/issues/236")
+
     w = workers(1, qsys_id="multiprocess")
     expect_null(w$recv())
     w$send(expression(3 + 5))
@@ -21,6 +23,8 @@ test_that("multiprocess", {
 })
 
 test_that("work_chunk on multiprocess", {
+    skip("https://github.com/r-lib/processx/issues/236")
+
     w = workers(1, qsys_id="multiprocess")
     expect_null(w$recv())
     w$send(expression(clustermq:::work_chunk(chunk, `+`)), chunk=list(a=1:3, b=4:6))

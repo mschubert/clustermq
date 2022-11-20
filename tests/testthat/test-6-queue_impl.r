@@ -29,14 +29,15 @@ test_that("qsys_multicore", {
 #    expect_true(success)
 })
 
-# can not combine with multicore tests: https://github.com/r-lib/processx/issues/236
-#test_that("qsys_multiprocess (callr)", {
-#    w = workers(n_jobs=2, qsys_id="multiprocess", reuse=TRUE)
-#    r = Q(fx, x=1:3, workers=w, timeout=3L)
-#    success = w$cleanup()
-#    expect_equal(r, as.list(1:3*2))
-#    expect_equal(success, TRUE)
-#})
+test_that("qsys_multiprocess (callr)", {
+    skip("https://github.com/r-lib/processx/issues/236")
+
+    w = workers(n_jobs=2, qsys_id="multiprocess", reuse=TRUE)
+    r = Q(fx, x=1:3, workers=w, timeout=3L)
+    success = w$cleanup()
+    expect_equal(r, as.list(1:3*2))
+    expect_equal(success, TRUE)
+})
 
 test_that("qsys_lsf", {
     skip_on_cran()
