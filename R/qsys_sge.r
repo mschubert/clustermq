@@ -34,6 +34,11 @@ SGE = R6::R6Class("SGE",
             }
 
             private$set_job_id(qsub_stdout)
+            private$is_cleaned_up = FALSE
+        },
+
+        cleanup = function() {
+            private$is_cleaned_up = TRUE
         }
     ),
 
@@ -41,6 +46,7 @@ SGE = R6::R6Class("SGE",
         job_name = NULL,
         job_id   = NULL,
         array_idx = "\\$TASK_ID",
+        is_cleaned_up = NULL,
 
         # This implementation of set_job_id ignores input argument qsub_stdout
         # as it can use job_name to refer to jobs in qdel

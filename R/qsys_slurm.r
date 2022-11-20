@@ -29,13 +29,19 @@ SLURM = R6::R6Class("SLURM",
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$is_cleaned_up = FALSE
+        },
+
+        cleanup = function() {
+            private$is_cleaned_up = TRUE
         }
     ),
 
     private = list(
         job_id = NULL,
+        is_cleaned_up = NULL,
 
-        finalize = function(quiet = self$workers_running == 0) {
+        finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {
                 system(paste("scancel --name", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)

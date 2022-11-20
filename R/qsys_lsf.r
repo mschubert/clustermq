@@ -29,13 +29,20 @@ LSF = R6::R6Class("LSF",
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$is_cleaned_up = FALSE
+        },
+
+        cleanup = function() {
+            private$is_cleaned_up = TRUE
         }
     ),
 
     private = list(
         job_id = NULL,
+        is_cleaned_up = NULL,
 
         finalize = function(quiet=self$workers_running == 0) {
+            quiet = FALSE #TODO:
             if (!private$is_cleaned_up) {
                 system(paste("bkill -J", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)

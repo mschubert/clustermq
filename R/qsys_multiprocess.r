@@ -31,20 +31,25 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                 private$callr[[as.character(cr$get_pid())]] = cr
             }
             private$workers_total = n_jobs
+            private$is_cleaned_up = FALSE
         },
 
         cleanup = function(quiet=FALSE, timeout=3) {
             dead_workers = sapply(private$callr, function(x) ! x$is_alive())
             if (length(dead_workers) > 0)
                 private$callr[dead_workers] = NULL
+            else
+                private$is_cleaned_up = TRUE
+            private$is_cleaned_up
         }
     ),
 
     private = list(
         callr = list(),
+        is_cleaned_up = NULL,
 
         finalize = function(quiet=FALSE) {
-#            if (!private$is_cleaned_up) {
+            if (!private$is_cleaned_up) {
                 dead_workers = sapply(private$callr, function(x) ! x$is_alive())
                 if (length(dead_workers) > 0)
                     private$callr[dead_workers] = NULL
@@ -53,8 +58,8 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                             paste(names(private$callr), collapse=", "), immediate.=TRUE)
                 for (cr in private$callr)
                     cr$kill_tree()
-#                private$is_cleaned_up = TRUE
-#            }
+                private$is_cleaned_up = TRUE
+            }
         }
     )
 )

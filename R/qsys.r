@@ -15,7 +15,6 @@ QSys = R6::R6Class("QSys",
         #
         # @param addr    Vector of possible addresses to bind
         # @param bind    Whether to bind 'addr' or just refer to it
-        # @param data    List with elements: fun, const, export, seed
         initialize = function(addr, template=NULL) {
             private$master = addr
             private$port = as.integer(sub(".*:", "", private$master))
@@ -54,7 +53,7 @@ QSys = R6::R6Class("QSys",
             if (grepl("CMQ_AUTH", private$template)) {
                 # note: auth will be obligatory in the future and this check will
                 #   be removed (i.e., filling will fail if no field in template)
-                values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
+                values$auth = paste(sample(letters, 5, TRUE), collapse="")
             } else {
                 values$auth = NULL
                 warning("Add 'CMQ_AUTH={{ auth }}' to template to enable socket authentication",

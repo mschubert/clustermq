@@ -7,8 +7,8 @@ LOCAL = R6::R6Class("LOCAL",
     inherit = QSys,
 
     public = list(
-        initialize = function(..., data=NULL) {
-            super$initialize(..., data=data)
+        initialize = function(...) {
+            super$initialize(...)
         },
 
         submit_jobs = function(..., verbose=TRUE) {
