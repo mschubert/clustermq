@@ -609,7 +609,7 @@ In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
   function call. The way it is written, it will use 6 hours if no arguemnt is
   given.
 * For other options, see [the LSF
-  documentation](https://www.ibm.com/docs/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html)
+  documentation](https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=bsub-options)
   and add them via `#BSUB-*` (where `*` represents the argument)
 * Do not change the identifiers in curly braces (`{{ ... }}`), as they are used
   to fill in the right variables
