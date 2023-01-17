@@ -17,7 +17,6 @@ worker = function(master, ..., verbose=TRUE, context=NULL) {
 
     #TODO: replace this by proper authentication
     auth = Sys.getenv("CMQ_AUTH")
-    ..starttime.. <<- proc.time()
 
     message("Master: ", master)
     if (length(list(...)) > 0)
@@ -31,7 +30,6 @@ worker = function(master, ..., verbose=TRUE, context=NULL) {
     message("connecting to: ", master)
     w$connect(master, 10000L)
 
-    start_time = proc.time()
     counter = 0
     repeat {
         tic = proc.time()
@@ -44,7 +42,7 @@ worker = function(master, ..., verbose=TRUE, context=NULL) {
     }
 
     message("shutting down worker")
-    run_time = proc.time() - start_time
+    run_time = proc.time()
     fmt = "%i in %.2fs [user], %.2fs [system], %.2fs [elapsed]"
     message("\nTotal: ", sprintf(fmt, counter, run_time[1], run_time[2], run_time[3]))
 }

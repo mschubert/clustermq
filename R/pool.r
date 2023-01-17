@@ -55,8 +55,7 @@ Pool = R6::R6Class("Pool",
             private$master$send(cmd, TRUE)
         },
         send_shutdown = function() {
-            # ..starttime.. in worker() .GlobalEnv
-            private$master$send(expression(proc.time() - ..starttime..), FALSE)
+            private$master$send(expression(proc.time()), FALSE)
         },
         send_wait = function(wait=50) {
             private$master$send(expression(Sys.sleep(wait)), TRUE)
