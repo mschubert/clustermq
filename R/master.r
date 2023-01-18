@@ -50,7 +50,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
         msg = pool$recv()
-        if (!is.list(msg)) # error occurred
+        if (inherits(msg, "worker_error"))
             stop("Worker Error: ", msg)
 
         if (verbose)
