@@ -91,7 +91,11 @@ public:
         env.clear();
         if (peers.size() > 0) {
             sock.set(zmq::sockopt::router_mandatory, 0);
-            poll_recv(timeout);
+            try {
+                poll_recv(timeout);
+            } catch (zmq::error_t const &e) {
+                Rcpp::warning(e.what());
+            }
         }
         close(timeout);
         Rcpp::List re(on_shutdown.size());
