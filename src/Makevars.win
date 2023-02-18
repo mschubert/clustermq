@@ -1,4 +1,3 @@
-CXX_STD = CXX11
 GCC_VERSION = ${subst gcc,,${COMPILED_BY}}
 RWINLIB = ../windows/zeromq-4.3.4
 
