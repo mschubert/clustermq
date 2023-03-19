@@ -1,3 +1,5 @@
+loadModule("cmq_proxy", TRUE) # CMQProxy C++ class
+
 #' SSH proxy for different schedulers
 #'
 #' Do not call this manually, the SSH qsys will do that

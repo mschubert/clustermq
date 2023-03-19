@@ -40,7 +40,7 @@ public:
             sock.set(zmq::sockopt::linger, 10000);
             sock.close();
         }
-        if (!external_context) {
+        if (!external_context && ctx != nullptr) {
             ctx->close();
             delete ctx;
             ctx = nullptr;

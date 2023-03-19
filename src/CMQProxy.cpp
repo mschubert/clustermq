@@ -3,10 +3,12 @@
 
 RCPP_MODULE(cmq_proxy) {
     using namespace Rcpp;
-    class_<CMQMaster>("CMQProxy")
+    class_<CMQProxy>("CMQProxy")
         .constructor()
-//        .constructor<zmq::context_t*>()
-//        .method("main_loop", &CMQMaster::main_loop)
-//        .method("listen", &CMQMaster::listen)
+        .constructor<SEXP>()
+        .method("listen", &CMQProxy::listen)
+        .method("connect", &CMQProxy::connect)
+        .method("close", &CMQProxy::close)
+        .method("process_one", &CMQProxy::process_one)
     ;
 }
