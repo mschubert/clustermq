@@ -13,7 +13,9 @@ enum wlife_t {
     active,
     shutdown,
     error,
-    done
+    done,
+    proxy_cmd,
+    proxy_error
 };
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;

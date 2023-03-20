@@ -7,14 +7,14 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(data, ...,
+        initialize = function(addr, ...,
                               ssh_host = getOption("clustermq.ssh.host"),
                               ssh_log = getOption("clustermq.ssh.log"),
                               template = getOption("clustermq.template", "SSH")) {
             if (is.null(ssh_host))
                 stop("Option 'clustermq.ssh.host' required for SSH but not set")
 
-            super$initialize(..., template=template)
+            super$initialize(addr=addr, ..., template=template)
 
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
@@ -24,50 +24,14 @@ SSH = R6::R6Class("SSH",
             # wait for ssh to connect
             message(sprintf("Connecting %s via SSH ...", ssh_host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
-
-            # Exchange init messages with proxy
-            init_timeout = getOption("clustermq.ssh.timeout", 5) * 1000
-            answer = private$zmq$poll("proxy", timeout=init_timeout)
-            if (!answer)
-                stop("Remote R process did not respond after ",
-                     init_timeout/1000, " seconds. ",
-                     "Check your SSH server log.")
-            msg = private$zmq$receive("proxy")
-            if (msg$id != "PROXY_UP")
-                stop("Expected PROXY_UP, received ", sQuote(msg$id))
-
-            # send common data to ssh
-            message("Sending common data ...")
-            private$zmq$send(c(list(id="DO_SETUP"), data), "proxy")
-            msg = private$zmq$receive("proxy")
-            if (msg$id != "PROXY_READY")
-                stop("Expected PROXY_READY, received ", sQuote(msg$id))
-
-            self$set_common_data(id="DO_SETUP", redirect=msg$data_url,
-                                 token = msg$token)
         },
 
         submit_jobs = function(..., verbose=TRUE) {
-            if (is.null(private$master))
-                stop("Need to call listen_socket() first")
-
-            # get the parent call and evaluate all arguments
-            call = match.call()
-            evaluated = lapply(call[2:length(call)], function(arg) {
-                if (is.call(arg) || is.name(arg))
-                    eval(arg, envir=parent.frame(2))
-                else
-                    arg
-            })
-
-            # forward the submit_job call via ssh
-            call[[1]] = quote(qsys$submit_jobs) #FIXME: only works bc 'qsys' in ssh_proxy
-            call[2:length(call)] = evaluated
-            private$zmq$send(list(id="PROXY_CMD", exec=call), "proxy")
-
-            msg = private$zmq$receive("proxy")
-            if (msg$id != "PROXY_CMD" || inherits(msg$reply, "try-error"))
-                stop(msg)
+            args = list(...)
+            init_timeout = getOption("clustermq.ssh.timeout", 10)
+            tryCatch(private$mater$proxy_submit_cmd(args, init_timeout*1000),
+                error = function(e) stop("Remote R process did not respond after ",
+                    init_timeout, " seconds. Check your SSH server log."))
 
             private$workers_total = list(...)[["n_jobs"]] #TODO: find cleaner way to handle this
         },

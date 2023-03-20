@@ -72,7 +72,22 @@ public:
             mp.push_back(std::move(msg));
         }
 
+        // if the master connects via ssh, remove env items after sending once?
+
         w.call = cmd;
+        mp.send(sock);
+    }
+
+    void proxy_submit_cmd(SEXP args, int timeout=10000) {
+        auto msgs = poll_recv(timeout);
+        // msgs[2] == wlife_t::proxy_cmd
+        // msgs[3] == R_NilValue
+
+        zmq::multipart_t mp;
+        mp.push_back(str2msg(cur));
+        mp.push_back(zmq::message_t(0));
+        mp.push_back(int2msg(wlife_t::proxy_cmd));
+        mp.push_back(r2msg(args));
         mp.send(sock);
     }
 

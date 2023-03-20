@@ -31,7 +31,18 @@ public:
         to_master.set(zmq::sockopt::connect_timeout, timeout);
         //todo: add socket monitor like in CMQWorker.h@connect
         to_master.connect(addr);
-        // send proxy_up to master (don't do this yet, just submit 1 multicore worker @R level)
+    }
+
+    void proxy_request_cmd() {
+        to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::sndmore);
+        to_master.send(r2msg(R_NilValue), zmq::send_flags::none);
+    }
+
+    SEXP proxy_receive_cmd() {
+        std::vector<zmq::message_t> msgs;
+        recv_multipart(to_master, std::back_inserter(msgs));
+        auto status = *static_cast<wlife_t*>(msgs[0].data());
+        return msg2r(msgs[1], true);
     }
 
     std::string listen(Rcpp::CharacterVector addrs) {
@@ -51,7 +62,7 @@ public:
         Rf_error("Could not bind port to any address in provided pool");
     }
 
-    void process_one() {
+    bool process_one() {
         auto pitems = std::vector<zmq::pollitem_t>(2);
         pitems[0].socket = to_master;
         pitems[0].events = ZMQ_POLLIN;
@@ -67,15 +78,23 @@ public:
         }
 
         if (pitems[0].revents > 0) {
-            // master event, foward to worker
-            zmq::multipart_t mp(to_master);
+//            zmq::multipart_t mp(to_master);
+            std::vector<zmq::message_t> msgs;
+            recv_multipart(to_master, std::back_inserter(msgs));
+            auto status = *static_cast<wlife_t*>(msgs[0].data());
+            if (status == wlife_t::proxy_cmd)
+                return false;
+            //todo: cache and add objects
+            zmq::multipart_t mp;
+            for (int i=0; i<msgs.size(); i++)
+                mp.push_back(std::move(msgs[i]));
             mp.send(to_worker);
         }
         if (pitems[1].revents > 0) {
-            // worker event, forward to master
-            zmq::multipart_t mp(to_worker); // https://github.com/zeromq/cppzmq/blob/master/zmq_addon.hpp#L334
+            zmq::multipart_t mp(to_worker);
             mp.send(to_master);
         }
+        return true;
     }
 
 private:

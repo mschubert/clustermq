@@ -13,5 +13,6 @@ RCPP_MODULE(cmq_master) {
         .method("send", &CMQMaster::send)
         .method("add_env", &CMQMaster::add_env)
         .method("add_pkg", &CMQMaster::add_pkg)
+        .method("proxy_submit_cmd", &CMQMaster::proxy_submit_cmd)
     ;
 }
