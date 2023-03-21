@@ -11,19 +11,21 @@ SSH = R6::R6Class("SSH",
                               ssh_host = getOption("clustermq.ssh.host"),
                               ssh_log = getOption("clustermq.ssh.log"),
                               template = getOption("clustermq.template", "SSH"),
-                              verbose = TRUE) {
+                              log_worker=FALSE, log_file=NULL, verbose=TRUE) {
             if (is.null(ssh_host))
                 stop("Option 'clustermq.ssh.host' required for SSH but not set")
+            if (!grepl("^tcp://", addr))
+                stop("SSH QSys must connect via tcp:// not ", sQuote(addr))
 
             super$initialize(addr=addr, ..., template=template)
 
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
             ssh_cmd = fill_template(private$template, opts,
-                required=c("ctl_port", "local_port", "job_port", "fwd_port", "ssh_host"))
+                required=c("local_port", "remote_port", "ssh_host"))
 
             # wait for ssh to connect
-            message(sprintf("Connecting %s via SSH ...", ssh_host))
+            message(sprintf("Connecting to %s via SSH ...", sQuote(ssh_host)))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
             args = list(...)
@@ -45,18 +47,11 @@ SSH = R6::R6Class("SSH",
     private = list(
         ssh_proxy_running = TRUE,
 
-        fill_options = function(ssh_host, ...) {
-            values = utils::modifyList(private$defaults,
-                                       list(ssh_host=ssh_host, ...))
-
+        fill_options = function(...) {
+            values = utils::modifyList(private$defaults, list(...))
             #TODO: let user define ports in private$defaults here and respect them
-            remote = sample(50000:55000, 2)
-            values$ssh_host = ssh_host
-            bound = private$zmq$listen(sid="proxy")
-            values$local_port = sub(".*:", "", bound)
-            values$ctl_port = remote[1]
-            values$job_port = remote[2]
-            values$fwd_port = private$port
+            values$local_port = sub(".*:", "", private$master)
+            values$remote_port = sample(50000:55000, 1)
             values
         },
 

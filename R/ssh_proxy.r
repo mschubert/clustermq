@@ -7,25 +7,28 @@ loadModule("cmq_proxy", TRUE) # CMQProxy C++ class
 #' @param master   The master address to connect to (remote end of reverse tunnel)
 #' @param qsys_id  Character string of QSys class to use
 #' @keywords internal
-ssh_proxy = function(master, qsys_id=qsys_default) {
+ssh_proxy = function(fwd_port, qsys_id=qsys_default) {
+    master = sprintf("tcp://localhost:%s", fwd_port)
     p = methods::new(CMQProxy)
     p$connect(master, 10000L)
 
     tryCatch({
-        addr = p$listen()
+        nodename = Sys.info()["nodename"]
+        addr = p$listen(sub(nodename, "*", sample(host()), fixed=TRUE))
+        message("listening for workers at ", addr)
+
         p$proxy_request_cmd()
+        args = p$proxy_receive_cmd()
+        message("submit args: ", paste(mapply(paste, names(args), args, sep="="), collapse=", "))
+        stopifnot(inherits(args, "list"), "n_jobs" %in% names(args))
 
         # set up qsys on cluster
         message("setting up qsys: ", qsys_id)
         if (toupper(qsys_id) %in% c("LOCAL", "SSH"))
             stop("Remote SSH QSys ", sQuote(qsys_id), " is not allowed")
         qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-        qsys = qsys$new(addr)
+        qsys = do.call(qsys$new, c(list(addr=addr), args))
         on.exit(qsys$cleanup())
-
-        args = p$proxy_receive_cmd()
-        message("submit args: ", paste(mapply(paste, names(args), args, sep="="), collapse=", "))
-        do.call(qsys$submit_jobs, args)
 
         while(p$process_one()) {}
 
