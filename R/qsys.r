@@ -29,14 +29,6 @@ QSys = R6::R6Class("QSys",
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
-        },
-
-        # Submits jobs to the cluster system
-        #
-        # This needs to be overwritten in the derived class and only
-        # produces an error if called directly
-        submit_jobs = function(...) {
-            stop(sQuote(submit_jobs), " must be overwritten")
         }
     ),
 

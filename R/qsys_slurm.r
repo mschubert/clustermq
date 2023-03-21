@@ -7,11 +7,10 @@ SLURM = R6::R6Class("SLURM",
     inherit = QSys,
 
     public = list(
-        initialize = function(..., template=getOption("clustermq.template", "SLURM")) {
-            super$initialize(..., template=template)
-        },
+        initialize = function(addr, n_jobs, ..., template=getOption("clustermq.template", "SLURM"),
+                              log_worker=FALSE, verbose=TRUE) {
+            super$initialize(addr, ..., template=template)
 
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, verbose=TRUE) {
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name
             if (!is.null(opts$log_file))

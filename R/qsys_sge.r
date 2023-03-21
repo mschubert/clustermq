@@ -7,11 +7,10 @@ SGE = R6::R6Class("SGE",
     inherit = QSys,
 
     public = list(
-        initialize = function(..., template=getOption("clustermq.template", "SGE")) {
+        initialize = function(addr, n_jobs, ..., template=getOption("clustermq.template", "SGE"),
+                              log_worker=FALSE, verbose=TRUE) {
             super$initialize(..., template=template)
-        },
 
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, verbose=TRUE) {
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_name = opts$job_name
             if (!is.null(opts$log_file))

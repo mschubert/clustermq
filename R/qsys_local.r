@@ -7,11 +7,8 @@ LOCAL = R6::R6Class("LOCAL",
     inherit = QSys,
 
     public = list(
-        initialize = function(...) {
+        initialize = function(addr="unused", n_jobs=0, ..., verbose=TRUE) {
             super$initialize(...)
-        },
-
-        submit_jobs = function(..., verbose=TRUE) {
             if (verbose)
                 message("Running sequentially ('LOCAL') ...")
         },

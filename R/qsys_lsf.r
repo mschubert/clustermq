@@ -7,11 +7,10 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(..., template=getOption("clustermq.template", "LSF")) {
+        initialize = function(addr, n_jobs, ..., template=getOption("clustermq.template", "LSF"),
+                              log_worker=FALSE, verbose=TRUE) {
             super$initialize(..., template=template)
-        },
 
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, verbose=TRUE) {
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name
             if (!is.null(opts$log_file))
