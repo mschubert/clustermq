@@ -7,7 +7,7 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr, n_jobs, ...,
+        initialize = function(addr, n_jobs, ..., master,
                               ssh_host = getOption("clustermq.ssh.host"),
                               ssh_log = getOption("clustermq.ssh.log"),
                               template = getOption("clustermq.template", "SSH"),
@@ -30,9 +30,14 @@ SSH = R6::R6Class("SSH",
 
             args = c(list(...), list(n_jobs=n_jobs))
             init_timeout = getOption("clustermq.ssh.timeout", 10)
-            tryCatch(private$mater$proxy_submit_cmd(args, init_timeout*1000),
-                error = function(e) stop("Remote R process did not respond after ",
-                    init_timeout, " seconds. Check your SSH server log."))
+            master$proxy_submit_cmd(args, init_timeout*1000) #FIXME: always pass master to qsys
+            tryCatch(private$master$proxy_submit_cmd(args, init_timeout*1000),
+                error = function(e) {
+                    if (grepl("timeout", conditionMessage(error))) {
+                        stop("Remote R process did not respond after ",
+                             init_timeout, " seconds. Check your SSH server log.")
+                    } else stop(e)
+            })
 
             private$workers_total = args$n_jobs
         },

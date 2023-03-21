@@ -30,8 +30,11 @@ ssh_proxy = function(fwd_port, qsys_id=qsys_default) {
         qsys = do.call(qsys$new, c(list(addr=addr), args))
         on.exit(qsys$cleanup())
 
-        while(p$process_one()) {}
+        while(p$process_one()) {
+            message("event at: ", Sys.time())
+        }
 
+        message("shutting down")
         p$close()
 
     }, error = function(e) {

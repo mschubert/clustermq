@@ -44,7 +44,7 @@ test_that("proxy communication yields submit args", {
     m$close(0L)
 })
 
-test_that("starting the proxy without forward", {
+test_that("using the proxy without pool and forward", {
     skip_on_cran()
     skip_on_os("windows")
     skip_if_not(has_localhost)
@@ -59,14 +59,18 @@ test_that("starting the proxy without forward", {
 
     m = methods::new(CMQMaster)
     addr = m$listen("tcp://127.0.0.1:*")
-    p = parallel::mcparallel(SSH$new(addr, 1, ssh_host="127.0.0.1", ssh_log="~/cmq_ssh.log"))
+    p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=1), 5000L)
-    wrk_up = m$recv(1000L)
-    m$send(expression(5 + 2), FALSE)
-#    m$recv(1000L) # crash
+    m$proxy_submit_cmd(list(n_jobs=2, log_worker=T), 5000L) # list(log_worker=T) for logging
+    expect_null(m$recv(1000L))
+    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), TRUE)
+    m$recv(1000L)
+    m$send(expression({ Sys.sleep(0.5); 3 + 2}), FALSE)
+    m$recv(1000L)
+    res = m$cleanup(1000L)
+    expect_equal(res, list(7))
 
-    parallel::mccollect(p)
+    parallel::mccollect(p, wait=FALSE) # NULL if still running, otherwise list with PID
 })
 
 test_that("full SSH connection", {
