@@ -94,7 +94,13 @@ public:
         mp.push_back(r2msg(args));
         mp.send(sock);
     }
-    void proxy_shutdown(int timeout=5000) {
+    void proxy_shutdown() {
+        zmq::multipart_t mp;
+        mp.push_back(str2msg("proxy"));
+        mp.push_back(zmq::message_t(0));
+        mp.push_back(int2msg(wlife_t::proxy_shutdown));
+        mp.push_back(r2msg(R_NilValue));
+        mp.send(sock);
     }
 
     void add_env(std::string name, SEXP obj) {
@@ -109,15 +115,17 @@ public:
     }
 
     Rcpp::List cleanup(int timeout=5000) {
+        sock.set(zmq::sockopt::router_mandatory, 0);
         env.clear();
-        if (peers.size() > 0) { //fixme: while peers>0 or until timer runs out
-            sock.set(zmq::sockopt::router_mandatory, 0);
+        while(peers.size() > has_proxy) {
             try {
                 poll_recv(timeout);
             } catch (zmq::error_t const &e) {
                 Rcpp::warning(e.what());
             }
         }
+        if (has_proxy)
+            proxy_shutdown();
         close(timeout);
         Rcpp::List re(on_shutdown.size());
         for (int i=0; i<on_shutdown.size(); i++)
@@ -167,10 +175,10 @@ private:
             }
 
             recv_multipart(sock, std::back_inserter(msgs));
-            if (msgs.size() == 5) {
+            if (msgs.size() == 5) { //todo: make this cleaner
                 has_proxy = 1;
-            } else if (msgs.size()==4) {
-                has_proxy=0;
+            } else if (msgs.size() == 4) {
+                has_proxy = 0;
             }
             if (msgs.size() != 4+has_proxy)
                 Rf_error("unexpected message format");
@@ -187,7 +195,7 @@ private:
             send(R_NilValue, false);
             peers.erase(cur);
             msgs.clear();
-            if (peers.size() == 0)
+            if (peers.size() <= has_proxy)
                 break;
         };
 

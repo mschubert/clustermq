@@ -35,7 +35,7 @@ ssh_proxy = function(fwd_port, qsys_id=qsys_default) {
         }
 
         message("shutting down")
-        p$close()
+        p$close(1000L)
 
     }, error = function(e) {
         stop(e)

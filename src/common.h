@@ -15,6 +15,7 @@ enum wlife_t {
     error,
     done,
     proxy_cmd,
+    proxy_shutdown,
     proxy_error
 };
 typedef std::chrono::high_resolution_clock Time;

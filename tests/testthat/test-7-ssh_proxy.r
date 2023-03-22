@@ -61,16 +61,16 @@ test_that("using the proxy without pool and forward", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=2, log_worker=T), 5000L) # list(log_worker=T) for logging
-    expect_null(m$recv(1000L))
-    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), TRUE)
-    m$recv(1000L)
-    m$send(expression({ Sys.sleep(0.5); 3 + 2}), FALSE)
-    m$recv(1000L)
-    res = m$cleanup(1000L)
-    expect_equal(res, list(7))
+    m$proxy_submit_cmd(list(n_jobs=2), 5000L)
+    expect_null(m$recv(1000L)) # worker 1 up
+    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), FALSE)
+    expect_null(m$recv(1000L)) # worker 2 up
+    m$send(expression({ Sys.sleep(0.5); 3 + 1 }), FALSE)
+    res = m$cleanup(1000L) # collect both results
+    expect_equal(res, list(7, 4))
 
-    parallel::mccollect(p, wait=FALSE) # NULL if still running, otherwise list with PID
+    pr = parallel::mccollect(p, wait=FALSE)
+    expect_equal(names(pr), as.character(p$pid))
 })
 
 test_that("full SSH connection", {

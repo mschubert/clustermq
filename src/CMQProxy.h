@@ -10,7 +10,7 @@ public:
     CMQProxy(SEXP ctx_): ctx(Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_)) {}
     ~CMQProxy() { close(); }
 
-    void close(int timeout=0) {
+    void close(int timeout=1000L) {
         if (to_worker.handle() != nullptr) {
             to_worker.set(zmq::sockopt::linger, timeout);
             to_worker.close();
@@ -35,7 +35,7 @@ public:
     }
 
     void proxy_request_cmd() {
-        to_master.send(str2msg(""), zmq::send_flags::sndmore);
+        to_master.send(zmq::message_t(0), zmq::send_flags::sndmore);
         to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::sndmore);
         to_master.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
@@ -84,8 +84,8 @@ public:
         if (pitems[0].revents > 0) {
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_master, std::back_inserter(msgs));
-            auto status = *static_cast<wlife_t*>(msgs[0].data());
-            if (status == wlife_t::proxy_cmd)
+            auto status = *static_cast<wlife_t*>(msgs[1].data());
+            if (status == wlife_t::proxy_shutdown)
                 return false;
             //todo: cache and add objects
             zmq::multipart_t mp;
