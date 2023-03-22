@@ -27,13 +27,15 @@ public:
     }
 
     void connect(std::string addr, int timeout=-1) {
-        to_master = zmq::socket_t(*ctx, ZMQ_REQ);
+        to_master = zmq::socket_t(*ctx, ZMQ_DEALER);
         to_master.set(zmq::sockopt::connect_timeout, timeout);
+        to_master.set(zmq::sockopt::routing_id, "proxy");
         //todo: add socket monitor like in CMQWorker.h@connect
         to_master.connect(addr);
     }
 
     void proxy_request_cmd() {
+        to_master.send(str2msg(""), zmq::send_flags::sndmore);
         to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::sndmore);
         to_master.send(r2msg(R_NilValue), zmq::send_flags::none);
     }
@@ -41,12 +43,13 @@ public:
     SEXP proxy_receive_cmd() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(to_master, std::back_inserter(msgs));
-        auto status = *static_cast<wlife_t*>(msgs[0].data());
-        return msg2r(msgs[1], true);
+        auto status = *static_cast<wlife_t*>(msgs[1].data());
+        return msg2r(msgs[2], true);
     }
 
     std::string listen(Rcpp::CharacterVector addrs) {
-        to_worker = zmq::socket_t(*ctx, ZMQ_REP);
+        to_worker = zmq::socket_t(*ctx, ZMQ_ROUTER);
+        to_worker.set(zmq::sockopt::router_mandatory, 1);
 
         int i;
         for (i=0; i<addrs.length(); i++) {
@@ -77,8 +80,8 @@ public:
                 Rf_error(e.what());
         }
 
+        // master to worker communication: add R env objects
         if (pitems[0].revents > 0) {
-//            zmq::multipart_t mp(to_master);
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_master, std::back_inserter(msgs));
             auto status = *static_cast<wlife_t*>(msgs[0].data());
@@ -90,8 +93,14 @@ public:
                 mp.push_back(std::move(msgs[i]));
             mp.send(to_worker);
         }
+
+        // worker to master communication
         if (pitems[1].revents > 0) {
-            zmq::multipart_t mp(to_worker);
+            std::vector<zmq::message_t> msgs;
+            recv_multipart(to_worker, std::back_inserter(msgs));
+            zmq::multipart_t mp;
+            for (int i=0; i<msgs.size(); i++)
+                mp.push_back(std::move(msgs[i]));
             mp.send(to_master);
         }
         return true;

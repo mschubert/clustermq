@@ -46,7 +46,7 @@ public:
 //            Rf_error("Trying to receive data without workers");
 
         auto msgs = poll_recv(timeout);
-        return msg2r(msgs[3], true);
+        return msg2r(msgs[3+has_proxy], true);
     }
 
     void send(SEXP cmd, bool more) {
@@ -60,6 +60,8 @@ public:
                 std::inserter(new_env, new_env.end()));
 
         zmq::multipart_t mp;
+        if (has_proxy != 0)
+            mp.push_back(str2msg(std::string("proxy")));
         mp.push_back(str2msg(cur));
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(status));
@@ -80,6 +82,8 @@ public:
 
     void proxy_submit_cmd(SEXP args, int timeout=10000) {
         auto msgs = poll_recv(timeout);
+        // msgs[0] == "proxy" routing id
+        // msgs[1] == delimiter
         // msgs[2] == wlife_t::proxy_cmd
         // msgs[3] == R_NilValue
 
@@ -89,6 +93,8 @@ public:
         mp.push_back(int2msg(wlife_t::proxy_cmd));
         mp.push_back(r2msg(args));
         mp.send(sock);
+    }
+    void proxy_shutdown(int timeout=5000) {
     }
 
     void add_env(std::string name, SEXP obj) {
@@ -104,7 +110,7 @@ public:
 
     Rcpp::List cleanup(int timeout=5000) {
         env.clear();
-        if (peers.size() > 0) {
+        if (peers.size() > 0) { //fixme: while peers>0 or until timer runs out
             sock.set(zmq::sockopt::router_mandatory, 0);
             try {
                 poll_recv(timeout);
@@ -127,6 +133,7 @@ private:
     };
 
     zmq::context_t *ctx {nullptr};
+    int has_proxy {0};
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;
@@ -160,17 +167,23 @@ private:
             }
 
             recv_multipart(sock, std::back_inserter(msgs));
-            if (msgs.size() != 4)
+            if (msgs.size() == 5) {
+                has_proxy = 1;
+            } else if (msgs.size()==4) {
+                has_proxy=0;
+            }
+            if (msgs.size() != 4+has_proxy)
                 Rf_error("unexpected message format");
 
-            cur = std::string(reinterpret_cast<const char*>(msgs[0].data()), msgs[0].size());
+            cur = std::string(reinterpret_cast<const char*>(msgs[0+has_proxy].data()),
+                    msgs[0+has_proxy].size());
             auto &w = peers[cur];
-            w.status = *static_cast<wlife_t*>(msgs[2].data());
+            w.status = *static_cast<wlife_t*>(msgs[2+has_proxy].data());
             w.call = R_NilValue;
             if (w.status != wlife_t::shutdown)
                 break;
 
-            on_shutdown.push_back(msg2r(msgs[3], true));
+            on_shutdown.push_back(msg2r(msgs[3+has_proxy], true));
             send(R_NilValue, false);
             peers.erase(cur);
             msgs.clear();
