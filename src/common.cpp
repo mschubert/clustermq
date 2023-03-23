@@ -36,6 +36,6 @@ SEXP msg2r(zmq::message_t &msg, bool unserialize) {
 
 wlife_t msg2wlife_t(zmq::message_t &msg) {
     wlife_t res;
-    memcpy(msg.data(), &res, sizeof(res));
+    memcpy(&res, msg.data(), msg.size());
     return res;
 }
