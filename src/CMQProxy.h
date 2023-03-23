@@ -43,7 +43,7 @@ public:
     SEXP proxy_receive_cmd() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(to_master, std::back_inserter(msgs));
-        auto status = *static_cast<wlife_t*>(msgs[1].data());
+        auto status = msg2wlife_t(msgs[1]);
         return msg2r(msgs[2], true);
     }
 
@@ -84,7 +84,7 @@ public:
         if (pitems[0].revents > 0) {
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_master, std::back_inserter(msgs));
-            auto status = *static_cast<wlife_t*>(msgs[1].data());
+            auto status = msg2wlife_t(msgs[1]);
             if (status == wlife_t::proxy_shutdown)
                 return false;
             //todo: cache and add objects

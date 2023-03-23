@@ -183,10 +183,9 @@ private:
             if (msgs.size() != 4+has_proxy)
                 Rf_error("unexpected message format");
 
-            cur = std::string(reinterpret_cast<const char*>(msgs[0+has_proxy].data()),
-                    msgs[0+has_proxy].size());
+            cur = msg2str(msgs[0+has_proxy]);
             auto &w = peers[cur];
-            w.status = *static_cast<wlife_t*>(msgs[2+has_proxy].data());
+            w.status = msg2wlife_t(msgs[2+has_proxy]);
             w.call = R_NilValue;
             if (w.status != wlife_t::shutdown)
                 break;

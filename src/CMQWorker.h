@@ -71,7 +71,7 @@ public:
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
-        auto status = *static_cast<wlife_t*>(msgs[0].data());
+        auto status = msg2wlife_t(msgs[0]);
         auto cmd = msg2r(msgs[1], true);
 
         for (auto it=msgs.begin()+2; it<msgs.end(); it++) {

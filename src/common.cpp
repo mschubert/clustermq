@@ -39,3 +39,11 @@ SEXP msg2r(zmq::message_t &msg, bool unserialize) {
     else
         return ans;
 }
+
+std::string msg2str(zmq::message_t &msg) {
+    return std::string(static_cast<const char*>(msg.data()), msg.size());
+}
+
+wlife_t msg2wlife_t(zmq::message_t &msg) {
+    return *static_cast<wlife_t*>(msgs[2+has_proxy].data());
+}
