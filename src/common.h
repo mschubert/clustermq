@@ -29,7 +29,6 @@ zmq::message_t int2msg(int val);
 zmq::message_t str2msg(std::string str);
 zmq::message_t r2msg(SEXP data);
 SEXP msg2r(zmq::message_t &msg, bool unserialize);
-std::string msg2str(zmq::message_t &msg);
 wlife_t msg2wlife_t(zmq::message_t &msg);
 
 #endif // _COMMON_H_

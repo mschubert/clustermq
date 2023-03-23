@@ -183,7 +183,7 @@ private:
             if (msgs.size() != 4+has_proxy)
                 Rf_error("unexpected message format");
 
-            cur = msg2str(msgs[0+has_proxy]);
+            cur = msgs[0+has_proxy].to_string();
             auto &w = peers[cur];
             w.status = msg2wlife_t(msgs[2+has_proxy]);
             w.call = R_NilValue;

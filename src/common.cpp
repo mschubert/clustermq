@@ -17,7 +17,7 @@ zmq::message_t int2msg(int val) {
     return msg;
 }
 
-zmq::message_t str2msg(std::string str) {
+zmq::message_t str2msg(std::string str) { // cppzmq provide?
     zmq::message_t msg(str.length());
     memcpy(msg.data(), str.data(), str.length());
     return msg;
@@ -40,10 +40,8 @@ SEXP msg2r(zmq::message_t &msg, bool unserialize) {
         return ans;
 }
 
-std::string msg2str(zmq::message_t &msg) {
-    return std::string(static_cast<const char*>(msg.data()), msg.size());
-}
-
 wlife_t msg2wlife_t(zmq::message_t &msg) {
-    return *static_cast<wlife_t*>(msgs[2+has_proxy].data());
+    wlife_t res;
+    memcpy(msg.data(), &res, sizeof(res));
+    return res;
 }
