@@ -26,7 +26,6 @@ extern Rcpp::Function R_unserialize;
 void check_interrupt_fn(void *dummy);
 int pending_interrupt();
 zmq::message_t int2msg(int val);
-zmq::message_t str2msg(std::string str);
 zmq::message_t r2msg(SEXP data);
 SEXP msg2r(zmq::message_t &msg, bool unserialize);
 wlife_t msg2wlife_t(zmq::message_t &msg);

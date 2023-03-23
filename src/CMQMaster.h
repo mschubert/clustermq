@@ -61,8 +61,8 @@ public:
 
         zmq::multipart_t mp;
         if (has_proxy != 0)
-            mp.push_back(str2msg(std::string("proxy")));
-        mp.push_back(str2msg(cur));
+            mp.push_back(zmq::message_t(std::string("proxy")));
+        mp.push_back(zmq::message_t(cur));
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(status));
         mp.push_back(r2msg(cmd));
@@ -88,7 +88,7 @@ public:
         // msgs[3] == R_NilValue
 
         zmq::multipart_t mp;
-        mp.push_back(str2msg(cur));
+        mp.push_back(zmq::message_t(cur));
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(wlife_t::proxy_cmd));
         mp.push_back(r2msg(args));
@@ -96,7 +96,7 @@ public:
     }
     void proxy_shutdown() {
         zmq::multipart_t mp;
-        mp.push_back(str2msg("proxy"));
+        mp.push_back(zmq::message_t(std::string("proxy")));
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(wlife_t::proxy_shutdown));
         mp.push_back(r2msg(R_NilValue));

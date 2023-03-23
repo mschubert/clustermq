@@ -17,12 +17,6 @@ zmq::message_t int2msg(int val) {
     return msg;
 }
 
-zmq::message_t str2msg(std::string str) { // cppzmq provide?
-    zmq::message_t msg(str.length());
-    memcpy(msg.data(), str.data(), str.length());
-    return msg;
-}
-
 zmq::message_t r2msg(SEXP data) {
     if (TYPEOF(data) != RAWSXP)
         data = R_serialize(data, R_NilValue);
