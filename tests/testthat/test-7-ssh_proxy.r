@@ -27,7 +27,6 @@ test_that("simple forwarding works", {
 })
 
 test_that("proxy communication yields submit args", {
-    skip("ci test")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy, m$context())
     addr1 = m$listen("inproc://master")
