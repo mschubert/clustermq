@@ -1,7 +1,6 @@
 context("ssh proxy")
 
 test_that("simple forwarding works", {
-    skip("ci test")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy, m$context())
     w = methods::new(CMQWorker, m$context())
@@ -9,14 +8,21 @@ test_that("simple forwarding works", {
     addr2 = p$listen("inproc://proxy")
     p$connect(addr1, 0L)
     w$connect(addr2, 0L)
-
+expect_true(T)
     p$process_one()
+expect_true(T)
     m$recv(0L)
+expect_true(T)
     m$send(expression(5 + 2), TRUE)
+expect_true(T)
     p$process_one()
+expect_true(T)
     status = w$process_one()
+expect_true(T)
     p$process_one()
+expect_true(T)
     result = m$recv(0L)
+expect_true(T)
 
     expect_true(status)
     expect_equal(result, 7)
