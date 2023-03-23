@@ -117,12 +117,11 @@ public:
     Rcpp::List cleanup(int timeout=5000) {
         sock.set(zmq::sockopt::router_mandatory, 0);
         env.clear();
-        while(peers.size() > has_proxy) {
-            try {
+        try {
+            while(peers.size() > has_proxy)
                 poll_recv(timeout);
-            } catch (zmq::error_t const &e) {
-                Rcpp::warning(e.what());
-            }
+        } catch (zmq::error_t const &e) {
+            Rcpp::warning(e.what());
         }
         if (has_proxy)
             proxy_shutdown();
@@ -170,7 +169,7 @@ private:
                 time_ms -= std::chrono::duration_cast<ms>(now - start);
                 start = now;
                 if (timeout != -1 && time_ms.count() <= 0)
-                    Rf_error("socket timeout reached");
+                    throw zmq::error_t();
                 continue;
             }
 

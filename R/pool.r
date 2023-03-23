@@ -67,7 +67,6 @@ Pool = R6::R6Class("Pool",
         cleanup = function(timeout=5000) {
             stats = private$master$cleanup(timeout)
             success = self$workers$cleanup()
-            private$master$close(0L)
 
             times = stats #TODO: mem stats
             # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
