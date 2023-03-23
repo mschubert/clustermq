@@ -47,7 +47,7 @@ test_that("proxy communication yields submit args", {
 test_that("using the proxy without pool and forward", {
     skip_on_cran()
     skip_on_os("windows")
-    skip_if_not(has_localhost)
+#    skip_if_not(has_localhost)
     skip_if_not(has_ssh_cmq("127.0.0.1"))
 
     # 'LOCAL' mode (default) will not set up required sockets
@@ -76,7 +76,7 @@ test_that("using the proxy without pool and forward", {
 test_that("full SSH connection", {
     skip_on_cran()
     skip_on_os("windows")
-    skip_if_not(has_localhost)
+#    skip_if_not(has_localhost)
     skip_if_not(has_ssh_cmq("127.0.0.1"))
 
     # 'LOCAL' mode (default) will not set up required sockets
