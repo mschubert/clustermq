@@ -9,7 +9,7 @@ SLURM = R6::R6Class("SLURM",
     public = list(
         initialize = function(addr, n_jobs, ..., template=getOption("clustermq.template", "SLURM"),
                               log_worker=FALSE, verbose=TRUE) {
-            super$initialize(addr, ..., template=template)
+            super$initialize(addr=addr, ..., template=template)
 
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name

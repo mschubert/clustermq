@@ -8,8 +8,8 @@ SGE = R6::R6Class("SGE",
 
     public = list(
         initialize = function(addr, n_jobs, ..., template=getOption("clustermq.template", "SGE"),
-                              log_worker=FALSE, verbose=TRUE) {
-            super$initialize(..., template=template)
+                              log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+            super$initialize(addr=addr, ..., template=template)
 
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_name = opts$job_name
