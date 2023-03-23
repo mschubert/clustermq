@@ -1,7 +1,6 @@
 context("ssh proxy")
 
 test_that("simple forwarding works", {
-    skip("double run crash local, cause upstream?")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy, m$context())
     w = methods::new(CMQWorker, m$context())
@@ -24,6 +23,7 @@ test_that("simple forwarding works", {
 })
 
 test_that("proxy communication yields submit args", {
+    skip("double run crash local, cause upstream?")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy, m$context())
     addr1 = m$listen("inproc://master")
