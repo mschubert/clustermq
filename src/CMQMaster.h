@@ -179,8 +179,16 @@ private:
             } else if (msgs.size() == 4) {
                 has_proxy = 0;
             }
-            if (msgs.size() != 4+has_proxy)
-                Rf_error("unexpected message format");
+            if (msgs.size() != 4+has_proxy) {
+                std::ostringstream errmsg;
+                errmsg << "Unexpected message format: got " << msgs.size() <<
+                    " frames but expected " << 4+has_proxy << "\n";
+                for (int i=0; i<msgs.size(); i++)
+                    errmsg << msgs[i].str() << "\n";
+                auto std_str = errmsg.str();
+                const char* p = std_str.c_str();
+                Rf_error(p);
+            }
 
             cur = msgs[0+has_proxy].to_string();
             auto &w = peers[cur];
