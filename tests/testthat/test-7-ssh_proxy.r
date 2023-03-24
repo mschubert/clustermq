@@ -25,7 +25,6 @@ test_that("simple forwarding works", {
 })
 
 test_that("proxy communication yields submit args", {
-    skip("ci isolate")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy)#, m$context())
     addr1 = m$listen(host("127.0.0.1"))#"inproc://master")
@@ -34,6 +33,7 @@ test_that("proxy communication yields submit args", {
     # direct connection, no ssh forward here
     p$connect(addr1, 0L)
     p$proxy_request_cmd()
+    Sys.sleep(0.1) # otherwise 'resource temporarily unavailable'
     m$proxy_submit_cmd(list(n_jobs=1), 0L)
     args = p$proxy_receive_cmd()
 
