@@ -45,7 +45,6 @@ test_that("proxy communication yields submit args", {
 })
 
 test_that("using the proxy without pool and forward", {
-    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
 #    skip_if_not(has_localhost)
