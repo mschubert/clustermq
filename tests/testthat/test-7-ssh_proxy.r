@@ -6,8 +6,8 @@ test_that("simple forwarding works", {
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy)#, m$context())
     w = methods::new(CMQWorker)#, m$context())
-    addr1 = m$listen(host("127.0.0.1"))#"inproc://master")
-    addr2 = p$listen(host("127.0.0.1"))#"inproc://proxy")
+    addr1 = m$listen("tcp://127.0.0.1:*")#"inproc://master")
+    addr2 = p$listen("tcp://127.0.0.1:*")#"inproc://proxy")
     p$connect(addr1, 0L)
     w$connect(addr2, 0L)
     expect_true(p$process_one())
@@ -27,8 +27,8 @@ test_that("simple forwarding works", {
 test_that("proxy communication yields submit args", {
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy)#, m$context())
-    addr1 = m$listen(host("127.0.0.1"))#"inproc://master")
-    addr2 = p$listen(host("127.0.0.1"))#"inproc://proxy")
+    addr1 = m$listen("tcp://127.0.0.1:*")#"inproc://master")
+    addr2 = p$listen("tcp://127.0.0.1:*")#"inproc://proxy")
 
     # direct connection, no ssh forward here
     p$connect(addr1, 0L)
