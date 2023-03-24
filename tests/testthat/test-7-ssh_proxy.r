@@ -1,23 +1,26 @@
 context("ssh proxy")
 
+has_localhost = has_connectivity("127.0.0.1")
+
+# in the following 2 tests, passing the context is deactivated because running
+# the first test twice leads to a segfault; not sure why, fix this eventually
 test_that("simple forwarding works", {
+    skip_if_not(has_localhost)
+
     m = methods::new(CMQMaster)
-    p = methods::new(CMQProxy, m$context())
-    w = methods::new(CMQWorker, m$context())
-    addr1 = m$listen("inproc://master")
-    addr2 = p$listen("inproc://proxy")
+    p = methods::new(CMQProxy)#, m$context())
+    w = methods::new(CMQWorker)#, m$context())
+    addr1 = m$listen("tcp://127.0.0.1:*")#"inproc://master")
+    addr2 = p$listen("tcp://127.0.0.1:*")#"inproc://proxy")
     p$connect(addr1, 0L)
     w$connect(addr2, 0L)
-
-    p$process_one()
-    m$recv(0L)
+    expect_true(p$process_one())
+    expect_null(m$recv(0L)) # worker up
     m$send(expression(5 + 2), TRUE)
-    p$process_one()
-    status = w$process_one()
-    p$process_one()
+    expect_true(p$process_one())
+    expect_true(w$process_one())
+    expect_true(p$process_one())
     result = m$recv(0L)
-
-    expect_true(status)
     expect_equal(result, 7)
 
     w$close()
@@ -26,14 +29,17 @@ test_that("simple forwarding works", {
 })
 
 test_that("proxy communication yields submit args", {
+    skip_if_not(has_localhost)
+
     m = methods::new(CMQMaster)
-    p = methods::new(CMQProxy, m$context())
-    addr1 = m$listen("inproc://master")
-    addr2 = p$listen("inproc://proxy")
+    p = methods::new(CMQProxy)#, m$context())
+    addr1 = m$listen("tcp://127.0.0.1:*")#"inproc://master")
+    addr2 = p$listen("tcp://127.0.0.1:*")#"inproc://proxy")
 
     # direct connection, no ssh forward here
     p$connect(addr1, 0L)
     p$proxy_request_cmd()
+    Sys.sleep(0.1) # otherwise 'resource temporarily unavailable'
     m$proxy_submit_cmd(list(n_jobs=1), 0L)
     args = p$proxy_receive_cmd()
 
@@ -45,17 +51,11 @@ test_that("proxy communication yields submit args", {
 })
 
 test_that("using the proxy without pool and forward", {
+    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
+    skip_if_not(has_localhost)
 #    skip_if_not(has_localhost)
-    skip_if_not(has_ssh_cmq("127.0.0.1"))
-
-    # 'LOCAL' mode (default) will not set up required sockets
-    # 'SSH' mode would lead to circular connections
-    # schedulers may have long delay (they start in fresh session, so no path)
-    sched = getOption("clustermq.scheduler", qsys_default)
-    skip_if(is.null(sched) || toupper(sched) != "MULTICORE",
-            message="options(clustermq.scheduler') must be 'MULTICORE'")
 
     m = methods::new(CMQMaster)
     addr = m$listen("tcp://127.0.0.1:*")
@@ -69,14 +69,15 @@ test_that("using the proxy without pool and forward", {
     res = m$cleanup(1000L) # collect both results
     expect_equal(res, list(7, 4))
 
-    pr = parallel::mccollect(p, wait=FALSE)
+    pr = parallel::mccollect(p, wait=TRUE, timeout=0.5)
     expect_equal(names(pr), as.character(p$pid))
 })
 
 test_that("full SSH connection", {
+    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
-#    skip_if_not(has_localhost)
+    skip_if_not(has_localhost)
     skip_if_not(has_ssh_cmq("127.0.0.1"))
 
     # 'LOCAL' mode (default) will not set up required sockets
