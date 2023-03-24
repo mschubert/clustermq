@@ -7,8 +7,8 @@ MULTICORE = R6::R6Class("MULTICORE",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr, n_jobs, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
-            super$initialize(addr=addr, ...)
+        initialize = function(addr, n_jobs, master, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+            super$initialize(addr=addr, master=master)
             if (verbose)
                 message("Starting ", n_jobs, " cores ...")
             if (log_worker && is.null(log_file))

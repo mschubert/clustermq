@@ -25,7 +25,7 @@ Pool = R6::R6Class("Pool",
         },
 
         add = function(qsys, n, ...) {
-            self$workers = qsys$new(addr=private$addr, n_jobs=n, ...)
+            self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
         },
 
         env = function(...) {

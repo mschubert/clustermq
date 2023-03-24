@@ -7,10 +7,10 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr, n_jobs, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+        initialize = function(addr, n_jobs, master, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
             if (! requireNamespace("callr", quietly=TRUE))
                 stop("The ", sQuote(callr), " package is required for ", sQuote("multiprocess"))
-            super$initialize(addr=addr, ...)
+            super$initialize(addr=addr, master=master)
 
             if (verbose)
                 message("Starting ", n_jobs, " processes ...")

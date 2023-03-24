@@ -7,9 +7,9 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr, n_jobs, ..., template=getOption("clustermq.template", "LSF"),
+        initialize = function(addr, n_jobs, master, ..., template=getOption("clustermq.template", "LSF"),
                               log_worker=FALSE, log_file=NULL, verbose=TRUE) {
-            super$initialize(addr=addr, ..., template=template)
+            super$initialize(addr=addr, master=master, template=template)
 
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name

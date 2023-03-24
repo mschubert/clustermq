@@ -8,7 +8,7 @@ loadModule("cmq_proxy", TRUE) # CMQProxy C++ class
 #' @param qsys_id  Character string of QSys class to use
 #' @keywords internal
 ssh_proxy = function(fwd_port, qsys_id=qsys_default) {
-    master = sprintf("tcp://localhost:%s", fwd_port)
+    master = sprintf("tcp://127.0.0.1:%s", fwd_port)
     p = methods::new(CMQProxy)
     p$connect(master, 10000L)
 

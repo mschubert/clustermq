@@ -15,9 +15,10 @@ QSys = R6::R6Class("QSys",
         #
         # @param addr    Vector of possible addresses to bind
         # @param bind    Whether to bind 'addr' or just refer to it
-        initialize = function(addr, template=NULL) {
-            private$master = addr
-            private$port = as.integer(sub(".*:", "", private$master))
+        initialize = function(addr, master, template=NULL) {
+            private$master = master
+            private$addr = addr
+            private$port = as.integer(sub(".*:", "", addr))
 
             if (!is.null(template)) {
                 if (!file.exists(template))
@@ -34,6 +35,7 @@ QSys = R6::R6Class("QSys",
 
     private = list(
         master = NULL,
+        addr = NULL,
         port = NULL,
         template = NULL,
         workers_total = NULL,
@@ -41,7 +43,7 @@ QSys = R6::R6Class("QSys",
 
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
-            values$master = private$master
+            values$master = private$addr
             if (grepl("CMQ_AUTH", private$template)) {
                 # note: auth will be obligatory in the future and this check will
                 #   be removed (i.e., filling will fail if no field in template)

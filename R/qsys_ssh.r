@@ -17,7 +17,7 @@ SSH = R6::R6Class("SSH",
             if (!grepl("^tcp://", addr))
                 stop("SSH QSys must connect via tcp:// not ", sQuote(addr))
 
-            super$initialize(addr=addr, ..., template=template)
+            super$initialize(addr=addr, master=master, template=template)
 
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
@@ -30,10 +30,10 @@ SSH = R6::R6Class("SSH",
 
             args = c(list(...), list(n_jobs=n_jobs))
             init_timeout = getOption("clustermq.ssh.timeout", 10)
-            master$proxy_submit_cmd(args, init_timeout*1000) #FIXME: always pass master to qsys
+            master$proxy_submit_cmd(args, init_timeout*1000)
             tryCatch(private$master$proxy_submit_cmd(args, init_timeout*1000),
                 error = function(e) {
-                    if (grepl("timeout", conditionMessage(error))) {
+                    if (grepl("timeout", conditionMessage(e))) {
                         stop("Remote R process did not respond after ",
                              init_timeout, " seconds. Check your SSH server log.")
                     } else stop(e)
@@ -55,7 +55,7 @@ SSH = R6::R6Class("SSH",
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             #TODO: let user define ports in private$defaults here and respect them
-            values$local_port = sub(".*:", "", private$master)
+            values$local_port = sub(".*:", "", private$addr)
             values$remote_port = sample(50000:55000, 1)
             values
         },
