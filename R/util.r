@@ -81,3 +81,13 @@ wrap_error = function(call) {
     structure(class = c("worker_error", "condition"),
               list(message=geterrmessage(), call=call));
 }
+
+#' Message format for logging
+#'
+#' @keywords internal
+msg_fmt = function(verbose=TRUE) {
+    if (verbose)
+        function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
+    else
+        function(...) invisible(NULL)
+}

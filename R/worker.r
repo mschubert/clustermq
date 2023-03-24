@@ -10,10 +10,7 @@ loadModule("cmq_worker", TRUE) # CMQWorker C++ class
 #' @param context  ZeroMQ context (for internal testing)
 #' @keywords internal
 worker = function(master, ..., verbose=TRUE, context=NULL) {
-    if (verbose)
-        message = function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
-    else
-        message = function(...) invisible(NULL)
+    message = msg_fmt(verbose)
 
     #TODO: replace this by proper authentication
     auth = Sys.getenv("CMQ_AUTH")
