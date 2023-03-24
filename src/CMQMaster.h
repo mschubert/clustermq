@@ -160,7 +160,7 @@ private:
             try {
                 zmq::poll(pitems, time_ms);
             } catch (zmq::error_t const &e) {
-                if (errno != EINTR || pending_interrupt())
+                if ((errno != EINTR && errno != EAGAIN) || pending_interrupt())
                     Rf_error(e.what());
             }
 

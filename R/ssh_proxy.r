@@ -27,7 +27,7 @@ ssh_proxy = function(fwd_port, qsys_id=qsys_default) {
         if (toupper(qsys_id) %in% c("LOCAL", "SSH"))
             stop("Remote SSH QSys ", sQuote(qsys_id), " is not allowed")
         qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-        qsys = do.call(qsys$new, c(list(addr=addr), args))
+        qsys = do.call(qsys$new, c(list(addr=addr, master=p), args))
         on.exit(qsys$cleanup())
 
         while(p$process_one()) {
