@@ -1,12 +1,13 @@
 context("ssh proxy")
 
+# in the following 2 tests, passing the context is deactivated because running
+# the first test twice leads to a segfault; not sure why, fix this eventually
 test_that("simple forwarding works", {
-    skip("double run crash local, cause upstream?")
     m = methods::new(CMQMaster)
-    p = methods::new(CMQProxy, m$context())
-    w = methods::new(CMQWorker, m$context())
-    addr1 = m$listen("inproc://master")
-    addr2 = p$listen("inproc://proxy")
+    p = methods::new(CMQProxy)#, m$context())
+    w = methods::new(CMQWorker)#, m$context())
+    addr1 = m$listen(host("127.0.0.1"))#"inproc://master")
+    addr2 = p$listen(host("127.0.0.1"))#"inproc://proxy")
     p$connect(addr1, 0L)
     w$connect(addr2, 0L)
     expect_true(p$process_one())
@@ -43,7 +44,6 @@ test_that("proxy communication yields submit args", {
 })
 
 test_that("using the proxy without pool and forward", {
-#    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
 #    skip_if_not(has_localhost)
@@ -72,7 +72,6 @@ test_that("using the proxy without pool and forward", {
 })
 
 test_that("full SSH connection", {
-#    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
 #    skip_if_not(has_localhost)
