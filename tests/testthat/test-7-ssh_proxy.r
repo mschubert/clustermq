@@ -1,6 +1,7 @@
 context("ssh proxy")
 
 test_that("simple forwarding works", {
+    skip("double run crash local, cause upstream?")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy, m$context())
     w = methods::new(CMQWorker, m$context())
@@ -23,7 +24,6 @@ test_that("simple forwarding works", {
 })
 
 test_that("proxy communication yields submit args", {
-    skip("double run crash local, cause upstream?")
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy, m$context())
     addr1 = m$listen("inproc://master")
@@ -43,7 +43,7 @@ test_that("proxy communication yields submit args", {
 })
 
 test_that("using the proxy without pool and forward", {
-    skip("ci isolate")
+#    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
 #    skip_if_not(has_localhost)
@@ -72,7 +72,7 @@ test_that("using the proxy without pool and forward", {
 })
 
 test_that("full SSH connection", {
-    skip("ci isolate")
+#    skip("ci isolate")
     skip_on_cran()
     skip_on_os("windows")
 #    skip_if_not(has_localhost)
