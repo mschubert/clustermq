@@ -17,6 +17,7 @@ ssh_proxy = function(fwd_port, qsys_id=qsys_default) {
     tryCatch({
         nodename = Sys.info()["nodename"]
         addr = p$listen(sub(nodename, "*", sample(host()), fixed=TRUE))
+        addr = sub("0.0.0.0", nodename, addr, fixed=TRUE)
         message("listening for workers at ", addr)
 
         p$proxy_request_cmd()

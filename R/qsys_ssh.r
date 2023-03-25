@@ -42,9 +42,8 @@ SSH = R6::R6Class("SSH",
         },
 
         cleanup = function(quiet=FALSE) {
-            success = super$cleanup(quiet=quiet)
             private$finalize()
-            success
+            TRUE
         }
     ),
 
