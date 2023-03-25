@@ -24,7 +24,7 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                 else
                     log_i = nullfile()
                 cr = callr::r_bg(function(m) clustermq:::worker(m),
-                                 args=list(m=private$master),
+                                 args=list(m=private$addr),
                                  stdout=log_i, stderr=log_i)
                 private$callr[[as.character(cr$get_pid())]] = cr
             }

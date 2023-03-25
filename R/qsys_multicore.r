@@ -26,7 +26,7 @@ MULTICORE = R6::R6Class("MULTICORE",
                     on.exit({ sink(type="message"); sink(type="output"); close(fout) })
                     clustermq:::worker(m)
                 }
-                p = parallel::mcparallel(quote(wrapper(private$master, log_i)))
+                p = parallel::mcparallel(quote(wrapper(private$addr, log_i)))
                 private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs
