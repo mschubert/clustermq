@@ -50,7 +50,27 @@ test_that("proxy communication yields submit args", {
 })
 
 test_that("using the proxy without pool and forward", {
-    skip("ci isolate")
+    skip("using 1 worker: Error: Resource temporarily unavailable @m$recv (L63)")
+    skip_on_cran()
+    skip_on_os("windows")
+    skip_if_not(has_localhost)
+
+    m = methods::new(CMQMaster)
+    addr = m$listen("tcp://127.0.0.1:*")
+    p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
+
+    m$proxy_submit_cmd(list(n_jobs=1), 5000L)
+    expect_null(m$recv(1000L)) # worker 1 up
+    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), FALSE)
+    res = m$cleanup(1000L) # collect results
+    expect_equal(res, list(7))
+
+    pr = parallel::mccollect(p, wait=TRUE, timeout=0.5)
+    expect_equal(names(pr), as.character(p$pid))
+})
+
+test_that("using the proxy without pool and forward, 2 workers", {
+    skip("using 2 workers: Assertion failed: check () (src/msg.cpp:414) on CI")
     skip_on_cran()
     skip_on_os("windows")
     skip_if_not(has_localhost)

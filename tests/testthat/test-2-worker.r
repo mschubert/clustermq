@@ -96,21 +96,44 @@ test_that("errors are sent back to master", {
 })
 
 test_that("worker R API", {
-    skip_on_cran()
     skip_on_os("windows")
     skip_if_not(has_connectivity("127.0.0.1")) # -> this or inproc w/ passing context
 
     m = methods::new(CMQMaster)
-    addr = m$listen(sprintf("tcp://127.0.0.1:%i", 6680:6690))
+    addr = m$listen("tcp://127.0.0.1:*")
 #    addr = m$listen("inproc://endpoint") # mailbox.cpp assertion error
 
     p = parallel::mcparallel(worker(addr))
-#    p = parallel::mcparallel(worker(addr, context=m$context()))
-    m$recv(1000L)
+    expect_null(m$recv(1000L))
     m$send(expression(5 + 1), FALSE)
     res = m$cleanup(1000L)
-    pc = parallel::mccollect(p)
-
     expect_equal(res[[1]], 6)
+
+    pc = parallel::mccollect(p, wait=TRUE, timeout=0.5)
     expect_equal(pc[[1]], NULL)
+    m$close(0L)
+})
+
+test_that("communication with two workers", {
+    skip_on_os("windows")
+    skip_if_not(has_connectivity("127.0.0.1"))
+
+    m = methods::new(CMQMaster)
+    addr = m$listen("tcp://127.0.0.1:*")
+    w1 = parallel::mcparallel(worker(addr))
+    w2 = parallel::mcparallel(worker(addr))
+
+    expect_null(m$recv(1000L)) # worker 1 up
+    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), FALSE)
+    expect_null(m$recv(1000L)) # worker 2 up
+    m$send(expression({ Sys.sleep(0.5); 3 + 1 }), FALSE)
+    res = m$cleanup(1000L) # collect both results
+    expect_equal(res, list(7, 4))
+
+    coll1 = parallel::mccollect(w1, wait=TRUE, timeout=0.5)
+    expect_equal(names(coll1), as.character(w1$pid))
+    coll2 = parallel::mccollect(w2, wait=TRUE, timeout=0.5)
+    expect_equal(names(coll2), as.character(w2$pid))
+
+    m$close(0L)
 })
