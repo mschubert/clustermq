@@ -72,13 +72,16 @@ public:
         pitems[1].socket = to_worker;
         pitems[1].events = ZMQ_POLLIN;
 
-        auto time_ms = std::chrono::milliseconds(-1);
-        try {
-            zmq::poll(pitems, time_ms);
-        } catch (zmq::error_t const &e) {
-            if (errno != EINTR || pending_interrupt())
-                Rf_error(e.what());
-        }
+        auto time_left = std::chrono::milliseconds(-1);
+        int rc = 0;
+        do {
+            try {
+                rc = zmq::poll(pitems, time_left);
+            } catch (zmq::error_t const &e) {
+                if (errno != EINTR || pending_interrupt())
+                    Rf_error(e.what());
+            }
+        } while (rc == 0);
 
         // master to worker communication: add R env objects
         if (pitems[0].revents > 0) {
@@ -89,8 +92,11 @@ public:
                 return false;
             //todo: cache and add objects
             zmq::multipart_t mp;
-            for (int i=0; i<msgs.size(); i++)
-                mp.push_back(std::move(msgs[i]));
+            for (int i=0; i<msgs.size(); i++) {
+                zmq::message_t msg;
+                msg.move(msgs[i]);
+                mp.push_back(std::move(msg));
+            }
             mp.send(to_worker);
         }
 
@@ -99,8 +105,11 @@ public:
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_worker, std::back_inserter(msgs));
             zmq::multipart_t mp;
-            for (int i=0; i<msgs.size(); i++)
-                mp.push_back(std::move(msgs[i]));
+            for (int i=0; i<msgs.size(); i++) {
+                zmq::message_t msg;
+                msg.move(msgs[i]);
+                mp.push_back(std::move(msg));
+            }
             mp.send(to_master);
         }
         return true;
