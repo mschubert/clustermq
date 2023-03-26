@@ -56,7 +56,7 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
         chunk_size = round(Reduce(min, c(
             500,                    # never more than 500
             n_calls / n_jobs / 100, # each worker reports back 100 times
-            n_calls / 2000,         # at least 2000 reports total
+            n_calls / 2000,         # at most 2000 reports total
             1e4 * n_calls / utils::object.size(df)[[1]] # no more than 10 kb
         )))
     chunk_size = max(chunk_size, 1)
