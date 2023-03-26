@@ -122,6 +122,8 @@ public:
                 poll_recv(timeout);
         } catch (zmq::error_t const &e) {
             Rcpp::warning(e.what());
+        } catch (Rcpp::exception const &e) {
+            Rcpp::warning(e.what());
         }
         if (has_proxy)
             proxy_shutdown();
@@ -155,23 +157,28 @@ private:
 
         std::vector<zmq::message_t> msgs;
         auto time_ms = std::chrono::milliseconds(timeout);
+        auto time_left = time_ms;
         auto start = Time::now();
         while (true) {
-            try {
-                zmq::poll(pitems, time_ms);
-            } catch (zmq::error_t const &e) {
-                if ((errno != EINTR && errno != EAGAIN) || pending_interrupt())
-                    Rf_error(e.what());
-            }
+            int rc = 0;
+            do {
+                try {
+                    rc = zmq::poll(pitems, time_left);
+                } catch (zmq::error_t const &e) {
+                    if (errno != EINTR || pending_interrupt())
+                        Rf_error(e.what());
+                }
 
-            if (pitems[0].revents == 0) {
-                auto now = Time::now();
-                time_ms -= std::chrono::duration_cast<ms>(now - start);
-                start = now;
-                if (timeout != -1 && time_ms.count() <= 0)
-                    throw zmq::error_t();
-                continue;
-            }
+                if (timeout != -1) {
+                    auto ms_diff = std::chrono::duration_cast<ms>(Time::now() - start);
+                    time_left = time_ms - ms_diff;
+                    if (time_left.count() < 0) {
+                        std::ostringstream err;
+                        err << "Socket timed out after " << ms_diff.count() << " ms\n";
+                        throw Rcpp::exception(err.str().c_str());
+                    }
+                }
+            } while (rc == 0);
 
             recv_multipart(sock, std::back_inserter(msgs));
             if (msgs.size() == 5) { //todo: make this cleaner
@@ -180,14 +187,12 @@ private:
                 has_proxy = 0;
             }
             if (msgs.size() != 4+has_proxy) {
-                std::ostringstream errmsg;
-                errmsg << "Unexpected message format: got " << msgs.size() <<
+                std::ostringstream err;
+                err << "Unexpected message format: got " << msgs.size() <<
                     " frames but expected " << 4+has_proxy << "\n";
                 for (int i=0; i<msgs.size(); i++)
-                    errmsg << msgs[i].str() << "\n";
-                auto std_str = errmsg.str();
-                const char* p = std_str.c_str();
-                Rf_error(p);
+                    err << msgs[i].str() << "\n";
+                Rf_error(err.str().c_str());
             }
 
             cur = msgs[0+has_proxy].to_string();

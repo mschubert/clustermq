@@ -32,7 +32,7 @@ SSH = R6::R6Class("SSH",
             init_timeout = getOption("clustermq.ssh.timeout", 10)
             tryCatch(private$master$proxy_submit_cmd(args, init_timeout*1000),
                 error = function(e) {
-                    if (grepl("temporarily", conditionMessage(e))) {
+                    if (grepl("timed out", conditionMessage(e))) {
                         stop("Remote R process did not respond after ",
                              init_timeout, " seconds. Check your SSH server log.")
                     } else stop(e)
