@@ -113,6 +113,18 @@ public:
     void add_pkg(Rcpp::CharacterVector pkg) {
         add_env("package:" + Rcpp::as<std::string>(pkg), pkg);
     }
+    Rcpp::DataFrame list_env() {
+        std::vector<std::string> names;
+        names.reserve(env.size());
+        std::vector<int> sizes;
+        sizes.reserve(env.size());
+        for (const auto &kv: env) {
+            names.push_back(kv.first);
+            sizes.push_back(kv.second.size());
+        }
+        return Rcpp::DataFrame::create(Rcpp::_["object"] = Rcpp::wrap(names),
+                Rcpp::_["size"] = Rcpp::wrap(sizes));
+    }
 
     Rcpp::List cleanup(int timeout=5000) {
         sock.set(zmq::sockopt::router_mandatory, 0);

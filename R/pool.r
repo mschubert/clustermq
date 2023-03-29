@@ -35,6 +35,7 @@ Pool = R6::R6Class("Pool",
 #                    environment(args[[fname]]) = .GlobalEnv
                 private$master$add_env(name, args[[name]])
             }
+            invisible(private$master$list_env())
         },
 
         pkg = function(...) {
@@ -94,8 +95,6 @@ Pool = R6::R6Class("Pool",
     active = list(
         workers_total = function() -1,
         workers_running = function() -1,
-        data_num = function() -1,
-        data_size = function() -1,
         reusable = function() private$reuse
     ),
 

@@ -33,14 +33,16 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     n_warnings = 0
     shutdown = FALSE
     kill_workers = FALSE
+    penv = pool$env()
+    obj_size = structure(sum(penv$size), class="object_size")
 
     if (!pool$reusable)
         on.exit(pool$cleanup())
 
     if (verbose) {
         message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
-                " calculations (", pool$data_num, " objs/",
-                format(pool$data_size, big.mark=",", units="Mb"),
+                " calculations (", nrow(penv), " objs/",
+                format(obj_size, big.mark=",", units="auto"),
                 " common; ", chunk_size, " calls/chunk) ...")
         pb = progress::progress_bar$new(total = n_calls,
                 format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
