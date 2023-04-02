@@ -1,7 +1,10 @@
 # git head
 
 * Jobs now error instead of stalling upon unexpected worker disconnect (#150)
+* Reuse of common data is now supported (#154)
 * Fix bug where max memory reporting by `gc()` may be in different column (#240)
+* The job port/id pool is now used properly upon binding failure (#270)
+* Common data size warning is now only displayed when exceeding limits (#287)
 
 # clustermq 0.8.95
 

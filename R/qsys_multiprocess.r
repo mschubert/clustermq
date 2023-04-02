@@ -7,18 +7,16 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr=host("127.0.0.1"), ...) {
+        initialize = function(addr, n_jobs, master, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
             if (! requireNamespace("callr", quietly=TRUE))
                 stop("The ", sQuote(callr), " package is required for ", sQuote("multiprocess"))
-            super$initialize(addr=addr, ...)
-        },
+            super$initialize(addr=addr, master=master)
 
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
             if (verbose)
                 message("Starting ", n_jobs, " processes ...")
 
             if (log_worker && is.null(log_file))
-                log_file = "cmq-%i.log"
+                log_file = sprintf("cmq%i-%%i.log", private$port)
 
             for (i in seq_len(n_jobs)) {
                 if (is.character(log_file))
@@ -26,20 +24,27 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                 else
                     log_i = nullfile()
                 cr = callr::r_bg(function(m) clustermq:::worker(m),
-                                 args=list(m=private$master),
+                                 args=list(m=private$addr),
                                  stdout=log_i, stderr=log_i)
                 private$callr[[as.character(cr$get_pid())]] = cr
             }
             private$workers_total = n_jobs
+            private$is_cleaned_up = FALSE
         },
 
         cleanup = function(quiet=FALSE, timeout=3) {
-            success = super$cleanup(quiet=quiet, timeout=timeout)
             dead_workers = sapply(private$callr, function(x) ! x$is_alive())
             if (length(dead_workers) > 0)
                 private$callr[dead_workers] = NULL
-            invisible(success)
-        },
+            else
+                private$is_cleaned_up = TRUE
+            private$is_cleaned_up
+        }
+    ),
+
+    private = list(
+        callr = list(),
+        is_cleaned_up = NULL,
 
         finalize = function(quiet=FALSE) {
             if (!private$is_cleaned_up) {
@@ -54,9 +59,5 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                 private$is_cleaned_up = TRUE
             }
         }
-    ),
-
-    private = list(
-        callr = list()
     )
 )

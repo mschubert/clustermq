@@ -36,8 +36,6 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
     n_calls = nrow(df)
     seed = as.integer(seed)
     check_args(fun, df, const)
-    data = list(fun=fun, const=const, export=export, pkgs=pkgs,
-                rettype=rettype, common_seed=seed)
 
     # set up workers if none provided
     if (is.null(workers)) {
@@ -46,23 +44,25 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
             stop("n_jobs or job_size is required")
         n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
 
-        workers = workers(n_jobs, data=data, reuse=FALSE, template=template,
+        workers = workers(n_jobs, reuse=FALSE, template=template,
                           log_worker=log_worker, verbose=verbose)
-    } else
-        do.call(workers$set_common_data, data)
+    }
+    workers$env(fun=fun, rettype=rettype, common_seed=seed, const=const)
+    workers$pkg(pkgs)
+    do.call(workers$env, export)
 
     # heuristic for chunk size
     if (is.na(chunk_size))
         chunk_size = round(Reduce(min, c(
             500,                    # never more than 500
             n_calls / n_jobs / 100, # each worker reports back 100 times
-            n_calls / 2000,         # at least 2000 reports total
+            n_calls / 2000,         # at most 2000 reports total
             1e4 * n_calls / utils::object.size(df)[[1]] # no more than 10 kb
         )))
     chunk_size = max(chunk_size, 1)
 
     # process calls
-    if (class(workers)[1] == "LOCAL") {
+    if (inherits(workers$workers, "LOCAL")) {
         list2env(export, envir=environment(fun))
         for (pkg in pkgs) # is it possible to attach the package to fun's env?
             library(pkg, character.only=TRUE)
@@ -71,9 +71,7 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
         summarize_result(re$result, length(re$errors), length(re$warnings),
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
-        if (workers$workers == 0)
-            stop("Attempting to use workers object without active workers")
-        master(qsys=workers, iter=df, rettype=rettype,
+        master(pool=workers, iter=df, rettype=rettype,
                fail_on_error=fail_on_error, chunk_size=chunk_size,
                timeout=timeout, max_calls_worker=max_calls_worker,
                verbose=verbose)

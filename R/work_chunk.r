@@ -55,7 +55,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
     if (!is.null(common_seed))
         df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
 
-    re = stats::setNames(purrr_lookup[[rettype]](df, fwrap), df$` id `)
+    re = stats::setNames(purrr_lookup(rettype)(df, fwrap), df$` id `)
     if (rettype != "list")
         re = unlist(re)
     list(result = re, warnings = context$warnings, errors = context$errors)

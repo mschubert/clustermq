@@ -1,7 +1,6 @@
 ssh -o "ExitOnForwardFailure yes" -f \
-    -R {{ ctl_port }}:localhost:{{ local_port }} \
-    -R {{ job_port }}:localhost:{{ fwd_port }} \
+    -R {{ remote_port }}:127.0.0.1:{{ local_port }} \
     {{ ssh_host }} \
     "R --no-save --no-restore -e \
-        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})' \
+        'clustermq:::ssh_proxy({{ remote_port }})' \
         > {{ ssh_log | /dev/null }} 2>&1"

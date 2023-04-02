@@ -10,7 +10,7 @@
 #'  * when computatons are complete, we send id=0 to the worker
 #'    * it responds with id=-1 (and usage stats) and shuts down
 #'
-#' @param qsys           Instance of QSys object
+#' @param pool           Instance of Pool object
 #' @param iter           Objects to be iterated in each function call
 #' @param rettype        Return type of function
 #' @param fail_on_error  If an error occurs on the workers, continue or fail?
@@ -21,7 +21,7 @@
 #' @param verbose        Print progress messages
 #' @return               A list of whatever `fun` returned
 #' @keywords  internal
-master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
+master = function(pool, iter, rettype="list", fail_on_error=TRUE,
                   chunk_size=NA, timeout=Inf, max_calls_worker=Inf, verbose=TRUE) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
@@ -34,32 +34,28 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     shutdown = FALSE
     kill_workers = FALSE
 
-    on.exit(qsys$finalize())
+    if (!pool$reusable)
+        on.exit(pool$cleanup())
 
     if (verbose) {
         message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
-                " calculations (", qsys$data_num, " objs/",
-                format(qsys$data_size, big.mark=",", units="Mb"),
+                " calculations (", pool$data_num, " objs/",
+                format(pool$data_size, big.mark=",", units="Mb"),
                 " common; ", chunk_size, " calls/chunk) ...")
         pb = progress::progress_bar$new(total = n_calls,
                 format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
-        pb$tick(0, tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
+        pb$tick(0, tokens=list(wtot=pool$workers_total, wup=pool$workers_running))
     }
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
-        msg = qsys$receive_data(timeout=timeout)
-        if (is.null(msg)) { # timeout reached
-            if (shutdown) {
-                kill_workers = TRUE
-                break
-            } else
-                stop("Socket timeout reached, likely due to a worker crash")
-        }
+        msg = pool$recv()
+        if (inherits(msg, "worker_error"))
+            stop("Worker Error: ", msg)
 
         if (verbose)
             pb$tick(length(msg$result),
-                    tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
+                    tokens=list(wtot=pool$workers_total, wup=pool$workers_running))
 
         # process the result data if we got some
         if (!is.null(msg$result)) {
@@ -69,46 +65,39 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
 
             n_warnings = n_warnings + length(msg$warnings)
             n_errors = n_errors + length(msg$errors)
-            if (n_errors > 0 && fail_on_error == TRUE) {
+            if (n_errors > 0 && fail_on_error == TRUE)
                 shutdown = TRUE
-                timeout = getOption("clustermq.error.timeout", min(timeout, 30))
-            }
             new_msgs = c(msg$errors, msg$warnings)
             if (length(new_msgs) > 0 && length(cond_msgs) < 50)
                 cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
         }
 
         if (shutdown || (!is.null(msg$n_calls) && msg$n_calls >= max_calls_worker)) {
-            qsys$send_shutdown_worker()
+            pool$send_shutdown()
             next
         }
 
-        if (msg$token != qsys$data_token) {
-            qsys$send_common_data()
-
-        } else if (submit_index[1] <= n_calls) {
+        if (submit_index[1] <= n_calls) {
             # if we have work, send it to the worker
             submit_index = submit_index[submit_index <= n_calls]
-            qsys$send_job_data(chunk = chunk(iter, submit_index))
+            pool$send(expression(clustermq:::work_chunk(chunk, fun=fun, const=const,
+                rettype=rettype, common_seed=common_seed)), chunk=chunk(iter, submit_index))
             jobs_running = jobs_running + length(submit_index)
             submit_index = submit_index + chunk_size
 
             # adapt chunk size towards end of processing
-            cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
+            cs = ceiling((n_calls - submit_index[1]) / pool$workers_running)
             if (cs < chunk_size) {
                 chunk_size = max(cs, 1)
                 submit_index = submit_index[1:chunk_size]
             }
 
-        } else if (qsys$reusable) {
-            qsys$send_wait()
+        } else if (pool$reusable) {
+            pool$send_wait()
         } else { # or else shut it down
-            qsys$send_shutdown_worker()
+            pool$send_shutdown()
         }
     }
-
-    if (!kill_workers && (qsys$reusable || qsys$cleanup(quiet=!verbose)))
-        on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)

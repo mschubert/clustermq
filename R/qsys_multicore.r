@@ -7,16 +7,12 @@ MULTICORE = R6::R6Class("MULTICORE",
     inherit = QSys,
 
     public = list(
-        initialize = function(addr=host("127.0.0.1"), ...) {
-            super$initialize(addr=addr, ...)
-        },
-
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+        initialize = function(addr, n_jobs, master, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+            super$initialize(addr=addr, master=master)
             if (verbose)
                 message("Starting ", n_jobs, " cores ...")
-
             if (log_worker && is.null(log_file))
-                log_file = "cmq-%i.log"
+                log_file = sprintf("cmq%i-%%i.log", private$port)
 
             for (i in seq_len(n_jobs)) {
                 if (is.character(log_file))
@@ -30,17 +26,28 @@ MULTICORE = R6::R6Class("MULTICORE",
                     on.exit({ sink(type="message"); sink(type="output"); close(fout) })
                     clustermq:::worker(m)
                 }
-                p = parallel::mcparallel(quote(wrapper(private$master, log_i)))
+                p = parallel::mcparallel(quote(wrapper(private$addr, log_i)))
                 private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs
         },
 
         cleanup = function(quiet=FALSE, timeout=3) {
-            success = super$cleanup(quiet=quiet, timeout=timeout)
-            private$collect_children(wait=success, timeout=timeout)
-            invisible(success && length(private$children) == 0)
+            private$collect_children(wait=TRUE, timeout=timeout)
+            invisible(length(private$children) == 0)
+        }
+    ),
+
+    private = list(
+        collect_children = function(...) {
+            pids = as.integer(names(private$children))
+            res = suppressWarnings(parallel::mccollect(pids, ...))
+            finished = intersect(names(private$children), names(res))
+            private$children[finished] = NULL
         },
+
+        children = list(),
+        is_cleaned_up = TRUE, #TODO:
 
         finalize = function(quiet=FALSE) {
             if (!private$is_cleaned_up) {
@@ -56,16 +63,5 @@ MULTICORE = R6::R6Class("MULTICORE",
                 private$is_cleaned_up = TRUE
             }
         }
-    ),
-
-    private = list(
-        collect_children = function(...) {
-            pids = as.integer(names(private$children))
-            res = suppressWarnings(parallel::mccollect(pids, ...))
-            finished = intersect(names(private$children), names(res))
-            private$children[finished] = NULL
-        },
-
-        children = list()
     )
 )

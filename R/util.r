@@ -1,29 +1,3 @@
-#' Binds a ZeroMQ socket to an available port in given range
-#'
-#' @param socket   An ZeroMQ socket object
-#' @param range    Numbers to consider (e.g. 6000:8000)
-#' @param iface    Interface to listen on
-#' @param n_tries  Number of ports to try in range
-#' @return         The port the socket is bound to
-#' @keywords internal
-bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
-    ports = sample(range, n_tries)
-
-    for (i in 1:n_tries) {
-        addr = paste(iface, ports[i], sep=":")
-        success = tryCatch({
-            port_found = bind_socket(socket, addr)
-        }, error = function(e) NULL)
-        if (is.null(success))
-            break
-    }
-
-    if (!is.null(success))
-        stop("Could not bind after ", n_tries, " tries")
-
-    ports[i]
-}
-
 #' Construct the ZeroMQ host address
 #'
 #' @param node   Node or device name
@@ -86,14 +60,34 @@ vec_lookup = list(
 #' Lookup table for return types to purrr functions
 #'
 #' @keywords internal
-purrr_lookup = list(
-    "list" = purrr::pmap,
-    "logical" = purrr::pmap_lgl,
-    "numeric" = purrr::pmap_dbl,
-    "integer" = purrr::pmap_int,
-    "character" = purrr::pmap_chr,
-    "lgl" = purrr::pmap_lgl,
-    "dbl" = purrr::pmap_dbl,
-    "int" = purrr::pmap_int,
-    "chr" = purrr::pmap_chr
-)
+purrr_lookup = function(type) {
+    switch(type,
+        "list" = purrr::pmap,
+        "logical" = purrr::pmap_lgl,
+        "numeric" = purrr::pmap_dbl,
+        "integer" = purrr::pmap_int,
+        "character" = purrr::pmap_chr,
+        "lgl" = purrr::pmap_lgl,
+        "dbl" = purrr::pmap_dbl,
+        "int" = purrr::pmap_int,
+        "chr" = purrr::pmap_chr
+    )
+}
+
+#' Wraps an error in a condition object
+#'
+#' @keywords internal
+wrap_error = function(call) {
+    structure(class = c("worker_error", "condition"),
+              list(message=geterrmessage(), call=call));
+}
+
+#' Message format for logging
+#'
+#' @keywords internal
+msg_fmt = function(verbose=TRUE) {
+    if (verbose)
+        function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
+    else
+        function(...) invisible(NULL)
+}

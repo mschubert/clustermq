@@ -7,11 +7,10 @@ LSF = R6::R6Class("LSF",
     inherit = QSys,
 
     public = list(
-        initialize = function(..., template=getOption("clustermq.template", "LSF")) {
-            super$initialize(..., template=template)
-        },
+        initialize = function(addr, n_jobs, master, ..., template=getOption("clustermq.template", "LSF"),
+                              log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+            super$initialize(addr=addr, master=master, template=template)
 
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, verbose=TRUE) {
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name
             if (!is.null(opts$log_file))
@@ -29,18 +28,25 @@ LSF = R6::R6Class("LSF",
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$is_cleaned_up = FALSE
         },
 
+        cleanup = function() {
+            private$is_cleaned_up = TRUE
+        }
+    ),
+
+    private = list(
+        job_id = NULL,
+        is_cleaned_up = NULL,
+
         finalize = function(quiet=self$workers_running == 0) {
+            quiet = FALSE #TODO:
             if (!private$is_cleaned_up) {
                 system(paste("bkill -J", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
                 private$is_cleaned_up = TRUE
             }
         }
-    ),
-
-    private = list(
-        job_id = NULL
     )
 )

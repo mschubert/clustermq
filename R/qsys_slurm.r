@@ -7,11 +7,10 @@ SLURM = R6::R6Class("SLURM",
     inherit = QSys,
 
     public = list(
-        initialize = function(..., template=getOption("clustermq.template", "SLURM")) {
-            super$initialize(..., template=template)
-        },
+        initialize = function(addr, n_jobs, master, ..., template=getOption("clustermq.template", "SLURM"),
+                              log_worker=FALSE, verbose=TRUE) {
+            super$initialize(addr=addr, master=master, template=template)
 
-        submit_jobs = function(n_jobs, ..., log_worker=FALSE, verbose=TRUE) {
             opts = private$fill_options(n_jobs=n_jobs, ...)
             private$job_id = opts$job_name
             if (!is.null(opts$log_file))
@@ -29,18 +28,24 @@ SLURM = R6::R6Class("SLURM",
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$is_cleaned_up = FALSE
         },
 
-        finalize = function(quiet = self$workers_running == 0) {
+        cleanup = function() {
+            private$is_cleaned_up = TRUE
+        }
+    ),
+
+    private = list(
+        job_id = NULL,
+        is_cleaned_up = NULL,
+
+        finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {
                 system(paste("scancel --name", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
                 private$is_cleaned_up = TRUE
             }
         }
-    ),
-
-    private = list(
-        job_id = NULL
     )
 )
