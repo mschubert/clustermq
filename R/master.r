@@ -35,14 +35,20 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     kill_workers = FALSE
     penv = pool$env()
     obj_size = structure(sum(penv$size), class="object_size")
+    obj_size_fmt = format(obj_size, big.mark=",", units="auto")
+
+    #TODO: warn before serialization, create pool+env & then submit
+    if (obj_size/1e6 > getOption("clustermq.data.warning", 500))
+        warning("Common data is ", obj_size_fmt, ". Recommended limit ",
+                "is ", getOption("clustermq.data.warning", 500),
+                " Mb (set by clustermq.data.warning option)", immediate.=TRUE)
 
     if (!pool$reusable)
         on.exit(pool$cleanup())
 
     if (verbose) {
         message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
-                " calculations (", nrow(penv), " objs/",
-                format(obj_size, big.mark=",", units="auto"),
+                " calculations (", nrow(penv), " objs/", obj_size_fmt,
                 " common; ", chunk_size, " calls/chunk) ...")
         pb = progress::progress_bar$new(total = n_calls,
                 format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
