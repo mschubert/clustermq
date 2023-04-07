@@ -3,13 +3,15 @@
 * Jobs now error instead of stalling upon unexpected worker disconnect (#150)
 * Reuse of common data is now supported (#154)
 * Fix bug where max memory reporting by `gc()` may be in different column (#240)
-* The job port/id pool is now used properly upon binding failure (#270)
+* Error if `n_jobs` and `max_calls_worker` provide insufficient call slots (#258)
+* The job port/id pool is now used properly upon binding failure (#270) @luwidmer
 * Common data size warning is now only displayed when exceeding limits (#287)
+* Request 1 GB by default in SGE template (#298) @nickholway
 
 # clustermq 0.8.95
 
 * We are now using _ZeroMQ_ via `Rcpp` in preparation for `v0.9` (#151)
-* New `multiprocess` backend via `callr` instead of forking (#142, #197) FIXME: test case
+* New `multiprocess` backend via `callr` instead of forking (#142, #197)
 * Sending data on sockets is now blocking to avoid excess memory usage (#161)
 * `multicore`, `multiprocess` schedulers now support logging (#169)
 * New option `clustermq.host` can specify host IP or network interface name (#170)

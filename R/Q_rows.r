@@ -40,13 +40,20 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
     # set up workers if none provided
     if (is.null(workers)) {
         qsys_id = toupper(getOption("clustermq.scheduler", qsys_default))
+        if (!is.null(n_jobs) && n_jobs == 0)
+            qsys_id = "LOCAL"
         if (qsys_id != "LOCAL" && is.null(n_jobs) && is.null(job_size))
             stop("n_jobs or job_size is required")
         n_jobs = Reduce(min, c(ceiling(n_calls / job_size), n_jobs, n_calls))
-
+    } else {
+        qsys_id = class(workers$workers)[1]
+        n_jobs = Inf #todo: number of workers
+    }
+    if (qsys_id != "LOCAL" && n_calls > n_jobs*max_calls_worker)
+        stop("n_jobs and max_calls_worker provide fewer call slots than required")
+    if (is.null(workers))
         workers = workers(n_jobs, reuse=FALSE, template=template,
                           log_worker=log_worker, verbose=verbose)
-    }
     workers$env(fun=fun, rettype=rettype, common_seed=seed, const=const)
     workers$pkg(pkgs)
     do.call(workers$env, export)
