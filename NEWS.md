@@ -4,6 +4,7 @@
 * Reuse of common data is now supported (#154)
 * Fix bug where max memory reporting by `gc()` may be in different column (#240)
 * Error if `n_jobs` and `max_calls_worker` provide insufficient call slots (#258)
+* Fix passing numerical `job_id` to `qdel` in PBS (#265)
 * The job port/id pool is now used properly upon binding failure (#270) @luwidmer
 * Common data size warning is now only displayed when exceeding limits (#287)
 * Request 1 GB by default in SGE template (#298) @nickholway
