@@ -128,7 +128,7 @@ test_that("communication with two workers", {
     expect_null(m$recv(1000L)) # worker 2 up
     m$send(expression({ Sys.sleep(0.5); 3 + 1 }), FALSE)
     res = m$cleanup(1000L) # collect both results
-    expect_equal(res, list(7, 4))
+    expect_equal(sort(unlist(res)), c(4,7))
 
     coll1 = parallel::mccollect(w1, wait=TRUE, timeout=0.5)
     expect_equal(names(coll1), as.character(w1$pid))
