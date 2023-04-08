@@ -73,6 +73,13 @@ test_that("NULL objects are exported", {
     expect_equal(res, cmp)
 })
 
+test_that("external worker", {
+    register_dopar_cmq(n_jobs=1)
+    res = foreach(i=1:3) %dopar% sqrt(i)
+    cmp = foreach(i=1:3) %do% sqrt(i)
+    expect_equal(res, cmp)
+})
+
 #test_that("foreach works via BiocParallel", {
 #    skip_if_not_installed("BiocParallel")
 #
