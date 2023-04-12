@@ -39,8 +39,8 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
 
     #TODO: warn before serialization, create pool+env & then submit
     if (obj_size/1e6 > getOption("clustermq.data.warning", 500))
-        warning("Common data is ", obj_size_fmt, ". Recommended limit ",
-                "is ", getOption("clustermq.data.warning", 500),
+        warning("Common data is ", obj_size_fmt, ". Recommended limit is ",
+                getOption("clustermq.data.warning", 500),
                 " Mb (set by clustermq.data.warning option)", immediate.=TRUE)
 
     if (!pool$reusable)
