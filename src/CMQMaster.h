@@ -31,6 +31,8 @@ public:
     }
 
     void close(int timeout=0) {
+        env.clear();
+
         if (sock.handle() != nullptr) {
             sock.set(zmq::sockopt::linger, timeout);
             sock.close();
@@ -46,25 +48,42 @@ public:
 //            Rf_error("Trying to receive data without workers");
 
         auto msgs = poll_recv(timeout);
-        return msg2r(msgs[3+has_proxy], true);
+        int proxy_offset;
+        if (msgs[1].size() == 0) {
+            proxy_offset = 0;
+        } else if (msgs[2].size() == 0) {
+            proxy_offset = 1;
+        } else {
+            // we expect frames: [proxy,] id, delim, status, payload
+            std::ostringstream err;
+            err << "Missing message delimiter (" << msgs.size() << "frames)\n";
+            for (int i=0; i<msgs.size(); i++)
+                err << msgs[i].str() << "\n";
+            Rf_error(err.str().c_str());
+        }
+
+        cur = msgs[0+proxy_offset].to_string();
+        auto &w = peers[cur];
+        w.status = msg2wlife_t(msgs[2+proxy_offset]);
+        w.call = R_NilValue;
+        if (proxy_offset != 0)
+            w.via = msgs[0].to_string();
+
+        return msg2r(msgs[3+proxy_offset], true);
     }
 
-    void send(SEXP cmd, bool more) {
-        auto status = wlife_t::active;
-        if (!more)
-            status = wlife_t::shutdown;
-
+    void send(SEXP cmd) {
         auto &w = peers[cur];
         std::set<std::string> new_env;
         std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
                 std::inserter(new_env, new_env.end()));
 
         zmq::multipart_t mp;
-        if (has_proxy != 0)
-            mp.push_back(zmq::message_t(std::string("proxy")));
+        if (!w.via.empty())
+            mp.push_back(zmq::message_t(w.via));
         mp.push_back(zmq::message_t(cur));
         mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(status));
+        mp.push_back(int2msg(wlife_t::active));
         mp.push_back(r2msg(cmd));
 
         for (auto &str : new_env) {
@@ -79,27 +98,33 @@ public:
         w.call = cmd;
         mp.send(sock);
     }
+    void send_shutdown() {
+        auto &w = peers[cur];
+
+        zmq::multipart_t mp;
+        if (!w.via.empty())
+            mp.push_back(zmq::message_t(w.via));
+        mp.push_back(zmq::message_t(cur));
+        mp.push_back(zmq::message_t(0));
+        mp.push_back(int2msg(wlife_t::shutdown));
+
+        w.call = R_NilValue;
+        w.status = wlife_t::shutdown;
+        mp.send(sock);
+    }
 
     void proxy_submit_cmd(SEXP args, int timeout=10000) {
         auto msgs = poll_recv(timeout);
+        cur = msgs[0].to_string();
         // msgs[0] == "proxy" routing id
         // msgs[1] == delimiter
         // msgs[2] == wlife_t::proxy_cmd
-        // msgs[3] == R_NilValue
 
         zmq::multipart_t mp;
         mp.push_back(zmq::message_t(cur));
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(wlife_t::proxy_cmd));
         mp.push_back(r2msg(args));
-        mp.send(sock);
-    }
-    void proxy_shutdown() {
-        zmq::multipart_t mp;
-        mp.push_back(zmq::message_t(std::string("proxy")));
-        mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(wlife_t::proxy_shutdown));
-        mp.push_back(r2msg(R_NilValue));
         mp.send(sock);
     }
 
@@ -126,31 +151,13 @@ public:
                 Rcpp::_["size"] = Rcpp::wrap(sizes));
     }
 
-    Rcpp::List cleanup(int timeout=5000) {
-        sock.set(zmq::sockopt::router_mandatory, 0);
-        env.clear();
-        try {
-            while(peers.size() > has_proxy)
-                poll_recv(timeout);
-        } catch (zmq::error_t const &e) {
-            Rcpp::warning(e.what());
-        } catch (Rcpp::exception const &e) {
-            Rcpp::warning(e.what());
-        }
-        if (has_proxy)
-            proxy_shutdown();
-        close(timeout);
-        Rcpp::List re(on_shutdown.size());
-        for (int i=0; i<on_shutdown.size(); i++)
-            re[i] = std::move(on_shutdown[i]);
-        return re;
-    }
-
 private:
     struct worker_t {
         std::set<std::string> env;
         SEXP call {R_NilValue};
+//        SEXP time {R_NilValue};
         wlife_t status;
+        std::string via;
     };
 
     zmq::context_t *ctx {nullptr};
@@ -160,7 +167,6 @@ private:
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
-    std::vector<SEXP> on_shutdown;
 
     std::vector<zmq::message_t> poll_recv(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
@@ -171,57 +177,28 @@ private:
         auto time_ms = std::chrono::milliseconds(timeout);
         auto time_left = time_ms;
         auto start = Time::now();
-        while (true) {
-            int rc = 0;
-            do {
-                try {
-                    rc = zmq::poll(pitems, time_left);
-                } catch (zmq::error_t const &e) {
-                    if (errno != EINTR || pending_interrupt())
-                        Rf_error(e.what());
-                }
 
-                if (timeout != -1) {
-                    auto ms_diff = std::chrono::duration_cast<ms>(Time::now() - start);
-                    time_left = time_ms - ms_diff;
-                    if (time_left.count() < 0) {
-                        std::ostringstream err;
-                        err << "Socket timed out after " << ms_diff.count() << " ms\n";
-                        throw Rcpp::exception(err.str().c_str());
-                    }
-                }
-            } while (rc == 0);
-
-            recv_multipart(sock, std::back_inserter(msgs));
-            if (msgs.size() == 5) { //todo: make this cleaner
-                has_proxy = 1;
-            } else if (msgs.size() == 4) {
-                has_proxy = 0;
-            }
-            if (msgs.size() != 4+has_proxy) {
-                std::ostringstream err;
-                err << "Unexpected message format: got " << msgs.size() <<
-                    " frames but expected " << 4+has_proxy << "\n";
-                for (int i=0; i<msgs.size(); i++)
-                    err << msgs[i].str() << "\n";
-                Rf_error(err.str().c_str());
+        int rc = 0;
+        do {
+            try {
+                rc = zmq::poll(pitems, time_left);
+            } catch (zmq::error_t const &e) {
+                if (errno != EINTR || pending_interrupt())
+                    Rf_error(e.what());
             }
 
-            cur = msgs[0+has_proxy].to_string();
-            auto &w = peers[cur];
-            w.status = msg2wlife_t(msgs[2+has_proxy]);
-            w.call = R_NilValue;
-            if (w.status != wlife_t::shutdown)
-                break;
+            if (timeout != -1) {
+                auto ms_diff = std::chrono::duration_cast<ms>(Time::now() - start);
+                time_left = time_ms - ms_diff;
+                if (time_left.count() < 0) {
+                    std::ostringstream err;
+                    err << "Socket timed out after " << ms_diff.count() << " ms\n";
+                    throw Rcpp::exception(err.str().c_str());
+                }
+            }
+        } while (rc == 0);
 
-            on_shutdown.push_back(msg2r(msgs[3+has_proxy], true));
-            send(R_NilValue, false);
-            peers.erase(cur);
-            msgs.clear();
-            if (peers.size() <= has_proxy)
-                break;
-        };
-
+        recv_multipart(sock, std::back_inserter(msgs));
         return msgs;
     }
 };

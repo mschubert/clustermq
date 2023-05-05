@@ -16,7 +16,7 @@ test_that("simple forwarding works", {
     w$connect(addr2, 0L)
     expect_true(p$process_one())
     expect_null(m$recv(0L)) # worker up
-    m$send(expression(5 + 2), TRUE)
+    m$send(expression(5 + 2))
     expect_true(p$process_one())
     expect_true(w$process_one())
     expect_true(p$process_one())
@@ -37,9 +37,9 @@ test_that("proxy communication yields submit args", {
     addr2 = p$listen("tcp://127.0.0.1:*")#"inproc://proxy")
 
     # direct connection, no ssh forward here
-    p$connect(addr1, 0L)
+    p$connect(addr1, 500L)
     p$proxy_request_cmd()
-    m$proxy_submit_cmd(list(n_jobs=1), 1000L)
+    m$proxy_submit_cmd(list(n_jobs=1), 500L)
     args = p$proxy_receive_cmd()
 
     expect_true(inherits(args, "list"))
@@ -59,11 +59,13 @@ test_that("using the proxy without pool and forward", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=1), 5000L)
-    expect_null(m$recv(1000L)) # worker 1 up
-    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), FALSE)
-    res = m$cleanup(1000L) # collect results
-    expect_equal(res, list(7))
+    m$proxy_submit_cmd(list(n_jobs=1), 500L)
+    expect_null(m$recv(500L)) # worker 1 up
+    m$send(expression(5 + 2))
+    expect_equal(m$recv(500L), 7) # collect results
+
+    m$send_shutdown()
+    m$close(500L)
 
     pr = parallel::mccollect(p, wait=TRUE, timeout=0.5)
     expect_equal(names(pr), as.character(p$pid))
@@ -79,14 +81,18 @@ test_that("using the proxy without pool and forward, 2 workers", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=2), 5000L)
-    expect_null(m$recv(1000L)) # worker 1 up
-    m$send(expression({ Sys.sleep(0.5); 5 + 2 }), FALSE)
-    expect_null(m$recv(1000L)) # worker 2 up
-    m$send(expression({ Sys.sleep(0.5); 3 + 1 }), FALSE)
-    res = m$cleanup(1000L) # collect both results
-    expect_equal(res, list(7, 4))
+    m$proxy_submit_cmd(list(n_jobs=2), 500L)
+    expect_null(m$recv(500L)) # worker 1 up
+    m$send(expression({ Sys.sleep(0.5); 5 + 2 }))
+    expect_null(m$recv(500L)) # worker 2 up
+    m$send(expression({ Sys.sleep(0.5); 3 + 1 }))
+    r1 = m$recv(1000L)
+    m$send_shutdown()
+    r2 = m$recv(500L)
+    m$send_shutdown()
+    expect_equal(sort(c(r1,r2)), c(4,7))
 
+    m$close(500L)
     pr = parallel::mccollect(p, wait=TRUE, timeout=0.5)
     expect_equal(names(pr), as.character(p$pid))
 })

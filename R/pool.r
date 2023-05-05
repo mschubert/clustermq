@@ -52,13 +52,13 @@ Pool = R6::R6Class("Pool",
                     cmd[[1]][[i]] = env[[as.character(name)]]
             }
 
-            private$master$send(cmd, TRUE)
+            private$master$send(cmd)
         },
         send_shutdown = function() {
-            private$master$send(expression(proc.time()), FALSE)
+            private$master$send_shutdown()
         },
         send_wait = function(wait=50) {
-            private$master$send(expression(Sys.sleep(wait)), TRUE)
+            private$master$send(expression(Sys.sleep(wait)))
         },
 
         recv = function() {
@@ -66,8 +66,10 @@ Pool = R6::R6Class("Pool",
         },
 
         cleanup = function(timeout=5000) {
-            stats = private$master$cleanup(timeout)
-            success = self$workers$cleanup()
+#            stats = private$master$cleanup(timeout)
+#            success = self$workers$cleanup()
+            # ^^ replace with: (1) try close connections, and (2) close socket
+            return(invisible(TRUE))
 
             times = stats #TODO: mem stats
             # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))

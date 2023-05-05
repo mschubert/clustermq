@@ -71,8 +71,8 @@ public:
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(sock, std::back_inserter(msgs));
-        auto status = msg2wlife_t(msgs[0]);
-        auto cmd = msg2r(msgs[1], true);
+        if (msg2wlife_t(msgs[0]) == wlife_t::shutdown)
+            return false;
 
         for (auto it=msgs.begin()+2; it<msgs.end(); it++) {
             Rcpp::List obj = msg2r(*it, true);
@@ -81,6 +81,7 @@ public:
                 load_pkg(obj[0]);
         }
 
+        auto cmd = msg2r(msgs[1], true);
         int err = 0;
         SEXP eval = PROTECT(R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
         if (err) {
@@ -88,10 +89,10 @@ public:
             Rcpp::Function wrap_error = cmq["wrap_error"];
             eval = wrap_error(cmd);
         }
-        sock.send(int2msg(status), zmq::send_flags::sndmore);
+        sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
         sock.send(r2msg(eval), zmq::send_flags::none);
         UNPROTECT(1);
-        return status == wlife_t::active;
+        return true;
     }
 
 private:

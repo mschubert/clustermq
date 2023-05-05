@@ -8,7 +8,6 @@ test_that("starting and stopping multicore", {
     w$send(expression(3 + 4))
     expect_equal(w$recv(), 7)
     w$send_shutdown()
-    w$cleanup()
 })
 
 test_that("multiprocess", {
@@ -19,7 +18,6 @@ test_that("multiprocess", {
     w$send(expression(3 + 5))
     expect_equal(w$recv(), 8)
     w$send_shutdown()
-    w$cleanup()
 })
 
 test_that("work_chunk on multiprocess", {
@@ -33,5 +31,4 @@ test_that("work_chunk on multiprocess", {
     expect_equal(res$warnings, list())
     expect_equal(res$errors, list())
     w$send_shutdown()
-    w$cleanup()
 })

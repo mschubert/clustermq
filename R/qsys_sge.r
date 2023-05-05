@@ -48,7 +48,7 @@ SGE = R6::R6Class("SGE",
         array_idx = "\\$TASK_ID",
         is_cleaned_up = NULL,
 
-        finalize = function(quiet=self$workers_running == 0) {
+        finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {
                 system(paste("qdel", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)

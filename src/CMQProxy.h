@@ -11,6 +11,10 @@ public:
     ~CMQProxy() { close(); }
 
     void close(int timeout=1000L) {
+        if (mon.handle() != nullptr) {
+            mon.set(zmq::sockopt::linger, 0);
+            mon.close();
+        }
         if (to_worker.handle() != nullptr) {
             to_worker.set(zmq::sockopt::linger, timeout);
             to_worker.close();
@@ -30,14 +34,18 @@ public:
         to_master = zmq::socket_t(*ctx, ZMQ_DEALER);
         to_master.set(zmq::sockopt::connect_timeout, timeout);
         to_master.set(zmq::sockopt::routing_id, "proxy");
-        //todo: add socket monitor like in CMQWorker.h@connect
+
+        if (zmq_socket_monitor(to_master, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
+            Rf_error("failed to create socket monitor");
+        mon = zmq::socket_t(*ctx, ZMQ_PAIR);
+        mon.connect("inproc://monitor");
+
         to_master.connect(addr);
     }
 
     void proxy_request_cmd() {
         to_master.send(zmq::message_t(0), zmq::send_flags::sndmore);
-        to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::sndmore);
-        to_master.send(r2msg(R_NilValue), zmq::send_flags::none);
+        to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::none);
     }
 
     SEXP proxy_receive_cmd() {
@@ -66,11 +74,13 @@ public:
     }
 
     bool process_one() {
-        auto pitems = std::vector<zmq::pollitem_t>(2);
+        auto pitems = std::vector<zmq::pollitem_t>(3);
         pitems[0].socket = to_master;
         pitems[0].events = ZMQ_POLLIN;
         pitems[1].socket = to_worker;
         pitems[1].events = ZMQ_POLLIN;
+        pitems[2].socket = mon;
+        pitems[2].events = ZMQ_POLLIN;
 
         auto time_left = std::chrono::milliseconds(-1);
         int rc = 0;
@@ -87,9 +97,7 @@ public:
         if (pitems[0].revents > 0) {
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_master, std::back_inserter(msgs));
-            auto status = msg2wlife_t(msgs[1]);
-            if (status == wlife_t::proxy_shutdown)
-                return false;
+
             //todo: cache and add objects
             zmq::multipart_t mp;
             for (int i=0; i<msgs.size(); i++) {
@@ -100,7 +108,7 @@ public:
             mp.send(to_worker);
         }
 
-        // worker to master communication
+        // worker to master communication: simple forward
         if (pitems[1].revents > 0) {
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_worker, std::back_inserter(msgs));
@@ -112,6 +120,10 @@ public:
             }
             mp.send(to_master);
         }
+
+        if (pitems[2].revents > 0)
+            return false;
+
         return true;
     }
 
@@ -120,4 +132,5 @@ private:
     zmq::context_t *ctx {nullptr};
     zmq::socket_t to_master;
     zmq::socket_t to_worker;
+    zmq::socket_t mon;
 };

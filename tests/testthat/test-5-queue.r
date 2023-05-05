@@ -131,6 +131,6 @@ test_that("shutdown monitor does not fire on clean disconnects", {
     # doing this via a separate call to `workers()` works
     # so this seems to be a race condition of some sort
     options(clustermq.scheduler="multicore")
-    res = Q(function(x) Sys.sleep(x), x=c(0,3), n_jobs=2, timeout=5L)
+    res = Q(Sys.sleep, time=c(0,1), n_jobs=2, timeout=5L)
     expect_equal(res, list(NULL, NULL))
 })
