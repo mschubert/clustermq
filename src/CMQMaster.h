@@ -47,6 +47,7 @@ public:
 //        if (peers.size() == 0)
 //            Rf_error("Trying to receive data without workers");
 
+        // we expect frames: [proxy,] id, delim, status, payload
         auto msgs = poll_recv(timeout);
         int proxy_offset;
         if (msgs[1].size() == 0) {
@@ -54,7 +55,6 @@ public:
         } else if (msgs[2].size() == 0) {
             proxy_offset = 1;
         } else {
-            // we expect frames: [proxy,] id, delim, status, payload
             std::ostringstream err;
             err << "Missing message delimiter (" << msgs.size() << "frames)\n";
             for (int i=0; i<msgs.size(); i++)
@@ -74,13 +74,18 @@ public:
 
     void send(SEXP cmd) {
         auto &w = peers[cur];
+        bool is_proxied = ! w.via.empty();
         std::set<std::string> new_env;
         std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
                 std::inserter(new_env, new_env.end()));
+        std::vector<std::string> proxy_add_env;
+        std::set<std::string> *via_env;
 
         zmq::multipart_t mp;
-        if (!w.via.empty())
+        if (is_proxied) {
+            via_env = &peers[w.via].env;
             mp.push_back(zmq::message_t(w.via));
+        }
         mp.push_back(zmq::message_t(cur));
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(wlife_t::active));
@@ -88,12 +93,21 @@ public:
 
         for (auto &str : new_env) {
             w.env.insert(str);
+            if (is_proxied) {
+                if (via_env->find(str) != via_env->end())
+                    proxy_add_env.push_back(str);
+                else
+                    via_env->insert(str);
+            }
             zmq::message_t msg;
             msg.copy(env[str]);
             mp.push_back(std::move(msg));
         }
 
-        // if the master connects via ssh, remove env items after sending once?
+        if (is_proxied) {
+            SEXP from_proxy = Rcpp::wrap(proxy_add_env);
+            mp.push_back(r2msg(from_proxy));
+        }
 
         w.call = cmd;
         mp.send(sock);

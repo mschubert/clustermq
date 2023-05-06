@@ -93,22 +93,43 @@ public:
             }
         } while (rc == 0);
 
-        // master to worker communication: add R env objects
+        // master to worker communication -> add R env objects
+        // frames: id, delim, status, call, [objs{1..n},] env_add
         if (pitems[0].revents > 0) {
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_master, std::back_inserter(msgs));
+            std::vector<std::string> add_from_proxy;
+            if (msgs.size() >= 5) {
+                add_from_proxy = Rcpp::as<std::vector<std::string>>(msg2r(msgs.back(), true));
+                msgs.pop_back();
+            }
 
-            //todo: cache and add objects
             zmq::multipart_t mp;
             for (int i=0; i<msgs.size(); i++) {
                 zmq::message_t msg;
                 msg.move(msgs[i]);
                 mp.push_back(std::move(msg));
+                if (i >= 4) {
+                    zmq::message_t store;
+                    store.copy(msgs[i]);
+                    // getting the name by unserializing is a bit wasteful
+                    Rcpp::List objs = Rcpp::as<Rcpp::List>(msg2r(store, true));
+                    Rcpp::CharacterVector names = objs.attr("names");
+                    auto name = Rcpp::as<std::string>(names[0]);
+                    env[name] = std::move(store);
+                }
             }
+
+            for (auto &name : add_from_proxy) {
+                zmq::message_t add;
+                add.copy(env[name]);
+                mp.push_back(std::move(add));
+            }
+
             mp.send(to_worker);
         }
 
-        // worker to master communication: simple forward
+        // worker to master communication -> simple forward
         if (pitems[1].revents > 0) {
             std::vector<zmq::message_t> msgs;
             recv_multipart(to_worker, std::back_inserter(msgs));
@@ -133,4 +154,5 @@ private:
     zmq::socket_t to_master;
     zmq::socket_t to_worker;
     zmq::socket_t mon;
+    std::unordered_map<std::string, zmq::message_t> env;
 };
