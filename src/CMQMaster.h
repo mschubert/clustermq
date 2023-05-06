@@ -47,29 +47,18 @@ public:
 //        if (peers.size() == 0)
 //            Rf_error("Trying to receive data without workers");
 
-        // we expect frames: [proxy,] id, delim, status, payload
-        auto msgs = poll_recv(timeout);
-        int proxy_offset;
-        if (msgs[1].size() == 0) {
-            proxy_offset = 0;
-        } else if (msgs[2].size() == 0) {
-            proxy_offset = 1;
-        } else {
-            std::ostringstream err;
-            err << "Missing message delimiter (" << msgs.size() << "frames)\n";
-            for (int i=0; i<msgs.size(); i++)
-                err << msgs[i].str() << "\n";
-            Rf_error(err.str().c_str());
-        }
+        int data_offset;
+        std::vector<zmq::message_t> msgs;
 
-        cur = msgs[0+proxy_offset].to_string();
-        auto &w = peers[cur];
-        w.status = msg2wlife_t(msgs[2+proxy_offset]);
-        w.call = R_NilValue;
-        if (proxy_offset != 0)
-            w.via = msgs[0].to_string();
+        do {
+            timeout = poll(timeout);
 
-        return msg2r(msgs[3+proxy_offset], true);
+            msgs.clear();
+            recv_multipart(sock, std::back_inserter(msgs));
+            data_offset = register_peer(msgs);
+        } while(data_offset >= msgs.size());
+
+        return msg2r(msgs[data_offset], true);
     }
 
     void send(SEXP cmd) {
@@ -128,8 +117,10 @@ public:
     }
 
     void proxy_submit_cmd(SEXP args, int timeout=10000) {
-        auto msgs = poll_recv(timeout);
-        cur = msgs[0].to_string();
+        poll(timeout);
+        std::vector<zmq::message_t> msgs;
+        recv_multipart(sock, std::back_inserter(msgs));
+        register_peer(msgs);
         // msgs[0] == "proxy" routing id
         // msgs[1] == delimiter
         // msgs[2] == wlife_t::proxy_cmd
@@ -182,12 +173,11 @@ private:
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
 
-    std::vector<zmq::message_t> poll_recv(int timeout=-1) {
+    int poll(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
         pitems[0].socket = sock;
         pitems[0].events = ZMQ_POLLIN;
 
-        std::vector<zmq::message_t> msgs;
         auto time_ms = std::chrono::milliseconds(timeout);
         auto time_left = time_ms;
         auto start = Time::now();
@@ -204,7 +194,8 @@ private:
             if (timeout != -1) {
                 auto ms_diff = std::chrono::duration_cast<ms>(Time::now() - start);
                 time_left = time_ms - ms_diff;
-                if (time_left.count() < 0) {
+                timeout = time_left.count();
+                if (timeout < 0) {
                     std::ostringstream err;
                     err << "Socket timed out after " << ms_diff.count() << " ms\n";
                     throw Rcpp::exception(err.str().c_str());
@@ -212,7 +203,38 @@ private:
             }
         } while (rc == 0);
 
-        recv_multipart(sock, std::back_inserter(msgs));
-        return msgs;
+        return timeout;
+    }
+
+    int register_peer(std::vector<zmq::message_t> &msgs) {
+        std::cout << "Received message: ";
+        for (int i=0; i<msgs.size(); i++)
+            std::cout << msgs[i].size() << " ";
+        std::cout << "\n";
+
+        int cur_i = 0;
+        if (msgs[1].size() != 0)
+            ++cur_i;
+
+        cur = msgs[cur_i].to_string();
+        auto &w = peers[cur];
+        w.call = R_NilValue;
+        if (cur_i == 1)
+            w.via = msgs[0].to_string();
+
+        if (msgs[++cur_i].size() != 0)
+            Rf_error("No frame delimiter found at expected position");
+
+        // handle status frame if present, else it's a disconnect notification
+        if (msgs.size() > ++cur_i)
+            w.status = msg2wlife_t(msgs[cur_i]);
+        else {
+            if (w.status == wlife_t::shutdown)
+                peers.erase(cur);
+            else
+                Rf_error("Unexpected worker disconnect");
+        }
+
+        return ++cur_i;
     }
 };
