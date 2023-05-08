@@ -56,7 +56,7 @@ public:
             msgs.clear();
             recv_multipart(sock, std::back_inserter(msgs));
             data_offset = register_peer(msgs);
-        } while(data_offset >= msgs.size());
+        } while(data_offset >= msgs.size() && peers.size() != 0);
 
         return msg2r(msgs[data_offset], true);
     }
@@ -207,10 +207,10 @@ private:
     }
 
     int register_peer(std::vector<zmq::message_t> &msgs) {
-        std::cout << "Received message: ";
-        for (int i=0; i<msgs.size(); i++)
-            std::cout << msgs[i].size() << " ";
-        std::cout << "\n";
+//        std::cout << "Received message: ";
+//        for (int i=0; i<msgs.size(); i++)
+//            std::cout << msgs[i].size() << " ";
+//        std::cout << "\n";
 
         int cur_i = 0;
         if (msgs[1].size() != 0)
@@ -229,7 +229,18 @@ private:
         if (msgs.size() > ++cur_i)
             w.status = msg2wlife_t(msgs[cur_i]);
         else {
-            if (w.status == wlife_t::shutdown)
+            if (w.status == wlife_t::proxy_cmd) {
+                auto it = peers.begin();
+                while (it != peers.end()) {
+                    if (it->second.via == cur) {
+                        if (it->second.status == wlife_t::shutdown)
+                            it = peers.erase(it);
+                        else
+                            Rf_error("Proxy disconnect with active worker(s)");
+                    }
+                }
+                peers.erase(cur);
+            } else if (w.status == wlife_t::shutdown)
                 peers.erase(cur);
             else
                 Rf_error("Unexpected worker disconnect");
