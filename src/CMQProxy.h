@@ -47,7 +47,6 @@ public:
         to_master.send(zmq::message_t(0), zmq::send_flags::sndmore);
         to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::none);
     }
-
     SEXP proxy_receive_cmd() {
         std::vector<zmq::message_t> msgs;
         recv_multipart(to_master, std::back_inserter(msgs));
@@ -58,6 +57,7 @@ public:
     std::string listen(Rcpp::CharacterVector addrs) {
         to_worker = zmq::socket_t(*ctx, ZMQ_ROUTER);
         to_worker.set(zmq::sockopt::router_mandatory, 1);
+        to_worker.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
 
         int i;
         for (i=0; i<addrs.length(); i++) {
@@ -107,7 +107,7 @@ public:
             zmq::multipart_t mp;
             for (int i=0; i<msgs.size(); i++) {
                 zmq::message_t msg;
-                msg.move(msgs[i]);
+                msg.copy(msgs[i]);
                 mp.push_back(std::move(msg));
                 if (i >= 4) {
                     zmq::message_t store;
