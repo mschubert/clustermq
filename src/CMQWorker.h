@@ -74,11 +74,12 @@ public:
         if (msg2wlife_t(msgs[0]) == wlife_t::shutdown)
             return false;
 
-        for (auto it=msgs.begin()+2; it<msgs.end(); it++) {
-            Rcpp::List obj = msg2r(*it, true);
-            env.assign(obj.names(), obj[0]);
-            if (Rcpp::as<std::string>(obj.names()).compare(0, 8, "package:") == 0)
-                load_pkg(obj[0]);
+        for (auto it=msgs.begin()+2; it<msgs.end(); it+=2) {
+            std::string name = it->to_string();
+            if (name.compare(0, 8, "package:") == 0)
+                load_pkg(name.substr(8, std::string::npos));
+            else
+                env.assign(name, msg2r(*(it+1), true));
         }
 
         auto cmd = msg2r(msgs[1], true);

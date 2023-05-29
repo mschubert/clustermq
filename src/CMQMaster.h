@@ -88,6 +88,7 @@ public:
                 else
                     via_env->insert(str);
             }
+            mp.push_back(zmq::message_t(str));
             zmq::message_t msg;
             msg.copy(env[str]);
             mp.push_back(std::move(msg));
@@ -136,9 +137,8 @@ public:
     void add_env(std::string name, SEXP obj) {
         for (auto &w : peers)
             w.second.env.erase(name);
-        auto named = Rcpp::List::create(Rcpp::Named(name) = obj);
         env_names.insert(name);
-        env[name] = r2msg(R_serialize(named, R_NilValue));
+        env[name] = r2msg(R_serialize(obj, R_NilValue));
     }
     void add_pkg(Rcpp::CharacterVector pkg) {
         add_env("package:" + Rcpp::as<std::string>(pkg), pkg);

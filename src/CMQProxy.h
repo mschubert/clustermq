@@ -110,12 +110,11 @@ public:
                 msg.copy(msgs[i]);
                 mp.push_back(std::move(msg));
                 if (i >= 4) {
-                    zmq::message_t store;
-                    store.copy(msgs[i]);
-                    // getting the name by unserializing is a bit wasteful
-                    Rcpp::List objs = Rcpp::as<Rcpp::List>(msg2r(store, true));
-                    Rcpp::CharacterVector names = objs.attr("names");
-                    auto name = Rcpp::as<std::string>(names[0]);
+                    std::string name = msg.to_string();
+                    zmq::message_t store, fwd;
+                    store.copy(msgs[++i]);
+                    fwd.copy(store);
+                    mp.push_back(std::move(fwd));
                     env[name] = std::move(store);
                 }
             }
