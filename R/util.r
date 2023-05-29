@@ -57,23 +57,6 @@ vec_lookup = list(
     "chr" = NA_character_
 )
 
-#' Lookup table for return types to purrr functions
-#'
-#' @keywords internal
-purrr_lookup = function(type) {
-    switch(type,
-        "list" = purrr::pmap,
-        "logical" = purrr::pmap_lgl,
-        "numeric" = purrr::pmap_dbl,
-        "integer" = purrr::pmap_int,
-        "character" = purrr::pmap_chr,
-        "lgl" = purrr::pmap_lgl,
-        "dbl" = purrr::pmap_dbl,
-        "int" = purrr::pmap_int,
-        "chr" = purrr::pmap_chr
-    )
-}
-
 #' Wraps an error in a condition object
 #'
 #' @keywords internal
