@@ -25,7 +25,7 @@ bool has_connectivity(std::string host) {
         pitems[0].socket = server;
         pitems[0].events = ZMQ_POLLIN;
         zmq::poll(pitems, time_ms);
-        server.recv(msg2, zmq::recv_flags::dontwait);
+        auto n = server.recv(msg2, zmq::recv_flags::dontwait);
         auto msg2_s = std::string(reinterpret_cast<const char*>(msg2.data()), msg2.size());
 
         if (msg1 == msg2_s)

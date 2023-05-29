@@ -49,7 +49,7 @@ public:
     }
     SEXP proxy_receive_cmd() {
         std::vector<zmq::message_t> msgs;
-        recv_multipart(to_master, std::back_inserter(msgs));
+        auto n = recv_multipart(to_master, std::back_inserter(msgs));
         auto status = msg2wlife_t(msgs[1]);
         return msg2r(msgs[2], true);
     }
@@ -97,7 +97,7 @@ public:
         // frames: id, delim, status, call, [objs{1..n},] env_add
         if (pitems[0].revents > 0) {
             std::vector<zmq::message_t> msgs;
-            recv_multipart(to_master, std::back_inserter(msgs));
+            auto n = recv_multipart(to_master, std::back_inserter(msgs));
             std::vector<std::string> add_from_proxy;
             if (msgs.size() >= 5) {
                 add_from_proxy = Rcpp::as<std::vector<std::string>>(msg2r(msgs.back(), true));
@@ -131,7 +131,7 @@ public:
         // worker to master communication -> simple forward
         if (pitems[1].revents > 0) {
             std::vector<zmq::message_t> msgs;
-            recv_multipart(to_worker, std::back_inserter(msgs));
+            auto n = recv_multipart(to_worker, std::back_inserter(msgs));
             zmq::multipart_t mp;
             for (int i=0; i<msgs.size(); i++) {
                 zmq::message_t msg;

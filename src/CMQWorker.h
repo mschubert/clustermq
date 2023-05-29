@@ -70,7 +70,7 @@ public:
 
     bool process_one() {
         std::vector<zmq::message_t> msgs;
-        recv_multipart(sock, std::back_inserter(msgs));
+        auto n = recv_multipart(sock, std::back_inserter(msgs));
         if (msg2wlife_t(msgs[0]) == wlife_t::shutdown)
             return false;
 

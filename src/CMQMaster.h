@@ -54,7 +54,7 @@ public:
             timeout = poll(timeout);
 
             msgs.clear();
-            recv_multipart(sock, std::back_inserter(msgs));
+            auto n = recv_multipart(sock, std::back_inserter(msgs));
             data_offset = register_peer(msgs);
         } while(data_offset >= msgs.size() && peers.size() != 0);
 
@@ -120,7 +120,7 @@ public:
     void proxy_submit_cmd(SEXP args, int timeout=10000) {
         poll(timeout);
         std::vector<zmq::message_t> msgs;
-        recv_multipart(sock, std::back_inserter(msgs));
+        auto n = recv_multipart(sock, std::back_inserter(msgs));
         register_peer(msgs);
         // msgs[0] == "proxy" routing id
         // msgs[1] == delimiter
