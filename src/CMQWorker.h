@@ -9,7 +9,7 @@ public:
     CMQWorker(SEXP ctx_): ctx(Rcpp::as<Rcpp::XPtr<zmq::context_t>>(ctx_)) {}
     ~CMQWorker() { close(); }
 
-    void connect(std::string addr, int timeout=10000) {
+    void connect(std::string addr, int timeout=5000) {
         sock = zmq::socket_t(*ctx, ZMQ_REQ);
         // timeout would need ZMQ_RECONNECT_STOP_CONN_REFUSED (draft, no C++ yet) to work
         sock.set(zmq::sockopt::connect_timeout, timeout);
@@ -24,6 +24,7 @@ public:
 
         try {
             sock.connect(addr);
+            check_send_ready(timeout);
             sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
             sock.send(r2msg(R_NilValue), zmq::send_flags::none);
         } catch (zmq::error_t const &e) {
@@ -103,4 +104,31 @@ private:
     zmq::socket_t mon;
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
+
+    void check_send_ready(int timeout=5000) {
+        auto pitems = std::vector<zmq::pollitem_t>(1);
+        pitems[0].socket = sock;
+        pitems[0].events = ZMQ_POLLOUT;
+
+        auto time_ms = std::chrono::milliseconds(timeout);
+        auto time_left = time_ms;
+        auto start = Time::now();
+
+        do {
+            try {
+                zmq::poll(pitems, time_left);
+            } catch (zmq::error_t const &e) {
+                if (errno != EINTR || pending_interrupt())
+                    Rf_error(e.what());
+            }
+
+            auto ms_diff = std::chrono::duration_cast<ms>(Time::now() - start);
+            time_left = time_ms - ms_diff;
+            if (time_left.count() < 0) {
+                std::ostringstream err;
+                err << "Connection failed after " << ms_diff.count() << " ms\n";
+                throw Rcpp::exception(err.str().c_str());
+            }
+        } while (pitems[0].revents == 0);
+    }
 };

@@ -11,8 +11,8 @@ test_that("simple forwarding works", {
     w = methods::new(CMQWorker)#, m$context())
     addr1 = m$listen("tcp://127.0.0.1:*")#"inproc://master")
     addr2 = p$listen("tcp://127.0.0.1:*")#"inproc://proxy")
-    p$connect(addr1, 0L)
-    w$connect(addr2, 0L)
+    p$connect(addr1, 500L)
+    w$connect(addr2, 500L)
     expect_true(p$process_one())
     expect_null(m$recv(0L)) # worker up
     m$send(expression(5 + 2))

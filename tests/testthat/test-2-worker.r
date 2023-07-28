@@ -6,10 +6,9 @@ test_that("timeouts are triggered correctly", {
     expect_error(m$recv(0L))
     m$close(0L)
 
-# connection timeout not working (needs ZMQ_RECONNECT_STOP_CONN_REFUSED in draft)
-#    w = methods::new(CMQWorker)
-#    expect_error(w$connect("tcp://localhost:12345", 0L))
-#    w$close()
+    w = methods::new(CMQWorker)
+    expect_error(w$connect("tcp://localhost:12345", 0L))
+    w$close()
 })
 
 test_that("worker evaluation", {

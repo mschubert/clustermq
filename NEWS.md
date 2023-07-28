@@ -1,6 +1,7 @@
 # git head
 
 * Jobs now error instead of stalling upon unexpected worker disconnect (#150)
+* Workers now error if they can not establish a connection within a time limit
 * Reuse of common data is now supported (#154)
 * Fix bug where max memory reporting by `gc()` may be in different column (#240)
 * Error if `n_jobs` and `max_calls_worker` provide insufficient call slots (#258)
