@@ -6,7 +6,7 @@ ClusterMQ: send R function calls as cluster jobs
 [![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](http://cran.rstudio.com/web/packages/clustermq/index.html)
 [![DOI](https://zenodo.org/badge/DOI/10.1093/bioinformatics/btz284.svg)](https://doi.org/10.1093/bioinformatics/btz284)
 
-### :warning: This is the _alpha_ version of `v0.9.0`. It is not feature-complete yet and has other issues
+### :warning: This is the _beta_ version of `v0.9.0`
 
 This package will allow you to send function calls as jobs on a computing
 cluster with a minimal interface provided by the `Q` function:
@@ -36,21 +36,8 @@ Browse the vignettes here:
 Installation
 ------------
 
-First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
-system library. This is probably already installed on your system. If not, your
-package manager will provide it:
-
-```sh
-# You can skip this step on Windows and macOS, the package binary has it
-# On a computing cluster, we recommend to use Conda or Linuxbrew
-brew install zeromq # Linuxbrew, Homebrew on macOS
-conda install zeromq # Conda, Miniconda
-sudo apt-get install libzmq3-dev # Ubuntu
-sudo yum install zeromq-devel # Fedora
-pacman -S zeromq # Arch Linux
-```
-
-Then install the `clustermq` package in R from CRAN:
+Install the `clustermq` package in R from CRAN (including the bundled
+[ZeroMQ](https://github.com/zeromq/libzmq) system library):
 
 ```r
 install.packages('clustermq')
