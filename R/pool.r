@@ -45,9 +45,9 @@ Pool = R6::R6Class("Pool",
         },
 
         ### START pre-0.9 compatibility functions (deprecated)
-        set_common_data = function(..., pkgs=c(), token="") {
+        set_common_data = function(..., export=list(), pkgs=c(), token="") {
             .Deprecated("env")
-            self$env(...)
+            do.call(self$env, c(list(...), export))
             if (length(pkgs) > 0)
                 do.call(self$pkg, as.list(pkgs))
             private$token = token
