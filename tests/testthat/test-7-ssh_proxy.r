@@ -15,7 +15,7 @@ test_that("simple forwarding works", {
     w$connect(addr2, 500L)
     expect_true(p$process_one())
     expect_null(m$recv(0L)) # worker up
-    m$send(expression(5 + 2))
+    m$send(5 + 2)
     expect_true(p$process_one())
     expect_true(w$process_one())
     expect_true(p$process_one())
@@ -60,7 +60,7 @@ test_that("using the proxy without pool and forward", {
 
     m$proxy_submit_cmd(list(n_jobs=1), 500L)
     expect_null(m$recv(500L)) # worker 1 up
-    m$send(expression(5 + 2))
+    m$send(5 + 2)
     expect_equal(m$recv(500L), 7) # collect results
 
     m$send_shutdown()
@@ -82,9 +82,9 @@ test_that("using the proxy without pool and forward, 2 workers", {
 
     m$proxy_submit_cmd(list(n_jobs=2), 500L)
     expect_null(m$recv(500L)) # worker 1 up
-    m$send(expression({ Sys.sleep(0.5); 5 + 2 }))
+    m$send({ Sys.sleep(0.5); 5 + 2 })
     expect_null(m$recv(500L)) # worker 2 up
-    m$send(expression({ Sys.sleep(0.5); 3 + 1 }))
+    m$send({ Sys.sleep(0.5); 3 + 1 })
     r1 = m$recv(1000L)
     m$send_shutdown()
     r2 = m$recv(500L)

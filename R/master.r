@@ -88,8 +88,8 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
         if (submit_index[1] <= n_calls) {
             # if we have work, send it to the worker
             submit_index = submit_index[submit_index <= n_calls]
-            pool$send(expression(clustermq:::work_chunk(chunk, fun=fun, const=const,
-                rettype=rettype, common_seed=common_seed)), chunk=chunk(iter, submit_index))
+            pool$send(clustermq:::work_chunk(chunk, fun=fun, const=const,
+                rettype=rettype, common_seed=common_seed), chunk=chunk(iter, submit_index))
             jobs_running = jobs_running + length(submit_index)
             submit_index = submit_index + chunk_size
 

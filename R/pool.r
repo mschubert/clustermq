@@ -54,7 +54,7 @@ Pool = R6::R6Class("Pool",
         },
         send_common_data = function() {
             .Deprecated("handled implicitly")
-            self$send(expression())
+            self$send()
         },
         send_shutdown_worker = function() {
             .Deprecated("send_shutdown")
@@ -62,7 +62,8 @@ Pool = R6::R6Class("Pool",
         },
         send_call = function(expr, env=list(), ref=substitute(expr)) {
             .Deprecated("send")
-            do.call(self$send, c(list(cmd=expression(expr)), env))
+            pcall = quote(substitute(expr))
+            do.call(self$send, c(list(cmd=eval(pcall)), env))
         },
         receive_data = function() {
             .Deprecated("recv")
@@ -72,20 +73,15 @@ Pool = R6::R6Class("Pool",
         ### END pre-0.9 compatibility functions (deprecated)
 
         send = function(cmd, ...) {
-            env = list(...)
-            for (i in seq_along(cmd[[1]])) {
-                name = cmd[[1]][[i]]
-                if (is.name(name) && as.character(name) %in% names(env))
-                    cmd[[1]][[i]] = env[[as.character(name)]]
-            }
-
+            pcall = quote(substitute(cmd))
+            cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
             private$master$send(cmd)
         },
         send_shutdown = function() {
             private$master$send_shutdown()
         },
         send_wait = function(wait=50) {
-            private$master$send(expression(Sys.sleep(wait)))
+            private$master$send(Sys.sleep(wait))
         },
 
         recv = function() {
