@@ -17,15 +17,14 @@ summarize_result = function(result, n_errors, n_warnings,
     detail = paste(cond_msgs, collapse="\n")
 
     if (n_errors > 0) {
-        msg = sprintf("%i/%i jobs failed (%i warnings)", n_errors,
-                      at, n_warnings)
+        msg = sprintf("%i/%i jobs failed (%i warnings)", n_errors, at, n_warnings)
         if (fail_on_error)
-            stop(msg, ". Stopping.\n", detail)
+            stop(msg, ". Stopping.\n", detail, call.=FALSE)
         else
-            warning(msg, "\n", detail, immediate.=TRUE)
+            warning(msg, "\n", detail, immediate.=TRUE, call.=FALSE)
     } else if (n_warnings > 0) {
         msg = sprintf("%i warnings occurred in processing\n", n_warnings)
-        warning(msg, detail, immediate.=TRUE)
+        warning(msg, detail, immediate.=TRUE, call.=FALSE)
     }
     unname(result)
 }
