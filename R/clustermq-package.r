@@ -22,8 +22,8 @@
 #' For more detailed usage instructions, see the documentation of the \code{Q}
 #' function.
 #'
-#' @name clustermq
 #' @docType package
+#' @keywords internal
 #' @useDynLib clustermq
 #' @import Rcpp
-NULL
+"_PACKAGE"
