@@ -10,8 +10,10 @@
 summarize_result = function(result, n_errors, n_warnings,
                             cond_msgs, at=length(result), fail_on_error=TRUE) {
 
-    if (length(cond_msgs) > 0)
-        cond_msgs = utils::head(cond_msgs[order(names(cond_msgs))], 50)
+    if (length(cond_msgs) > 50) {
+        call_idx = as.integer(sub("\\((Error )?#([0-9]+)\\) .*", "\\2", cond_msgs))
+        cond_msgs = utils::head(cond_msgs[order(call_idx)], 50)
+    }
     detail = paste(cond_msgs, collapse="\n")
 
     if (n_errors > 0) {
