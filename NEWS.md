@@ -9,6 +9,7 @@
 * The job port/id pool is now used properly upon binding failure (#270) @luwidmer
 * Common data size warning is now only displayed when exceeding limits (#287)
 * Request 1 GB by default in SGE template (#298) @nickholway
+* Error and warning summary now orders by index and severity (#304)
 
 # clustermq 0.8.95
 
