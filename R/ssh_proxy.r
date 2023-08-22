@@ -4,7 +4,8 @@ loadModule("cmq_proxy", TRUE) # CMQProxy C++ class
 #'
 #' Do not call this manually, the SSH qsys will do that
 #'
-#' @param master   The master address to connect to (remote end of reverse tunnel)
+#' @param fwd_port The port of the master address to connect to
+#'                 (remote end of reverse tunnel)
 #' @param qsys_id  Character string of QSys class to use
 #' @keywords internal
 ssh_proxy = function(fwd_port, qsys_id=qsys_default) {

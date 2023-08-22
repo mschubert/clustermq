@@ -16,8 +16,6 @@ host(
 \item{ports}{Range of ports to consider}
 
 \item{n}{How many addresses to return}
-
-\item{short}{Whether to use unqualified host name (before first dot)}
 }
 \value{
 The possible addresses as character vector

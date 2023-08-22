@@ -7,9 +7,10 @@
 ssh_proxy(fwd_port, qsys_id = qsys_default)
 }
 \arguments{
-\item{qsys_id}{Character string of QSys class to use}
+\item{fwd_port}{The port of the master address to connect to
+(remote end of reverse tunnel)}
 
-\item{master}{The master address to connect to (remote end of reverse tunnel)}
+\item{qsys_id}{Character string of QSys class to use}
 }
 \description{
 Do not call this manually, the SSH qsys will do that

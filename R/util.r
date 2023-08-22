@@ -3,9 +3,9 @@
 #' @param node   Node or device name
 #' @param ports  Range of ports to consider
 #' @param n      How many addresses to return
-#' @param short  Whether to use unqualified host name (before first dot)
 #' @return       The possible addresses as character vector
 #' @keywords internal
+# @param short  Whether to use unqualified host name (before first dot)
 host = function(node=getOption("clustermq.host", Sys.info()["nodename"]),
                 ports=6000:9999, n=100) {
     utils::head(sample(sprintf("tcp://%s:%i", node, ports)), n)
