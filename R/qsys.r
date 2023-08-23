@@ -30,7 +30,9 @@ QSys = R6::R6Class("QSys",
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
-        }
+        },
+
+        n = function() private$workers_total
     ),
 
     private = list(

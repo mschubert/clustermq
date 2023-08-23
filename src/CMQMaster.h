@@ -156,6 +156,19 @@ public:
                 Rcpp::_["size"] = Rcpp::wrap(sizes));
     }
 
+    Rcpp::DataFrame list_workers() {
+        std::vector<std::string> names;
+        names.reserve(peers.size());
+        std::vector<int> status;
+        status.reserve(peers.size());
+        for (const auto &kv: peers) {
+            names.push_back(kv.first);
+            status.push_back(kv.second.status);
+        }
+        return Rcpp::DataFrame::create(Rcpp::_["worker"] = Rcpp::wrap(names),
+                Rcpp::_["status"] = Rcpp::wrap(status));
+    }
+
 private:
     struct worker_t {
         std::set<std::string> env;

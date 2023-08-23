@@ -21,7 +21,7 @@ Pool = R6::R6Class("Pool",
         },
 
         print = function() {
-            cat(sprintf("<clustermq> worker pool with %i member(s)\n", length(private$workers)))
+            cat(sprintf("<clustermq> worker pool with %i member(s)\n", self$workers$n()))
         },
 
         add = function(qsys, n, ...) {
@@ -118,8 +118,8 @@ Pool = R6::R6Class("Pool",
     ),
 
     active = list(
-        workers_total = function() -1,
-        workers_running = function() -1,
+        workers_total = function() self$workers$n(),
+        workers_running = function() nrow(private$master$list_workers()),
         reusable = function() private$reuse
     ),
 

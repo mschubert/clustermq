@@ -11,9 +11,10 @@ RCPP_MODULE(cmq_master) {
         .method("recv", &CMQMaster::recv)
         .method("send", &CMQMaster::send)
         .method("send_shutdown", &CMQMaster::send_shutdown)
+        .method("proxy_submit_cmd", &CMQMaster::proxy_submit_cmd)
         .method("add_env", &CMQMaster::add_env)
         .method("add_pkg", &CMQMaster::add_pkg)
         .method("list_env", &CMQMaster::list_env)
-        .method("proxy_submit_cmd", &CMQMaster::proxy_submit_cmd)
+        .method("list_workers", &CMQMaster::list_workers)
     ;
 }
