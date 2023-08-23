@@ -10,12 +10,9 @@
 summarize_result = function(result, n_errors, n_warnings,
                             cond_msgs, at=length(result), fail_on_error=TRUE) {
 
-    if (length(cond_msgs) > 50) {
-        call_idx = as.integer(sub("\\((Error )?#([0-9]+)\\) .*", "\\2", cond_msgs))
-        is_err = grepl("^\\(Error", cond_msgs)
-        ranks = order(call_idx - 1e9*is_err)
-        cond_msgs = utils::head(cond_msgs[ranks], 50)
-    }
+    cond_msgs$errors = cond_msgs$errors[order(as.integer(names(cond_msgs$errors)))]
+    cond_msgs$warnings = cond_msgs$warnings[order(as.integer(names(cond_msgs$warnings)))]
+    cond_msgs = utils::head(c(cond_msgs$errors, cond_msgs$warnings), 50)
     detail = paste(cond_msgs, collapse="\n")
 
     if (n_errors > 0) {

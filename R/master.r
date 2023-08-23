@@ -28,7 +28,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     job_result = rep(vec_lookup[[rettype]], n_calls)
     submit_index = 1:chunk_size
     jobs_running = 0
-    cond_msgs = list()
+    cond_msgs = list(warnings=list(), errors=list())
     n_errors = 0
     n_warnings = 0
     shutdown = FALSE
@@ -75,9 +75,10 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
             n_errors = n_errors + length(msg$errors)
             if (n_errors > 0 && fail_on_error == TRUE)
                 shutdown = TRUE
-            new_msgs = c(msg$errors, msg$warnings)
-            if (length(new_msgs) > 0 && length(cond_msgs) < 50)
-                cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
+            if (length(cond_msgs$warnings) < 50)
+                cond_msgs$warnings = c(cond_msgs$warnings, msg$warnings)
+            if (length(cond_msgs$errors) < 50)
+                cond_msgs$errors = c(cond_msgs$errors, msg$errors)
         }
 
         if (shutdown || (!is.null(msg$n_calls) && msg$n_calls >= max_calls_worker)) {

@@ -76,7 +76,7 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
         re = work_chunk(df=df, fun=fun, const=const, rettype=rettype,
                         common_seed=seed, progress=TRUE)
         summarize_result(re$result, length(re$errors), length(re$warnings),
-                         c(re$errors, re$warnings), fail_on_error=fail_on_error)
+                         re[c("errors", "warnings")], fail_on_error=fail_on_error)
     } else {
         master(pool=workers, iter=df, rettype=rettype,
                fail_on_error=fail_on_error, chunk_size=chunk_size,
