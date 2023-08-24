@@ -10,6 +10,7 @@
 * Common data size warning is now only displayed when exceeding limits (#287)
 * Request 1 GB by default in SGE template (#298) @nickholway
 * Error and warning summary now orders by index and severity (#304)
+* A call can have multiple warnings forwarded, not only last
 
 # clustermq 0.8.95
 

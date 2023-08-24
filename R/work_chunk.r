@@ -34,7 +34,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
             ),
             warning = function(w) {
                 wmsg = paste0("(#", chr_id, ") ", conditionMessage(w))
-                context$warnings[[chr_id]] = wmsg
+                context$warnings[[chr_id]] = c(context$warnings[[chr_id]], wmsg)
                 invokeRestart("muffleWarning")
             },
             error = function(e) {

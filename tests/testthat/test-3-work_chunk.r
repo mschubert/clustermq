@@ -53,6 +53,17 @@ test_that("warning and error handling", {
     expect_true(grepl("warning", re$warnings[[2]]))
 })
 
+test_that("call can have multiple warnings", {
+    fx = function(a) {
+        if (a == 1) {
+            warning("warning 1")
+            warning("warning 2")
+        }
+    }
+    re = work_chunk(data.frame(a=1:2), fx)
+    expect_equal(length(re$warnings[['1']]), 2)
+})
+
 test_that("const args", {
     fx = function(a, ..., x=23) a + x
 
