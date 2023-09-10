@@ -156,24 +156,29 @@ public:
                 Rcpp::_["size"] = Rcpp::wrap(sizes));
     }
 
-    Rcpp::DataFrame list_workers() {
+    Rcpp::List list_workers() {
         std::vector<std::string> names;
         names.reserve(peers.size());
         std::vector<int> status;
         status.reserve(peers.size());
+        Rcpp::List wtime;
         for (const auto &kv: peers) {
             names.push_back(kv.first);
             status.push_back(kv.second.status);
+            wtime.push_back(kv.second.time);
         }
-        return Rcpp::DataFrame::create(Rcpp::_["worker"] = Rcpp::wrap(names),
-                Rcpp::_["status"] = Rcpp::wrap(status));
+        return Rcpp::List::create(
+            Rcpp::_["worker"] = Rcpp::wrap(names),
+            Rcpp::_["status"] = Rcpp::wrap(status),
+            Rcpp::_["time"] = wtime
+        );
     }
 
 private:
     struct worker_t {
         std::set<std::string> env;
         SEXP call {R_NilValue};
-//        SEXP time {R_NilValue};
+        SEXP time {Rcpp::List()};
         wlife_t status;
         std::string via;
     };
@@ -259,6 +264,7 @@ private:
                 Rf_error("Unexpected worker disconnect");
         }
 
+        w.time = msg2r(msgs[++cur_i], true);
         return ++cur_i;
     }
 };

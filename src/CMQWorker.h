@@ -26,6 +26,7 @@ public:
             sock.connect(addr);
             check_send_ready(timeout);
             sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
+            sock.send(r2msg(proc_time()), zmq::send_flags::sndmore);
             sock.send(r2msg(R_NilValue), zmq::send_flags::none);
         } catch (zmq::error_t const &e) {
             Rf_error(e.what());
@@ -92,6 +93,7 @@ public:
             eval = wrap_error(cmd);
         }
         sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
+        sock.send(r2msg(proc_time()), zmq::send_flags::sndmore);
         sock.send(r2msg(eval), zmq::send_flags::none);
         UNPROTECT(1);
         return true;
@@ -104,6 +106,7 @@ private:
     zmq::socket_t mon;
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
+    Rcpp::Function proc_time {"proc.time"};
 
     void check_send_ready(int timeout=5000) {
         auto pitems = std::vector<zmq::pollitem_t>(1);

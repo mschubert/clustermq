@@ -45,7 +45,8 @@ public:
 
     void proxy_request_cmd() {
         to_master.send(zmq::message_t(0), zmq::send_flags::sndmore);
-        to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::none);
+        to_master.send(int2msg(wlife_t::proxy_cmd), zmq::send_flags::sndmore);
+        to_master.send(r2msg(proc_time()), zmq::send_flags::none);
     }
     SEXP proxy_receive_cmd() {
         std::vector<zmq::message_t> msgs;
@@ -148,6 +149,7 @@ public:
     }
 
 private:
+    Rcpp::Function proc_time {"proc.time"};
     bool external_context {true};
     zmq::context_t *ctx {nullptr};
     zmq::socket_t to_master;

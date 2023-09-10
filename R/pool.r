@@ -24,6 +24,12 @@ Pool = R6::R6Class("Pool",
             cat(sprintf("<clustermq> worker pool with %i member(s)\n", self$workers$n()))
         },
 
+        list = function() {
+            info = private$master$list_workers()
+            times = do.call(rbind, info$time)[,1:3]
+            data.frame(worker=info$worker, status=info$status, times)
+        },
+
         add = function(qsys, n, ...) {
             self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
         },
@@ -89,12 +95,11 @@ Pool = R6::R6Class("Pool",
         },
 
         cleanup = function(timeout=5000) {
-#            stats = private$master$cleanup(timeout)
-#            success = self$workers$cleanup()
+            private$master$close(timeout)
             # ^^ replace with: (1) try close connections, and (2) close socket
-            return(invisible(TRUE))
 
-            times = stats #TODO: mem stats
+            times = private$master$list_workers()$time
+            times = times[sapply(times, length) != 0]
             # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
             max_mb = NA_character_
             # if (length(max_mem) == 1) {
@@ -111,7 +116,7 @@ Pool = R6::R6Class("Pool",
             message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
 
-            invisible(success)
+            invisible(TRUE)
         },
 
         workers = NULL
@@ -119,7 +124,7 @@ Pool = R6::R6Class("Pool",
 
     active = list(
         workers_total = function() self$workers$n(),
-        workers_running = function() nrow(private$master$list_workers()),
+        workers_running = function() length(private$master$list_workers()$worker),
         reusable = function() private$reuse
     ),
 
