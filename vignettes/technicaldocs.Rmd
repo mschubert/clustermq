@@ -62,7 +62,7 @@ A pool of workers can be created using the `workers()` function, which
 instantiates a `Pool` object of the corresponding `QSys`-derived scheduler
 class. See `?workers` for details.
 
-```r
+```{r eval=FALSE}
 # start up a pool of three workers using the default scheduler
 w = workers(n_jobs=3)
 
@@ -101,7 +101,7 @@ After the expression (in `...`), any variables that should be passed along with
 the call can be added. For batch processing that `clustermq` usually does, this
 command is `work_chunk`, where the `chunk` data is added:
 
-```{r}
+```{r eval=FALSE}
 w$send(clustermq:::work_chunk(chunk, fun, const, rettype, common_seed),
        chunk = chunk(iter, submit_index))
 ```
@@ -173,7 +173,7 @@ names the proxy should add before forwarding to the worker.
 
 A worker evaluates the call using the R C API:
 
-```{r}
+```{r eval=FALSE}
 R_tryEvalSilent(cmd, env, &err);
 ```
 

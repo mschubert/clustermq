@@ -152,7 +152,7 @@ Q(fx, x=list(iris), n_jobs=1)
 
 `clustermq` can also be used as a parallel backend for
 [`foreach`](https://cran.r-project.org/package=foreach). As this is also
-used by [`BiocParallel`](http://bioconductor.org/packages/release/bioc/html/BiocParallel.html),
+used by [`BiocParallel`](https://bioconductor.org/packages/release/bioc/html/BiocParallel.html),
 we can run those packages on the cluster as well:
 
 ```{r}

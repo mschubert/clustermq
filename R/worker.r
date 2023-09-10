@@ -1,4 +1,5 @@
 loadModule("cmq_worker", TRUE) # CMQWorker C++ class
+utils::globalVariables(c("common_seed", "const", "fun")) # worker .GlobalEnv
 
 #' R worker submitted as cluster job
 #'

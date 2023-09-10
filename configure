@@ -26,6 +26,10 @@ if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
     mv src/curve_client_tools.hpp src/curve_client_tools.hpp.orig
     sed '/^#pragma/s|^|//|' src/curve_client_tools.hpp.orig > src/curve_client_tools.hpp
   fi
+  if [ ! -f include/zmq_utils.h.orig ]; then
+    mv include/zmq_utils.h src/zmq_utils.h.orig
+    sed '/^#pragma/s|^|//|' include/zmq_utils.h.orig > include/zmq_utils.h
+  fi
 
   if [ ! -f Makefile.in ]; then
     ./autogen.sh || die
@@ -43,7 +47,7 @@ if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
       --disable-curve-keygen \
       --disable-ws \
       --disable-radix-tree
-  make || die
+  make || exit 1
   cd -
 fi
 

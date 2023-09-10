@@ -1,4 +1,5 @@
 ^doc$
+^configure.backup$
 ^Meta$
 ^doc(s)?$
 \.gitignore
@@ -13,11 +14,11 @@ clustermq_[0-9.]+\.tar\.gz
 ^\.github$
 ^src/libzmq/\.
 ^src/libzmq/config/.*\.m4$
+^src/libzmq/build_qnx/.*Makefile$
 ^src/libzmq/builds/openwrt/Makefile$
 ^src/libzmq/Makefile$
 ^src/libzmq/CMakeFiles$
 ^src/libzmq/external/wepoll$
-^src/libzmq/include/zmq_utils.h$
 ^src/libzmq/src/tweetnacl.c$
 ^src/cppzmq/\.
 ^windows$
