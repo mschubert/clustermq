@@ -109,7 +109,8 @@ Pool = R6::R6Class("Pool",
             rt = proc.time() - private$timer
             if (! inherits(wt, "proc_time"))
                 wt = rep(NA, 3)
-            rt3_fmt = difftime(rt[[3]], 0, units="auto")
+            rt3_fmt = difftime(as.POSIXct(rt[[3]], origin="1970-01-01"),
+                               as.POSIXct(0, origin="1970-01-01"), units="auto")
             rt3_str = sprintf("%.1f %s", rt3_fmt, attr(rt3_fmt, "units"))
 
             fmt = "Master: [%s %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
