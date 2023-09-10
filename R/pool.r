@@ -27,7 +27,9 @@ Pool = R6::R6Class("Pool",
         list = function() {
             info = private$master$list_workers()
             times = do.call(rbind, info$time)[,1:3]
-            data.frame(worker=info$worker, status=info$status, times)
+            mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
+            data.frame(worker=info$worker, status=info$status, times,
+                       mem.used=mem("used"), mem.max=mem("max used"))
         },
 
         add = function(qsys, n, ...) {
@@ -100,12 +102,8 @@ Pool = R6::R6Class("Pool",
 
             times = private$master$list_workers()$time
             times = times[sapply(times, length) != 0]
-            # max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
-            max_mb = NA_character_
-            # if (length(max_mem) == 1) {
-            #     class(max_mem) = "object_size"
-            #     max_mb = format(max_mem + 2e8, units="auto") # ~ 200 Mb overhead
-            # }
+            max_mem = max(c(self$list()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
+            max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
 
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
@@ -116,7 +114,7 @@ Pool = R6::R6Class("Pool",
 
             fmt = "Master: [%s %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
             message(sprintf(fmt, rt3_str, 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem_str))
 
             invisible(TRUE)
         },

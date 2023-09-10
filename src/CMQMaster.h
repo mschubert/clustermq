@@ -161,16 +161,18 @@ public:
         names.reserve(peers.size());
         std::vector<int> status;
         status.reserve(peers.size());
-        Rcpp::List wtime;
+        Rcpp::List wtime, mem;
         for (const auto &kv: peers) {
             names.push_back(kv.first);
             status.push_back(kv.second.status);
             wtime.push_back(kv.second.time);
+            mem.push_back(kv.second.mem);
         }
         return Rcpp::List::create(
             Rcpp::_["worker"] = Rcpp::wrap(names),
             Rcpp::_["status"] = Rcpp::wrap(status),
-            Rcpp::_["time"] = wtime
+            Rcpp::_["time"] = wtime,
+            Rcpp::_["mem"] = mem
         );
     }
 
@@ -179,6 +181,7 @@ private:
         std::set<std::string> env;
         SEXP call {R_NilValue};
         SEXP time {Rcpp::List()};
+        SEXP mem {Rcpp::List()};
         wlife_t status;
         std::string via;
     };
@@ -265,6 +268,7 @@ private:
         }
 
         w.time = msg2r(msgs[++cur_i], true);
+        w.mem = msg2r(msgs[++cur_i], true);
         return ++cur_i;
     }
 };
