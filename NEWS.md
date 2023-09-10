@@ -1,16 +1,26 @@
-# git head
+# clustermq 0.9.0
 
+#### Features
+
+* Reuse of common data is now supported (#154)
 * Jobs now error instead of stalling upon unexpected worker disconnect (#150)
 * Workers now error if they can not establish a connection within a time limit
-* Reuse of common data is now supported (#154)
-* Fix bug where max memory reporting by `gc()` may be in different column (#240)
 * Error if `n_jobs` and `max_calls_worker` provide insufficient call slots (#258)
-* Fix passing numerical `job_id` to `qdel` in PBS (#265)
-* The job port/id pool is now used properly upon binding failure (#270) @luwidmer
-* Common data size warning is now only displayed when exceeding limits (#287)
 * Request 1 GB by default in SGE template (#298) @nickholway
 * Error and warning summary now orders by index and severity (#304)
 * A call can have multiple warnings forwarded, not only last
+
+#### Bugfix
+
+* Fix bug where max memory reporting by `gc()` may be in different column (#240)
+* Fix passing numerical `job_id` to `qdel` in PBS (#265)
+* The job port/id pool is now used properly upon binding failure (#270) @luwidmer
+* Common data size warning is now only displayed when exceeding limits (#287)
+
+#### Under the hood
+
+* Complete rewrite of the worker API
+* We no longer depend on the `purrr` package
 
 # clustermq 0.8.95
 
@@ -98,15 +108,23 @@
 
 # clustermq 0.8.0
 
+#### Features
+
 * Templates changed: `clustermq:::worker` now takes only master as argument
-* Fix a bug where copies of `common_data` are collected by gc too slowly (#19)
 * Creating `workers` is now separated from `Q`, enabling worker reuse (#45)
 * Objects in the function environment must now be `export`ed explicitly (#47)
-* Messages on the master are now processed in threads (#42)
 * Added `multicore` qsys using the `parallel` package (#49)
 * New function `Q_rows` using data.frame rows as iterated arguments (#43)
-* Jobs will now be submitted as array if possible
 * Job summary will now report max memory as reported by `gc` (#18)
+
+#### Bugfix
+
+* Fix a bug where copies of `common_data` are collected by gc too slowly (#19)
+
+#### Under the hood
+
+* Messages on the master are now processed in threads (#42)
+* Jobs will now be submitted as array if possible
 
 # clustermq 0.7.0
 

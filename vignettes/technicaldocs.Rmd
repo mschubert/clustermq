@@ -33,10 +33,10 @@ library(clustermq)
 
 ### Base API and schedulers
 
-The main worker functions are wrapped in an `R6` class with the name of `QSys`.
+The main worker functions are wrapped in an _R6_ class with the name of `QSys`.
 This provides a standardized API to the [lower-level
 messages](https://mschubert.github.io/clustermq/articles/technicaldocs.html#zeromq-message-specification)
-that are sent via [`ZeroMQ`](https://zeromq.org/).
+that are sent via [_ZeroMQ_](https://zeromq.org/).
 
 The base class itself is derived in scheduler classes that add the required
 functions for submitting and cleaning up jobs:
@@ -51,19 +51,26 @@ functions for submitting and cleaning up jobs:
   |- etc.
 ```
 
+The user-visible object is a worker `Pool` that wraps this, and will eventually
+allow to manage different workers.
+
+### Workers
+
+#### Creating a worker pool
+
 A pool of workers can be created using the `workers()` function, which
-instantiates an object of the corresponding `QSys`-derived scheduler class. See
-`?workers` for details.
+instantiates a `Pool` object of the corresponding `QSys`-derived scheduler
+class. See `?workers` for details.
 
 ```r
 # start up a pool of three workers using the default scheduler
 w = workers(n_jobs=3)
 
 # if we make an unclean exit for whatever reason, clean up the jobs
-on.exit(w$finalize())
+on.exit(w$cleanup())
 ```
 
-### Worker startup
+#### Worker startup
 
 For workers that are started up via a scheduler, we do not know which machine
 they will run on. This is why we start up every worker with a TCP/IP address of
@@ -75,311 +82,116 @@ This is achieved by the call to R common to all schedulers:
 R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 ```
 
+#### Worker communication
+
 On the master's side, we wait until a worker connects:
 
 ```{r eval=FALSE}
-# this will block until a worker is ready
-msg = w$receive_data()
+msg = w$recv() # this will block until a worker is ready
 ```
 
-### Common data and exports
-
-Workers will start up without any knowledge of what they should process or how.
-In order to transfer initial data to the worker, we first create and serialize
-a list object with the following fields:
-
-* `fun` - the function to call with iterated data
-* `const` - the constant data each function call should receive
-* `export` - objects that will be exported to the workers' `.GlobalEnv`
-* `rettype` - character string which data type to return; e.g. `list`, `logical`
-* `common_seed` - random seed for function calls; will be offset by job ID
-* `token` - character string to identify this data set; this is optional, if an
-  automatically generated token will be returned if none is given
+We can then send any expression to be evaluated on the worker using the `send`
+method:
 
 ```{r eval=FALSE}
-# create a reusable, serialized ZeroMQ object with the common data on the master
-w$set_common_data(fun, const, export, rettype, common_seed, token)
+w$send(expression, ...)
 ```
 
-Workers that connect to the master will send a list with a field `token`. This
-can be used to check if the worker already received the common data it is
-supposed to work on.
+After the expression (in `...`), any variables that should be passed along with
+the call can be added. For batch processing that `clustermq` usually does, this
+command is `work_chunk`, where the `chunk` data is added:
 
-```r
-if (msg$token != <token>)
-    w$send_common_data()
+```{r}
+w$send(clustermq:::work_chunk(chunk, fun, const, rettype, common_seed),
+       chunk = chunk(iter, submit_index))
 ```
 
-### Iterated data
+#### Worker environment
 
-If the worker has already received the common data, we can send it a chunk of
-iterated arguments to work on. These are passed as a list of iterables, e.g. a
-`data.frame` with a column for each iterated argument.
-
-It also needs to have a column with name `<space>id<space>`, which will be used
-to identify each call.
+We can add any number of objects to a worker environment using the `env`
+method:
 
 ```{r eval=FALSE}
-chunk = data.frame(arg1=1:5, arg2=5:1, ` id `=1:5)
-w$send_job_data(chunk)
+w$env(object=value, ...)
 ```
 
-If the worker has finished processing, it will send a message with the field
-`result` that is a list, containing:
-
-* `result` - a named rettype with results
-* `warnings` - a list with warning messages of individual calls
-* `errors` - a list with error messages of individual calls
-
-```{r eval=FALSE}
-msg = w$receive_data()
-if (!is.null(msg$result)) {
-    # store result here, handle errors/warnings if required
-}
-```
-
-### Custom calls
-
-Apart from sending common and iterated data that the worker will process in
-chunks, it is also possible to send arbitrary calls that it will evaluate. It
-needs the following fields:
-
-* `expr` - the expression to be evaluated
-* `env` - list with all additional objects required to perform the call
-* `ref` - an identifier for the call; will default to the expression itself
-
-```{r eval=FALSE}
-w$send_call(expr, env=list(...), ref="mycall1")
-```
+This will also invisibly return a `data.frame` with all objects currently in
+the environment. If a user wants to inspect the environment without changing it
+they can call `w$env()` without arguments. The environment will be propagated
+to all workers automatically in a greedy fashion.
 
 ### Main event loop
 
 Putting the above together in an event loop, we get what is essentially
-implemented in `master`.
+implemented in `master`. Note that your `expression` to evaluate needs to track
+its origin (this may change in the future).
 
 ```{r eval=FALSE}
 w = workers(3)
-on.exit(w$finalize())
+on.exit(w$cleanup())
+w$env(...)
 
-while (we have new work to send) {
-    msg = w$receive_data()
+while (we have new work to send || jobs pending) {
+    res = w$recv()
+    # handle result
 
-    if (!is.null(msg$result))
-        # handle result
-
-    if (msg$token != <token>)
-        w$send_common_data()
+    if (more work)
+        w$send(expression, ...)
     else
-        w$send_job_data(...)
+        w$send_shutdown()
 }
-
-# if proper cleanup is successful, cancel kill-on-exit
-if (w$cleanup())
-    on.exit()
 ```
 
 A loop of a similar structure can be used to extend `clustermq`. As an example,
-[this was done by
-`drake`](https://github.com/ropensci/drake/blob/v7.9.0/R/backend_clustermq.R) using
-common data and custom calls only (no iterated chunks).
+[this was done by the _targets_
+package](https://github.com/ropensci/targets/blob/1.2.2/R/class_clustermq.R).
 
 ## ZeroMQ message specification
 
 Communication between the `master` (main event loop) and workers (`QSys` base
-class) is organised in *messages*. These are chunks of serialized data with an
-`id` field, and other data that is required for this type of message.
+class) is organised in _messages_. These are chunks of serialized data sent via
+_ZeroMQ_'s protocol (_ZMTP_). The parts of each message are called *frames*.
 
-### Messages per type
+### Master - Worker communication
 
-Below, the message `id` is listed with the additional fields per message.
+The master requests an evaluation in a message with X frames (direct) or Y if
+proxied. This is all handled by _clustermq_ internally.
 
-#### Worker
+* The worker identity frame or routing identifier
+* A delimiter frame
+* Worker status (`wlife_t`)
+* The call to be evaluated
+* _N_ repetitions of:
+  * The variable name of an environment object that is not yet present on the
+    worker
+  * The variable value
 
-This workflow is handled by the `worker()` event loop of `clustermq` (not to be
-confused with the `workers()` control). It is the function called in every job
-or thread to interact with the `master()`. The event loop is internal, i.e. it
-is not modifiable and not exported.
+If using a proxy, this will be followed by a `SEXP` that contains variable
+names the proxy should add before forwarding to the worker.
 
-##### `WORKER_UP`
+### Worker evaluation
 
-* Message ID indicating worker is accepting data
-* Field has to be `worker_id` to master or empty to ssh_proxy
-* Answer is serialized common data (`fun`, `const`, and `seed`) or `redirect`
-  (with URL where worker can get data)
+A worker evaluates the call using the R C API:
 
-##### `WORKER_READY`
-
-* Message ID indicating worker is accepting chunks
-* It may contain the field `result` with a finished chunk
-* If processing failed, `result` is an object of type `error`
-* If success, `result` is a list with the following vectors:
-  * `result` is a named `rettype` with results
-  * `warnings` is a list with warning messages of individual calls
-  * `errors` is a list with error messages of individual calls
-
-##### `WORKER_DONE`
-
-* Message ID indicating worker is shutting down
-* Worker will send this in response to `WORKER_STOP`
-* Field has to be `time` (from `Sys.time()`), `mem` (max memory used) and
-  `calls` (number of processed calls)
-
-##### `WORKER_ERROR`
-
-* Some error occurred in processing flow (not the function calls themselves)
-* Field `msg` is describing the error
-* Master will shut down after receiving this signal
-
-#### Master
-
-This workflow is handled by the `master()` function of `clustermq`. If you are
-using `Q()` or `Q_rows()`, this is handled under the hood. Workers created
-outside of these functions can be reused within `Q()`/`Q_rows()` without
-knowing any of the internal message structure.
-
-```{r eval=FALSE}
-w = workers(n_jobs, ...)
-# w$cleanup() for a clean shutdown at the end
+```{r}
+R_tryEvalSilent(cmd, env, &err);
 ```
 
-The documentation below is to show it is possible to implement a custom control
-flow, e.g. if you want to evaluate arbitrary expressions on workers instead of
-defining one function to call and different arguments.
+If an error occurs in this evaluation will be returned as a structure with
+class `worker_error`. If a developer wants to catch errors and warnings in a
+more fine-grained manner, it is recommended to add their own `callingHandlers`
+to `cmd` (as _clustermq_ does work its `work_chunk`).
 
-##### `DO_SETUP`
+### Worker - Master communication
 
-* Message contains common data, like the function to call and its arguments
-* Required fields are: `fun`, `const`, `export`, `rettype`, `common_seed`, `token`
-* Worker will respond with `WORKER_READY`
+The result of this evaluation is then returned in a message with four (direct)
+or five (proxied) frames:
 
-```{r eval=FALSE}
-# create a reusable, serialized ZeroMQ object with the common data on the master
-w$set_common_data()
-# send this object to a worker
-w$send_common_data()
-```
+* Worker identity frame (handled internally by _ZeroMQ_'s `ZMQ_REQ` socket)
+* Empty frame (handled internally by _ZeroMQ_'s `ZMQ_REQ` socket)
+* Worker status (`wlife_t`) that is handled internally by _clustermq_
+* The result of the call (`SEXP`), visible to the user
 
-##### `DO_CHUNK`
-
-* Chunk of iterated arguments for the worker
-* Field has to be `chunk`, a `data.frame` where each row is a call and columns are arguments
-* Row names of `chunk` are used as call IDs
-
-```{r eval=FALSE}
-w$send_job_data()
-```
-
-##### `DO_CALL` (new in `0.8.5`)
-
-* Evaluate a specific expression on the worker
-* Needs fields `expr` (the expression to be evaluated) and `env` (list
-  environment to evaluate it in)
-
-```{r eval=FALSE}
-w$send_call()
-```
-
-##### `WORKER_WAIT`
-
-* Instruct the worker to wait `wait` seconds
-* Worker will respond with `WORKER_READY`
-
-```{r eval=FALSE}
-w$send_wait()
-```
-
-##### `WORKER_STOP`
-
-* Instruct the worker to exit its main event loop
-* This message has no fields
-
-```{r eval=FALSE}
-w$send_shutdown_worker()
-```
-
-##### Disconnect and reset socket state
-
-```{r eval=FALSE}
-w$disconnect_worker()
-```
-
-### Control flow stages
-
-The convention here is
-
-* worker > master
-  * master > worker
-
-#### Batch processing, no proxy
-
-This is the default use case for `Q`, `Q_rows`. It will set the common data
-(`DO_SETUP`; function to call, constant arguments, exported data, random seed)
-once and then provide chunks of arguments (`DO_CHUNK`) as `data.frame`s for
-batch processing.
-
-* `WORKER_UP`
-  * `DO_SETUP`
-* `WORKER_READY` *[repeat]*
-  * `DO_CHUNK` *[repeat]*
-* `WORKER_READY`
-  * `WORKER_STOP`
-* `WORKER_DONE`
-
-These can be implemented the following way:
-
-```{r eval=FALSE}
-w$set_common_data(...)
-
-while(work remaining or w$workers_running > 0) {
-    msg = w$receive_data() # wait until a worker is ready
-    if (msg$id == "WORKER_UP") { # treat same as WORKER_READY if no common data
-        w$send_common_data()
-    } else if (msg$id == "WORKER_READY") {
-        if (work remaining)
-            w$send_job_data(data.frame with arguments for all calls of this chunk)
-        else
-            w$send_shutdown_worker()
-        # ..handle your result..
-    } else if (msg$id == "WORKER_DONE") {
-        w$disconnect_worker()
-    } else if (msg$id == "WORKER_ERROR") {
-        stop("processing error")
-    }
-}
-```
-
-#### Evaluating custom expressions
-
-This can be mixed with batch processing, as long as `DO_SETUP` is called before
-`DO_CHUNK` (otherwise it will cause `WORKER_ERROR` on token mismatch).
-
-* `WORKER_UP`
-  * `DO_SETUP` or `DO_CALL` (e.g. to export commonly used data)
-* `WORKER_READY` *[repeat]*
-  * `DO_CALL` *[repeat]*
-* `WORKER_READY`
-  * `WORKER_STOP`
-* `WORKER_DONE`
-
-These can be implemented the following way:
-
-```{r eval=FALSE}
-w$set_common_data(...) # optional, if common data required
-
-while(work remaining or w$workers_running > 0) {
-    msg = w$receive_data() # wait until a worker is ready
-    if (msg$id == "WORKER_UP") { # treat same as WORKER_READY if no common data
-        w$send_common_data()
-    } else if (msg$id == "WORKER_READY") {
-        if (work remaining)
-            w$send_call(expr, env)
-        else
-            w$send_shutdown_worker()
-        # ..handle your result..
-    } else if (msg$id == "WORKER_DONE") {
-        w$disconnect_worker()
-    } else if (msg$id == "WORKER_ERROR") {
-        stop("processing error")
-    }
-}
-```
+If using a worker via SSH, these frames will be preceded by a routing identify
+frame that is handled internally by _ZeroMQ_ and added or peeled off by the
+proxy.
