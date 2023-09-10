@@ -111,9 +111,11 @@ Pool = R6::R6Class("Pool",
             rt = proc.time() - private$timer
             if (! inherits(wt, "proc_time"))
                 wt = rep(NA, 3)
+            rt3_fmt = difftime(rt[[3]], 0, units="auto")
+            rt3_str = sprintf("%.1f %s", rt3_fmt, attr(rt3_fmt, "units"))
 
-            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
-            message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
+            fmt = "Master: [%s %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %s]"
+            message(sprintf(fmt, rt3_str, 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max_mb))
 
             invisible(TRUE)
