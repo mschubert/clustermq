@@ -78,6 +78,9 @@ Pool = R6::R6Class("Pool",
             rd = self$recv()
             list(result=rd, warnings=c(), errors=c(), token=private$token)
         },
+        finalize = function() { # -> will move private
+            private$master$close(0L)
+        },
         ### END pre-0.9 compatibility functions (deprecated)
 
         send = function(cmd, ...) {
@@ -130,10 +133,6 @@ Pool = R6::R6Class("Pool",
     ),
 
     private = list(
-        finalize = function() {
-            private$master$close(0L)
-        },
-
         token = NULL, ### pre-0.9 compatibility functions (deprecated)
 
         master = NULL,
