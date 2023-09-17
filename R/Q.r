@@ -43,9 +43,10 @@ Q = function(fun, ..., const=list(), export=list(), pkgs=c(), seed=128965,
         verbose=TRUE) {
 
     split_arrays = function(x) {
-        if (is.array(x))
+        if (is.array(x)) {
+            .Deprecated("narray package directly")
             narray::split(x, along=split_array_by)
-        else
+        } else
             x
     }
     iter = lapply(list(...), split_arrays)
