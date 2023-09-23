@@ -32,6 +32,7 @@ reference:
     - title: Manage worker pools
       contents:
           - workers
+          - Pool
     - title: "`foreach` support"
       contents:
           - register_dopar_cmq
