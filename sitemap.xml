@@ -40,6 +40,9 @@
     <loc>/reference/MULTIPROCESS.html</loc>
   </url>
   <url>
+    <loc>/reference/Pool.html</loc>
+  </url>
+  <url>
     <loc>/reference/Q.html</loc>
   </url>
   <url>
@@ -58,19 +61,13 @@
     <loc>/reference/SSH.html</loc>
   </url>
   <url>
-    <loc>/reference/ZeroMQ.html</loc>
-  </url>
-  <url>
-    <loc>/reference/bind_avail.html</loc>
-  </url>
-  <url>
     <loc>/reference/check_args.html</loc>
   </url>
   <url>
     <loc>/reference/chunk.html</loc>
   </url>
   <url>
-    <loc>/reference/clustermq.html</loc>
+    <loc>/reference/clustermq-package.html</loc>
   </url>
   <url>
     <loc>/reference/cmq_foreach.html</loc>
@@ -94,7 +91,7 @@
     <loc>/reference/master.html</loc>
   </url>
   <url>
-    <loc>/reference/purrr_lookup.html</loc>
+    <loc>/reference/msg_fmt.html</loc>
   </url>
   <url>
     <loc>/reference/register_dopar_cmq.html</loc>
@@ -116,5 +113,8 @@
   </url>
   <url>
     <loc>/reference/workers.html</loc>
+  </url>
+  <url>
+    <loc>/reference/wrap_error.html</loc>
   </url>
 </urlset>
