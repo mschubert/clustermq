@@ -42,6 +42,7 @@ test_that("load package on worker", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) splitIndices(1,1)
+    x = "a string"
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
     r = Q(fx, x=x, pkgs="parallel", workers=w, rettype="character", timeout=3L)
     expect_equal(r, "1")
