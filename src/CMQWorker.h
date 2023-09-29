@@ -60,7 +60,7 @@ public:
         int total_sock_ev = 0;
         do {
             try {
-                zmq::poll(pitems, std::chrono::duration<long int>::max());
+                zmq::poll(pitems);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
