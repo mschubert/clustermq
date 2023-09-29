@@ -14,12 +14,12 @@ test_that("simple forwarding works", {
     p$connect(addr1, 500L)
     w$connect(addr2, 500L)
     expect_true(p$process_one())
-    expect_null(m$recv(0L)) # worker up
+    expect_null(m$recv(500L)) # worker up
     m$send(5 + 2)
     expect_true(p$process_one())
     expect_true(w$process_one())
     expect_true(p$process_one())
-    result = m$recv(0L)
+    result = m$recv(500L)
     expect_equal(result, 7)
 
     w$close()
