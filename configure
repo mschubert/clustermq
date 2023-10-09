@@ -39,6 +39,7 @@ if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
       --enable-static \
       --disable-shared \
       --disable-maintainer-mode \
+      --disable-Werror \
       --enable-drafts \
       --disable-libbsd \
       --disable-libunwind \
