@@ -28,8 +28,8 @@ Pool = R6::R6Class("Pool",
             info = private$master$list_workers()
             times = do.call(rbind, info$time)[,1:3]
             mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
-            data.frame(worker=info$worker, status=info$status, times,
-                       mem.used=mem("used"), mem.max=mem("max used"))
+            do.call(data.frame, c(info[c("worker", "status")], as.list(times),
+                                  mem.used=mem("used"), mem.max=mem("max used")))
         },
 
         add = function(qsys, n, ...) {
