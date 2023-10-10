@@ -1,15 +1,24 @@
 context("worker usage")
 
-test_that("timeouts are triggered correctly", {
+test_that("connect to invalid endpoint errors", {
+    w = methods::new(CMQWorker)
+    expect_error(w$connect("tcp://localhost:12345", 0L))
+    w$close()
+})
+
+test_that("recv without pending workers errors before timeout", {
+    m = methods::new(CMQMaster)
+    addr = m$listen("inproc://endpoint")
+    expect_error(m$recv(-1L))
+    m$close(0L)
+})
+
+test_that("recv timeout works", {
     m = methods::new(CMQMaster)
     addr = m$listen("inproc://endpoint")
     m$add_pending_workers(1L)
     expect_error(m$recv(0L))
     m$close(0L)
-
-    w = methods::new(CMQWorker)
-    expect_error(w$connect("tcp://localhost:12345", 0L))
-    w$close()
 })
 
 test_that("worker evaluation", {
