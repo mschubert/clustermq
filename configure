@@ -53,12 +53,12 @@ if [ -z "$USE_SYSTEM_LIBZMQ" ]; then
       sed '/^#pragma/s|^|//|' src/curve_client_tools.hpp.orig > src/curve_client_tools.hpp
     fi
     if [ ! -f include/zmq_utils.h.orig ]; then
-      mv include/zmq_utils.h src/zmq_utils.h.orig
+      mv include/zmq_utils.h include/zmq_utils.h.orig
       sed '/^#pragma/s|^|//|' include/zmq_utils.h.orig > include/zmq_utils.h
     fi
 
     if [ ! -f Makefile.in ]; then
-      ./autogen.sh || die
+      ./autogen.sh || exit 1
     fi
 
     CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
@@ -79,5 +79,5 @@ if [ -z "$USE_SYSTEM_LIBZMQ" ]; then
   fi
 fi
 
-rm libzmq_test.c libzmq_test
+rm -f libzmq_test.c libzmq_test
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
