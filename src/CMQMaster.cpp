@@ -15,6 +15,7 @@ RCPP_MODULE(cmq_master) {
         .method("add_env", &CMQMaster::add_env)
         .method("add_pkg", &CMQMaster::add_pkg)
         .method("list_env", &CMQMaster::list_env)
+        .method("add_pending_workers", &CMQMaster::add_pending_workers)
         .method("list_workers", &CMQMaster::list_workers)
     ;
 }

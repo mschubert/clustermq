@@ -34,6 +34,7 @@ Pool = R6::R6Class("Pool",
 
         add = function(qsys, n, ...) {
             self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
+            private$master$add_pending_workers(n)
         },
 
         env = function(...) {
@@ -127,7 +128,10 @@ Pool = R6::R6Class("Pool",
     ),
 
     active = list(
-        workers_total = function() self$workers$n(),
+        workers_total = function() {
+            ls_w = private$master$list_workers()
+            length(ls_w$worker) + ls_w$pending
+        },
         workers_running = function() length(private$master$list_workers()$worker),
         reusable = function() private$reuse
     ),
