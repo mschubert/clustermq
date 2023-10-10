@@ -74,8 +74,10 @@ public:
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         auto n = recv_multipart(sock, std::back_inserter(msgs));
-        if (msg2wlife_t(msgs[0]) == wlife_t::shutdown)
+        if (msg2wlife_t(msgs[0]) == wlife_t::shutdown) {
+            close();
             return false;
+        }
 
         for (auto it=msgs.begin()+2; it<msgs.end(); it+=2) {
             std::string name = it->to_string();

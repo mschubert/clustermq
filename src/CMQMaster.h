@@ -44,19 +44,18 @@ public:
     }
 
     SEXP recv(int timeout=-1) {
-        if (peers.size() + pending_workers <= 0)
-            Rcpp::stop("Trying to receive data without workers");
-
         int data_offset;
         std::vector<zmq::message_t> msgs;
 
         do {
-            timeout = poll(timeout);
+            if (peers.size() + pending_workers <= 0)
+                Rcpp::stop("Trying to receive data without workers");
 
             msgs.clear();
+            timeout = poll(timeout);
             auto n = recv_multipart(sock, std::back_inserter(msgs));
             data_offset = register_peer(msgs);
-        } while(data_offset >= msgs.size() && peers.size() != 0);
+        } while(data_offset >= msgs.size());
 
         return msg2r(msgs[data_offset], true);
     }
@@ -269,14 +268,16 @@ private:
                     }
                 }
                 peers.erase(cur);
-            } else if (w.status == wlife_t::shutdown)
+            } else if (w.status == wlife_t::shutdown) {
                 peers.erase(cur);
-            else
+            } else
                 Rcpp::stop("Unexpected worker disconnect");
         }
 
-        w.time = msg2r(msgs[++cur_i], true);
-        w.mem = msg2r(msgs[++cur_i], true);
+        if (msgs.size() > cur_i+2) {
+            w.time = msg2r(msgs[++cur_i], true);
+            w.mem = msg2r(msgs[++cur_i], true);
+        }
         return ++cur_i;
     }
 };
