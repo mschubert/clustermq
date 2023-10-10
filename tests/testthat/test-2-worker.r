@@ -3,6 +3,7 @@ context("worker usage")
 test_that("timeouts are triggered correctly", {
     m = methods::new(CMQMaster)
     addr = m$listen("inproc://endpoint")
+    m$add_pending_workers(1L)
     expect_error(m$recv(0L))
     m$close(0L)
 
@@ -15,6 +16,7 @@ test_that("worker evaluation", {
     m = methods::new(CMQMaster)
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
+    m$add_pending_workers(1L)
     w$connect(addr, 0L)
 
     m$recv(0L)
@@ -33,6 +35,7 @@ test_that("export variable to worker", {
     m = methods::new(CMQMaster)
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
+    m$add_pending_workers(1L)
     w$connect(addr, 0L)
 
     m$add_env("x", 3)
@@ -58,6 +61,7 @@ test_that("load package on worker", {
     m = methods::new(CMQMaster)
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
+    m$add_pending_workers(1L)
     w$connect(addr, 0L)
 
     m$add_pkg("parallel")
@@ -80,6 +84,7 @@ test_that("errors are sent back to master", {
     m = methods::new(CMQMaster)
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
+    m$add_pending_workers(1L)
     w$connect(addr, 0L)
 
     m$recv(0L)
@@ -100,6 +105,7 @@ test_that("worker R API", {
 
     m = methods::new(CMQMaster)
     addr = m$listen("tcp://127.0.0.1:*")
+    m$add_pending_workers(1L)
 #    addr = m$listen("inproc://endpoint") # mailbox.cpp assertion error
 
     p = parallel::mcparallel(worker(addr))
@@ -120,6 +126,7 @@ test_that("communication with two workers", {
 
     m = methods::new(CMQMaster)
     addr = m$listen("tcp://127.0.0.1:*")
+    m$add_pending_workers(2L)
     w1 = parallel::mcparallel(worker(addr))
     w2 = parallel::mcparallel(worker(addr))
 

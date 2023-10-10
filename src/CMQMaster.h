@@ -44,8 +44,8 @@ public:
     }
 
     SEXP recv(int timeout=-1) {
-//        if (peers.size() == 0)
-//            Rf_error("Trying to receive data without workers");
+        if (peers.size() + pending_workers <= 0)
+            Rf_error("Trying to receive data without workers");
 
         int data_offset;
         std::vector<zmq::message_t> msgs;
@@ -156,6 +156,10 @@ public:
                 Rcpp::_["size"] = Rcpp::wrap(sizes));
     }
 
+    void add_pending_workers(int n) {
+        pending_workers += n;
+    }
+
     Rcpp::List list_workers() {
         std::vector<std::string> names;
         names.reserve(peers.size());
@@ -172,7 +176,8 @@ public:
             Rcpp::_["worker"] = Rcpp::wrap(names),
             Rcpp::_["status"] = Rcpp::wrap(status),
             Rcpp::_["time"] = wtime,
-            Rcpp::_["mem"] = mem
+            Rcpp::_["mem"] = mem,
+            Rcpp::_["pending"] = pending_workers
         );
     }
 
@@ -188,6 +193,7 @@ private:
 
     zmq::context_t *ctx {nullptr};
     int has_proxy {0};
+    int pending_workers {0};
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;
@@ -238,7 +244,9 @@ private:
             ++cur_i;
 
         cur = msgs[cur_i].to_string();
+        int prev_size = peers.size();
         auto &w = peers[cur];
+        pending_workers -= peers.size() - prev_size;
         w.call = R_NilValue;
         if (cur_i == 1)
             w.via = msgs[0].to_string();
