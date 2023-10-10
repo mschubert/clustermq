@@ -3,6 +3,7 @@
 ^Meta$
 ^doc(s)?$
 \.gitignore
+backup
 ^CHANGES\.md$
 ^Makefile$$
 ^README\.md$

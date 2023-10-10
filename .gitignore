@@ -1,6 +1,7 @@
 Meta
 doc
 docs
+backup
 inst/doc
 vignettes/*.R
 vignettes/*.md
