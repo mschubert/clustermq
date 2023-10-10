@@ -17,7 +17,7 @@ public:
 
         if (mon.handle() == nullptr) {
             if (zmq_socket_monitor(sock, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
-                Rf_error("failed to create socket monitor");
+                Rcpp::stop("failed to create socket monitor");
             mon = zmq::socket_t(*ctx, ZMQ_PAIR);
             mon.connect("inproc://monitor");
         }
@@ -30,7 +30,7 @@ public:
             sock.send(r2msg(gc()), zmq::send_flags::sndmore);
             sock.send(r2msg(R_NilValue), zmq::send_flags::none);
         } catch (zmq::error_t const &e) {
-            Rf_error(e.what());
+            Rcpp::stop(e.what());
         }
     }
 
@@ -63,10 +63,10 @@ public:
                 zmq::poll(pitems);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
             if (pitems[1].revents > 0)
-                Rf_error("Unexpected peer disconnect");
+                Rcpp::stop("Unexpected peer disconnect");
             total_sock_ev = pitems[0].revents;
         } while (total_sock_ev == 0);
     }
@@ -125,7 +125,7 @@ private:
                 zmq::poll(pitems, time_left);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
 
             auto ms_diff = std::chrono::duration_cast<ms>(Time::now() - start);

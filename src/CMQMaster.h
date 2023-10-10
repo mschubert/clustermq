@@ -24,10 +24,10 @@ public:
                 return sock.get(zmq::sockopt::last_endpoint);
             } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
         }
-        Rf_error("Could not bind port to any address in provided pool");
+        Rcpp::stop("Could not bind port to any address in provided pool");
     }
 
     void close(int timeout=0) {
@@ -45,7 +45,7 @@ public:
 
     SEXP recv(int timeout=-1) {
         if (peers.size() + pending_workers <= 0)
-            Rf_error("Trying to receive data without workers");
+            Rcpp::stop("Trying to receive data without workers");
 
         int data_offset;
         std::vector<zmq::message_t> msgs;
@@ -215,7 +215,7 @@ private:
                 rc = zmq::poll(pitems, time_left);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
 
             if (timeout != -1) {
@@ -252,7 +252,7 @@ private:
             w.via = msgs[0].to_string();
 
         if (msgs[++cur_i].size() != 0)
-            Rf_error("No frame delimiter found at expected position");
+            Rcpp::stop("No frame delimiter found at expected position");
 
         // handle status frame if present, else it's a disconnect notification
         if (msgs.size() > ++cur_i)
@@ -265,14 +265,14 @@ private:
                         if (it->second.status == wlife_t::shutdown)
                             it = peers.erase(it);
                         else
-                            Rf_error("Proxy disconnect with active worker(s)");
+                            Rcpp::stop("Proxy disconnect with active worker(s)");
                     }
                 }
                 peers.erase(cur);
             } else if (w.status == wlife_t::shutdown)
                 peers.erase(cur);
             else
-                Rf_error("Unexpected worker disconnect");
+                Rcpp::stop("Unexpected worker disconnect");
         }
 
         w.time = msg2r(msgs[++cur_i], true);
