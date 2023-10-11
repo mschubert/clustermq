@@ -49,6 +49,8 @@ remotes::install_github('mschubert/clustermq')
 # remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
+Note that this version needs `autoconf`/`automake` for compilation.
+
 Schedulers
 ----------
 
