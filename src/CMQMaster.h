@@ -162,14 +162,13 @@ public:
     }
 
     Rcpp::List list_workers() {
-        std::vector<std::string> names;
+        std::vector<std::string> names, status;
         names.reserve(peers.size());
-        std::vector<int> status;
         status.reserve(peers.size());
         Rcpp::List wtime, mem;
         for (const auto &kv: peers) {
             names.push_back(kv.first);
-            status.push_back(kv.second.status);
+            status.push_back(std::string(wlife_t2str(kv.second.status)));
             wtime.push_back(kv.second.time);
             mem.push_back(kv.second.mem);
         }

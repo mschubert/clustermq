@@ -16,6 +16,7 @@ enum wlife_t {
     proxy_cmd,
     proxy_error
 };
+const char* wlife_t2str(wlife_t status);
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
 extern Rcpp::Function R_serialize;

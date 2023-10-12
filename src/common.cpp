@@ -3,6 +3,17 @@
 Rcpp::Function R_serialize("serialize");
 Rcpp::Function R_unserialize("unserialize");
 
+const char* wlife_t2str(wlife_t status) {
+    switch(status) {
+        case wlife_t::active: return "active";
+        case wlife_t::shutdown: return "shutdown";
+        case wlife_t::error: return "error";
+        case wlife_t::proxy_cmd: return "proxy_cmd";
+        case wlife_t::proxy_error: return "proxy_error";
+        default: Rcpp::stop("Invalid worker status");
+    }
+}
+
 void check_interrupt_fn(void *dummy) {
     R_CheckUserInterrupt();
 }
