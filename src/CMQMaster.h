@@ -26,7 +26,7 @@ public:
                 return sock.get(zmq::sockopt::last_endpoint);
             } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
-                    Rcpp::stop(e.what());
+                    Rcpp::stop(std::string("Binding port failed (") + e.what() + ")");
             }
         }
         Rcpp::stop("Could not bind port to any address in provided pool");
