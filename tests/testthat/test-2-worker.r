@@ -45,25 +45,25 @@ test_that("export variable to worker", {
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     m$add_pending_workers(1L)
-    w$connect(addr, 0L)
+    w$connect(addr, 500L)
 
     m$add_env("x", 3)
-    m$recv(0L)
+    m$recv(500L)
     m$send(expression(5 + x))
     status = w$process_one()
-    result = m$recv(0L)
+    result = m$recv(500L)
     expect_true(status)
     expect_equal(result, 8)
 
     m$add_env("x", 5)
     m$send(expression(5 + x))
     status = w$process_one()
-    result = m$recv(0L)
+    result = m$recv(500L)
     expect_true(status)
     expect_equal(result, 10)
 
     w$close()
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("load package on worker", {
@@ -71,20 +71,20 @@ test_that("load package on worker", {
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     m$add_pending_workers(1L)
-    w$connect(addr, 0L)
+    w$connect(addr, 500L)
 
     m$add_pkg("parallel")
 
-    m$recv(0L)
+    m$recv(500L)
     m$send(expression(splitIndices(1, 1)[[1]]))
     status = w$process_one()
-    result = m$recv(0L)
+    result = m$recv(500L)
 
     expect_true(status)
     expect_equal(result, 1)
 
     w$close()
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("errors are sent back to master", {
@@ -94,18 +94,18 @@ test_that("errors are sent back to master", {
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     m$add_pending_workers(1L)
-    w$connect(addr, 0L)
+    w$connect(addr, 500L)
 
-    m$recv(0L)
+    m$recv(500L)
     m$send(expression(stop("errmsg")))
     status = w$process_one()
-    result = m$recv(0L)
+    result = m$recv(500L)
 
     expect_true(status)
     expect_true(inherits(result, c("condition", "worker_error")))
 
     w$close()
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("worker R API", {
@@ -118,7 +118,7 @@ test_that("worker R API", {
 #    addr = m$listen("inproc://endpoint") # mailbox.cpp assertion error
 
     p = parallel::mcparallel(worker(addr))
-    expect_null(m$recv(1000L))
+    expect_null(m$recv(500L))
     m$send(expression(5 + 1))
     res = m$recv(500L)
     expect_equal(res[[1]], 6)
@@ -126,7 +126,7 @@ test_that("worker R API", {
     m$send_shutdown()
     pc = parallel::mccollect(p, wait=TRUE, timeout=0.5)
     expect_equal(pc[[1]], NULL)
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("communication with two workers", {
@@ -139,9 +139,9 @@ test_that("communication with two workers", {
     w1 = parallel::mcparallel(worker(addr))
     w2 = parallel::mcparallel(worker(addr))
 
-    expect_null(m$recv(1000L)) # worker 1 up
+    expect_null(m$recv(500L)) # worker 1 up
     m$send(expression({ Sys.sleep(0.5); 5 + 2 }))
-    expect_null(m$recv(1000L)) # worker 2 up
+    expect_null(m$recv(500L)) # worker 2 up
     m$send(expression({ Sys.sleep(0.5); 3 + 1 }))
     r1 = m$recv(1000L)
     m$send_shutdown()
@@ -154,5 +154,5 @@ test_that("communication with two workers", {
     coll2 = parallel::mccollect(w2, wait=TRUE, timeout=0.5)
     expect_equal(names(coll2), as.character(w2$pid))
 
-    m$close(0L)
+    m$close(500L)
 })
