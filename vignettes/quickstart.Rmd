@@ -49,32 +49,30 @@ not all calls return after the same time, or one worker has a high load.
 
 ## Installation
 
-First, we need the [ZeroMQ](https://github.com/zeromq/libzmq)
-system library. This is probably already installed on your system. If not, your
-package manager will provide it:
+Install the `clustermq` package in R from CRAN (including the bundled
+[ZeroMQ](https://github.com/zeromq/libzmq) system library):
 
-```{sh, eval=FALSE}
-# You can skip this step on Windows and macOS, the package binary has it
-# On a computing cluster, we recommend to use Conda or Linuxbrew
-brew install zeromq # Linuxbrew, Homebrew on macOS
-conda install zeromq # Conda, Miniconda
-sudo apt-get install libzmq3-dev # Ubuntu
-sudo yum install zeromq-devel # Fedora
-pacman -S zeromq # Arch Linux
-```
-
-Then install the `clustermq` package in R from CRAN:
-
-```{r, eval=FALSE}
+```r
 install.packages('clustermq')
 ```
 
-Alternatively you can use the `remotes` package to install directly from Github:
+Alternatively you can use the `remotes` package to install directly from
+Github. Note that this version needs `autoconf`/`automake` for compilation:
 
-```{r, eval=FALSE}
+```r
 # install.packages('remotes')
 remotes::install_github('mschubert/clustermq')
-# remotes::install_github('mschubert/clustermq', ref="develop") # dev version
+```
+
+In the [`develop`](https://github.com/mschubert/clustermq/tree/develop) branch,
+we will introduce code changes and new features. These may contain bugs, poor
+documentation, or other inconveniences. This branch may not install at times.
+However, [feedback is very
+welcome](https://github.com/mschubert/clustermq/issues/new).
+
+```{r eval=FALSE}
+# install.packages('remotes')
+remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
 You should be good to go!
