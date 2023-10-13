@@ -60,7 +60,7 @@ public:
         int total_sock_ev = 0;
         do {
             try {
-                zmq::poll(pitems);
+                zmq::poll(pitems, std::chrono::milliseconds{-1});
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
                     Rcpp::stop(e.what());
