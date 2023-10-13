@@ -22,6 +22,8 @@ test_that("starting and stopping multicore", {
     expect_equal(w$workers_total, 0)
     expect_error(w$send(2))
     expect_error(w$recv())
+    expect_equal(w$workers_running, 0)
+    expect_equal(w$workers_total, 0)
 })
 
 test_that("calculations are really done on the worker", {

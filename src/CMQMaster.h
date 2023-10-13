@@ -63,7 +63,11 @@ public:
     }
 
     void send(SEXP cmd) {
+        if (peers.find(cur) == peers.end())
+            Rcpp::stop("Trying to send to worker that does not exist");
         auto &w = peers[cur];
+        if (w.status != wlife_t::active)
+            Rcpp::stop("Trying to send to worker that is not active");
         bool is_proxied = ! w.via.empty();
         std::set<std::string> new_env;
         std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
@@ -104,7 +108,11 @@ public:
         mp.send(sock);
     }
     void send_shutdown() {
+        if (peers.find(cur) == peers.end())
+            Rcpp::stop("Trying to send to worker that does not exist");
         auto &w = peers[cur];
+        if (w.status != wlife_t::active)
+            Rcpp::stop("Trying to send to worker that is not active");
 
         zmq::multipart_t mp;
         if (!w.via.empty())
@@ -247,6 +255,8 @@ private:
         int prev_size = peers.size();
         auto &w = peers[cur];
         pending_workers -= peers.size() - prev_size;
+//        if (pending_workers < 0)
+//            Rcpp::stop("More workers registered than expected");
         w.call = R_NilValue;
         if (cur_i == 1)
             w.via = msgs[0].to_string();
