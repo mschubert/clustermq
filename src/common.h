@@ -9,6 +9,12 @@
 #include "zmq.hpp"
 #include "zmq_addon.hpp"
 
+#if ! defined(ZMQ_BUILD_DRAFT_API) || \
+    ! ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0) || \
+    ! CPPZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 10, 0)
+#error clustermq needs at least libzmq>=4.3.0 and cppzmq>=4.10.0 with DRAFT enabled
+#endif
+
 enum wlife_t {
     active,
     shutdown,

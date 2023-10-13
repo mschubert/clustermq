@@ -14,11 +14,7 @@ public:
     std::string listen(Rcpp::CharacterVector addrs) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
         sock.set(zmq::sockopt::router_mandatory, 1);
-        #if defined(ZMQ_BUILD_DRAFT_API) && \
-            ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0) && \
-            CPPZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 10, 0)
         sock.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
-        #endif
 
         int i;
         for (i=0; i<addrs.length(); i++) {
