@@ -1,3 +1,13 @@
+# clustermq 0.9.1
+
+* Fix a bug where worker shutdown notifications can cause a crash (#306, #308, #310)
+* Fix a bug where using `Rf_error` lead to improper cleanup of resources (#311)
+* Fix a bug where maximum worker timeout was multiplied and led to undefined behavior
+* Fix a bug where ZeroMQ's `-Werror` flag led to compilation issues on M1 Mac
+* Fix a bug where SSH tests could error with timeout on high load
+* Worker API: `CMQMaster` now needs to know `add_pending_workers(n)`
+* Worker API: status report now displays properly
+
 # clustermq 0.9.0
 
 #### Features
@@ -17,7 +27,7 @@
 * The job port/id pool is now used properly upon binding failure (#270) @luwidmer
 * Common data size warning is now only displayed when exceeding limits (#287)
 
-#### Under the hood
+#### Internal
 
 * Complete rewrite of the worker API
 * We no longer depend on the `purrr` package
@@ -121,7 +131,7 @@
 
 * Fix a bug where copies of `common_data` are collected by gc too slowly (#19)
 
-#### Under the hood
+#### Internal
 
 * Messages on the master are now processed in threads (#42)
 * Jobs will now be submitted as array if possible
