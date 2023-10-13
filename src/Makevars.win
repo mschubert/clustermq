@@ -1,12 +1,12 @@
-GCC_VERSION = ${subst gcc,,${COMPILED_BY}}
-RWINLIB = ../windows/zeromq-4.3.4
-
+RWINLIB = ../windows/zeromq
+OLDLIBDIR = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)
 PKG_CPPFLAGS = -DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 \
 	-Icppzmq -I${RWINLIB}/include
 
 PKG_LIBS = \
-	-L${RWINLIB}/lib${GCC_VERSION}${R_ARCH} \
-	-L${RWINLIB}/lib${R_ARCH}${CRT} \
+	-L$(RWINLIB)/$(OLDLIBDIR) \
+	-L$(RWINLIB)/lib$(R_ARCH) \
+	-L$(RWINLIB)/lib \
 	-lzmq -lsodium -liphlpapi -lws2_32
 
 all: clean winlibs
