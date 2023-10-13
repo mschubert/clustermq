@@ -21,7 +21,7 @@ if $(cc -o libzmq_test libzmq_test.c -lzmq >/dev/null 2>&1); then
   echo "* system has libzmq"
   if $(./libzmq_test 2>/dev/null); then
     echo "* libzmq has DRAFT API -> linking system library"
-    PKG_CFLAGS="-DZMQ_BUILD_DRAFT_API=1 -fPIC -Icppzmq"
+    PKG_CFLAGS="-DZMQ_BUILD_DRAFT_API=1 -fPIC -Isrc/cppzmq"
     PKG_LIBS="-lzmq"
     USE_SYSTEM_LIBZMQ=1
   else
