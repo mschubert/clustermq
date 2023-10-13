@@ -10,7 +10,7 @@ test_that("recv without pending workers errors before timeout", {
     m = methods::new(CMQMaster)
     addr = m$listen("inproc://endpoint")
     expect_error(m$recv(-1L))
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("recv timeout works", {
@@ -18,7 +18,7 @@ test_that("recv timeout works", {
     addr = m$listen("inproc://endpoint")
     m$add_pending_workers(1L)
     expect_error(m$recv(0L))
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("worker evaluation", {
@@ -26,18 +26,18 @@ test_that("worker evaluation", {
     w = methods::new(CMQWorker, m$context())
     addr = m$listen("inproc://endpoint")
     m$add_pending_workers(1L)
-    w$connect(addr, 0L)
+    w$connect(addr, 500L)
 
-    m$recv(0L)
+    m$recv(500L)
     m$send(expression(5 * 2))
     status = w$process_one()
-    result = m$recv(0L)
+    result = m$recv(500L)
 
     expect_true(status)
     expect_equal(result, 10)
 
     w$close()
-    m$close(0L)
+    m$close(500L)
 })
 
 test_that("export variable to worker", {
