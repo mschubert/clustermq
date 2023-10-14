@@ -6,7 +6,7 @@ PKG_LIBS = \
 	-L$(RWINLIB)/$(OLDLIBDIR) \
 	-L$(RWINLIB)/lib$(R_ARCH) \
 	-L$(RWINLIB)/lib \
-	-lzmq -lsodium -liphlpapi -lws2_32
+	-lzmq -lsodium -lpthread -liphlpapi -lws2_32
 
 all: clean winlibs
 
