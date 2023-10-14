@@ -12,6 +12,15 @@
 #if ! defined(ZMQ_BUILD_DRAFT_API) || \
     ! ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0) || \
     ! CPPZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 10, 0)
+#define XSTR(x) STR(x)
+#define STR(x) #x
+#pragma message "libzmq version is: " XSTR(ZMQ_VERSION)
+#pragma message "cppzmq version is: " XSTR(CPPZMQ_VERSION)
+#ifdef ZMQ_BUILD_DRAFT_API
+#pragma message "DRAFT API is available"
+#else
+#pragma message "DRAFT API is missing"
+#endif
 #error clustermq needs libzmq>=4.3.0 and cppzmq>=4.10.0 with DRAFT enabled
 #endif
 
