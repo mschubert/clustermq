@@ -41,15 +41,14 @@ Install the `clustermq` package in R from CRAN (including the bundled
 install.packages('clustermq')
 ```
 
-Alternatively you can use the `remotes` package to install directly from Github:
+Alternatively you can use the `remotes` package to install directly from
+Github. Note that this version needs `autoconf`/`automake` for compilation:
 
 ```r
 # install.packages('remotes')
 remotes::install_github('mschubert/clustermq')
 # remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
-
-Note that this version needs `autoconf`/`automake` for compilation.
 
 Schedulers
 ----------
