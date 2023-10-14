@@ -15,3 +15,5 @@ clustermq.Rcheck
 src/Makevars
 .github/*.html
 windows
+/doc/
+/Meta/

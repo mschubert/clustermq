@@ -3,6 +3,7 @@ all: rcpp doc vignettes
 
 R = R --no-save --no-restore -e
 BIN = $(abspath $(lastword $(MAKEFILE_LIST))/../tests/bin)
+PKGVER = $(shell grep Version: < DESCRIPTION | sed "s/Version: //")
 
 .PHONY: test
 test:
@@ -32,6 +33,12 @@ inst/doc/%.md: vignettes/%.rmd
 .PHONY: doc
 doc:
 	$(R) "devtools::document()"
+
+.PHONY: package
+package: rcpp doc vignettes
+	./src/patch_libzmq.sh
+	PATH=$(BIN):$$PATH R CMD build .
+	R CMD check --as-cran clustermq_$(PKGVER).tar.gz
 
 .PHONY: deploy
 deploy:
