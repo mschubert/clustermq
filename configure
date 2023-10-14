@@ -3,11 +3,8 @@ CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
-PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
-PKG_LIBS="libzmq/src/.libs/libzmq.a"
-
+if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
 cat <<EOF >libzmq_test.c
-#define ZMQ_BUILD_DRAFT_API
 #include <zmq.h>
 int main() {
     #if defined(ZMQ_BUILD_DRAFT_API) && ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0)
@@ -17,13 +14,10 @@ int main() {
 }
 EOF
 
-if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
-  if $(cc -o libzmq_test libzmq_test.c -lzmq >/dev/null 2>&1); then
+  if $(cc -o libzmq_test libzmq_test.c $(pkg-config --cflags --libs libzmq) >/dev/null 2>&1); then
     echo "* system has libzmq"
     if $(./libzmq_test 2>/dev/null); then
       echo "* libzmq has DRAFT API -> linking system library"
-      PKG_CFLAGS="-DZMQ_BUILD_DRAFT_API=1 -fPIC -Icppzmq"
-      PKG_LIBS="-lzmq"
       CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
     else
       echo "* no DRAFT API found -> using bundled libzmq"
@@ -33,9 +27,13 @@ if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
     echo "* no system libzmq found -> using bundled libzmq"
     CLUSTERMQ_USE_SYSTEM_LIBZMQ=0
   fi
+  rm -f libzmq_test.c libzmq_test
 fi
 
 if [ "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" -eq "0" ]; then
+  PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
+  PKG_LIBS="libzmq/src/.libs/libzmq.a"
+
   ./src/patch_libzmq.sh
 
   if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
@@ -57,7 +55,9 @@ if [ "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" -eq "0" ]; then
     make || exit 1
     cd -
   fi
+else
+  PKG_CFLAGS="-DZMQ_BUILD_DRAFT_API=1 -fPIC -Icppzmq"
+  PKG_LIBS="$(pkg-config --libs libzmq)"
 fi
 
-rm -f libzmq_test.c libzmq_test
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
