@@ -14,8 +14,10 @@
     ! CPPZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 10, 0)
 #define XSTR(x) STR(x)
 #define STR(x) #x
-#pragma message "libzmq version is: " XSTR(ZMQ_VERSION)
-#pragma message "cppzmq version is: " XSTR(CPPZMQ_VERSION)
+#pragma message "libzmq version is: " XSTR(ZMQ_VERSION_MAJOR) "." \
+    XSTR(ZMQ_VERSION_MINOR) "." XSTR(ZMQ_VERSION_PATCH)
+#pragma message "cppzmq version is: " XSTR(CPPZMQ_VERSION_MAJOR) "." \
+    XSTR(CPPZMQ_VERSION_MINOR) "." XSTR(CPPZMQ_VERSION_PATCH)
 #ifdef ZMQ_BUILD_DRAFT_API
 #pragma message "DRAFT API is available"
 #else
