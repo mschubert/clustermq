@@ -1,7 +1,6 @@
 RWINLIB = ../windows/zeromq
 OLDLIBDIR = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)
-PKG_CPPFLAGS = -Icppzmq -I${RWINLIB}/include
-PKG_CFLAGS = -DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -Icppzmq -I${RWINLIB}/include
+PKG_CPPFLAGS = -DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -Icppzmq -I${RWINLIB}/include
 
 PKG_LIBS = \
 	-L$(RWINLIB)/$(OLDLIBDIR) \
