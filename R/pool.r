@@ -24,12 +24,12 @@ Pool = R6::R6Class("Pool",
             cat(sprintf("<clustermq> worker pool with %i member(s)\n", self$workers$n()))
         },
 
-        list = function() {
+        info = function() {
             info = private$master$list_workers()
             times = do.call(rbind, info$time)[,1:3]
             mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
-            do.call(data.frame, c(info[c("worker", "status")], as.list(times),
-                                  mem.used=mem("used"), mem.max=mem("max used")))
+            do.call(data.frame, c(info[c("worker", "status")], as.data.frame(times),
+                                  list(mem.used=mem("used"), mem.max=mem("max used"))))
         },
 
         add = function(qsys, n, ...) {
@@ -106,7 +106,7 @@ Pool = R6::R6Class("Pool",
 
             times = private$master$list_workers()$time
             times = times[sapply(times, length) != 0]
-            max_mem = max(c(self$list()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
+            max_mem = max(c(self$info()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
 
             wt = Reduce(`+`, times) / length(times)
