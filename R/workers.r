@@ -21,6 +21,8 @@ workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FA
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
 
     p = Pool$new(reuse=reuse)
-    p$add(qsys, n_jobs, log_worker=log_worker, verbose=verbose, ...)
+#    p$add(qsys, n_jobs, log_worker=log_worker, verbose=verbose, ...)
+    args = c(list(qsys=qsys, n=n_jobs, log_worker=log_worker, verbose=verbose), template, list(...))
+    do.call(p$add, args)
     p
 }
