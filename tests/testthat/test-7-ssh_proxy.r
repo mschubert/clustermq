@@ -59,8 +59,8 @@ test_that("using the proxy without pool and forward", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=1), 500L)
-    expect_null(m$recv(500L)) # worker 1 up
+    m$proxy_submit_cmd(list(n_jobs=1), 1000L)
+    expect_null(m$recv(1000L)) # worker 1 up
     m$send(5 + 2)
     expect_equal(m$recv(500L), 7) # collect results
 
@@ -81,8 +81,8 @@ test_that("using the proxy without pool and forward, 2 workers", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=2), 500L)
-    expect_null(m$recv(500L)) # worker 1 up
+    m$proxy_submit_cmd(list(n_jobs=2), 1000L)
+    expect_null(m$recv(1000L)) # worker 1 up
     m$send({ Sys.sleep(0.5); 5 + 2 })
     expect_null(m$recv(500L)) # worker 2 up
     m$send({ Sys.sleep(0.5); 3 + 1 })
