@@ -1,12 +1,13 @@
 # clustermq 0.9.1
 
 * Fix a bug where worker shutdown notifications can cause a crash (#306, #308, #310)
+* Fix a bug where template values were not filled correctly (#309)
 * Fix a bug where using `Rf_error` lead to improper cleanup of resources (#311)
 * Fix a bug where maximum worker timeout was multiplied and led to undefined behavior
 * Fix a bug where ZeroMQ's `-Werror` flag led to compilation issues on M1 Mac
 * Fix a bug where SSH tests could error with timeout on high load
 * Worker API: `CMQMaster` now needs to know `add_pending_workers(n)`
-* Worker API: status report now displays properly
+* Worker API: status report `info` now displays properly
 
 # clustermq 0.9.0
 
