@@ -1,6 +1,8 @@
 context("work_chunk")
 
-df = as.data.frame(dplyr::tibble(
+skip_if_not_installed("tibble")
+
+df = as.data.frame(tibble::tibble(
     a = 1:3,
     b = as.list(letters[1:3]),
     c = setNames(as.list(3:1), letters[1:3])
