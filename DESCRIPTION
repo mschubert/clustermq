@@ -37,6 +37,7 @@ Suggests:
     rmarkdown,
     roxygen2 (>= 5.0.0),
     testthat,
+    tibble,
     tools
 VignetteBuilder: knitr
 Roxygen: list(r6 = FALSE)
