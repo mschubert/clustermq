@@ -30,4 +30,8 @@
                 "defaulting to ", sQuote(qsys_default))
         packageStartupMessage("--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration")
     }
+    if (!libzmq_has_draft()) {
+        packageStartupMessage("* Worker disconnect monitor is disabled")
+        packageStartupMessage("--- see: https://mschubert.github.io/clustermq/articles/userguide.html#installation")
+    }
 }

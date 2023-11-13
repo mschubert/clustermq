@@ -5,3 +5,7 @@ has_connectivity <- function(host) {
     .Call('_clustermq_has_connectivity', PACKAGE = 'clustermq', host)
 }
 
+libzmq_has_draft <- function() {
+    .Call('_clustermq_libzmq_has_draft', PACKAGE = 'clustermq')
+}
+

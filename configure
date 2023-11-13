@@ -15,13 +15,13 @@ int main() {
 EOF
 
   if $(cc -o libzmq_test libzmq_test.c $(pkg-config --cflags --libs libzmq) >/dev/null 2>&1); then
-    echo "* system has libzmq"
+    echo "* system has libzmq -> linking system library"
     if $(./libzmq_test 2>/dev/null); then
-      echo "* libzmq has DRAFT API -> linking system library"
+      echo "* libzmq has DRAFT API -> enabling crash monitor feature"
       CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
     else
-      echo "* no DRAFT API found -> using bundled libzmq"
-      CLUSTERMQ_USE_SYSTEM_LIBZMQ=0
+      echo "* libzmq without DRAFT API found -> disabling crash monitor feature"
+      CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
     fi
   else
     echo "* no system libzmq found -> using bundled libzmq"
@@ -56,7 +56,7 @@ if [ "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" -eq "0" ]; then
     cd -
   fi
 else
-  PKG_CFLAGS="-DZMQ_BUILD_DRAFT_API=1 -fPIC -Icppzmq"
+  PKG_CFLAGS="$(pkg-config --cflags libzmq) -fPIC -Icppzmq"
   PKG_LIBS="$(pkg-config --libs libzmq)"
 fi
 

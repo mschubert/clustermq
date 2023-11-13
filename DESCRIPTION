@@ -14,6 +14,7 @@ Description: Evaluate arbitrary function calls using workers on HPC schedulers
     accessing the file system. Remote schedulers are supported via SSH.
 URL: https://mschubert.github.io/clustermq/
 BugReports: https://github.com/mschubert/clustermq/issues
+SystemRequirements: ZeroMQ (libzmq) >= 4.3.0 (optional; otherwise bundled)
 Depends:
     R (>= 3.6.2)
 LinkingTo: Rcpp

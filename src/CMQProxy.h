@@ -59,7 +59,9 @@ public:
     std::string listen(Rcpp::CharacterVector addrs) {
         to_worker = zmq::socket_t(*ctx, ZMQ_ROUTER);
         to_worker.set(zmq::sockopt::router_mandatory, 1);
+        #ifdef ZMQ_BUILD_DRAFT_API
         to_worker.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
+        #endif
 
         int i;
         for (i=0; i<addrs.length(); i++) {

@@ -1,5 +1,6 @@
 # clustermq 0.9.1
 
+* Disconnect monitor (libzmq with `-DZMQ_BUILD_DRAFT_API=1`) is now optional (#317)
 * Fix a bug where worker shutdown notifications can cause a crash (#306, #308, #310)
 * Fix a bug where template values were not filled correctly (#309)
 * Fix a bug where using `Rf_error` lead to improper cleanup of resources (#311)

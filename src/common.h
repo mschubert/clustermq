@@ -9,8 +9,7 @@
 #include "zmq.hpp"
 #include "zmq_addon.hpp"
 
-#if ! defined(ZMQ_BUILD_DRAFT_API) || \
-    ! ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0) || \
+#if ! ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0) || \
     ! CPPZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 10, 0)
 #define XSTR(x) STR(x)
 #define STR(x) #x
@@ -18,12 +17,7 @@
     XSTR(ZMQ_VERSION_MINOR) "." XSTR(ZMQ_VERSION_PATCH)
 #pragma message "cppzmq version is: " XSTR(CPPZMQ_VERSION_MAJOR) "." \
     XSTR(CPPZMQ_VERSION_MINOR) "." XSTR(CPPZMQ_VERSION_PATCH)
-#ifdef ZMQ_BUILD_DRAFT_API
-#pragma message "DRAFT API is available"
-#else
-#pragma message "DRAFT API is missing"
-#endif
-#error clustermq needs libzmq>=4.3.0 and cppzmq>=4.10.0 with DRAFT enabled
+#error clustermq needs libzmq>=4.3.0 and cppzmq>=4.10.0
 #endif
 
 enum wlife_t {

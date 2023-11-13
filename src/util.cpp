@@ -43,3 +43,12 @@ bool has_connectivity(std::string host) {
 
     return success;
 }
+
+// [[Rcpp::export]]
+bool libzmq_has_draft() {
+    #ifdef ZMQ_BUILD_DRAFT_API
+    return true;
+    #else
+    return false;
+    #endif
+}

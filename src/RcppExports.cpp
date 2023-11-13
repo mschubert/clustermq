@@ -21,6 +21,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// libzmq_has_draft
+bool libzmq_has_draft();
+RcppExport SEXP _clustermq_libzmq_has_draft() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(libzmq_has_draft());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_cmq_master();
 RcppExport SEXP _rcpp_module_boot_cmq_proxy();
@@ -28,6 +38,7 @@ RcppExport SEXP _rcpp_module_boot_cmq_worker();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_clustermq_has_connectivity", (DL_FUNC) &_clustermq_has_connectivity, 1},
+    {"_clustermq_libzmq_has_draft", (DL_FUNC) &_clustermq_libzmq_has_draft, 0},
     {"_rcpp_module_boot_cmq_master", (DL_FUNC) &_rcpp_module_boot_cmq_master, 0},
     {"_rcpp_module_boot_cmq_proxy", (DL_FUNC) &_rcpp_module_boot_cmq_proxy, 0},
     {"_rcpp_module_boot_cmq_worker", (DL_FUNC) &_rcpp_module_boot_cmq_worker, 0},
