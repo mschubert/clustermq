@@ -53,7 +53,7 @@ public:
         do {
             int w_active = pending_workers;
             for (const auto &kv: peers) {
-                if (kv.second.status == wlife_t::active)
+                if (kv.second.status == wlife_t::active || kv.second.status == wlife_t::proxy_cmd)
                     w_active++;
             }
             if (w_active <= 0)
