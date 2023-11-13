@@ -50,7 +50,12 @@ public:
         std::vector<zmq::message_t> msgs;
 
         do {
-            if (peers.size() + pending_workers <= 0)
+            int w_active = pending_workers;
+            for (const auto &kv: peers) {
+                if (kv.second.status == wlife_t::active)
+                    w_active++;
+            }
+            if (w_active <= 0)
                 Rcpp::stop("Trying to receive data without workers");
 
             msgs.clear();
