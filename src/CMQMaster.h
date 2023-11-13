@@ -33,6 +33,7 @@ public:
     }
 
     void close(int timeout=0) {
+        peers.clear();
         env.clear();
 
         if (sock.handle() != nullptr) {
