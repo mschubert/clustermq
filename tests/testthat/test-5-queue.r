@@ -14,8 +14,12 @@ test_that("control flow", {
 test_that("control flow with automatic workers", {
     skip_if_not(has_localhost)
     skip_on_os("windows")
-    fx = function(x) x*2
+
+    old_sched = getOption("clustermq.scheduler")
+    on.exit(options(clustermq.scheduler = old_sched))
     options(clustermq.scheduler = "multicore")
+
+    fx = function(x) x*2
     r = Q(fx, x=1:3, n_jobs=1, timeout=3L)
     expect_equal(r, as.list(1:3*2))
 })
@@ -130,7 +134,7 @@ test_that("shutdown monitor does not fire on clean disconnects", {
 
     # doing this via a separate call to `workers()` works
     # so this seems to be a race condition of some sort
-    options(clustermq.scheduler="multicore")
-    res = Q(Sys.sleep, time=c(0,1), n_jobs=2, timeout=5L)
+    w = workers(n_jobs=2, qsys_id="multicore", reuse=FALSE)
+    res = Q(Sys.sleep, time=c(0,1), workers=w, timeout=5L)
     expect_equal(res, list(NULL, NULL))
 })

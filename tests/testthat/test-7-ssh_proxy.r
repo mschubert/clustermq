@@ -111,7 +111,7 @@ test_that("full SSH connection", {
             message="options(clustermq.scheduler') must be 'MULTICORE'")
 
     options(clustermq.template = "SSH", clustermq.ssh.host="127.0.0.1")
-    w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE, log_worker=T)
+    w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE)
     result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
     expect_equal(result, list(42))
 })
