@@ -26,19 +26,20 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 options(clustermq.scheduler = "local")
-library(clustermq)
+suppressPackageStartupMessages(library(clustermq))
 ```
 
 ## Installation
 
 Install the `clustermq` package in R from CRAN. This will automatically detect
-if [ZeroMQ](https://github.com/zeromq/libzmq) is installed and use the bundled
-library (with `-DZMQ_BUILD_DRAFT_API=1` to detect worker crashes) if not:
+if [ZeroMQ](https://github.com/zeromq/libzmq) is installed and otherwise use
+the bundled library:
 
 ```r
-# If your system has `libzmq` installed but you want to enable the worker crash
-#   monitor, set the following environment variable to enable compilation of
-#   the bundled `libzmq` library that has the required feature enabled:
+# Recommended:
+#   If your system has `libzmq` installed but you want to enable the worker crash
+#   monitor, set the following environment variable to enable compilation of the
+#   bundled `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
 # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 install.packages('clustermq')
 ```
