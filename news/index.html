@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">clustermq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,19 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.1" id="clustermq-091">clustermq 0.9.1<a class="anchor" aria-label="anchor" href="#clustermq-091"></a></h2>
+<ul><li>Disconnect monitor (libzmq with <code>-DZMQ_BUILD_DRAFT_API=1</code>) is now optional (<a href="https://github.com/mschubert/clustermq/issues/317" class="external-link">#317</a>)</li>
+<li>Fix a bug where worker shutdown notifications can cause a crash (<a href="https://github.com/mschubert/clustermq/issues/306" class="external-link">#306</a>, <a href="https://github.com/mschubert/clustermq/issues/308" class="external-link">#308</a>, <a href="https://github.com/mschubert/clustermq/issues/310" class="external-link">#310</a>)</li>
+<li>Fix a bug where template values were not filled correctly (<a href="https://github.com/mschubert/clustermq/issues/309" class="external-link">#309</a>)</li>
+<li>Fix a bug where using <code>Rf_error</code> lead to improper cleanup of resources (<a href="https://github.com/mschubert/clustermq/issues/311" class="external-link">#311</a>)</li>
+<li>Fix a bug where maximum worker timeout was multiplied and led to undefined behavior</li>
+<li>Fix a bug where ZeroMQ’s <code>-Werror</code> flag led to compilation issues on M1 Mac</li>
+<li>Fix a bug where SSH tests could error with timeout on high load</li>
+<li>Worker API: <code>CMQMaster</code> now needs to know <code>add_pending_workers(n)</code>
+</li>
+<li>Worker API: status report <code>info</code> now displays properly</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="clustermq-090">clustermq 0.9.0<a class="anchor" aria-label="anchor" href="#clustermq-090"></a></h2><p class="text-muted">CRAN release: 2023-09-23</p>
 <div class="section level5">
 <h5 id="features-0-9-0">Features<a class="anchor" aria-label="anchor" href="#features-0-9-0"></a></h5>
@@ -76,7 +89,7 @@
 <li>Common data size warning is now only displayed when exceeding limits (<a href="https://github.com/mschubert/clustermq/issues/287" class="external-link">#287</a>)</li>
 </ul></div>
 <div class="section level5">
-<h5 id="under-the-hood-0-9-0">Under the hood<a class="anchor" aria-label="anchor" href="#under-the-hood-0-9-0"></a></h5>
+<h5 id="internal-0-9-0">Internal<a class="anchor" aria-label="anchor" href="#internal-0-9-0"></a></h5>
 <ul><li>Complete rewrite of the worker API</li>
 <li>We no longer depend on the <code>purrr</code> package</li>
 </ul></div>
@@ -188,7 +201,7 @@
 <ul><li>Fix a bug where copies of <code>common_data</code> are collected by gc too slowly (<a href="https://github.com/mschubert/clustermq/issues/19" class="external-link">#19</a>)</li>
 </ul></div>
 <div class="section level5">
-<h5 id="under-the-hood-0-8-0">Under the hood<a class="anchor" aria-label="anchor" href="#under-the-hood-0-8-0"></a></h5>
+<h5 id="internal-0-8-0">Internal<a class="anchor" aria-label="anchor" href="#internal-0-8-0"></a></h5>
 <ul><li>Messages on the master are now processed in threads (<a href="https://github.com/mschubert/clustermq/issues/42" class="external-link">#42</a>)</li>
 <li>Jobs will now be submitted as array if possible</li>
 </ul></div>

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">clustermq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,6 +101,8 @@ computing cluster with a minimal interface provided by the
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load the library and create a simple function</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mschubert.github.io/clustermq/" class="external-link">clustermq</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; * Worker disconnect monitor is disabled</span></span>
+<span><span class="co">#&gt; --- see: https://mschubert.github.io/clustermq/articles/userguide.html#installation</span></span>
 <span><span class="va">fx</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span></span>
 <span></span>
 <span><span class="co"># queue the function call on your scheduler</span></span>
@@ -124,25 +126,25 @@ worker has a high load.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>First, we need the <a href="https://github.com/zeromq/libzmq" class="external-link">ZeroMQ</a> system library. This
-is probably already installed on your system. If not, your package
-manager will provide it:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># You can skip this step on Windows and macOS, the package binary has it</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># On a computing cluster, we recommend to use Conda or Linuxbrew</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="ex">conda</span> install zeromq <span class="co"># Conda, Miniconda</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">sudo</span> yum install zeromq-devel <span class="co"># Fedora</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="ex">pacman</span> <span class="at">-S</span> zeromq <span class="co"># Arch Linux</span></span></code></pre></div>
-<p>Then install the <code>clustermq</code> package in R from CRAN:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>Install the <code>clustermq</code> package in R from CRAN (including
+the bundled <a href="https://github.com/zeromq/libzmq" class="external-link">ZeroMQ</a> system
+library):</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'clustermq'</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively you can use the <code>remotes</code> package to install
-directly from Github:</p>
+directly from Github. Note that this version needs
+<code>autoconf</code>/<code>automake</code> for compilation:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages('remotes')</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'mschubert/clustermq'</span><span class="op">)</span></span></code></pre></div>
+<p>In the <a href="https://github.com/mschubert/clustermq/tree/develop" class="external-link"><code>develop</code></a>
+branch, we will introduce code changes and new features. These may
+contain bugs, poor documentation, or other inconveniences. This branch
+may not install at times. However, <a href="https://github.com/mschubert/clustermq/issues/new" class="external-link">feedback is
+very welcome</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages('remotes')</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'mschubert/clustermq'</span><span class="op">)</span></span>
-<span><span class="co"># remotes::install_github('mschubert/clustermq', ref="develop") # dev version</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'mschubert/clustermq'</span>, ref<span class="op">=</span><span class="st">"develop"</span><span class="op">)</span></span></code></pre></div>
 <p>You should be good to go!</p>
 <p>By default, <code>clustermq</code> will look for <code>sbatch</code>
 (SLURM), <code>bsub</code> (LSF), or <code>qsub</code> (SGE) in your
