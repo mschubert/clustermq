@@ -1,5 +1,7 @@
 context("foreach")
 
+skip_if_not_installed("foreach")
+
 foreach = foreach::foreach
 `%dopar%` = foreach::`%dopar%`
 `%do%` = foreach::`%do%`

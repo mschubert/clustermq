@@ -1,6 +1,6 @@
 context("work_chunk")
 
-df = as.data.frame(dplyr::tibble(
+df = structure(row.names=c(NA, -3), class="data.frame", .Data=list(
     a = 1:3,
     b = as.list(letters[1:3]),
     c = setNames(as.list(3:1), letters[1:3])
