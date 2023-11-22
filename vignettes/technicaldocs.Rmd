@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 options(clustermq.scheduler = "local")
-library(clustermq)
+suppressPackageStartupMessages(library(clustermq))
 ```
 
 ## Worker API
