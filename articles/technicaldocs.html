@@ -95,8 +95,6 @@ code {
     border: 0px !important;
 }
 </style>
-<pre><code><span><span class="co">## * Worker disconnect monitor is disabled</span></span></code></pre>
-<pre><code><span><span class="co">## --- see: https://mschubert.github.io/clustermq/articles/userguide.html#installation</span></span></code></pre>
 <div class="section level2">
 <h2 id="worker-api">Worker API<a class="anchor" aria-label="anchor" href="#worker-api"></a>
 </h2>
@@ -129,7 +127,7 @@ this, and will eventually allow to manage different workers.</p>
 function, which instantiates a <code>Pool</code> object of the
 corresponding <code>QSys</code>-derived scheduler class. See
 <code><a href="../reference/workers.html">?workers</a></code> for details.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># start up a pool of three workers using the default scheduler</span></span>
 <span><span class="va">w</span> <span class="op">=</span> <span class="fu"><a href="../reference/workers.html">workers</a></span><span class="op">(</span>n_jobs<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -143,23 +141,23 @@ corresponding <code>QSys</code>-derived scheduler class. See
 machine they will run on. This is why we start up every worker with a
 TCP/IP address of the master socket that will distribute work.</p>
 <p>This is achieved by the call to R common to all schedulers:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">R</span> <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">R</span> <span class="at">--no-save</span> <span class="at">--no-restore</span> <span class="at">-e</span> <span class="st">'clustermq:::worker("{{ master }}")'</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="worker-communication">Worker communication<a class="anchor" aria-label="anchor" href="#worker-communication"></a>
 </h4>
 <p>On the master’s side, we wait until a worker connects:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">msg</span> <span class="op">=</span> <span class="va">w</span><span class="op">$</span><span class="fu">recv</span><span class="op">(</span><span class="op">)</span> <span class="co"># this will block until a worker is ready</span></span></code></pre></div>
 <p>We can then send any expression to be evaluated on the worker using
 the <code>send</code> method:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">w</span><span class="op">$</span><span class="fu">send</span><span class="op">(</span><span class="va">expression</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
 <p>After the expression (in <code>...</code>), any variables that should
 be passed along with the call can be added. For batch processing that
 <code>clustermq</code> usually does, this command is
 <code>work_chunk</code>, where the <code>chunk</code> data is added:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">w</span><span class="op">$</span><span class="fu">send</span><span class="op">(</span><span class="fu">clustermq</span><span class="fu">:::</span><span class="fu"><a href="../reference/work_chunk.html">work_chunk</a></span><span class="op">(</span><span class="va">chunk</span>, <span class="va">fun</span>, <span class="va">const</span>, <span class="va">rettype</span>, <span class="va">common_seed</span><span class="op">)</span>,</span>
 <span>       chunk <span class="op">=</span> <span class="fu"><a href="../reference/chunk.html">chunk</a></span><span class="op">(</span><span class="va">iter</span>, <span class="va">submit_index</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -168,7 +166,7 @@ be passed along with the call can be added. For batch processing that
 </h4>
 <p>We can add any number of objects to a worker environment using the
 <code>env</code> method:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">w</span><span class="op">$</span><span class="fu">env</span><span class="op">(</span>object<span class="op">=</span><span class="va">value</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
 <p>This will also invisibly return a <code>data.frame</code> with all
 objects currently in the environment. If a user wants to inspect the
@@ -184,19 +182,19 @@ automatically in a greedy fashion.</p>
 essentially implemented in <code>master</code>. Note that your
 <code>expression</code> to evaluate needs to track its origin (this may
 change in the future).</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>w <span class="ot">=</span> <span class="fu">workers</span>(<span class="dv">3</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">on.exit</span>(w<span class="sc">$</span><span class="fu">cleanup</span>())</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>w<span class="sc">$</span><span class="fu">env</span>(...)</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="cf">while</span> (we have new work to send <span class="sc">||</span> jobs pending) {</span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>    res <span class="ot">=</span> w<span class="sc">$</span><span class="fu">recv</span>()</span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>    <span class="co"># handle result</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="cf">if</span> (more work)</span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send</span>(expression, ...)</span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>    <span class="cf">else</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send_shutdown</span>()</span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>w <span class="ot">=</span> <span class="fu">workers</span>(<span class="dv">3</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">on.exit</span>(w<span class="sc">$</span><span class="fu">cleanup</span>())</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>w<span class="sc">$</span><span class="fu">env</span>(...)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="cf">while</span> (we have new work to send <span class="sc">||</span> jobs pending) {</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    res <span class="ot">=</span> w<span class="sc">$</span><span class="fu">recv</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="co"># handle result</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="cf">if</span> (more work)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send</span>(expression, ...)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send_shutdown</span>()</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>}</span></code></pre></div>
 <p>A loop of a similar structure can be used to extend
 <code>clustermq</code>. As an example, <a href="https://github.com/ropensci/targets/blob/1.2.2/R/class_clustermq.R" class="external-link">this
 was done by the <em>targets</em> package</a>.</p>
@@ -238,7 +236,7 @@ worker.</p>
 <h3 id="worker-evaluation">Worker evaluation<a class="anchor" aria-label="anchor" href="#worker-evaluation"></a>
 </h3>
 <p>A worker evaluates the call using the R C API:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">R_tryEvalSilent</span>(cmd, env, <span class="sc">&amp;</span>err);</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">R_tryEvalSilent</span>(cmd, env, <span class="sc">&amp;</span>err);</span></code></pre></div>
 <p>If an error occurs in this evaluation will be returned as a structure
 with class <code>worker_error</code>. If a developer wants to catch
 errors and warnings in a more fine-grained manner, it is recommended to
