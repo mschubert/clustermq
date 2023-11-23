@@ -93,8 +93,8 @@ Pool = R6::R6Class("Pool",
             private$master$send(Sys.sleep(wait/1000))
         },
 
-        recv = function() {
-            private$master$recv(-1L)
+        recv = function(timeout=-1L) {
+            private$master$recv(timeout)
         },
 
         cleanup = function(timeout=5000) {
