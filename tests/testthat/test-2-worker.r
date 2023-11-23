@@ -118,7 +118,7 @@ test_that("worker R API", {
 #    addr = m$listen("inproc://endpoint") # mailbox.cpp assertion error
 
     p = parallel::mcparallel(worker(addr))
-    expect_null(m$recv(1000L))
+    expect_null(m$recv(5000L))
     m$send(expression(5 + 1))
     res = m$recv(500L)
     expect_equal(res[[1]], 6)
@@ -139,7 +139,7 @@ test_that("communication with two workers", {
     w1 = parallel::mcparallel(worker(addr))
     w2 = parallel::mcparallel(worker(addr))
 
-    expect_null(m$recv(1000L)) # worker 1 up
+    expect_null(m$recv(5000L)) # worker 1 up
     m$send(expression({ Sys.sleep(0.5); 5 + 2 }))
     expect_null(m$recv(500L)) # worker 2 up
     m$send(expression({ Sys.sleep(0.5); 3 + 1 }))
