@@ -8,6 +8,7 @@ MULTICORE = R6::R6Class("MULTICORE",
 
     public = list(
         initialize = function(addr, n_jobs, master, ..., log_worker=FALSE, log_file=NULL, verbose=TRUE) {
+            addr = sub(Sys.info()["nodename"], "127.0.0.1", addr, fixed=TRUE)
             super$initialize(addr=addr, master=master)
             if (verbose)
                 message("Starting ", n_jobs, " cores ...")
