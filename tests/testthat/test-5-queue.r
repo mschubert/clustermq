@@ -1,9 +1,8 @@
 context("queue")
 
-has_localhost = has_connectivity("localhost")
+skip_if_not(has_connectivity("127.0.0.1"))
 
 test_that("control flow", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) x*2
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
@@ -12,7 +11,6 @@ test_that("control flow", {
 })
 
 test_that("control flow with automatic workers", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
 
     old_sched = getOption("clustermq.scheduler")
@@ -25,7 +23,6 @@ test_that("control flow with automatic workers", {
 })
 
 test_that("common data", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x, y) x*2 + y
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
@@ -34,7 +31,6 @@ test_that("common data", {
 })
 
 test_that("export", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) x*2 + z
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
@@ -43,7 +39,6 @@ test_that("export", {
 })
 
 test_that("load package on worker", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) splitIndices(1,1)
     x = "a string"
@@ -53,7 +48,6 @@ test_that("load package on worker", {
 })
 
 test_that("seed reproducibility", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) sample(1:100, 1)
     w1 = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
@@ -64,7 +58,6 @@ test_that("seed reproducibility", {
 })
 
 test_that("master does not exit loop prematurely", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) {
         Sys.sleep(0.5)
@@ -76,7 +69,6 @@ test_that("master does not exit loop prematurely", {
 })
 
 test_that("rettype is respected", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     fx = function(x) x*2
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
@@ -86,8 +78,6 @@ test_that("rettype is respected", {
 
 test_that("worker timeout throws error", {
     skip("FIXME")
-
-    skip_if_not(has_localhost)
     skip_on_os("windows")
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
     expect_error(expect_warning(
@@ -114,9 +104,7 @@ test_that("worker timeout throws error", {
 
 test_that("Q with expired workers throws error quickly", {
     skip("FIXME")
-
     skip_on_cran()
-    skip_if_not(has_localhost)
     skip_on_os("windows")
 
     w = workers(n_jobs=1, qsys_id="multicore", reuse=FALSE)
@@ -129,7 +117,6 @@ test_that("Q with expired workers throws error quickly", {
 })
 
 test_that("shutdown monitor does not fire on clean disconnects", {
-    skip_if_not(has_localhost)
     skip_on_os("windows")
 
     # doing this via a separate call to `workers()` works
