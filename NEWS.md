@@ -1,3 +1,7 @@
+# git head
+
+* Local parallelism (`multicore`, `multiprocess`) again uses local IP (#321)
+
 # clustermq 0.9.1
 
 * Disconnect monitor (libzmq with `-DZMQ_BUILD_DRAFT_API=1`) is now optional (#317)
