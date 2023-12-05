@@ -19,14 +19,19 @@ test_that("local, n_jobs=0", {
 })
 
 test_that("qsys_multicore", {
-#    skip("mailbox.cpp crash with reuse=TRUE")
-
     skip_on_os("windows")
     w = workers(n_jobs=4, qsys_id="multicore", reuse=FALSE)
     r = Q(fx, x=1:3, workers=w, timeout=3L)
-#    success = w$cleanup()
     expect_equal(r, as.list(1:3*2))
-#    expect_true(success)
+})
+
+test_that("qsys_multicore with reuse=TRUE", {
+    skip_on_os("windows")
+    w = workers(n_jobs=4, qsys_id="multicore", reuse=TRUE)
+    r = Q(fx, x=1:3, workers=w, timeout=3L)
+    success = w$cleanup()
+    expect_equal(r, as.list(1:3*2))
+    expect_true(success)
 })
 
 test_that("qsys_multiprocess (callr)", {
