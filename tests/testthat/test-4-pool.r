@@ -67,8 +67,7 @@ test_that("work_chunk on multiprocess", {
 })
 
 test_that("worker creation passes template filling values", {
-    skip("works interactively")
-    TMPL_FILLER = R6::R6Class("TMPL_FILLER",
+    TMPL_FILLER <<- R6::R6Class("TMPL_FILLER",
         inherit = QSys,
         public = list(
             initialize = function(addr, n_jobs, master, ...) {
@@ -78,8 +77,12 @@ test_that("worker creation passes template filling values", {
             filled = list()
         )
     )
+    old_defaults = getOption("clustermq.defaults")
+    on.exit(options(clustermq.defaults = old_defaults))
     options(clustermq.defaults = list(cores="defaults_test", memory="invalid"))
+
     w = workers(1, qsys_id="tmpl_filler", template=list(memory="test"))
+    rm(TMPL_FILLER, envir=.GlobalEnv)
 
     expect_equal(w$workers$filled$memory, "test")
     expect_equal(w$workers$filled$cores, "defaults_test")
