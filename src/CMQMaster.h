@@ -94,21 +94,21 @@ public:
         for (auto &str : new_env) {
             w.env.insert(str);
             if (is_proxied) {
-                if (via_env->find(str) != via_env->end())
+                if (via_env->find(str) != via_env->end()) {
+//                    std::cout << "+from_proxy " << str << "\n";
                     proxy_add_env.push_back(str);
-                else
+                    continue;
+                } else {
+//                    std::cout << "+from_master " << str << "\n";
                     via_env->insert(str);
+                }
             }
             mp.push_back(zmq::message_t(str));
-            zmq::message_t msg;
-            msg.copy(env[str]);
-            mp.push_back(std::move(msg));
+            mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
         }
 
-        if (is_proxied) {
-            SEXP from_proxy = Rcpp::wrap(proxy_add_env);
-            mp.push_back(r2msg(from_proxy));
-        }
+        if (is_proxied)
+            mp.push_back(r2msg(Rcpp::wrap(proxy_add_env)));
 
         w.call = cmd;
         mp.send(sock);

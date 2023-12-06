@@ -74,17 +74,26 @@ public:
     bool process_one() {
         std::vector<zmq::message_t> msgs;
         auto n = recv_multipart(sock, std::back_inserter(msgs));
+
+//        std::cout << "Received message: ";
+//        for (int i=0; i<msgs.size(); i++)
+//            std::cout << msgs[i].size() << " ";
+//        std::cout << "\n";
+//        for (int i=0; i<msgs.size(); i++)
+//            std::cout << i << ": " << msgs[i].str() << "\n";
+
         if (msg2wlife_t(msgs[0]) == wlife_t::shutdown) {
             close();
             return false;
         }
-
-        for (auto it=msgs.begin()+2; it<msgs.end(); it+=2) {
-            std::string name = it->to_string();
+        for (auto it=msgs.begin()+3; it<msgs.end(); it+=2) {
+            std::string name = (it-1)->to_string();
             if (name.compare(0, 8, "package:") == 0)
                 load_pkg(name.substr(8, std::string::npos));
-            else
-                env.assign(name, msg2r(*(it+1), true));
+            else {
+                auto obj = zmq::message_t(it->data(), it->size());
+                env.assign(name, msg2r(obj, true));
+            }
         }
 
         auto cmd = msg2r(msgs[1], true);
