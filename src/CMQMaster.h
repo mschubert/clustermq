@@ -181,7 +181,11 @@ public:
         status.reserve(peers.size());
         Rcpp::List wtime, mem;
         for (const auto &kv: peers) {
-            names.push_back(kv.first);
+            std::stringstream os;
+            os << std::hex << std::setw(2) << std::setfill('0');
+            for (const auto ch: kv.first)
+                os << static_cast<short>(ch);
+            names.push_back(os.str());
             status.push_back(std::string(wlife_t2str(kv.second.status)));
             wtime.push_back(kv.second.time);
             mem.push_back(kv.second.mem);
