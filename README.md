@@ -146,13 +146,22 @@ Use [`batchtools`](https://github.com/mllg/batchtools) if you:
 * don't mind there's no load-balancing at run-time
 
 Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) or
-[`drake`](https://github.com/ropensci/drake) if:
+[`targets`](https://github.com/ropensci/targets) if:
 
 * you want to design and run a workflow on HPC
 
 Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).
+
+Questions
+---------
+
+You are welcome to ask questions if something is not clear in the [User
+guide](https://mschubert.github.io/clustermq/articles/userguide.html).
+
+Please use the [Github
+Discussions](https://github.com/mschubert/clustermq/discussions) for this.
 
 Contributing
 ------------
@@ -162,8 +171,6 @@ to coordinate development of `clustermq`. Contributions are welcome and they
 come in many different forms, shapes, and sizes. These include, but are not
 limited to:
 
-* Questions: You are welcome to ask questions if something is not clear in the
-  [User guide](https://mschubert.github.io/clustermq/articles/userguide.html).
 * Bug reports: Let us know if something does not work as expected. Be sure to
   include a self-contained [Minimal Reproducible
   Example](https://stackoverflow.com/help/minimal-reproducible-example) and set
