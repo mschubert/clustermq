@@ -28,7 +28,9 @@ Pool = R6::R6Class("Pool",
             info = private$master$list_workers()
             times = do.call(rbind, info$time)[,1:3]
             mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
-            do.call(data.frame, c(info[c("worker", "status")], as.data.frame(times),
+            do.call(data.frame, c(info[c("worker", "status")],
+                                  current=list(info$worker==info$cur),
+                                  info["calls"], as.data.frame(times),
                                   list(mem.used=mem("used"), mem.max=mem("max used"))))
         },
 
