@@ -6,7 +6,7 @@ public:
     CMQMaster(): ctx(new zmq::context_t(3)) {}
     ~CMQMaster() { close(); }
 
-    SEXP context() {
+    SEXP context() const {
         Rcpp::XPtr<zmq::context_t> p(ctx, true);
         return p;
     }
@@ -158,7 +158,7 @@ public:
     void add_pkg(Rcpp::CharacterVector pkg) {
         add_env("package:" + Rcpp::as<std::string>(pkg), pkg);
     }
-    Rcpp::DataFrame list_env() {
+    Rcpp::DataFrame list_env() const {
         std::vector<std::string> names;
         names.reserve(env.size());
         std::vector<int> sizes;
@@ -175,7 +175,7 @@ public:
         pending_workers += n;
     }
 
-    Rcpp::List list_workers() {
+    Rcpp::List list_workers() const {
         std::vector<std::string> names, status;
         names.reserve(peers.size());
         status.reserve(peers.size());
@@ -183,7 +183,7 @@ public:
         for (const auto &kv: peers) {
             std::stringstream os;
             os << std::hex << std::setw(2) << std::setfill('0');
-            for (const auto ch: kv.first)
+            for (const auto &ch: kv.first)
                 os << static_cast<short>(ch);
             names.push_back(os.str());
             status.push_back(std::string(wlife_t2str(kv.second.status)));
