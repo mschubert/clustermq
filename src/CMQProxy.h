@@ -132,11 +132,8 @@ public:
             std::vector<zmq::message_t> msgs;
             auto n = recv_multipart(to_worker, std::back_inserter(msgs));
             zmq::multipart_t mp;
-            for (int i=0; i<msgs.size(); i++) {
-                zmq::message_t msg;
-                msg.move(msgs[i]);
-                mp.push_back(std::move(msg));
-            }
+            for (int i=0; i<msgs.size(); i++)
+                mp.push_back(std::move(msgs[i]));
             mp.send(to_master);
         }
 
