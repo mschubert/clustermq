@@ -63,7 +63,7 @@ defaults to 100 chunks per worker or max. 10 kb per chunk}
 
 \item{timeout}{Maximum time in seconds to wait for worker (default: Inf)}
 
-\item{max_calls_worker}{Maxmimum number of function calls that will be sent to one worker}
+\item{max_calls_worker}{Maxmimum number of chunks that will be sent to one worker}
 
 \item{verbose}{Print status messages and progress bar (default: TRUE)}
 }

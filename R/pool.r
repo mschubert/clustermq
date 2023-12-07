@@ -26,7 +26,7 @@ Pool = R6::R6Class("Pool",
 
         info = function() {
             info = private$master$list_workers()
-            times = do.call(rbind, info$time)[,1:3]
+            times = do.call(rbind, info$time)[,1:3,drop=FALSE]
             mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
             do.call(data.frame, c(info[c("worker", "status")],
                                   current=list(info$worker==info$cur),

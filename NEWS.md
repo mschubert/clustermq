@@ -1,6 +1,7 @@
 # git head
 
 * Fix a bug where SSH proxy would not cache data properly (#320)
+* Fix a bug where `max_calls_worker` was not respected (#322)
 * Local parallelism (`multicore`, `multiprocess`) again uses local IP (#321)
 
 # clustermq 0.9.1

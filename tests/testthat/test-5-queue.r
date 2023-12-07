@@ -124,3 +124,18 @@ test_that("shutdown monitor does not fire on clean disconnects", {
     res = Q(Sys.sleep, time=c(0,1), workers=w, timeout=10L)
     expect_equal(res, list(NULL, NULL))
 })
+
+test_that("max_calls_worker is respected", {
+    skip_on_cran() # not sure if CRAN-safe
+    skip_on_os("windows")
+
+    fx = function(x) { Sys.sleep(x==1); Sys.getpid() }
+
+    w = workers(n_jobs=2, qsys_id="multicore", reuse=FALSE)
+    res = table(unlist(Q(fx, x=1:4, workers=w)))
+    expect_true(setequal(res, c(1,3)))
+
+    w = workers(n_jobs=2, qsys_id="multicore", reuse=FALSE)
+    res = table(unlist(Q(fx, x=1:4, workers=w, max_calls_worker=2)))
+    expect_true(setequal(res, 2))
+})

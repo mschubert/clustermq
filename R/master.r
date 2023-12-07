@@ -86,7 +86,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
                 cond_msgs$errors = c(cond_msgs$errors, msg$errors)
         }
 
-        if (shutdown || (!is.null(msg$n_calls) && msg$n_calls >= max_calls_worker)) {
+        if (shutdown || with(pool$info(), calls[current]) >= max_calls_worker) {
             pool$send_shutdown()
             next
         }

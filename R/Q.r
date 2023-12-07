@@ -19,7 +19,7 @@
 #' @param chunk_size      Number of function calls to chunk together
 #'                        defaults to 100 chunks per worker or max. 10 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
-#' @param max_calls_worker  Maxmimum number of function calls that will be sent to one worker
+#' @param max_calls_worker  Maxmimum number of chunks that will be sent to one worker
 #' @param verbose         Print status messages and progress bar (default: TRUE)
 #' @return                A list of whatever `fun` returned
 #' @export
