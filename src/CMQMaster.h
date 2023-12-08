@@ -65,7 +65,7 @@ public:
             data_offset = register_peer(msgs);
         } while(data_offset >= msgs.size());
 
-        return msg2r(msgs[data_offset], true);
+        return msg2r(std::move(msgs[data_offset]), true);
     }
 
     void send(SEXP cmd) {
@@ -305,8 +305,8 @@ private:
         }
 
         if (msgs.size() > cur_i+2) {
-            w.time = msg2r(msgs[++cur_i], true);
-            w.mem = msg2r(msgs[++cur_i], true);
+            w.time = msg2r(std::move(msgs[++cur_i]), true);
+            w.mem = msg2r(std::move(msgs[++cur_i]), true);
         }
         return ++cur_i;
     }

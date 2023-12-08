@@ -53,7 +53,7 @@ public:
         std::vector<zmq::message_t> msgs;
         auto n = recv_multipart(to_master, std::back_inserter(msgs));
         auto status = msg2wlife_t(msgs[1]);
-        return msg2r(msgs[2], true);
+        return msg2r(std::move(msgs[2]), true);
     }
 
     std::string listen(Rcpp::CharacterVector addrs) {
@@ -104,7 +104,7 @@ public:
             auto n = recv_multipart(to_master, std::back_inserter(msgs));
             std::vector<std::string> add_from_proxy;
             if (msgs.size() >= 5) {
-                add_from_proxy = Rcpp::as<std::vector<std::string>>(msg2r(msgs.back(), true));
+                add_from_proxy = Rcpp::as<std::vector<std::string>>(msg2r(std::move(msgs.back()), true));
                 msgs.pop_back();
             }
 

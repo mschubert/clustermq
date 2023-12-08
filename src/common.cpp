@@ -22,7 +22,7 @@ int pending_interrupt() {
     return !(R_ToplevelExec(check_interrupt_fn, NULL));
 }
 
-zmq::message_t int2msg(int val) {
+zmq::message_t int2msg(const int val) {
     zmq::message_t msg(sizeof(int));
     memcpy(msg.data(), &val, sizeof(int));
     return msg;
@@ -36,7 +36,7 @@ zmq::message_t r2msg(SEXP data) {
     return msg;
 }
 
-SEXP msg2r(zmq::message_t &msg, bool unserialize) {
+SEXP msg2r(const zmq::message_t &&msg, const bool unserialize) {
     SEXP ans = Rf_allocVector(RAWSXP, msg.size());
     memcpy(RAW(ans), msg.data(), msg.size());
     if (unserialize)
@@ -45,7 +45,7 @@ SEXP msg2r(zmq::message_t &msg, bool unserialize) {
         return ans;
 }
 
-wlife_t msg2wlife_t(zmq::message_t &msg) {
+wlife_t msg2wlife_t(const zmq::message_t &msg) {
     wlife_t res;
     memcpy(&res, msg.data(), msg.size());
     return res;

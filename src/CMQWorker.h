@@ -90,13 +90,11 @@ public:
             std::string name = (it-1)->to_string();
             if (name.compare(0, 8, "package:") == 0)
                 load_pkg(name.substr(8, std::string::npos));
-            else {
-                auto obj = zmq::message_t(it->data(), it->size());
-                env.assign(name, msg2r(obj, true));
-            }
+            else
+                env.assign(name, msg2r(std::move(*it), true));
         }
 
-        auto cmd = msg2r(msgs[1], true);
+        auto cmd = msg2r(std::move(msgs[1]), true);
         int err = 0;
         SEXP eval = PROTECT(R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
         if (err) {
