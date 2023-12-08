@@ -52,16 +52,18 @@ test_that("proxy communication yields submit args", {
 })
 
 test_that("using the proxy without pool and forward", {
-    skip("using 1 worker: Error: Resource temporarily unavailable @m$recv (L63)")
     skip_on_cran()
     skip_on_os("windows")
     skip_if_not(has_localhost)
+    skip_if(toupper(getOption("clustermq.scheduler", qsys_default)) != "MULTICORE",
+            message="options(clustermq.scheduler') must be 'MULTICORE'")
 
     m = methods::new(CMQMaster)
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
     m$proxy_submit_cmd(list(n_jobs=1), 5000L)
+    m$add_pending_workers(1L)
     expect_null(m$recv(1000L)) # worker 1 up
     m$send(5 + 2)
     expect_equal(m$recv(500L), 7) # collect results
@@ -74,16 +76,18 @@ test_that("using the proxy without pool and forward", {
 })
 
 test_that("using the proxy without pool and forward, 2 workers", {
-    skip("using 2 workers: Assertion failed: check () (src/msg.cpp:414) on CI")
     skip_on_cran()
     skip_on_os("windows")
     skip_if_not(has_localhost)
+    skip_if(toupper(getOption("clustermq.scheduler", qsys_default)) != "MULTICORE",
+            message="options(clustermq.scheduler') must be 'MULTICORE'")
 
     m = methods::new(CMQMaster)
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
     m$proxy_submit_cmd(list(n_jobs=2), 5000L)
+    m$add_pending_workers(2L)
     expect_null(m$recv(1000L)) # worker 1 up
     m$send({ Sys.sleep(0.5); 5 + 2 })
     expect_null(m$recv(500L)) # worker 2 up
