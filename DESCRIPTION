@@ -29,8 +29,6 @@ License: Apache License (== 2.0) | file LICENSE
 Encoding: UTF-8
 Suggests:
     callr,
-    devtools,
-    dplyr,
     foreach,
     iterators,
     knitr,
