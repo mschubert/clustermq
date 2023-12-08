@@ -30,7 +30,7 @@
     
     <a class="navbar-brand me-2" href="index.html">clustermq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -187,18 +187,23 @@
 <li>don’t mind that arguments to every call are written to/read from disc</li>
 <li>don’t mind there’s no load-balancing at run-time</li>
 </ul>
-<p>Use <a href="https://snakemake.readthedocs.io/en/latest/" class="external-link">Snakemake</a> or <a href="https://github.com/ropensci/drake" class="external-link"><code>drake</code></a> if:</p>
+<p>Use <a href="https://snakemake.readthedocs.io/en/latest/" class="external-link">Snakemake</a> or <a href="https://github.com/ropensci/targets" class="external-link"><code>targets</code></a> if:</p>
 <ul>
 <li>you want to design and run a workflow on HPC</li>
 </ul>
 <p>Don’t use <a href="https://cran.r-project.org/web/packages/batch/index.html" class="external-link"><code>batch</code></a> (last updated 2013) or <a href="https://github.com/tudo-r/BatchJobs" class="external-link"><code>BatchJobs</code></a> (issues with SQLite on network-mounted storage).</p>
 </div>
 <div class="section level2">
+<h2 id="questions">Questions<a class="anchor" aria-label="anchor" href="#questions"></a>
+</h2>
+<p>You are welcome to ask questions if something is not clear in the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User guide</a>.</p>
+<p>Please use the <a href="https://github.com/mschubert/clustermq/discussions" class="external-link">Github Discussions</a> for this.</p>
+</div>
+<div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>We use Github’s <a href="https://github.com/mschubert/clustermq/issues" class="external-link">Issue Tracker</a> to coordinate development of <code>clustermq</code>. Contributions are welcome and they come in many different forms, shapes, and sizes. These include, but are not limited to:</p>
 <ul>
-<li>Questions: You are welcome to ask questions if something is not clear in the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User guide</a>.</li>
 <li>Bug reports: Let us know if something does not work as expected. Be sure to include a self-contained <a href="https://stackoverflow.com/help/minimal-reproducible-example" class="external-link">Minimal Reproducible Example</a> and set <code>log_worker=TRUE</code>.</li>
 <li>Code contributions: Have a look at the <a href="https://github.com/mschubert/clustermq/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22" class="external-link"><code>good first   issue</code></a> tag. Please discuss anything more complicated before putting a lot of work in, I’m happy to help you get started.</li>
 </ul>
