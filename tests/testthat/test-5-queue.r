@@ -126,7 +126,6 @@ test_that("shutdown monitor does not fire on clean disconnects", {
 })
 
 test_that("max_calls_worker is respected", {
-    skip_on_cran() # not sure if CRAN-safe
     skip_on_os("windows")
 
     fx = function(x) { Sys.sleep(x==1); Sys.getpid() }

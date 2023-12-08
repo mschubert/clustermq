@@ -6,7 +6,6 @@ has_localhost = has_connectivity("127.0.0.1")
 # the first test twice leads to a segfault; not sure why, fix this eventually
 test_that("simple forwarding works", {
     skip_if_not(has_localhost)
-    skip_on_cran()
 
     m = methods::new(CMQMaster)
     p = methods::new(CMQProxy)#, m$context())
