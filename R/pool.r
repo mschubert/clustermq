@@ -100,18 +100,19 @@ Pool = R6::R6Class("Pool",
         },
 
         cleanup = function(timeout=5000) {
+            info = self$info()
             private$master$close(timeout)
             # ^^ replace with: (1) try close connections, and (2) close socket
 
-            times = private$master$list_workers()$time
-            times = times[sapply(times, length) != 0]
-            max_mem = max(c(self$info()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
+            max_mem = max(c(info$mem.max+2e8, 0), na.rm=TRUE) # add 200 Mb
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
 
-            wt = Reduce(`+`, times) / length(times)
-            rt = proc.time() - private$timer
-            if (! inherits(wt, "proc_time"))
+            if (nrow(info) > 0) {
+                wt = lapply(info[c("user.self", "sys.self", "elapsed")], mean, na.rm=TRUE)
+            } else {
                 wt = rep(NA, 3)
+            }
+            rt = proc.time() - private$timer
             rt3_fmt = difftime(as.POSIXct(rt[[3]], origin="1970-01-01"),
                                as.POSIXct(0, origin="1970-01-01"), units="auto")
             rt3_str = sprintf("%.1f %s", rt3_fmt, attr(rt3_fmt, "units"))
