@@ -35,6 +35,7 @@ public:
     void close(int timeout=0) {
         peers.clear();
         env.clear();
+        pending_workers = 0;
 
         if (sock.handle() != nullptr) {
             sock.set(zmq::sockopt::linger, timeout);
