@@ -6,7 +6,6 @@
 backup
 ^CHANGES\.md$
 ^Makefile$$
-^README\.md$
 ^\.travis\.yml$
 ^\.travis-ssh\.sh$
 ^CITATION$
