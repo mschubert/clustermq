@@ -65,9 +65,9 @@ welcome](https://github.com/mschubert/clustermq/issues/new).
 remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
-For installation problems, see the [Troubleshooting](#troubleshooting) section.
+For any installation issues please see the [Troubleshooting](#trouble-install) section.
 
-## Configuration {#configuration}
+## Configuration
 
 Choose your preferred parallelism using:
 
@@ -83,6 +83,9 @@ There are three kinds of schedulers:
 * [HPC schedulers](#setting-up-the-scheduler)
 
 Parallel and HPC schedulers can also be used [via SSH](#ssh-connector).
+
+If this does not work for any reason, please see the
+[Troubleshooting](#troubleshooting) section.
 
 ### Local parallelization
 
@@ -116,11 +119,11 @@ To set up a scheduler explicitly, see the following links:
 
 Default submission templates [are
 provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
-customized](#configuration),
+customized](#Configuration),
 e.g. to activate [compute environments or
 containers](#Environments).
 
-### SSH connector {#ssh-connector}
+### SSH connector
 
 There are reasons why you might prefer to not to work on the computing cluster
 directly but rather on your local machine instead.
@@ -325,7 +328,7 @@ persist if you restart R.
 
 ## Troubleshooting
 
-### Installation errors
+### Installation errors {#trouble-install}
 
 To compile this package a fully C++11 compliant compiler is required. This is
 [implicit for CRAN packages](https://www.tidyverse.org/blog/2023/03/cran-checks-compiled-code/)
@@ -352,7 +355,7 @@ cc --version
 In this case, it is _very_ likely that your HPC system already has a newer
 compiler installed that you need to add to your `$PATH` or load as a module.
 
-### Job submission fails with template error
+### Job submission fails with template error {#trouble-template}
 
 If you test your setup with a simple `Q` call, but get an error like the
 following:
@@ -363,7 +366,7 @@ Submitting 1 worker jobs (ID: cmq6053) ...
 Unable to run job: unknown resource "m_mem_free"
 Exiting.
 
-see: https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting
+see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template
 
 Your filled template was:
 """
@@ -404,7 +407,7 @@ your system admins for more information. For the latter, provide them with the
 filled template from the error message (as this is an HPC scheduler template
 issue, not a `clustermq` issue).
 
-### Session gets stuck at "Running calculations"
+### Session gets stuck at "Running calculations" {#trouble-stuck}
 
 Your R session may be stuck at something like the following:
 

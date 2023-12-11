@@ -50,6 +50,8 @@ remotes::install_github('mschubert/clustermq')
 # remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
+For installation problems, see the [Troubleshooting](https://mschubert.github.io/clustermq/articles/userguide.html#trouble-install) section of the User Guide.
+
 Schedulers
 ----------
 
@@ -121,7 +123,7 @@ bplapply(1:3, sqrt)
 ```
 
 More examples are available in [the
-user guide](https://mschubert.github.io/clustermq/articles/userguide.html).
+User Guide](https://mschubert.github.io/clustermq/articles/userguide.html).
 
 Comparison to other packages
 ----------------------------
@@ -158,9 +160,9 @@ Questions
 ---------
 
 For any questions and issues, please check the [User
-manual](https://mschubert.github.io/clustermq/articles/userguide.html)
+Guide](https://mschubert.github.io/clustermq/articles/userguide.html)
 and in particular the [Troubleshooting
-guide](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting).
+section](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting).
 
 If you have questions beyond that, please use the [Github
 Discussions](https://github.com/mschubert/clustermq/discussions). If you

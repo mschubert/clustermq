@@ -1,3 +1,4 @@
+
 #' SGE scheduler functions
 #'
 #' Derives from QSys to provide SGE-specific functions
@@ -27,7 +28,7 @@ SGE = R6::R6Class("SGE",
             status = attr(private$qsub_stdout, "status")
             if (!is.null(status) && status != 0) {
                 message("\nYour filled template was:\n", '"""', "\n", filled, '"""', "\n\n")
-                message("see: https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting\n")
+                message("see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template\n")
                 stop("Job submission failed with error code ", status)
             }
 
