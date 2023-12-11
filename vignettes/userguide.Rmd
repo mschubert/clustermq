@@ -65,6 +65,8 @@ welcome](https://github.com/mschubert/clustermq/issues/new).
 remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
+For installation problems, see the [Troubleshooting](#troubleshooting) section.
+
 ## Configuration {#configuration}
 
 Choose your preferred parallelism using:
@@ -432,7 +434,7 @@ which have access to the head node.
 
 You can list the available network interfaces using the `ifconfig` command.
 Find the interface that shares a subnetwork with the head node and add the
-[option](options) `clustermq.host=<interface>`. Contact your system
+[option](#options) `clustermq.host=<interface>`. Contact your system
 administrators for more information.
 
 ### Debugging workers
