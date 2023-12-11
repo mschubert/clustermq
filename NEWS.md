@@ -1,3 +1,7 @@
+# git head
+
+* The Troubleshooting page in the User Guide has been extensively updated
+
 # clustermq 0.9.2
 
 * Fix a bug where SSH proxy would not cache data properly (#320)

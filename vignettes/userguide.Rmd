@@ -288,7 +288,8 @@ where applicable, however, we list all of the options here for reference.
 
 Options can be set by including a call to `options(<key> = <value>)` in your
 `.Rprofile`, or by calling `options(<key> = <value>)` in a script or
-interactively during a session.
+interactively during a session. Note, however, that the latter will not
+persist if you restart R.
 
 * `clustermq.scheduler` - One of the supported
       [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
@@ -321,6 +322,118 @@ interactively during a session.
       (default is an empty list (i.e. `list()`))
 
 ## Troubleshooting
+
+### Installation errors
+
+To compile this package a fully C++11 compliant compiler is required. This is
+[implicit for CRAN packages](https://www.tidyverse.org/blog/2023/03/cran-checks-compiled-code/)
+since `R=3.6.2` and is hence not listed in _SystemRequirements_. If you
+encounter an error saying that that no matching function call to
+`zmq::message_t::message_t(std::string&)` exists, your compiler does not
+(fully) support this.
+
+```{sh eval=FALSE}
+In file included from CMQMaster.cpp:2:0:
+CMQMaster.h: In member function ‘void CMQMaster::proxy_submit_cmd(SEXP, int)’:
+CMQMaster.h:146:40: error: no matching function for call to ‘zmq::message_t::message_t(std::string&)’
+         mp.push_back(zmq::message_t(cur));
+```
+
+This happens for instance for old versions of the `gcc` compiler (default on
+most Linux distributions). You can check your version using:
+
+```{sh eval=FALSE}
+# the minimum required gcc version is 4.8.1 for full C++11 support (clang 3.3)
+cc --version
+```
+
+In this case, it is _very_ likely that your HPC system already has a newer
+compiler installed that you need to add to your `$PATH` or load as a module.
+
+### Job submission fails with template error
+
+If you test your setup with a simple `Q` call, but get an error like the
+following:
+
+```{r eval=FALSE}
+> clustermq::Q(identity, x=1, n_jobs=1)
+Submitting 1 worker jobs (ID: cmq6053) ...
+Unable to run job: unknown resource "m_mem_free"
+Exiting.
+
+see: https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting
+
+Your filled template was:
+"""
+#$ -N cmq6053
+#$ -j y
+#$ -o /dev/null
+#$ -cwd
+#$ -V
+#$ -t 1-1
+#$ -pe smp 1
+#$ -l m_mem_free=1073741824
+
+ulimit -v $(( 1024 * 4096 ))
+CMQ_AUTH=xxxx R --no-save --no-restore -e 'clustermq:::worker("tcp://10.0.0.100:6053")'
+"""
+
+Error in initialize(...) : Job submission failed with error code 1
+In addition: Warning message:
+In system2("qsub", input = filled, stdout = TRUE) :
+  running command ''qsub' < '/tmp/RtmpdGJOxs/filee7f3011007b'' had status 1
+```
+
+This means that your job submission system has not been successfully
+auto-detected and requires some configuration, _i.e._ you need to manually
+specify which scheduler and template you want to use.
+
+Be sure to know what scheduler your HPC provides, and then see the [manual
+scheduler setup](#scheduler-templates) on how to set it up.
+
+You may need to change some scheduler-specific options in the template file for
+this to work, like the queue/partition name or how to request memory or
+runtime. Often, the error message gives you a good hint on what to change: In
+the example above, we are using a version of SGE where we need to use
+`mem_free` instead of `m_mem_free` to request memory.
+
+If it is not obvious what do change, consult the scheduler documentation or
+your system admins for more information. For the latter, provide them with the
+filled template from the error message (as this is an HPC scheduler template
+issue, not a `clustermq` issue).
+
+### Session gets stuck at "Running calculations"
+
+Your R session may be stuck at something like the following:
+
+```{r eval=FALSE}
+> clustermq::Q(identity, x=42, n_jobs=1)
+Submitting 1 worker jobs (ID: cmq8480) ...
+Running 1 calculations (5 objs/19.4 Kb common; 1 calls/chunk) ...
+```
+
+This likely means that your jobs are started, but can not connect back to the
+main session. You can confirm this by setting
+[`log_worker=TRUE`](#debugging-workers) and inspect the logs created in your
+current working directory. They will state something like:
+
+```{sh eval=FALSE}
+> clustermq:::worker("tcp://my.headnode:9091")
+2023-12-11 10:22:58.485529 | Master: tcp://my.headnode:9091
+2023-12-11 10:22:58.488892 | connecting to: tcp://my.headnode:9091:
+Error: Connection failed after 10016 ms
+Execution halted
+```
+
+Here, the submitted job is unable to establish a network connection with the
+head node. This can happen if your HPC does not allow these connections, but
+more likely happens because there are multiple network interfaces, only some of
+which have access to the head node.
+
+You can list the available network interfaces using the `ifconfig` command.
+Find the interface that shares a subnetwork with the head node and add the
+[option](options) `clustermq.host=<interface>`. Contact your system
+administrators for more information.
 
 ### Debugging workers
 

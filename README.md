@@ -157,11 +157,14 @@ Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 Questions
 ---------
 
-You are welcome to ask questions if something is not clear in the [User
-guide](https://mschubert.github.io/clustermq/articles/userguide.html).
+For any questions and issues, please check the [User
+manual](https://mschubert.github.io/clustermq/articles/userguide.html)
+and in particular the [Troubleshooting
+guide](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting).
 
-Please use the [Github
-Discussions](https://github.com/mschubert/clustermq/discussions) for this.
+If you have questions beyond that, please use the [Github
+Discussions](https://github.com/mschubert/clustermq/discussions). If you
+believe you found a bug, please [open it as an issue](#contributing).
 
 Contributing
 ------------
