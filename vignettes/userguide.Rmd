@@ -290,9 +290,9 @@ The various configurable options are mentioned throughout the documentation,
 where applicable, however, we list all of the options here for reference.
 
 Options can be set by including a call to `options(<key> = <value>)` in your
-`.Rprofile`, or by calling `options(<key> = <value>)` in a script or
-interactively during a session. Note, however, that the latter will not
-persist if you restart R.
+current session or added as a line to your `~/.Rprofile`. The former will only
+be available in your active session, while the latter will be available any
+time after you restart R.
 
 * `clustermq.scheduler` - One of the supported
       [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
