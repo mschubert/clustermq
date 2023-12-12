@@ -5,6 +5,8 @@ loadModule("cmq_master", TRUE) # CMQMaster C++ class
 #' Provides the basic functions needed to communicate between machines
 #' This should abstract most functions of rZMQ so the scheduler
 #' implementations can rely on the higher level functionality
+#'
+#' @keywords internal
 Pool = R6::R6Class("Pool",
     public = list(
         initialize = function(addr=sample(host()), reuse=TRUE) {

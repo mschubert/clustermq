@@ -53,8 +53,7 @@ remotes::install_github('mschubert/clustermq')
 
 > [!TIP]
 > For installation problems, see the
-> [Troubleshooting](https://mschubert.github.io/clustermq/articles/userguide.html#trouble-install)
-> section of the User Guide
+> [Troubleshooting guide](https://mschubert.github.io/clustermq/articles/troubleshooting.html#install)
 
 Schedulers
 ----------
@@ -77,8 +76,8 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#config
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
 > [!TIP]
-> You may need to [adjust the default templates](https://mschubert.github.io/clustermq/articles/userguide.html#configuration)
-> for the scheduler interface to work properly
+> Follow the links above to configure your scheduler in case it is not working
+> out of the box
 
 Usage
 -----
@@ -180,8 +179,8 @@ sizes. These include, but are not limited to:
 
 > [!TIP]
 > For any questions and issues, pleasecheck the
-> [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html) and in particular the
-> [Troubleshooting section](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting) first
+> [User](https://mschubert.github.io/clustermq/articles/userguide.html) and the
+> [Troubleshooting guide](https://mschubert.github.io/clustermq/articles/troubleshooting.html) first
 
 Citation
 --------

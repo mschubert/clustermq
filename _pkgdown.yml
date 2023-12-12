@@ -13,6 +13,8 @@ navbar:
           href: articles/userguide.html
         - text: Technical Documentation
           href: articles/technicaldocs.html
+        - text: Troubleshooting
+          href: articles/troubleshooting.html
         - text: Reference
           href: reference/index.html
         - text: Changelog
@@ -32,7 +34,6 @@ reference:
     - title: Manage worker pools
       contents:
           - workers
-          - Pool
     - title: "`foreach` support"
       contents:
           - register_dopar_cmq
