@@ -51,6 +51,7 @@ Github. Note that this version needs `autoconf`/`automake` for compilation:
 # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 # install.packages('remotes')
 remotes::install_github("mschubert/clustermq")
+# remotes::install_github("mschubert/clustermq@develop") # dev version
 ```
 
 In the [`develop`](https://github.com/mschubert/clustermq/tree/develop) branch,
@@ -58,12 +59,6 @@ we will introduce code changes and new features. These may contain bugs, poor
 documentation, or other inconveniences. This branch may not install at times.
 However, [feedback is very
 welcome](https://github.com/mschubert/clustermq/issues/new).
-
-```{r eval=FALSE}
-# Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
-# install.packages("remotes")
-remotes::install_github("mschubert/clustermq@develop")
-```
 
 For any installation issues please see the
 [FAQ](https://mschubert.github.io/clustermq/articles/faq.html#install).
@@ -113,13 +108,11 @@ To set up a scheduler explicitly, see the following links:
 * [SGE](#sge) - *may require configuration*
 * [PBS](#pbs)/[Torque](#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * you can suggest another scheduler by [opening an
-  issue](https://github.com/mschubert/clustermq/issues/new)
+  issue](https://github.com/mschubert/clustermq/issues)
 
-Default submission templates [are
-provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
-customized](#configuration),
-e.g. to activate [compute environments or
-containers](#environments).
+You may in addition need to activate [compute environments or
+containers](#environments) if your shell (_e.g._ `~/.bashrc`) does not do this
+automatically.
 
 ### SSH connector
 
@@ -432,9 +425,8 @@ options(
 )
 ```
 
-The option `clustermq.template` should point to a LSF template file like the
-one below (only needed if you want to supply your own template rather than
-using the default).
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
@@ -482,9 +474,8 @@ options(
 )
 ```
 
-The option `clustermq.template` should point to a SGE template file like the
-one below (only needed if you want to supply your own template rather than
-using the default).
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 #$ -N {{ job_name }}               # job name
@@ -524,9 +515,8 @@ options(
 )
 ```
 
-The option `clustermq.template` should point to a SLURM template file like the
-one below (only needed if you want to supply your own template rather than
-using the default).
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 #!/bin/sh
@@ -566,9 +556,8 @@ options(
 )
 ```
 
-The option `clustermq.template` should point to a PBS template file like the
-one below (only needed if you want to supply your own template rather than
-using the default).
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 #PBS -N {{ job_name }}
@@ -605,9 +594,8 @@ options(clustermq.scheduler = "Torque",
 )
 ```
 
-The option `clustermq.template` should point to a Torque template file like the
-one below (only needed if you want to supply your own template rather than
-using the default).
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 #PBS -N {{ job_name }}
@@ -650,6 +638,9 @@ options(clustermq.scheduler = "ssh",
 The default template is shown below. If `R` is not in your HPC `$PATH`, you may
 need to specify its path or [load the required bash modules/conda
 environments](https://github.com/mschubert/clustermq/issues/281).
+
+To supply your own template, save its contents with any desired changes to a
+file _on your local machine_ and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 ssh -o "ExitOnForwardFailure yes" -f \
