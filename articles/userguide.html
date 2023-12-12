@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">clustermq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -425,11 +425,10 @@ calculations as jobs</a>.</p>
 documentation, where applicable, however, we list all of the options
 here for reference.</p>
 <p>Options can be set by including a call to
-<code>options(&lt;key&gt; = &lt;value&gt;)</code> in your
-<code>.Rprofile</code>, or by calling
-<code>options(&lt;key&gt; = &lt;value&gt;)</code> in a script or
-interactively during a session. Note, however, that the latter will not
-persist if you restart R.</p>
+<code>options(&lt;key&gt; = &lt;value&gt;)</code> in your current
+session or added as a line to your <code>~/.Rprofile</code>. The former
+will only be available in your active session, while the latter will be
+available any time after you restart R.</p>
 <ul>
 <li>
 <code>clustermq.scheduler</code> - One of the supported <a href="#configuration"><code>clustermq</code> schedulers</a>; options are
