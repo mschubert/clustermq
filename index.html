@@ -106,7 +106,9 @@
 <code class="sourceCode R"><span><span class="co"># install.packages('remotes')</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'mschubert/clustermq'</span><span class="op">)</span></span>
 <span><span class="co"># remotes::install_github('mschubert/clustermq', ref="develop") # dev version</span></span></code></pre></div>
-<p>For installation problems, see the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#trouble-install" class="external-link">Troubleshooting</a> section of the User Guide.</p>
+<blockquote>
+<p>[!TIP] For installation problems, see the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#trouble-install" class="external-link">Troubleshooting</a> section of the User Guide</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="schedulers">Schedulers<a class="anchor" aria-label="anchor" href="#schedulers"></a>
@@ -118,13 +120,13 @@
 <a href="https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization" class="external-link">Multiprocess</a> - <em>test your calls and parallelize on cores using</em> <code>options(clustermq.scheduler="multiprocess")</code>
 </li>
 <li>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#slurm" class="external-link">SLURM</a> - <em>should work without setup</em>
+</li>
+<li>
 <a href="https://mschubert.github.io/clustermq/articles/userguide.html#lsf" class="external-link">LSF</a> - <em>should work without setup</em>
 </li>
 <li>
-<a href="https://mschubert.github.io/clustermq/articles/userguide.html#sge" class="external-link">SGE</a> - <em>should work without setup</em>
-</li>
-<li>
-<a href="https://mschubert.github.io/clustermq/articles/userguide.html#slurm" class="external-link">SLURM</a> - <em>should work without setup</em>
+<a href="https://mschubert.github.io/clustermq/articles/userguide.html#sge" class="external-link">SGE</a> - <em>may require configuration</em>
 </li>
 <li>
 <a href="https://mschubert.github.io/clustermq/articles/userguide.html#pbs" class="external-link">PBS</a>/<a href="https://mschubert.github.io/clustermq/articles/userguide.html#torque" class="external-link">Torque</a> - <em>needs</em> <code>options(clustermq.scheduler="PBS"/"Torque")</code>
@@ -132,7 +134,9 @@
 <li>via <a href="https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector" class="external-link">SSH</a> - <em>needs</em> <code>options(clustermq.scheduler="ssh", clustermq.ssh.host=&lt;yourhost&gt;)</code>
 </li>
 </ul>
-<p>Default submission templates <a href="https://github.com/mschubert/clustermq/tree/master/inst" class="external-link">are provided</a> and <a href="https://mschubert.github.io/clustermq/articles/userguide.html#configuration" class="external-link">can be customized</a>, e.g. to activate <a href="https://mschubert.github.io/clustermq/articles/userguide.html#environments" class="external-link">compute environments or containers</a>.</p>
+<blockquote>
+<p>[!TIP] You may need to <a href="https://mschubert.github.io/clustermq/articles/userguide.html#configuration" class="external-link">adjust the default templates</a> for the scheduler interface to work properly</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -195,19 +199,18 @@
 <p>Don’t use <a href="https://cran.r-project.org/web/packages/batch/index.html" class="external-link"><code>batch</code></a> (last updated 2013) or <a href="https://github.com/tudo-r/BatchJobs" class="external-link"><code>BatchJobs</code></a> (issues with SQLite on network-mounted storage).</p>
 </div>
 <div class="section level2">
-<h2 id="questions">Questions<a class="anchor" aria-label="anchor" href="#questions"></a>
-</h2>
-<p>For any questions and issues, please check the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User Guide</a> and in particular the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting" class="external-link">Troubleshooting section</a>.</p>
-<p>If you have questions beyond that, please use the <a href="https://github.com/mschubert/clustermq/discussions" class="external-link">Github Discussions</a>. If you believe you found a bug, please <a href="#contributing">open it as an issue</a>.</p>
-</div>
-<div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>We use Github’s <a href="https://github.com/mschubert/clustermq/issues" class="external-link">Issue Tracker</a> to coordinate development of <code>clustermq</code>. Contributions are welcome and they come in many different forms, shapes, and sizes. These include, but are not limited to:</p>
+<p>Contributions are welcome and they come in many different forms, shapes, and sizes. These include, but are not limited to:</p>
 <ul>
+<li>Questions beyond the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User Guide</a>: Please post your questions on the <a href="https://github.com/mschubert/clustermq/discussions" class="external-link">Github Discussion Board</a>
+</li>
 <li>Bug reports: Let us know if something does not work as expected. Be sure to include a self-contained <a href="https://stackoverflow.com/help/minimal-reproducible-example" class="external-link">Minimal Reproducible Example</a> and set <code>log_worker=TRUE</code>.</li>
 <li>Code contributions: Have a look at the <a href="https://github.com/mschubert/clustermq/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22" class="external-link"><code>good first   issue</code></a> tag. Please discuss anything more complicated before putting a lot of work in, I’m happy to help you get started.</li>
 </ul>
+<blockquote>
+<p>[!TIP] For any questions and issues, please first check the <a href="https://mschubert.github.io/clustermq/articles/userguide.html" class="external-link">User Guide</a> and in particular the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting" class="external-link">Troubleshooting section</a></p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
