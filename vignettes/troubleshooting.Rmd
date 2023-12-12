@@ -69,7 +69,7 @@ Submitting 1 worker jobs (ID: cmq6053) ...
 Unable to run job: unknown resource "m_mem_free"
 Exiting.
 
-Your filled job submission template was:
+The filled SGE template ‘~/R/x86_64-pc-linux-gnu-library/4.2/clustermq/SGE.tmpl’ was:
 """
 #$ -N cmq6053
 #$ -j y
@@ -84,7 +84,7 @@ ulimit -v $(( 1024 * 4096 ))
 CMQ_AUTH=xxxx R --no-save --no-restore -e 'clustermq:::worker("tcp://10.0.0.100:6053")'
 """
 
-see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template
+see: https://mschubert.github.io/clustermq/articles/troubleshooting.html#template
 
 Error in initialize(...) : Job submission failed with error code 1
 In addition: Warning message:

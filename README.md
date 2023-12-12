@@ -178,9 +178,10 @@ sizes. These include, but are not limited to:
   in, I'm happy to help you get started.
 
 > [!TIP]
-> For any questions and issues, pleasecheck the
+> For any questions and issues, please check the
 > [User](https://mschubert.github.io/clustermq/articles/userguide.html) and the
-> [Troubleshooting guide](https://mschubert.github.io/clustermq/articles/troubleshooting.html) first
+> [Troubleshooting](https://mschubert.github.io/clustermq/articles/troubleshooting.html)
+> guides first
 
 Citation
 --------

@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
-Version: 0.9.2
+Version: 0.9.2.9000
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre', 'cph'),

@@ -1,6 +1,6 @@
 # git head
 
-* The Troubleshooting page in the User Guide has been extensively updated
+* Troubleshooting documentation has been extended and now has its own vignette
 
 # clustermq 0.9.2
 

@@ -24,12 +24,8 @@ SLURM = R6::R6Class("SLURM",
                 message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_id, ") ...")
 
             status = system("sbatch", input=filled, ignore.stdout=TRUE)
-            if (status != 0) {
-                message("\nYour filled job submission template was:\n", '"""', "\n", filled, '"""', "\n")
-                message("see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template\n")
-                stop("Job submission failed with error code ", status)
-            }
-
+            if (status != 0)
+                private$template_error("SLURM", status, filled)
             private$is_cleaned_up = FALSE
         },
 
