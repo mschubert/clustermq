@@ -25,7 +25,7 @@ LSF = R6::R6Class("LSF",
 
             success = system("bsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {
-                message("\nYour filled template was:\n", '"""', "\n", filled, '"""', "\n\n")
+                message("\nYour filled job submission template was:\n", '"""', "\n", filled, '"""', "\n")
                 message("see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template\n")
                 stop("Job submission failed with error code ", success)
             }

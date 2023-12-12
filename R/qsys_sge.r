@@ -27,7 +27,7 @@ SGE = R6::R6Class("SGE",
             private$qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
             status = attr(private$qsub_stdout, "status")
             if (!is.null(status) && status != 0) {
-                message("\nYour filled template was:\n", '"""', "\n", filled, '"""', "\n\n")
+                message("\nYour filled job submission template was:\n", '"""', "\n", filled, '"""', "\n")
                 message("see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template\n")
                 stop("Job submission failed with error code ", status)
             }

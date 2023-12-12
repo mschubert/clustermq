@@ -345,15 +345,17 @@ CMQMaster.h:146:40: error: no matching function for call to ‘zmq::message_t::m
 ```
 
 This happens for instance for old versions of the `gcc` compiler (default on
-most Linux distributions). You can check your version using:
+most Linux distributions). You can check your version in the terminal using:
 
 ```{sh eval=FALSE}
-# the minimum required gcc version is 4.8.1 for full C++11 support (clang 3.3)
+# the minimum required gcc version is 5.5 for full C++11 support (clang 3.3)
 cc --version
 ```
 
 In this case, it is _very_ likely that your HPC system already has a newer
 compiler installed that you need to add to your `$PATH` or load as a module.
+Once this is set, you can install the package from R *that was started in a
+terminal that has this module/path active*.
 
 ### Job submission fails with template error {#trouble-template}
 
@@ -366,9 +368,7 @@ Submitting 1 worker jobs (ID: cmq6053) ...
 Unable to run job: unknown resource "m_mem_free"
 Exiting.
 
-see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template
-
-Your filled template was:
+Your filled job submission template was:
 """
 #$ -N cmq6053
 #$ -j y
@@ -383,6 +383,8 @@ ulimit -v $(( 1024 * 4096 ))
 CMQ_AUTH=xxxx R --no-save --no-restore -e 'clustermq:::worker("tcp://10.0.0.100:6053")'
 """
 
+see: https://mschubert.github.io/clustermq/articles/userguide.html#trouble-template
+
 Error in initialize(...) : Job submission failed with error code 1
 In addition: Warning message:
 In system2("qsub", input = filled, stdout = TRUE) :
@@ -391,9 +393,9 @@ In system2("qsub", input = filled, stdout = TRUE) :
 
 This means that your job submission system has not been successfully
 auto-detected and requires some configuration, _i.e._ you need to manually
-specify which scheduler and template you want to use.
+specify what scheduler and template you want to use.
 
-Be sure to know what scheduler your HPC provides, and then see the [manual
+Be sure to know which scheduler your HPC provides, and then see the [manual
 scheduler setup](#scheduler-templates) on how to set it up.
 
 You may need to change some scheduler-specific options in the template file for
@@ -404,8 +406,8 @@ the example above, we are using a version of SGE where we need to use
 
 If it is not obvious what do change, consult the scheduler documentation or
 your system admins for more information. For the latter, provide them with the
-filled template from the error message (as this is an HPC scheduler template
-issue, not a `clustermq` issue).
+filled template from the error message (as this is an HPC submission template
+issue rather than a `clustermq` package issue).
 
 ### Session gets stuck at "Running calculations" {#trouble-stuck}
 
@@ -417,10 +419,15 @@ Submitting 1 worker jobs (ID: cmq8480) ...
 Running 1 calculations (5 objs/19.4 Kb common; 1 calls/chunk) ...
 ```
 
-This likely means that your jobs are started, but can not connect back to the
-main session. You can confirm this by setting
-[`log_worker=TRUE`](#debugging-workers) and inspect the logs created in your
-current working directory. They will state something like:
+You will see this every time your jobs are queued but not yet started.
+Depending on how busy your HPC is, this may take a long time. You can check the
+queueing status of your jobs in the terminal with _e.g._ `qstat` (SGE), `bjobs`
+(LSF), or `sinfo` (SLURM).
+
+If your jobs are already finished, this likely means that the `clustermq`
+workers can not connect to the main session. You can confirm this by passing
+[`log_worker=TRUE`](#debugging-workers) to `Q` and inspect the logs created in
+your current working directory. If they state something like:
 
 ```{sh eval=FALSE}
 > clustermq:::worker("tcp://my.headnode:9091")
@@ -430,15 +437,15 @@ Error: Connection failed after 10016 ms
 Execution halted
 ```
 
-Here, the submitted job is unable to establish a network connection with the
+the submitted job is indeed unable to establish a network connection with the
 head node. This can happen if your HPC does not allow these connections, but
 more likely happens because there are multiple network interfaces, only some of
 which have access to the head node.
 
-You can list the available network interfaces using the `ifconfig` command.
-Find the interface that shares a subnetwork with the head node and add the
-[option](#options) `clustermq.host=<interface>`. Contact your system
-administrators for more information.
+You can list the available network interfaces using the `ifconfig` command in
+the terminal. Find the interface that shares a subnetwork with the head node
+and add the [R option](#options) `clustermq.host=<interface>`. If this is
+unclear, contact your system administrators to see which interface to use.
 
 ### Debugging workers
 
@@ -649,9 +656,9 @@ chmod u+x ~/bin/qsub
 SINGULARITYENV_APPEND_PATH=~/bin
 ```
 
-## Scheduler templates {#scheduler-templates}
+## Scheduler templates
 
-### LSF {#LSF}
+### LSF
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -701,7 +708,7 @@ In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### SGE {#SGE}
+### SGE
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -724,7 +731,7 @@ using the default).
 #$ -cwd                            # use pwd as work dir
 #$ -V                              # use environment variable
 #$ -t 1-{{ n_jobs }}               # submit jobs as array
-#$ -pe {{ cores | 1 }}             # number of cores to use per job
+#$ -pe smp {{ cores | 1 }}         # number of cores to use per job
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
@@ -743,7 +750,7 @@ In this file, `#$-*` defines command-line arguments to the `qsub` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### SLURM {#SLURM}
+### SLURM
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -785,7 +792,7 @@ In this file, `#SBATCH` defines command-line arguments to the `sbatch` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### PBS {#PBS}
+### PBS
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
@@ -826,7 +833,7 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
 
-### Torque {#Torque}
+### Torque
 
 In your `~/.Rprofile` on your computing cluster, set the following options:
 
