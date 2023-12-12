@@ -13,8 +13,8 @@ navbar:
           href: articles/userguide.html
         - text: Technical Documentation
           href: articles/technicaldocs.html
-        - text: Troubleshooting
-          href: articles/troubleshooting.html
+        - text: FAQ
+          href: articles/faq.html
         - text: Reference
           href: reference/index.html
         - text: Changelog

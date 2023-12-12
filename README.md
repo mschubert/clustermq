@@ -30,6 +30,7 @@ Browse the vignettes here:
 
 * [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html)
 * [Technical Documentation](https://mschubert.github.io/clustermq/articles/technicaldocs.html)
+* [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
 
 Installation
 ------------
@@ -53,7 +54,7 @@ remotes::install_github('mschubert/clustermq')
 
 > [!TIP]
 > For installation problems, see the
-> [Troubleshooting guide](https://mschubert.github.io/clustermq/articles/troubleshooting.html#install)
+> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html#install)
 
 Schedulers
 ----------
@@ -180,7 +181,7 @@ sizes. These include, but are not limited to:
 > [!TIP]
 > For any questions and issues, please check the
 > [User](https://mschubert.github.io/clustermq/articles/userguide.html) and the
-> [Troubleshooting](https://mschubert.github.io/clustermq/articles/troubleshooting.html)
+> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
 > guides first
 
 Citation

@@ -1,9 +1,9 @@
 ---
-title: "Troubleshooting"
+title: "Frequently asked questions"
 output:
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Troubleshooting}
+  %\VignetteIndexEntry{FAQ}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -57,59 +57,6 @@ In this case, it is _very_ likely that your HPC system already has a newer
 compiler installed that you need to add to your `$PATH` or load as a module.
 Once this is set, you can install the package from R *that was started in a
 terminal that has this module/path active*.
-
-## Job submission fails with template error {#template}
-
-If you test your setup with a simple `Q` call, but get an error like the
-following:
-
-```{r eval=FALSE}
-> clustermq::Q(identity, x=1, n_jobs=1)
-Submitting 1 worker jobs (ID: cmq6053) ...
-Unable to run job: unknown resource "m_mem_free"
-Exiting.
-
-The filled SGE template ‘~/R/x86_64-pc-linux-gnu-library/4.2/clustermq/SGE.tmpl’ was:
-"""
-#$ -N cmq6053
-#$ -j y
-#$ -o /dev/null
-#$ -cwd
-#$ -V
-#$ -t 1-1
-#$ -pe smp 1
-#$ -l m_mem_free=1073741824
-
-ulimit -v $(( 1024 * 4096 ))
-CMQ_AUTH=xxxx R --no-save --no-restore -e 'clustermq:::worker("tcp://10.0.0.100:6053")'
-"""
-
-see: https://mschubert.github.io/clustermq/articles/troubleshooting.html#template
-
-Error in initialize(...) : Job submission failed with error code 1
-In addition: Warning message:
-In system2("qsub", input = filled, stdout = TRUE) :
-  running command ''qsub' < '/tmp/RtmpdGJOxs/filee7f3011007b'' had status 1
-```
-
-This means that your job submission system has not been successfully
-auto-detected and requires some configuration, _i.e._ you need to manually
-specify what scheduler and template you want to use.
-
-Be sure to know which scheduler your HPC provides, and then see the [manual
-scheduler setup](https://mschubert.github.io/clustermq/articles/userguide.html#scheduler-templates)
-on how to set it up.
-
-You may need to change some scheduler-specific options in the template file for
-this to work, like the queue/partition name or how to request memory or
-runtime. Often, the error message gives you a good hint on what to change: In
-the example above, we are using a version of SGE where we need to use
-`mem_free` instead of `m_mem_free` to request memory.
-
-If it is not obvious what do change, consult the scheduler documentation or
-your system admins for more information. For the latter, provide them with the
-filled template from the error message (as this is an HPC submission template
-issue rather than a `clustermq` package issue).
 
 ## Session gets stuck at "Running calculations" {#stuck}
 

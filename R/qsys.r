@@ -66,7 +66,7 @@ QSys = R6::R6Class("QSys",
         template_error = function(scheduler, status, filled) {
             message("\nThe filled ", scheduler, " template ", sQuote(private$template_file),
                     " was:\n", '"""', "\n", filled, '"""', "\n")
-            message("see: https://mschubert.github.io/clustermq/articles/troubleshooting.html#template\n")
+            message("see: https://mschubert.github.io/clustermq/articles/userguide.html#scheduler-setup\n")
             stop("Job submission failed with error code ", status, call.=FALSE)
         }
     ),
