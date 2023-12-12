@@ -1,10 +1,11 @@
 #!/bin/sh
+CC=$(${R_HOME}/bin/R CMD config CC)
 CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
 if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
-  if $(cc -o test_libzmq src/util/test_libzmq.c $(pkg-config --cflags --libs libzmq) >/dev/null 2>&1); then
+  if $($CC -o test_libzmq src/util/test_libzmq.c $(pkg-config --cflags --libs libzmq) >/dev/null 2>&1); then
     echo "* system has libzmq -> linking system library"
     if $(./test_libzmq 2>/dev/null); then
       echo "* libzmq has DRAFT API -> enabling crash monitor feature"
@@ -20,7 +21,7 @@ if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
   rm -f test_libzmq
 fi
 
-if ! $(cc --std=c++11 -o test_cpp11 src/util/test_cpp11.cpp >/dev/null 2>&1); then
+if ! $($CXX -o test_cpp11 src/util/test_cpp11.cpp >/dev/null 2>&1); then
   echo "ERROR: compiler needs full c++11 support (gcc>=5, clang>=3.3) -> check 'cc --version'"
   exit 1
 fi
