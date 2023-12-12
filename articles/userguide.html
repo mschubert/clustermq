@@ -224,8 +224,7 @@ without problems. Note that the <em>remote scheduler</em> can not be
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.scheduler <span class="op">=</span> <span class="st">"multiprocess"</span> <span class="co"># or multicore, LSF, SGE, Slurm etc.</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>On your <em>local machine</em>, add the following options in your
-<code>~/.Rprofile</code>:</p>
+<p>On your <em>local machine</em>, add the following options:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.scheduler <span class="op">=</span> <span class="st">"ssh"</span>,</span>
@@ -565,7 +564,7 @@ others):</p>
 need to pass either</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/Q.html">Q</a></span><span class="op">(</span><span class="va">...</span>, template<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>bashenv<span class="op">=</span><span class="st">"my environment name"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>or set it via an <em>.Rprofile</em> option:</p>
+<p>or set it via an option:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>bashenv<span class="op">=</span><span class="st">"my default env"</span><span class="op">)</span></span>
@@ -577,8 +576,8 @@ need to pass either</p>
 <div class="section level3">
 <h3 id="lsf">LSF<a class="anchor" aria-label="anchor" href="#lsf"></a>
 </h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, set the
-following options:</p>
+<p>Set the following options in your <em>R</em> session that will submit
+jobs:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.scheduler <span class="op">=</span> <span class="st">"lsf"</span>,</span>
@@ -628,8 +627,8 @@ warn you of the missing options.</p>
 <div class="section level3">
 <h3 id="sge">SGE<a class="anchor" aria-label="anchor" href="#sge"></a>
 </h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, set the
-following options:</p>
+<p>Set the following options in your <em>R</em> session that will submit
+jobs:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.scheduler <span class="op">=</span> <span class="st">"sge"</span>,</span>
@@ -668,8 +667,8 @@ warn you of the missing options.</p>
 <div class="section level3">
 <h3 id="slurm">SLURM<a class="anchor" aria-label="anchor" href="#slurm"></a>
 </h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, set the
-following options:</p>
+<p>Set the following options in your <em>R</em> session that will submit
+jobs:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.scheduler <span class="op">=</span> <span class="st">"slurm"</span>,</span>
@@ -710,8 +709,8 @@ warn you of the missing options.</p>
 <div class="section level3">
 <h3 id="pbs">PBS<a class="anchor" aria-label="anchor" href="#pbs"></a>
 </h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, set the
-following options:</p>
+<p>Set the following options in your <em>R</em> session that will submit
+jobs:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>    clustermq.scheduler <span class="op">=</span> <span class="st">"pbs"</span>,</span>
@@ -748,8 +747,8 @@ warn you of the missing options.</p>
 <div class="section level3">
 <h3 id="torque">Torque<a class="anchor" aria-label="anchor" href="#torque"></a>
 </h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, set the
-following options:</p>
+<p>Set the following options in your <em>R</em> session that will submit
+jobs:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.scheduler <span class="op">=</span> <span class="st">"Torque"</span>,</span>
 <span>        clustermq.template <span class="op">=</span> <span class="st">"/path/to/file/below"</span> <span class="co"># if using your own template</span></span>
