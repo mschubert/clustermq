@@ -3,6 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   technicaldocs: technicaldocs.html
+  troubleshooting: troubleshooting.html
   userguide: userguide.html
-last_built: 2023-12-12T09:08Z
+last_built: 2023-12-12T09:52Z
 
