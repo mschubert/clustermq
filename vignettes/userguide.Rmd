@@ -110,18 +110,18 @@ processing. This will work in most, but not all cases.
 
 To set up a scheduler explicitly, see the following links:
 
-* [LSF](#LSF) - *should work without setup*
-* [SGE](#SGE) - *should work without setup*
-* [SLURM](#SLURM) - *should work without setup*
-* [PBS](#PBS)/[Torque](#TORQUE) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
+* [LSF](#lsf) - *should work without setup*
+* [SGE](#sge) - *should work without setup*
+* [SLURM](#slurm) - *should work without setup*
+* [PBS](#pbs)/[Torque](#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * you can suggest another scheduler by [opening an
   issue](https://github.com/mschubert/clustermq/issues/new)
 
 Default submission templates [are
 provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
-customized](#Configuration),
+customized](#configuration),
 e.g. to activate [compute environments or
-containers](#Environments).
+containers](#environments).
 
 ### SSH connector
 
@@ -438,7 +438,7 @@ Execution halted
 ```
 
 the submitted job is indeed unable to establish a network connection with the
-head node. This can happen if your HPC does not allow these connections, but
+head node. This can happen if your HPC does not allow incoming connections, but
 more likely happens because there are multiple network interfaces, only some of
 which have access to the head node.
 
@@ -575,7 +575,7 @@ Examples for such environments or containers are:
 
 It should be possible to activate them in the job submission script (i.e., the
 template file). This is widely untested, but would look the following for the
-[LSF](#LSF) scheduler (analogous for others):
+[LSF](#lsf) scheduler (analogous for others):
 
 ```{sh eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs

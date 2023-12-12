@@ -42,12 +42,13 @@ install.packages('clustermq')
 ```
 
 Alternatively you can use the `remotes` package to install directly from
-Github. Note that this version needs `autoconf`/`automake` for compilation:
+Github. Note that this version needs `autoconf`/`automake` and `CMake` for
+compilation:
 
 ```r
 # install.packages('remotes')
 remotes::install_github('mschubert/clustermq')
-# remotes::install_github('mschubert/clustermq', ref="develop") # dev version
+# remotes::install_github('mschubert/clustermq@develop') # dev version
 ```
 
 > [!TIP]
@@ -165,9 +166,10 @@ sizes. These include, but are not limited to:
 
 * Questions beyond the [User
   Guide](https://mschubert.github.io/clustermq/articles/userguide.html): Please
-  post your questions on the [Github Discussion
-  Board](https://github.com/mschubert/clustermq/discussions)
-* Bug reports: Let us know if something does not work as expected. Be sure to
+  post your questions on the [Github Discussion](https://github.com/mschubert/clustermq/discussions)
+  board. If you are an advanced user, please also consider answering them.
+* Bug reports: [File an issue](https://github.com/mschubert/clustermq/issues)
+  if something does not work as expected. Be sure to
   include a self-contained [Minimal Reproducible
   Example](https://stackoverflow.com/help/minimal-reproducible-example) and set
   `log_worker=TRUE`.
@@ -177,9 +179,9 @@ sizes. These include, but are not limited to:
   in, I'm happy to help you get started.
 
 > [!TIP]
-> For any questions and issues, please first check the
+> For any questions and issues, pleasecheck the
 > [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html) and in particular the
-> [Troubleshooting section](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting)
+> [Troubleshooting section](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting) first
 
 Citation
 --------
