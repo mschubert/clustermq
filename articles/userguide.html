@@ -48,7 +48,7 @@
   <a class="nav-link" href="../articles/technicaldocs.html">Technical Documentation</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../articles/troubleshooting.html">Troubleshooting</a>
+  <a class="nav-link" href="../articles/faq.html">FAQ</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
@@ -127,8 +127,7 @@ very welcome</a>.</p>
 <code class="sourceCode R"><span><span class="co"># Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mschubert/clustermq@develop"</span><span class="op">)</span></span></code></pre></div>
-<p>For any installation issues please see the <a href="https://mschubert.github.io/clustermq/articles/troubleshooting.html#install" class="external-link">Troubleshooting
-guide</a>.</p>
+<p>For any installation issues please see the <a href="https://mschubert.github.io/clustermq/articles/faq.html#install" class="external-link">FAQ</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
@@ -144,7 +143,7 @@ guide</a>.</p>
 HPC scheduler found)</li>
 <li><a href="#local-parallelization">Multiple cores on the same
 machine</a></li>
-<li><a href="#setting-up-the-scheduler">HPC schedulers</a></li>
+<li><a href="#scheduler-setup">HPC schedulers</a></li>
 </ul>
 <p>Parallel and HPC schedulers can also be used <a href="#ssh-connector">via SSH</a>.</p>
 <div class="section level3">
@@ -166,7 +165,7 @@ causes problems (macOS, RStudio) and is not available on Windows.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="setting-up-the-scheduler">Setting up the scheduler<a class="anchor" aria-label="anchor" href="#setting-up-the-scheduler"></a>
+<h3 id="scheduler-setup">Setting up the scheduler<a class="anchor" aria-label="anchor" href="#scheduler-setup"></a>
 </h3>
 <p>An HPC cluster’s scheduler ensures that computing jobs are
 distributed to available worker nodes. Hence, this is what
@@ -214,10 +213,11 @@ scripts as jobs, aggregating the data in the end again.
 transparent SSH interface.</p>
 <p>In order to use <code>clustermq</code> from your local machine, the
 package needs to be installed on both there and on the computing
-cluster. On the computing cluster, <a href="#setting-up-the-scheduler">set up your scheduler</a> and make sure
-<code>clustermq</code> runs there without problems. Note that the
-<em>remote scheduler</em> can not be <code>LOCAL</code> (default if no
-HPC scheduler found) or <code>SSH</code> for this to work.</p>
+cluster. On the computing cluster, <a href="#scheduler-setup">set up
+your scheduler</a> and make sure <code>clustermq</code> runs there
+without problems. Note that the <em>remote scheduler</em> can not be
+<code>LOCAL</code> (default if no HPC scheduler found) or
+<code>SSH</code> for this to work.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># If this is set to 'LOCAL' or 'SSH' you will get the following error:</span></span>
 <span><span class="co">#  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys is not allowed’</span></span>
