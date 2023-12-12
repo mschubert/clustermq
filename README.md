@@ -165,8 +165,8 @@ Contributions are welcome and they come in many different forms, shapes, and
 sizes. These include, but are not limited to:
 
 * Questions beyond the [User
-  Guide](https://mschubert.github.io/clustermq/articles/userguide.html): Please
-  post your questions on the [Github Discussion](https://github.com/mschubert/clustermq/discussions)
+  Guide](https://mschubert.github.io/clustermq/articles/userguide.html): Ask on
+  the [Github Discussions](https://github.com/mschubert/clustermq/discussions)
   board. If you are an advanced user, please also consider answering them.
 * Bug reports: [File an issue](https://github.com/mschubert/clustermq/issues)
   if something does not work as expected. Be sure to
@@ -179,10 +179,9 @@ sizes. These include, but are not limited to:
   in, I'm happy to help you get started.
 
 > [!TIP]
-> For any questions and issues, please check the
-> [User](https://mschubert.github.io/clustermq/articles/userguide.html) and the
-> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
-> guides first
+> For any questions or issues, please check the
+> [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html) and the
+> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html) first
 
 Citation
 --------
