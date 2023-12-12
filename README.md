@@ -50,7 +50,10 @@ remotes::install_github('mschubert/clustermq')
 # remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
-For installation problems, see the [Troubleshooting](https://mschubert.github.io/clustermq/articles/userguide.html#trouble-install) section of the User Guide.
+> [!TIP]
+> For installation problems, see the
+> [Troubleshooting](https://mschubert.github.io/clustermq/articles/userguide.html#trouble-install)
+> section of the User Guide
 
 Schedulers
 ----------
@@ -65,18 +68,16 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#config
 
 * [Multiprocess](https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization) -
   *test your calls and parallelize on cores using* `options(clustermq.scheduler="multiprocess")`
-* [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
-* [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *should work without setup*
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
+* [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
+* [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *may require configuration*
 * [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
 
-Default submission templates [are
-provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
-customized](https://mschubert.github.io/clustermq/articles/userguide.html#configuration),
-e.g. to activate [compute environments or
-containers](https://mschubert.github.io/clustermq/articles/userguide.html#environments).
+> [!TIP]
+> You may need to [adjust the default templates](https://mschubert.github.io/clustermq/articles/userguide.html#configuration)
+> for the scheduler interface to work properly
 
 Usage
 -----
@@ -156,26 +157,16 @@ Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).
 
-Questions
----------
-
-For any questions and issues, please check the [User
-Guide](https://mschubert.github.io/clustermq/articles/userguide.html)
-and in particular the [Troubleshooting
-section](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting).
-
-If you have questions beyond that, please use the [Github
-Discussions](https://github.com/mschubert/clustermq/discussions). If you
-believe you found a bug, please [open it as an issue](#contributing).
-
 Contributing
 ------------
 
-We use Github's [Issue Tracker](https://github.com/mschubert/clustermq/issues)
-to coordinate development of `clustermq`. Contributions are welcome and they
-come in many different forms, shapes, and sizes. These include, but are not
-limited to:
+Contributions are welcome and they come in many different forms, shapes, and
+sizes. These include, but are not limited to:
 
+* Questions beyond the [User
+  Guide](https://mschubert.github.io/clustermq/articles/userguide.html): Please
+  post your questions on the [Github Discussion
+  Board](https://github.com/mschubert/clustermq/discussions)
 * Bug reports: Let us know if something does not work as expected. Be sure to
   include a self-contained [Minimal Reproducible
   Example](https://stackoverflow.com/help/minimal-reproducible-example) and set
@@ -184,6 +175,11 @@ limited to:
   issue`](https://github.com/mschubert/clustermq/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
   tag. Please discuss anything more complicated before putting a lot of work
   in, I'm happy to help you get started.
+
+> [!TIP]
+> For any questions and issues, please first check the
+> [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html) and in particular the
+> [Troubleshooting section](https://mschubert.github.io/clustermq/articles/userguide.html#troubleshooting)
 
 Citation
 --------
