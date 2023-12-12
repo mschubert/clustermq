@@ -115,7 +115,7 @@ compiler does not (fully) support this.</p>
 <p>This happens for instance for old versions of the <code>gcc</code>
 compiler (default on most Linux distributions). You can check your
 version in the terminal using:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># the minimum required gcc version is 5.5 for full C++11 support (clang 3.3)</span></span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># the minimum required gcc version is 5.5 for full C++11 support (3.3 for clang)</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">cc</span> <span class="at">--version</span></span></code></pre></div>
 <p>In this case, it is <em>very</em> likely that your HPC system already
 has a newer compiler installed that you need to add to your
@@ -206,7 +206,7 @@ unclear, contact your system administrators to see which interface to
 use.</p>
 </div>
 <div class="section level2">
-<h2 id="ssh-not-working-ssh">SSH not working {ssh}<a class="anchor" aria-label="anchor" href="#ssh-not-working-ssh"></a>
+<h2 id="ssh">SSH not working<a class="anchor" aria-label="anchor" href="#ssh"></a>
 </h2>
 <p>Before trying remote schedulers via SSH, make sure that the scheduler
 works when you first connect to the cluster and run a job from
@@ -253,7 +253,7 @@ environment, or having to confirm the connection via two-factor
 authentication.</p>
 </div>
 <div class="section level2">
-<h2 id="can-not-run-the-master-inside-containers-master-in-container">Can not run the master inside containers {master-in-container}<a class="anchor" aria-label="anchor" href="#can-not-run-the-master-inside-containers-master-in-container"></a>
+<h2 id="master-in-container">Running the master inside containers<a class="anchor" aria-label="anchor" href="#master-in-container"></a>
 </h2>
 <p>If your master process is inside a container, accessing the HPC
 scheduler is more difficult. Containers, including singularity and

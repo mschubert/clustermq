@@ -478,9 +478,10 @@ the common data (in Mb) before <code>clustermq</code> throws a warning
 the HPC template; this takes precedence over defaults specified in the
 template file (default is an empty list (i.e. <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>))</li>
 </ul>
-<div class="section level3">
-<h3 id="debugging-workers">Debugging workers<a class="anchor" aria-label="anchor" href="#debugging-workers"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="debugging-workers">Debugging workers<a class="anchor" aria-label="anchor" href="#debugging-workers"></a>
+</h2>
 <p>Function calls evaluated by workers are wrapped in event handlers,
 which means that even if a call evaluation throws an error, this should
 be reported back to the main R session.</p>
@@ -527,7 +528,6 @@ wildcards in their log file names. For instance:</p>
 available options.</p>
 <p>When reporting a bug that includes worker crashes, please always
 include a log file.</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="environments">Environments<a class="anchor" aria-label="anchor" href="#environments"></a>
