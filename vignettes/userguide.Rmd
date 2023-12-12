@@ -150,7 +150,7 @@ options(
 )
 ```
 
-On your *local machine*, add the following options in your `~/.Rprofile`:
+On your *local machine*, add the following options:
 
 ```{r eval=FALSE}
 options(
@@ -413,7 +413,7 @@ pass either
 Q(..., template=list(bashenv="my environment name"))
 ```
 
-or set it via an *.Rprofile* option:
+or set it via an option:
 
 ```{r eval=FALSE}
 options(
@@ -425,7 +425,7 @@ options(
 
 ### LSF
 
-In your `~/.Rprofile` on your computing cluster, set the following options:
+Set the following options in your _R_ session that will submit jobs:
 
 ```{r eval=FALSE}
 options(
@@ -475,7 +475,7 @@ the missing options.
 
 ### SGE
 
-In your `~/.Rprofile` on your computing cluster, set the following options:
+Set the following options in your _R_ session that will submit jobs:
 
 ```{r eval=FALSE}
 options(
@@ -517,7 +517,7 @@ the missing options.
 
 ### SLURM
 
-In your `~/.Rprofile` on your computing cluster, set the following options:
+Set the following options in your _R_ session that will submit jobs:
 
 ```{r eval=FALSE}
 options(
@@ -562,7 +562,7 @@ the missing options.
 
 ### PBS
 
-In your `~/.Rprofile` on your computing cluster, set the following options:
+Set the following options in your _R_ session that will submit jobs:
 
 ```{r eval=FALSE}
 options(
@@ -602,7 +602,7 @@ the missing options.
 
 ### Torque
 
-In your `~/.Rprofile` on your computing cluster, set the following options:
+Set the following options in your _R_ session that will submit jobs:
 
 ```{r eval=FALSE}
 options(clustermq.scheduler = "Torque",
