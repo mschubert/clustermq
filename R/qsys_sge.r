@@ -18,8 +18,7 @@ SGE = R6::R6Class("SGE",
                 opts$log_file = normalizePath(opts$log_file, mustWork=FALSE)
             else if (log_worker)
                 opts$log_file = sprintf("%s-%s.log", private$job_name, private$array_idx)
-            filled = fill_template(private$template, opts,
-                                   required=c("master", "n_jobs"))
+            filled = fill_template(private$template, opts, required=c("master", "n_jobs"))
 
             if (verbose)
                 message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_name, ") ...")
@@ -41,7 +40,7 @@ SGE = R6::R6Class("SGE",
         qsub_stdout = NULL,
         job_name = NULL,
         job_id   = NULL,
-        array_idx = "\\$TASK_ID",
+        array_idx = "$TASK_ID",
         is_cleaned_up = NULL,
 
         finalize = function(quiet = TRUE) { # self$workers_running == 0

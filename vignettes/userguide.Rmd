@@ -354,7 +354,7 @@ In order to log each worker separately, some schedulers support wildcards in
 their log file names. For instance:
 
 * Multicore/Multiprocess: `log_file="/path/to.file.%i"`
-* SGE: `log_file="/path/to.file.\$TASK_ID"`
+* SGE: `log_file="/path/to.file.$TASK_ID"`
 * LSF: `log_file="/path/to.file.%I"`
 * Slurm: `log_file="/path/to.file.%a"`
 * PBS: `log_file="/path/to.file.$PBS_ARRAY_INDEX"`
