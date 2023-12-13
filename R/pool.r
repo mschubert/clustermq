@@ -91,7 +91,7 @@ Pool = R6::R6Class("Pool",
         send = function(cmd, ...) {
             pcall = quote(substitute(cmd))
             cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
-            private$master$send(cmd)
+            invisible(private$master$send(cmd))
         },
         send_shutdown = function() {
             private$master$send_shutdown()

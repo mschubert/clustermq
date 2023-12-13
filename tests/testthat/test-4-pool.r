@@ -49,6 +49,22 @@ test_that("calculations are really done on the worker", {
     w$cleanup()
 })
 
+test_that("call references are matched properly", {
+    skip_on_os("windows")
+    w = workers(2, qsys_id="multicore")
+    expect_null(w$recv(5000L))
+
+    r1 = w$send({Sys.sleep(1); 1})
+    expect_null(w$recv(1000L))
+    r2 = w$send(2)
+    expect_equal(w$recv(500L), 2)
+    expect_equal(w$current()$call_ref, r2)
+    w$send_shutdown()
+    expect_equal(w$recv(2000L), 1)
+    expect_equal(w$current()$call_ref, r1)
+    w$cleanup()
+})
+
 test_that("multiprocess", {
     skip("https://github.com/r-lib/processx/issues/236")
 

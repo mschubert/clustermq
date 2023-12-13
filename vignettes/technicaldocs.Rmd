@@ -123,8 +123,8 @@ to all workers automatically in a greedy fashion.
 ### Main event loop
 
 Putting the above together in an event loop, we get what is essentially
-implemented in `master`. Note that your `expression` to evaluate needs to track
-its origin (this may change in the future).
+implemented in `master`. `w$send` invisibly returns an identifier to track
+which call was submitted, and `w$current()` matches the same to `w$recv()`.
 
 ```{r eval=FALSE}
 w = workers(3)
@@ -132,11 +132,12 @@ on.exit(w$cleanup())
 w$env(...)
 
 while (we have new work to send || jobs pending) {
-    res = w$recv()
+    res = w$recv() # the result of the call, or NULL for a new worker
+    w$current()$call_ref # matches answer to request, -1 otherwise
     # handle result
 
     if (more work)
-        w$send(expression, ...)
+        call_ref = w$send(expression, ...) # call_ref tracks request identity
     else
         w$send_shutdown()
 }

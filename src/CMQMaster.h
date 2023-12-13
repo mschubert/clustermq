@@ -116,7 +116,7 @@ public:
         return msg2r(std::move(msgs[data_offset]), true);
     }
 
-    void send(SEXP cmd) {
+    int send(SEXP cmd) {
         if (peers.find(cur) == peers.end())
             Rcpp::stop("Trying to send to worker that does not exist");
         auto &w = peers[cur];
@@ -159,7 +159,9 @@ public:
             mp.push_back(r2msg(Rcpp::wrap(proxy_add_env)));
 
         w.call = cmd;
+        w.call_ref = ++call_counter;
         mp.send(sock);
+        return w.call_ref;
     }
     void send_shutdown() {
         if (peers.find(cur) == peers.end())
@@ -266,6 +268,7 @@ public:
         return Rcpp::List::create(
             Rcpp::_["worker"] = os.str(),
             Rcpp::_["status"] = Rcpp::wrap(wlife_t2str(w.status)),
+            Rcpp::_["call_ref"] = w.call_ref,
             Rcpp::_["calls"] = w.n_calls,
             Rcpp::_["time"] = w.time,
             Rcpp::_["mem"] = w.mem
@@ -281,11 +284,13 @@ private:
         wlife_t status;
         std::string via;
         int n_calls {-1};
+        int call_ref {-1};
     };
 
     zmq::context_t *ctx {nullptr};
     bool is_cleaned_up {false};
     int pending_workers {0};
+    int call_counter {-1};
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;
