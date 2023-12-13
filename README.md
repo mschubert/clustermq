@@ -3,7 +3,7 @@ ClusterMQ: send R function calls as cluster jobs
 
 [![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
 [![Build Status](https://github.com/mschubert/clustermq/workflows/R-check/badge.svg?branch=master)](https://github.com/mschubert/clustermq/actions)
-[![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](http://cran.rstudio.com/web/packages/clustermq/index.html)
+[![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](https://cran.r-project.org/package=clustermq)
 [![DOI](https://zenodo.org/badge/DOI/10.1093/bioinformatics/btz284.svg)](https://doi.org/10.1093/bioinformatics/btz284)
 
 This package will allow you to send function calls as jobs on a computing
@@ -111,7 +111,7 @@ Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 
 `clustermq` can also be used as a parallel backend for
 [`foreach`](https://cran.r-project.org/package=foreach). As this is also
-used by [`BiocParallel`](http://bioconductor.org/packages/release/bioc/html/BiocParallel.html),
+used by [`BiocParallel`](https://bioconductor.org/packages/release/bioc/html/BiocParallel.html),
 we can run those packages on the cluster as well:
 
 ```r
@@ -156,7 +156,7 @@ Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) or
 
 * you want to design and run a workflow on HPC
 
-Don't use [`batch`](https://cran.r-project.org/web/packages/batch/index.html)
+Don't use [`batch`](https://cran.r-project.org/package=batch)
 (last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
 (issues with SQLite on network-mounted storage).
 
