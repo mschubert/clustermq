@@ -32,7 +32,51 @@ public:
         Rcpp::stop("Could not bind port to any address in provided pool");
     }
 
-    void close(int timeout=0) {
+    void close(int timeout=1000) {
+        if (ctx == nullptr)
+            return;
+
+        if (peers.find(cur) != peers.end()) {
+            auto &w = peers[cur];
+            if (w.status == wlife_t::active && w.call == R_NilValue)
+                try {
+                    send_shutdown();
+                } catch (...) {}
+        }
+
+        auto pitems = std::vector<zmq::pollitem_t>(1);
+        pitems[0].socket = sock;
+        pitems[0].events = ZMQ_POLLIN;
+
+        auto time_ms = std::chrono::milliseconds(timeout);
+        auto time_left = time_ms;
+        auto start = Time::now();
+        while (time_left.count() > 0) {
+            if (std::find_if(peers.begin(), peers.end(), [](const auto &w) {
+                        return w.second.status == wlife_t::active; }) == peers.end())
+                break;
+
+            try {
+                int rc = zmq::poll(pitems, time_left);
+                if (pitems[0].revents) {
+                    std::vector<zmq::message_t> msgs;
+                    auto n = recv_multipart(sock, std::back_inserter(msgs));
+                    register_peer(msgs);
+                    if (peers.empty())
+                        break;
+                    else
+                        send_shutdown();
+                }
+            } catch (zmq::error_t const &e) {
+                if (errno != EINTR || pending_interrupt())
+                    throw;
+            } catch (...) {
+                timeout = 0;
+                break;
+            }
+            time_left = time_ms - std::chrono::duration_cast<ms>(Time::now() - start);
+        };
+
         peers.clear();
         env.clear();
         pending_workers = 0;
