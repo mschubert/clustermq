@@ -182,22 +182,23 @@ automatically in a greedy fashion.</p>
 <h3 id="main-event-loop">Main event loop<a class="anchor" aria-label="anchor" href="#main-event-loop"></a>
 </h3>
 <p>Putting the above together in an event loop, we get what is
-essentially implemented in <code>master</code>. Note that your
-<code>expression</code> to evaluate needs to track its origin (this may
-change in the future).</p>
+essentially implemented in <code>master</code>. <code>w$send</code>
+invisibly returns an identifier to track which call was submitted, and
+<code>w$current()</code> matches the same to <code>w$recv()</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>w <span class="ot">=</span> <span class="fu">workers</span>(<span class="dv">3</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">on.exit</span>(w<span class="sc">$</span><span class="fu">cleanup</span>())</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>w<span class="sc">$</span><span class="fu">env</span>(...)</span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="cf">while</span> (we have new work to send <span class="sc">||</span> jobs pending) {</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    res <span class="ot">=</span> w<span class="sc">$</span><span class="fu">recv</span>()</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="co"># handle result</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="cf">if</span> (more work)</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send</span>(expression, ...)</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="cf">else</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send_shutdown</span>()</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    res <span class="ot">=</span> w<span class="sc">$</span><span class="fu">recv</span>() <span class="co"># the result of the call, or NULL for a new worker</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    w<span class="sc">$</span><span class="fu">current</span>()<span class="sc">$</span>call_ref <span class="co"># matches answer to request, -1 otherwise</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="co"># handle result</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="cf">if</span> (more work)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>        call_ref <span class="ot">=</span> w<span class="sc">$</span><span class="fu">send</span>(expression, ...) <span class="co"># call_ref tracks request identity</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>        w<span class="sc">$</span><span class="fu">send_shutdown</span>()</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>}</span></code></pre></div>
 <p>A loop of a similar structure can be used to extend
 <code>clustermq</code>. As an example, <a href="https://github.com/ropensci/targets/blob/1.2.2/R/class_clustermq.R" class="external-link">this
 was done by the <em>targets</em> package</a>.</p>

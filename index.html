@@ -82,7 +82,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="clustermq-send-r-function-calls-as-cluster-jobs">ClusterMQ: send R function calls as cluster jobs<a class="anchor" aria-label="anchor" href="#clustermq-send-r-function-calls-as-cluster-jobs"></a>
 </h1></div>
-<p><a href="https://cran.r-project.org/package=clustermq" class="external-link"><img src="http://www.r-pkg.org/badges/version/clustermq" alt="CRAN version"></a> <a href="https://github.com/mschubert/clustermq/actions" class="external-link"><img src="https://github.com/mschubert/clustermq/workflows/R-check/badge.svg?branch=master" alt="Build Status"></a> <a href="http://cran.rstudio.com/web/packages/clustermq/index.html" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/clustermq" alt="CRAN downloads"></a> <a href="https://doi.org/10.1093/bioinformatics/btz284" class="external-link"><img src="https://zenodo.org/badge/DOI/10.1093/bioinformatics/btz284.svg" alt="DOI"></a></p>
+<p><a href="https://cran.r-project.org/package=clustermq" class="external-link"><img src="http://www.r-pkg.org/badges/version/clustermq" alt="CRAN version"></a> <a href="https://github.com/mschubert/clustermq/actions" class="external-link"><img src="https://github.com/mschubert/clustermq/workflows/R-check/badge.svg?branch=master" alt="Build Status"></a> <a href="https://cran.r-project.org/package=clustermq" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/clustermq" alt="CRAN downloads"></a> <a href="https://doi.org/10.1093/bioinformatics/btz284" class="external-link"><img src="https://zenodo.org/badge/DOI/10.1093/bioinformatics/btz284.svg" alt="DOI"></a></p>
 <p>This package will allow you to send function calls as jobs on a computing cluster with a minimal interface provided by the <code>Q</code> function:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load the library and create a simple function</span></span>
@@ -166,7 +166,7 @@
 <code class="sourceCode R"><span><span class="co"># exporting an object to workers</span></span>
 <span><span class="va">fx</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">+</span> <span class="va">y</span></span>
 <span><span class="fu"><a href="reference/Q.html">Q</a></span><span class="op">(</span><span class="va">fx</span>, x<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, export<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>y<span class="op">=</span><span class="fl">10</span><span class="op">)</span>, n_jobs<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><code>clustermq</code> can also be used as a parallel backend for <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a>. As this is also used by <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html" class="external-link"><code>BiocParallel</code></a>, we can run those packages on the cluster as well:</p>
+<p><code>clustermq</code> can also be used as a parallel backend for <a href="https://cran.r-project.org/package=foreach" class="external-link"><code>foreach</code></a>. As this is also used by <a href="https://bioconductor.org/packages/release/bioc/html/BiocParallel.html" class="external-link"><code>BiocParallel</code></a>, we can run those packages on the cluster as well:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach" class="external-link">foreach</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/register_dopar_cmq.html">register_dopar_cmq</a></span><span class="op">(</span>n_jobs<span class="op">=</span><span class="fl">2</span>, memory<span class="op">=</span><span class="fl">1024</span><span class="op">)</span> <span class="co"># see `?workers` for arguments</span></span>
@@ -200,7 +200,7 @@
 <ul>
 <li>you want to design and run a workflow on HPC</li>
 </ul>
-<p>Don’t use <a href="https://cran.r-project.org/web/packages/batch/index.html" class="external-link"><code>batch</code></a> (last updated 2013) or <a href="https://github.com/tudo-r/BatchJobs" class="external-link"><code>BatchJobs</code></a> (issues with SQLite on network-mounted storage).</p>
+<p>Don’t use <a href="https://cran.r-project.org/package=batch" class="external-link"><code>batch</code></a> (last updated 2013) or <a href="https://github.com/tudo-r/BatchJobs" class="external-link"><code>BatchJobs</code></a> (issues with SQLite on network-mounted storage).</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
