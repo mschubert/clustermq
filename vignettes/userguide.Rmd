@@ -62,7 +62,7 @@ However, [feedback is very
 welcome](https://github.com/mschubert/clustermq/issues/new).
 
 For any installation issues please see the
-[FAQ](https://mschubert.github.io/clustermq/articles/faq.html#install).
+[FAQ](https://mschubert.github.io/clustermq/articles/faq.html).
 
 ## Configuration
 
@@ -114,6 +114,10 @@ To set up a scheduler explicitly, see the following links:
 You may in addition need to activate [compute environments or
 containers](#environments) if your shell (_e.g._ `~/.bashrc`) does not do this
 automatically.
+
+Check the
+[FAQ](https://mschubert.github.io/clustermq/articles/faq.html) if your
+job submission/call to `Q` errors or gets stuck.
 
 ### SSH connector
 

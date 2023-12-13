@@ -54,7 +54,7 @@ remotes::install_github('mschubert/clustermq')
 
 > [!TIP]
 > For installation problems, see the
-> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html#install)
+> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
 
 Schedulers
 ----------
@@ -78,7 +78,9 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#config
 
 > [!TIP]
 > Follow the links above to configure your scheduler in case it is not working
-> out of the box
+> out of the box and check the
+> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html) if
+> your job submission errors or gets stuck
 
 Usage
 -----
