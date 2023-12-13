@@ -107,7 +107,8 @@ for CRAN packages</a> since <code>R=3.6.2</code> and is hence not listed
 in <em>SystemRequirements</em>. If you encounter an error saying that
 that no matching function call to
 <code>zmq::message_t::message_t(std::string&amp;)</code> exists, your
-compiler does not (fully) support this.</p>
+compiler does not (fully) support this and the automated check failed
+for some reason.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">In</span> file included from CMQMaster.cpp:2:0:</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">CMQMaster.h:</span> In member function ‘void CMQMaster::proxy_submit_cmd<span class="er">(</span><span class="ex">SEXP,</span> int<span class="kw">)</span><span class="ex">’:</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="ex">CMQMaster.h:146:40:</span> error: no matching function for call to ‘zmq::message_t::message_t<span class="er">(</span><span class="ex">std::string</span><span class="kw">&amp;)</span><span class="ex">’</span></span>

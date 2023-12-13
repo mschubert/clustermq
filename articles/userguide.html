@@ -113,7 +113,8 @@ otherwise use the bundled library:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"clustermq"</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively you can use the <code>remotes</code> package to install
 directly from Github. Note that this version needs
-<code>autoconf</code>/<code>automake</code> for compilation:</p>
+<code>autoconf</code>/<code>automake</code> and <code>CMake</code> for
+compilation:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)</span></span>
 <span><span class="co"># install.packages('remotes')</span></span>
@@ -502,7 +503,7 @@ wildcards in their log file names. For instance:</p>
 <li>Multicore/Multiprocess:
 <code>log_file="/path/to.file.%i"</code>
 </li>
-<li>SGE: <code>log_file="/path/to.file.\$TASK_ID"</code>
+<li>SGE: <code>log_file="/path/to.file.$TASK_ID"</code>
 </li>
 <li>LSF: <code>log_file="/path/to.file.%I"</code>
 </li>
@@ -772,8 +773,9 @@ warn you of the missing options.</p>
 <h3 id="ssh-template">SSH<a class="anchor" aria-label="anchor" href="#ssh-template"></a>
 </h3>
 <p>While SSH is not a scheduler, we can access remote schedulers via
-SSH. If you want to use it, first make sure that your real scheduler is
-running when manually connecting to the HPC environment.</p>
+SSH. If you want to use it, first make sure that <code>clustermq</code>
+works on your server with the real scheduler. Only then move on to
+setting up SSH.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>clustermq.scheduler <span class="op">=</span> <span class="st">"ssh"</span>,</span>
 <span>        clustermq.ssh.host <span class="op">=</span> <span class="st">"myhost"</span>, <span class="co"># set this up in your local ~/.ssh/config</span></span>
