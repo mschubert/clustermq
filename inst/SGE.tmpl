@@ -5,7 +5,7 @@
 #$ -V
 #$ -t 1-{{ n_jobs }}
 #$ -pe smp {{ cores | 1 }}
-#$ -l m_mem_free={{ memory | 1073741824}}
+#$ -l m_mem_free={{ memory | 1073741824 }}
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

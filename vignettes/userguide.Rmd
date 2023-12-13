@@ -491,6 +491,7 @@ to a file and have `clustermq.template` point to it.
 #$ -V                              # use environment variable
 #$ -t 1-{{ n_jobs }}               # submit jobs as array
 #$ -pe smp {{ cores | 1 }}         # number of cores to use per job
+#$ -l m_mem_free={{ memory | 1073741824 }} # 1 Gb in bytes
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
