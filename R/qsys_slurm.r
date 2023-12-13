@@ -29,14 +29,14 @@ SLURM = R6::R6Class("SLURM",
             private$is_cleaned_up = FALSE
         },
 
-        cleanup = function() {
-            private$is_cleaned_up = TRUE
+        cleanup = function(success, timeout) {
+            private$is_cleaned_up = success
+            private$finalize()
         }
     ),
 
     private = list(
         job_id = NULL,
-        is_cleaned_up = NULL,
 
         finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {

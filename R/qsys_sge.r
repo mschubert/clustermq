@@ -31,8 +31,9 @@ SGE = R6::R6Class("SGE",
             private$is_cleaned_up = FALSE
         },
 
-        cleanup = function() {
-            private$is_cleaned_up = TRUE
+        cleanup = function(success, timeout) {
+            private$is_cleaned_up = success
+            private$finalize()
         }
     ),
 
@@ -41,7 +42,6 @@ SGE = R6::R6Class("SGE",
         job_name = NULL,
         job_id   = NULL,
         array_idx = "$TASK_ID",
-        is_cleaned_up = NULL,
 
         finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {

@@ -33,6 +33,8 @@ QSys = R6::R6Class("QSys",
             private$defaults = getOption("clustermq.defaults", list())
         },
 
+        cleanup = function(success, timeout) TRUE,
+
         n = function() private$workers_total
     ),
 
@@ -44,6 +46,7 @@ QSys = R6::R6Class("QSys",
         template_file = NULL,
         workers_total = NULL,
         defaults = list(),
+        is_cleaned_up = NULL,
 
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))

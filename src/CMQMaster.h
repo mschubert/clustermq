@@ -32,9 +32,9 @@ public:
         Rcpp::stop("Could not bind port to any address in provided pool");
     }
 
-    void close(int timeout=1000) {
+    bool close(int timeout=1000) {
         if (ctx == nullptr)
-            return;
+            return is_cleaned_up;
 
         if (peers.find(cur) != peers.end()) {
             auto &w = peers[cur];
@@ -53,8 +53,10 @@ public:
         auto start = Time::now();
         while (time_left.count() > 0) {
             if (std::find_if(peers.begin(), peers.end(), [](const auto &w) {
-                        return w.second.status == wlife_t::active; }) == peers.end())
+                        return w.second.status == wlife_t::active; }) == peers.end()) {
+                is_cleaned_up = true;
                 break;
+            }
 
             try {
                 int rc = zmq::poll(pitems, time_left);
@@ -89,6 +91,7 @@ public:
             ctx->close();
             ctx = nullptr;
         }
+        return is_cleaned_up;
     }
 
     SEXP recv(int timeout=-1) {
@@ -264,6 +267,7 @@ private:
     };
 
     zmq::context_t *ctx {nullptr};
+    bool is_cleaned_up {false};
     int pending_workers {0};
     zmq::socket_t sock;
     std::string cur;

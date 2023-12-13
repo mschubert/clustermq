@@ -29,14 +29,14 @@ LSF = R6::R6Class("LSF",
             private$is_cleaned_up = FALSE
         },
 
-        cleanup = function() {
-            private$is_cleaned_up = TRUE
+        cleanup = function(success, timeout) {
+            private$is_cleaned_up = success
+            private$finalize()
         }
     ),
 
     private = list(
         job_id = NULL,
-        is_cleaned_up = NULL,
 
         finalize = function(quiet=self$workers_running == 0) {
             quiet = FALSE #TODO:

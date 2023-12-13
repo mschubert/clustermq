@@ -12,10 +12,7 @@ LOCAL = R6::R6Class("LOCAL",
             super$initialize(addr=addr, master=master)
             if (verbose)
                 message("Running sequentially ('LOCAL') ...")
-        },
-
-        cleanup = function(quiet=FALSE, timeout=3) {
-            invisible(TRUE)
+            private$is_cleaned_up = TRUE
         }
     )
 )

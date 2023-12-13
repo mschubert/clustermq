@@ -101,10 +101,10 @@ Pool = R6::R6Class("Pool",
             private$master$recv(timeout)
         },
 
-        cleanup = function(timeout=5000) {
+        cleanup = function(timeout=5) {
             info = self$info()
-            private$master$close(timeout)
-            # ^^ replace with: (1) try close connections, and (2) close socket
+            success = private$master$close(as.integer(timeout*1000))
+            success = self$workers$cleanup(success, timeout) # timeout left?
 
             max_mem = max(c(info$mem.max+2e8, 0), na.rm=TRUE) # add 200 Mb
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
@@ -123,7 +123,7 @@ Pool = R6::R6Class("Pool",
             message(sprintf(fmt, rt3_str, 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem_str))
 
-            invisible(TRUE)
+            invisible(success)
         },
 
         workers = NULL
