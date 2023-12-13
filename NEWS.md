@@ -1,6 +1,6 @@
 # git head
 
-* Troubleshooting documentation has been extended and now has its own vignette
+* There is now an FAQ vignette with answers to frequently asked questions
 
 # clustermq 0.9.2
 

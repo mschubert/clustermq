@@ -36,7 +36,7 @@ To compile this package a fully C++11 compliant compiler is required. This is
 since `R=3.6.2` and is hence not listed in _SystemRequirements_. If you
 encounter an error saying that that no matching function call to
 `zmq::message_t::message_t(std::string&)` exists, your compiler does not
-(fully) support this.
+(fully) support this and the automated check failed for some reason.
 
 ```{sh eval=FALSE}
 In file included from CMQMaster.cpp:2:0:

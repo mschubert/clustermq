@@ -45,7 +45,8 @@ install.packages("clustermq")
 ```
 
 Alternatively you can use the `remotes` package to install directly from
-Github. Note that this version needs `autoconf`/`automake` for compilation:
+Github. Note that this version needs `autoconf`/`automake` and `CMake` for
+compilation:
 
 ```{r eval=FALSE}
 # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
@@ -623,8 +624,8 @@ the missing options.
 ### SSH {#ssh-template}
 
 While SSH is not a scheduler, we can access remote schedulers via SSH. If you
-want to use it, first make sure that your real scheduler is running when
-manually connecting to the HPC environment.
+want to use it, first make sure that `clustermq` works on your server with the
+real scheduler. Only then move on to setting up SSH.
 
 ```{r eval=FALSE}
 options(clustermq.scheduler = "ssh",

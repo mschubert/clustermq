@@ -164,24 +164,24 @@ Contributing
 Contributions are welcome and they come in many different forms, shapes, and
 sizes. These include, but are not limited to:
 
-* Questions beyond the [User
-  Guide](https://mschubert.github.io/clustermq/articles/userguide.html): Ask on
-  the [Github Discussions](https://github.com/mschubert/clustermq/discussions)
-  board. If you are an advanced user, please also consider answering them.
-* Bug reports: [File an issue](https://github.com/mschubert/clustermq/issues)
+* **Questions**: Ask on the [Github
+  Discussions](https://github.com/mschubert/clustermq/discussions) board. If
+  you are an advanced user, please also consider answering questions there.
+* **Bug reports**: [File an issue](https://github.com/mschubert/clustermq/issues)
   if something does not work as expected. Be sure to
   include a self-contained [Minimal Reproducible
   Example](https://stackoverflow.com/help/minimal-reproducible-example) and set
   `log_worker=TRUE`.
-* Code contributions: Have a look at the [`good first
+* **Code contributions**: Have a look at the [`good first
   issue`](https://github.com/mschubert/clustermq/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
   tag. Please discuss anything more complicated before putting a lot of work
   in, I'm happy to help you get started.
 
 > [!TIP]
-> For any questions or issues, please check the
+> Check the
 > [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html) and the
-> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html) first
+> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html) first, maybe
+> your query is already answered there
 
 Citation
 --------
