@@ -254,6 +254,23 @@ public:
             Rcpp::_["pending"] = pending_workers
         );
     }
+    Rcpp::List current() {
+        if (peers.find(cur) == peers.end())
+            return Rcpp::List::create();
+        const auto &w = peers[cur];
+        std::string cur_hex;
+        std::stringstream os;
+        os << std::hex << std::setw(2) << std::setfill('0');
+        for (const auto &ch: cur)
+            os << static_cast<short>(ch);
+        return Rcpp::List::create(
+            Rcpp::_["worker"] = os.str(),
+            Rcpp::_["status"] = Rcpp::wrap(wlife_t2str(w.status)),
+            Rcpp::_["calls"] = w.n_calls,
+            Rcpp::_["time"] = w.time,
+            Rcpp::_["mem"] = w.mem
+        );
+    }
 
 private:
     struct worker_t {

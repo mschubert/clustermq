@@ -35,6 +35,9 @@ Pool = R6::R6Class("Pool",
                                   info["calls"], as.data.frame(times),
                                   list(mem.used=mem("used"), mem.max=mem("max used"))))
         },
+        current = function() {
+            private$master$current()
+        },
 
         add = function(qsys, n, ...) {
             self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
