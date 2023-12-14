@@ -55,9 +55,6 @@ cmq_foreach = function(obj, expr, envir, data) {
     if (length(obj$export) > 0) {
         export = as.list(mget(obj$export, envir=export_env, inherits=TRUE))
         data$export = utils::modifyList(as.list(data$export), export, keep.null=TRUE)
-        for (i in seq_along(data$export))
-            if (inherits(data$export[[i]], "function")) # strip attached objs
-                environment(data$export[[i]]) = .GlobalEnv
     }
 
     # make sure packages are loaded on the dopar target

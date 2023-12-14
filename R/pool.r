@@ -46,11 +46,8 @@ Pool = R6::R6Class("Pool",
 
         env = function(...) {
             args = list(...)
-            for (name in names(args)) {
-#                if (inherits(args[[name]], "function"))
-#                    environment(args[[fname]]) = .GlobalEnv
+            for (name in names(args))
                 private$master$add_env(name, args[[name]])
-            }
             invisible(private$master$list_env())
         },
 
