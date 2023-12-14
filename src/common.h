@@ -23,6 +23,7 @@
 enum wlife_t {
     active,
     shutdown,
+    finished,
     error,
     proxy_cmd,
     proxy_error

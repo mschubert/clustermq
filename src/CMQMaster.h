@@ -36,14 +36,6 @@ public:
         if (ctx == nullptr)
             return is_cleaned_up;
 
-        if (peers.find(cur) != peers.end()) {
-            auto &w = peers[cur];
-            if (w.status == wlife_t::active && w.call == R_NilValue)
-                try {
-                    send_shutdown();
-                } catch (...) {}
-        }
-
         auto pitems = std::vector<zmq::pollitem_t>(1);
         pitems[0].socket = sock;
         pitems[0].events = ZMQ_POLLIN;
@@ -58,16 +50,20 @@ public:
                 break;
             }
 
+            if (peers.find(cur) != peers.end()) {
+                auto &w = peers[cur];
+                if (w.status == wlife_t::active && w.call == R_NilValue)
+                    try {
+                        send_shutdown();
+                    } catch (...) {}
+            }
+
             try {
                 int rc = zmq::poll(pitems, time_left);
                 if (pitems[0].revents) {
                     std::vector<zmq::message_t> msgs;
                     auto n = recv_multipart(sock, std::back_inserter(msgs));
                     register_peer(msgs);
-                    if (peers.empty())
-                        break;
-                    else
-                        send_shutdown();
                 }
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
@@ -370,7 +366,7 @@ private:
                 }
                 peers.erase(cur);
             } else if (w.status == wlife_t::shutdown) {
-                peers.erase(cur);
+                w.status = wlife_t::finished;
             } else
                 Rcpp::stop("Unexpected worker disconnect");
         }
