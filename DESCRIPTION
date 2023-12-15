@@ -21,6 +21,7 @@ LinkingTo: Rcpp
 Imports:
     methods,
     narray,
+    globals,
     progress,
     R6,
     Rcpp,
@@ -28,6 +29,7 @@ Imports:
 License: Apache License (== 2.0) | file LICENSE
 Encoding: UTF-8
 Suggests:
+    BiocParallel,
     callr,
     foreach,
     iterators,
