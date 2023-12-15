@@ -51,3 +51,9 @@ wlife_t msg2wlife_t(const zmq::message_t &msg) {
     memcpy(&res, msg.data(), msg.size());
     return res;
 }
+
+std::string z85_encode_routing_id(const std::string rid) {
+    std::string dest(5, 0);
+    zmq_z85_encode(&dest[0], reinterpret_cast<const uint8_t*>(&rid[1]), 4);
+    return dest;
+}

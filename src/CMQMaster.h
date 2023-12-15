@@ -228,15 +228,11 @@ public:
         status.reserve(peers.size());
         calls.reserve(peers.size());
         Rcpp::List wtime, mem;
-        std::string cur_hex;
+        std::string cur_z85;
         for (const auto &kv: peers) {
-            std::stringstream os;
-            os << std::hex << std::setw(2) << std::setfill('0');
-            for (const auto &ch: kv.first)
-                os << static_cast<short>(ch);
-            names.push_back(os.str());
+            names.push_back(z85_encode_routing_id(kv.first));
             if (kv.first == cur)
-                cur_hex = os.str();
+                cur_z85 = names.back();
             status.push_back(std::string(wlife_t2str(kv.second.status)));
             calls.push_back(kv.second.n_calls);
             wtime.push_back(kv.second.time);
@@ -245,7 +241,7 @@ public:
         return Rcpp::List::create(
             Rcpp::_["worker"] = Rcpp::wrap(names),
             Rcpp::_["status"] = Rcpp::wrap(status),
-            Rcpp::_["current"] = cur_hex,
+            Rcpp::_["current"] = cur_z85,
             Rcpp::_["calls"] = calls,
             Rcpp::_["time"] = wtime,
             Rcpp::_["mem"] = mem,
@@ -256,13 +252,8 @@ public:
         if (peers.find(cur) == peers.end())
             return Rcpp::List::create();
         const auto &w = peers[cur];
-        std::string cur_hex;
-        std::stringstream os;
-        os << std::hex << std::setw(2) << std::setfill('0');
-        for (const auto &ch: cur)
-            os << static_cast<short>(ch);
         return Rcpp::List::create(
-            Rcpp::_["worker"] = os.str(),
+            Rcpp::_["worker"] = z85_encode_routing_id(cur),
             Rcpp::_["status"] = Rcpp::wrap(wlife_t2str(w.status)),
             Rcpp::_["call_ref"] = w.call_ref,
             Rcpp::_["calls"] = w.n_calls,

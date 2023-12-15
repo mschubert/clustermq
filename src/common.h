@@ -40,5 +40,6 @@ zmq::message_t int2msg(const int val);
 zmq::message_t r2msg(SEXP data);
 SEXP msg2r(const zmq::message_t &&msg, const bool unserialize);
 wlife_t msg2wlife_t(const zmq::message_t &msg);
+std::string z85_encode_routing_id(const std::string rid);
 
 #endif // _COMMON_H_
