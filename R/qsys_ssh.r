@@ -41,7 +41,7 @@ SSH = R6::R6Class("SSH",
             private$workers_total = args$n_jobs
         },
 
-        cleanup = function(quiet=FALSE) {
+        cleanup = function(success, timeout) {
             private$finalize()
             TRUE
         }

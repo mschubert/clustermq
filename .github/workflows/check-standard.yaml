@@ -71,6 +71,7 @@ jobs:
         run: |
           R CMD INSTALL .
           echo '.libPaths("~/work/_temp/Library")' >> ~/.Rprofile # cmq package in R
+          echo 'options(clustermq.scheduler="multicore")' >> ~/.Rprofile
           echo "$(pwd)/tests/bin" >> $GITHUB_PATH # local cmq
           sed -i "1iexport PATH=$(pwd)/tests/bin:\$PATH" ~/.bashrc || true # ssh cmq
 
