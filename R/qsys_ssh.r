@@ -18,6 +18,7 @@ SSH = R6::R6Class("SSH",
                 stop("SSH QSys must connect via tcp:// not ", sQuote(addr))
 
             super$initialize(addr=addr, master=master, template=template)
+            private$template = paste(trimws(readLines(textConnection(private$template))), collapse=" ")
 
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
