@@ -23,7 +23,7 @@ SSH = R6::R6Class("SSH",
             # set forward and run ssh.r (send port, master)
             opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
             ssh_cmd = fill_template(private$template, opts,
-                required=c("local_port", "remote_port", "ssh_host"))
+                required=c("local_port", "ssh.hpc_fwd_port", "ssh_host"))
 
             # wait for ssh to connect
             message(sprintf("Connecting to %s via SSH ...", sQuote(ssh_host)))
@@ -52,11 +52,10 @@ SSH = R6::R6Class("SSH",
         ssh_proxy_running = TRUE,
 
         fill_options = function(...) {
-            values = utils::modifyList(private$defaults, list(...))
-            #TODO: let user define ports in private$defaults here and respect them
-            values$local_port = sub(".*:", "", private$addr)
-            values$remote_port = sample(50000:55000, 1)
-            values
+            args = list(...)
+            args$local_port = sub(".*:", "", private$addr)
+            args$ssh.hpc_fwd_port = getOption("clustermq.ssh.hpc_fwd_port", sample(50000:55000, 1))
+            utils::modifyList(private$defaults, args)
         },
 
         finalize = function(quiet = self$workers_running == 0) {

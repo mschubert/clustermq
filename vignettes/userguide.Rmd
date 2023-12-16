@@ -293,6 +293,9 @@ time after you restart R.
       (e.g. `"~/cmq_ssh.log"`); helpful for debugging purposes
 * `clustermq.ssh.timeout` - The amount of time to wait (in seconds) for a SSH
       start-up connection before timing out (default is `10` seconds)
+* `clustermq.ssh.hpc_fwd_port` - Port that will be opened for SSH reverse
+      tunneling between the workers on the HPC and a local session
+      (default: one integer in the range of 50-55k)
 * `clustermq.worker.timeout` - The amount of time to wait (in seconds) for
       master-worker communication before timing out (default is to wait
       indefinitely)
