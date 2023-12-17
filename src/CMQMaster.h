@@ -230,6 +230,8 @@ public:
         Rcpp::List wtime, mem;
         std::string cur_z85;
         for (const auto &kv: peers) {
+            if (kv.second.status == wlife_t::proxy_cmd || kv.second.status == wlife_t::error)
+                continue;
             names.push_back(z85_encode_routing_id(kv.first));
             if (kv.first == cur)
                 cur_z85 = names.back();
@@ -347,12 +349,11 @@ private:
                 while (it != peers.end()) {
                     if (it->second.via == cur) {
                         if (it->second.status == wlife_t::shutdown)
-                            it = peers.erase(it);
+                            it->second.status = wlife_t::finished;
                         else
                             Rcpp::stop("Proxy disconnect with active worker(s)");
                     }
                 }
-                peers.erase(cur);
             } else if (w.status == wlife_t::shutdown) {
                 w.status = wlife_t::finished;
             } else
