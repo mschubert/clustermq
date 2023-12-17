@@ -129,14 +129,8 @@ Pool = R6::R6Class("Pool",
     ),
 
     active = list(
-        workers_total = function() {
-            ls_w = private$master$list_workers()
-            length(ls_w$worker) + ls_w$pending
-        },
-        workers_running = function() {
-            ls_w = private$master$list_workers()
-            sum(ls_w$status == "active")
-        },
+        workers_total = function() private$master$workers_total(),
+        workers_running = function() private$master$workers_running(),
         reusable = function() private$reuse
     ),
 

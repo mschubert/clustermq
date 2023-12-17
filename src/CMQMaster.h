@@ -263,6 +263,13 @@ public:
             Rcpp::_["mem"] = w.mem
         );
     }
+    int workers_running() {
+        return std::count_if(peers.begin(), peers.end(), [](const auto &w) {
+                return w.second.status == wlife_t::active; });
+    }
+    int workers_total() {
+        return workers_running() + pending_workers;
+    }
 
 private:
     struct worker_t {

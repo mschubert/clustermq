@@ -18,5 +18,7 @@ RCPP_MODULE(cmq_master) {
         .method("add_pending_workers", &CMQMaster::add_pending_workers)
         .method("list_workers", &CMQMaster::list_workers)
         .method("current", &CMQMaster::current)
+        .method("workers_running", &CMQMaster::workers_running)
+        .method("workers_total", &CMQMaster::workers_total)
     ;
 }

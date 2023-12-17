@@ -16,7 +16,7 @@ test_that("starting and stopping multicore", {
     expect_equal(w$workers_running, 1)
     w$send_shutdown()
     expect_equal(w$workers_running, 0)
-    expect_equal(w$workers_total, 1)
+    expect_equal(w$workers_total, 0)
     expect_error(w$send(1))
     expect_error(w$recv(500L))
     w$cleanup()
