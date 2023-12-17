@@ -28,6 +28,7 @@ SGE = R6::R6Class("SGE",
             if (!is.null(status) && status != 0)
                 private$template_error("SGE", status, filled)
             private$job_id = private$job_name
+            private$master$add_pending_workers(n_jobs)
             private$is_cleaned_up = FALSE
         },
 

@@ -26,6 +26,7 @@ LSF = R6::R6Class("LSF",
             status = system("bsub", input=filled, ignore.stdout=TRUE)
             if (status != 0)
                 private$template_error("LSF", status, filled)
+            private$master$add_pending_workers(n_jobs)
             private$is_cleaned_up = FALSE
         },
 

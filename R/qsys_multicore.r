@@ -30,6 +30,7 @@ MULTICORE = R6::R6Class("MULTICORE",
                 p = parallel::mcparallel(quote(wrapper(private$addr, log_i)))
                 private$children[[as.character(p$pid)]] = p
             }
+            private$master$add_pending_workers(n_jobs)
             private$workers_total = n_jobs
             private$is_cleaned_up = FALSE
         },

@@ -41,7 +41,6 @@ Pool = R6::R6Class("Pool",
 
         add = function(qsys, n, ...) {
             self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
-            private$master$add_pending_workers(n)
         },
 
         env = function(...) {

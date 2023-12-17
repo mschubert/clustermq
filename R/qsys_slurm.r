@@ -26,6 +26,7 @@ SLURM = R6::R6Class("SLURM",
             status = system("sbatch", input=filled, ignore.stdout=TRUE)
             if (status != 0)
                 private$template_error("SLURM", status, filled)
+            private$master$add_pending_workers(n_jobs)
             private$is_cleaned_up = FALSE
         },
 

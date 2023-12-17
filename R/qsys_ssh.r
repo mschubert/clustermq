@@ -29,6 +29,7 @@ SSH = R6::R6Class("SSH",
             message(sprintf("Connecting to %s via SSH ...", sQuote(ssh_host)))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
+            master$add_pending_workers(n_jobs)
             args = c(list(...), list(n_jobs=n_jobs))
             init_timeout = getOption("clustermq.ssh.timeout", 10)
             tryCatch(private$master$proxy_submit_cmd(args, init_timeout*1000),

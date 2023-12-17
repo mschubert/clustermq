@@ -330,9 +330,6 @@ private:
         cur = msgs[cur_i].to_string();
         int prev_size = peers.size();
         auto &w = peers[cur];
-        pending_workers -= peers.size() - prev_size;
-//        if (pending_workers < 0)
-//            Rcpp::stop("More workers registered than expected");
         w.call = R_NilValue;
         if (cur_i == 1)
             w.via = msgs[0].to_string();
@@ -360,6 +357,11 @@ private:
                 w.status = wlife_t::finished;
             } else
                 Rcpp::stop("Unexpected worker disconnect");
+        }
+
+        if (peers.size() > prev_size && w.status == wlife_t::active) {
+            if (--pending_workers < 0)
+                Rcpp::stop("More workers registered than expected");
         }
 
         if (msgs.size() > cur_i+2) {

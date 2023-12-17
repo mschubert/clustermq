@@ -29,6 +29,7 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                                  stdout=log_i, stderr=log_i)
                 private$callr[[as.character(cr$get_pid())]] = cr
             }
+            private$master$add_pending_workers(n_jobs)
             private$workers_total = n_jobs
             private$is_cleaned_up = FALSE
         },
