@@ -352,14 +352,9 @@ private:
             w.n_calls++;
         } else {
             if (w.status == wlife_t::proxy_cmd) {
-                auto it = peers.begin();
-                while (it != peers.end()) {
-                    if (it->second.via == cur) {
-                        if (it->second.status == wlife_t::shutdown)
-                            it->second.status = wlife_t::finished;
-                        else
-                            Rcpp::stop("Proxy disconnect with active worker(s)");
-                    }
+                for (const auto &w: peers) {
+                    if (w.second.via == cur && w.second.status == wlife_t::active)
+                        Rcpp::stop("Proxy disconnect with active worker(s)");
                 }
             } else if (w.status == wlife_t::shutdown) {
                 w.status = wlife_t::finished;
