@@ -265,9 +265,9 @@ public:
 private:
     struct worker_t {
         std::set<std::string> env;
-        SEXP call {R_NilValue};
-        SEXP time {Rcpp::List()};
-        SEXP mem {Rcpp::List()};
+        Rcpp::RObject call {R_NilValue};
+        Rcpp::RObject time {R_NilValue};
+        Rcpp::RObject mem {R_NilValue};
         wlife_t status;
         std::string via;
         int n_calls {-1};

@@ -102,10 +102,10 @@ Pool = R6::R6Class("Pool",
         },
 
         cleanup = function(timeout=5) {
-            info = self$info()
             success = private$master$close(as.integer(timeout*1000))
             success = self$workers$cleanup(success, timeout) # timeout left?
 
+            info = self$info()
             max_mem = max(c(info$mem.max+2e8, 0), na.rm=TRUE) # add 200 Mb
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
 
