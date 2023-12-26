@@ -94,19 +94,23 @@ public:
                 env.assign(name, msg2r(std::move(*it), true));
         }
 
-        auto cmd = msg2r(std::move(msgs[1]), true);
+        SEXP cmd, eval, time, mem;
+        PROTECT(cmd = msg2r(std::move(msgs[1]), true));
         int err = 0;
-        SEXP eval = PROTECT(R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
+        PROTECT(eval = R_tryEvalSilent(Rcpp::as<Rcpp::List>(cmd)[0], env, &err));
         if (err) {
             auto cmq = Rcpp::Environment::namespace_env("clustermq");
             Rcpp::Function wrap_error = cmq["wrap_error"];
-            eval = wrap_error(cmd);
+            UNPROTECT(1);
+            PROTECT(eval = wrap_error(cmd));
         }
+        PROTECT(time = proc_time());
+        PROTECT(mem = gc());
         sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
-        sock.send(r2msg(proc_time()), zmq::send_flags::sndmore);
-        sock.send(r2msg(gc()), zmq::send_flags::sndmore);
+        sock.send(r2msg(time), zmq::send_flags::sndmore);
+        sock.send(r2msg(mem), zmq::send_flags::sndmore);
         sock.send(r2msg(eval), zmq::send_flags::none);
-        UNPROTECT(1);
+        UNPROTECT(4);
         return true;
     }
 
