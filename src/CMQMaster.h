@@ -264,7 +264,7 @@ public:
         );
     }
     int workers_running() {
-        return std::count_if(peers.begin(), peers.end(), [](const auto &w) {
+        return std::count_if(peers.begin(), peers.end(), [](const std::pair<std::string, worker_t> &w) { // 'const auto &w' is C++14
                 return w.second.status == wlife_t::active; });
     }
     int workers_total() {
