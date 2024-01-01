@@ -10,6 +10,7 @@ RCPP_MODULE(cmq_proxy) {
         .method("connect", &CMQProxy::connect)
         .method("proxy_request_cmd", &CMQProxy::proxy_request_cmd)
         .method("proxy_receive_cmd", &CMQProxy::proxy_receive_cmd)
+        .method("add_pending_workers", &CMQProxy::add_pending_workers)
         .method("close", &CMQProxy::close)
         .method("process_one", &CMQProxy::process_one)
     ;

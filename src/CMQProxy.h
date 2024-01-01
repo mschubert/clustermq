@@ -56,6 +56,10 @@ public:
         return msg2r(std::move(msgs[2]), true);
     }
 
+    void add_pending_workers(int n) {
+        // proxy will always wait
+    }
+
     std::string listen(Rcpp::CharacterVector addrs) {
         to_worker = zmq::socket_t(*ctx, ZMQ_ROUTER);
         to_worker.set(zmq::sockopt::router_mandatory, 1);
