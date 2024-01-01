@@ -35,9 +35,10 @@ MULTICORE = R6::R6Class("MULTICORE",
             private$is_cleaned_up = FALSE
         },
 
-        cleanup = function(success, timeout) {
-            private$collect_children(wait=TRUE, timeout=3L)
-            private$is_cleaned_up = length(private$children) == 0
+        cleanup = function(success, timeout=5L) {
+            private$is_cleaned_up = success
+            private$collect_children(wait=FALSE, timeout=timeout)
+            private$finalize()
         }
     ),
 
