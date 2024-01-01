@@ -44,8 +44,8 @@ LSF = R6::R6Class("LSF",
             if (!private$is_cleaned_up) {
                 system(paste("bkill -J", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
-                private$is_cleaned_up = TRUE
             }
+            private$is_cleaned_up = TRUE
         }
     )
 )

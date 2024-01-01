@@ -57,8 +57,8 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
                             paste(names(private$callr), collapse=", "), immediate.=TRUE)
                 for (cr in private$callr)
                     cr$kill_tree()
-                private$is_cleaned_up = TRUE
             }
+            private$is_cleaned_up = TRUE
         }
     )
 )

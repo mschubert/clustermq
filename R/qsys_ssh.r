@@ -65,8 +65,8 @@ SSH = R6::R6Class("SSH",
 #                    list(id="PROXY_STOP", finalize=!private$is_cleaned_up),
 #                    "proxy"
 #                )
-                private$ssh_proxy_running = FALSE
 #            }
+            private$ssh_proxy_running = FALSE
         }
     )
 )

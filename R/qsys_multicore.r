@@ -64,8 +64,8 @@ MULTICORE = R6::R6Class("MULTICORE",
                     tools::pskill(running, tools::SIGKILL)
                 }
                 private$children = list()
-                private$is_cleaned_up = TRUE
             }
+            private$is_cleaned_up = TRUE
         }
     )
 )
