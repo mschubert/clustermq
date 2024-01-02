@@ -2,6 +2,7 @@
 
 * Fix a bug where `BiocParallel` did not export required objects (#302)
 * Fix a bug where already finished workers were killed (#307)
+* Fix a bug where worker results and stats could be garbage collected (#324)
 * There is now an FAQ vignette with answers to frequently asked questions
 * Worker API: `send()` now reports a call identifier that `current()` tracks
 
