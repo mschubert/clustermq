@@ -638,11 +638,11 @@ To supply your own template, save its contents with any desired changes to a
 file _on your local machine_ and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
-ssh -o "ExitOnForwardFailure yes" -f \
-    -R {{ ctl_port }}:localhost:{{ local_port }} \
-    -R {{ job_port }}:localhost:{{ fwd_port }} \
-    {{ ssh_host }} \
-    "R --no-save --no-restore -e \
-        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})' \
+ssh -o "ExitOnForwardFailure yes" -f
+    -R {{ ctl_port }}:localhost:{{ local_port }}
+    -R {{ job_port }}:localhost:{{ fwd_port }}
+    {{ ssh_host }}
+    "R --no-save --no-restore -e
+        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})'
         > {{ ssh_log | /dev/null }} 2>&1"
 ```
