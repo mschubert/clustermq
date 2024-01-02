@@ -113,11 +113,7 @@ public:
     }
 
     int send(SEXP cmd) {
-        if (peers.find(cur) == peers.end())
-            Rcpp::stop("Trying to send to worker that does not exist");
-        auto &w = peers[cur];
-        if (w.status != wlife_t::active)
-            Rcpp::stop("Trying to send to worker that is not active");
+        auto &w = check_current_worker(wlife_t::active);
         bool is_proxied = ! w.via.empty();
         std::set<std::string> new_env;
         std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
@@ -125,15 +121,10 @@ public:
         std::vector<std::string> proxy_add_env;
         std::set<std::string> *via_env;
 
-        zmq::multipart_t mp;
-        if (is_proxied) {
-            via_env = &peers[w.via].env;
-            mp.push_back(zmq::message_t(w.via));
-        }
-        mp.push_back(zmq::message_t(cur));
-        mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(wlife_t::active));
+        auto mp = init_multipart(w, wlife_t::active);
         mp.push_back(r2msg(cmd));
+        if (is_proxied)
+            via_env = &peers[w.via].env;
 
         for (auto &str : new_env) {
             w.env.insert(str);
@@ -160,19 +151,8 @@ public:
         return w.call_ref;
     }
     void send_shutdown() {
-        if (peers.find(cur) == peers.end())
-            Rcpp::stop("Trying to send to worker that does not exist");
-        auto &w = peers[cur];
-        if (w.status != wlife_t::active)
-            Rcpp::stop("Trying to send to worker that is not active");
-
-        zmq::multipart_t mp;
-        if (!w.via.empty())
-            mp.push_back(zmq::message_t(w.via));
-        mp.push_back(zmq::message_t(cur));
-        mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(wlife_t::shutdown));
-
+        auto &w = check_current_worker(wlife_t::active);
+        auto mp = init_multipart(w, wlife_t::shutdown);
         w.call = R_NilValue;
         w.status = wlife_t::shutdown;
         mp.send(sock);
@@ -187,10 +167,8 @@ public:
         // msgs[1] == delimiter
         // msgs[2] == wlife_t::proxy_cmd
 
-        zmq::multipart_t mp;
-        mp.push_back(zmq::message_t(cur));
-        mp.push_back(zmq::message_t(0));
-        mp.push_back(int2msg(wlife_t::proxy_cmd));
+        auto &w = check_current_worker(wlife_t::proxy_cmd);
+        auto mp = init_multipart(w, wlife_t::proxy_cmd);
         mp.push_back(r2msg(args));
         mp.send(sock);
     }
@@ -292,6 +270,24 @@ private:
     std::unordered_map<std::string, worker_t> peers;
     std::unordered_map<std::string, zmq::message_t> env;
     std::set<std::string> env_names;
+
+    worker_t &check_current_worker(const wlife_t status) {
+        if (peers.find(cur) == peers.end())
+            Rcpp::stop("Trying to send to worker that does not exist");
+        auto &w = peers[cur];
+        if (w.status != status)
+            Rcpp::stop("Trying to send to worker with invalid status");
+        return w;
+    }
+    zmq::multipart_t init_multipart(const worker_t &w, const wlife_t status) const {
+        zmq::multipart_t mp;
+        if (!w.via.empty())
+            mp.push_back(zmq::message_t(w.via));
+        mp.push_back(zmq::message_t(cur));
+        mp.push_back(zmq::message_t(0));
+        mp.push_back(int2msg(status));
+        return mp;
+    }
 
     int poll(int timeout=-1) {
         auto pitems = std::vector<zmq::pollitem_t>(1);
