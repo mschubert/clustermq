@@ -131,16 +131,15 @@ public:
             auto &via_env = peers[w.via].env;
             for (auto &str : new_env) {
                 w.env.insert(str);
-                if (via_env.find(str) != via_env.end()) {
-//                    std::cout << "+from_proxy " << str << "\n";
-                    proxy_add_env.push_back(str);
-                    continue;
-                } else {
+                if (via_env.find(str) == via_env.end()) {
 //                    std::cout << "+from_master " << str << "\n";
                     via_env.insert(str);
+                    mp.push_back(zmq::message_t(str));
+                    mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
+                } else {
+//                    std::cout << "+from_proxy " << str << "\n";
+                    proxy_add_env.push_back(str);
                 }
-                mp.push_back(zmq::message_t(str));
-                mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
             }
             mp.push_back(r2msg(Rcpp::wrap(proxy_add_env)));
         }
