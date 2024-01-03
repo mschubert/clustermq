@@ -1,4 +1,4 @@
-# git head
+# clustermq 0.9.3
 
 * Fix a bug where `BiocParallel` did not export required objects (#302)
 * Fix a bug where already finished workers were killed (#307)

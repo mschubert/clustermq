@@ -36,7 +36,7 @@ doc:
 
 .PHONY: package
 package: rcpp doc vignettes
-	./src/patch_libzmq.sh
+	./src/util/patch_libzmq.sh
 	PATH=$(BIN):$$PATH R CMD build .
 	R CMD check --as-cran clustermq_$(PKGVER).tar.gz
 
