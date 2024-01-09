@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">clustermq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -440,6 +440,10 @@ debugging purposes</li>
 seconds) for a SSH start-up connection before timing out (default is
 <code>10</code> seconds)</li>
 <li>
+<code>clustermq.ssh.hpc_fwd_port</code> - Port that will be opened
+for SSH reverse tunneling between the workers on the HPC and a local
+session (default: one integer in the range of 50-55k)</li>
+<li>
 <code>clustermq.worker.timeout</code> - The amount of time to wait
 (in seconds) for master-worker communication before timing out (default
 is to wait indefinitely)</li>
@@ -779,12 +783,12 @@ required bash modules/conda environments</a>.</p>
 <p>To supply your own template, save its contents with any desired
 changes to a file <em>on your local machine</em> and have
 <code>clustermq.template</code> point to it.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-o</span> <span class="st">"ExitOnForwardFailure yes"</span> <span class="at">-f</span> <span class="dt">\</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>    <span class="at">-R</span> {{ ctl_port }}:localhost:{{ local_port }} <span class="dt">\</span></span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>    <span class="at">-R</span> {{ job_port }}:localhost:{{ fwd_port }} <span class="dt">\</span></span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>    {{ ssh_host }} <span class="dt">\</span></span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>    <span class="st">"R --no-save --no-restore -e </span><span class="dt">\</span></span>
-<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="st">        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})' </span><span class="dt">\</span></span>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-o</span> <span class="st">"ExitOnForwardFailure yes"</span> <span class="at">-f</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>    <span class="ex">-R</span> {{ ctl_port }}:localhost:{{ local_port }}</span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>    <span class="ex">-R</span> {{ job_port }}:localhost:{{ fwd_port }}</span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>    <span class="ex">{{</span> ssh_host }}</span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>    <span class="st">"R --no-save --no-restore -e</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="st">        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})'</span></span>
 <span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="st">        &gt; {{ ssh_log | /dev/null }} 2&gt;&amp;1"</span></span></code></pre></div>
 </div>
 </div>

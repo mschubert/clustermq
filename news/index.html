@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">clustermq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,11 +60,19 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.3" id="clustermq-093">clustermq 0.9.3<a class="anchor" aria-label="anchor" href="#clustermq-093"></a></h2><p class="text-muted">CRAN release: 2024-01-09</p>
+<ul><li>Fix a bug where <code>BiocParallel</code> did not export required objects (<a href="https://github.com/mschubert/clustermq/issues/302" class="external-link">#302</a>)</li>
+<li>Fix a bug where already finished workers were killed (<a href="https://github.com/mschubert/clustermq/issues/307" class="external-link">#307</a>)</li>
+<li>Fix a bug where worker results and stats could be garbage collected (<a href="https://github.com/mschubert/clustermq/issues/324" class="external-link">#324</a>)</li>
+<li>There is now an FAQ vignette with answers to frequently asked questions</li>
+<li>Worker API: <code>send()</code> now reports a call identifier that <code>current()</code> tracks</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.2" id="clustermq-092">clustermq 0.9.2<a class="anchor" aria-label="anchor" href="#clustermq-092"></a></h2><p class="text-muted">CRAN release: 2023-12-07</p>
 <ul><li>Fix a bug where SSH proxy would not cache data properly (<a href="https://github.com/mschubert/clustermq/issues/320" class="external-link">#320</a>)</li>
 <li>Fix a bug where <code>max_calls_worker</code> was not respected (<a href="https://github.com/mschubert/clustermq/issues/322" class="external-link">#322</a>)</li>
 <li>Local parallelism (<code>multicore</code>, <code>multiprocess</code>) again uses local IP (<a href="https://github.com/mschubert/clustermq/issues/321" class="external-link">#321</a>)</li>
-<li>Pool <code>info()</code> now also returns current worker and number of calls</li>
+<li>Worker API: <code>info()</code> now also returns current worker and number of calls</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.1" id="clustermq-091">clustermq 0.9.1<a class="anchor" aria-label="anchor" href="#clustermq-091"></a></h2><p class="text-muted">CRAN release: 2023-11-21</p>
@@ -77,7 +85,7 @@
 <li>Fix a bug where SSH tests could error with timeout on high load</li>
 <li>Worker API: <code>CMQMaster</code> now needs to know <code>add_pending_workers(n)</code>
 </li>
-<li>Worker API: status report <code>info</code> now displays properly</li>
+<li>Worker API: status report <code>info()</code> now displays properly</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="clustermq-090">clustermq 0.9.0<a class="anchor" aria-label="anchor" href="#clustermq-090"></a></h2><p class="text-muted">CRAN release: 2023-09-23</p>
