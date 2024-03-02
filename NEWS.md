@@ -1,3 +1,8 @@
+# git head
+
+* Fix a bug where worker stats were shown as `NA` (#325)
+* Worker API: `env()` now visibly lists environment if called without arguments
+
 # clustermq 0.9.3
 
 * Fix a bug where `BiocParallel` did not export required objects (#302)
