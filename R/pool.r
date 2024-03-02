@@ -47,7 +47,10 @@ Pool = R6::R6Class("Pool",
             args = list(...)
             for (name in names(args))
                 private$master$add_env(name, args[[name]])
-            invisible(private$master$list_env())
+            if (length(args) == 0)
+                private$master$list_env()
+            else
+                invisible(private$master$list_env())
         },
 
         pkg = function(...) {
