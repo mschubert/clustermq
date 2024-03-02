@@ -75,7 +75,6 @@ public:
             time_left = time_ms - std::chrono::duration_cast<ms>(Time::now() - start);
         };
 
-        peers.clear();
         env.clear();
         pending_workers = 0;
 
