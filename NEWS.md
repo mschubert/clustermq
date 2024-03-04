@@ -1,4 +1,4 @@
-# git head
+# clustermq 0.9.4
 
 * Fix a bug where worker stats were shown as `NA` (#325)
 * Worker API: `env()` now visibly lists environment if called without arguments
