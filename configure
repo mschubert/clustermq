@@ -15,7 +15,7 @@ if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
       CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
     fi
   else
-    echo "* no system libzmq found -> using bundled libzmq"
+    echo "* no system libzmq>=4.3.0 found -> using bundled libzmq"
     CLUSTERMQ_USE_SYSTEM_LIBZMQ=0
   fi
   rm -f test_libzmq

@@ -1,7 +1,9 @@
 #include <zmq.h>
+#if ZMQ_VERSION < ZMQ_MAKE_VERSION(4, 3, 0)
+#error clustermq needs libzmq>=4.3.0
+#endif
 int main() {
-    #if defined(ZMQ_BUILD_DRAFT_API) && ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0)
-    return 0;
-    #endif
+    #ifndef ZMQ_BUILD_DRAFT_API
     return 1;
+    #endif
 }
