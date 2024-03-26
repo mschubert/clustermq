@@ -287,7 +287,7 @@ time after you restart R.
       `ZeroMQ` host address (default is `Sys.info()["nodename"]`)
 * `clustermq.port.range` - A port range used by `clustermq` to initiate 
       connections. Must be in the form of `lower_port:upper_port`.
-      (Default: `5000:9999`)
+      (Default: `6000:9999`)
       Important: This option - when used with the ssh connector - must be 
       set as an option on the remote host. 
 * `clustermq.ssh.host` - The user name and host for
@@ -300,8 +300,8 @@ time after you restart R.
       start-up connection before timing out (default is `10` seconds)
 * `clustermq.ssh.hpc_fwd_port` - Port that will be opened for SSH reverse
       tunneling between the workers on the HPC and a local session
-      (default: one integer in the range of 50-55k, unless     
-      `clustermq.ssh.hpc_fwd_port.range` is defined)
+      (default: one integer randomly samples from the range between 50000 and
+      55000, unless `clustermq.ssh.hpc_fwd_port.range` is defined)
 * `clustermq.ssh.hpc_fwd_port.range` - Port range allowed for SSH reverse 
       tunneling between the workers on the HPC and a local session. 
       Must be in the form or `lower_port:upper_port`. 
