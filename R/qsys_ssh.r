@@ -58,7 +58,7 @@ SSH = R6::R6Class("SSH",
             args$ssh.hpc_fwd_port=getOption("clustermq.ssh.hpc_fwd_port", 50000:55000) 
             if (length(args$ssh.hpc_fwd_port) > 1)
                 args$ssh.hpc_fwd_port = sample(args$ssh.hpc_fwd_port, 1)
-	    utils::modifyList(private$defaults, args)
+            utils::modifyList(private$defaults, args)
         },
 
         finalize = function(quiet = self$workers_running == 0) {
