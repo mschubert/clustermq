@@ -50,6 +50,7 @@ cmq_foreach = function(obj, expr, envir, data) {
 
     # scan 'expr' for exports, eval and add objects ref'd in '.export'
     globs = globals::globalsOf(expr, envir=envir, mustExist=FALSE)
+    globs = globs[! names(globs) %in% c(names(formals(fun)), ls(baseenv()))]
     data$export = utils::modifyList(as.list(data$export), globs, keep.null=TRUE)
 
     # make sure packages are loaded on the dopar target
