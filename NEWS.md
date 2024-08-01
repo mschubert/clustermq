@@ -1,3 +1,8 @@
+# git head
+
+* Fix a bug where an outdated system `libzmq` led to compilation errors (#327)
+* New option `clustermq.ports` specifies eligible port range (#328) @michaelmayer2
+
 # clustermq 0.9.4
 
 * Fix a bug where worker stats were shown as `NA` (#325)
