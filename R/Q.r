@@ -6,10 +6,10 @@
 #' @param export          List of objects to be exported to the worker
 #' @param pkgs            Character vector of packages to load on the worker
 #' @param seed            A seed to set for each function call
-#' @param memory          Short for template=list(memory=value)
-#' @param template        A named list of values to fill in template
-#' @param n_jobs          The number of LSF jobs to submit; upper limit of jobs
-#'                        if job_size is given as well
+#' @param memory          Short for `template=list(memory=value)`
+#' @param template        A named list of values to fill in the scheduler template
+#' @param n_jobs          The number of jobs to submit; upper limit of jobs if job_size
+#'                        is given as well
 #' @param job_size        The number of function calls per job
 #' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @param rettype         Return type of function call (vector type or 'list')

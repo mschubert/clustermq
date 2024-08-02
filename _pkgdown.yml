@@ -1,5 +1,6 @@
 template:
   bootstrap: 5
+  light-switch: true
 
 toc:
     depth: 2 # level 3 currently not distinguishable from 2

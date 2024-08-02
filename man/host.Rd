@@ -6,7 +6,7 @@
 \usage{
 host(
   node = getOption("clustermq.host", Sys.info()["nodename"]),
-  ports = 6000:9999,
+  ports = getOption("clustermq.ports", 6000:9999),
   n = 100
 )
 }

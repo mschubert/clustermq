@@ -37,9 +37,10 @@ the bundled library:
 
 ```{r eval=FALSE}
 # Recommended:
-#   If your system has `libzmq` installed but you want to enable the worker crash
-#   monitor, set the following environment variable to enable compilation of the
-#   bundled `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
+#   If your system has `libzmq` installed but you want to enable the worker
+#   crash monitor, set the environment variable below to use the bundled
+#   `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
+
 # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 install.packages("clustermq")
 ```
@@ -237,8 +238,12 @@ we can use `clustermq`:
 
 ```{r}
 # set up the scheduler first, otherwise this will run sequentially
-clustermq::register_dopar_cmq(n_jobs=2, memory=1024) # this accepts same arguments as `Q`
-x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
+
+# this accepts same arguments as `Q`
+clustermq::register_dopar_cmq(n_jobs=2, memory=1024)
+
+# this will be executed as jobs
+x = foreach(i=1:3) %dopar% sqrt(i)
 ```
 
 As [BiocParallel](https://bioconductor.org/packages/release/bioc/html/BiocParallel.html)
@@ -412,6 +417,21 @@ options(
 ```
 
 ## Scheduler templates
+
+The package provides its own default scheduler templates, similar to the ones
+listed below. Which template is used is decided based on which scheduler
+submission executable is present in the user's `$PATH`, e.g. `sbatch` for SLURM
+or `bsub` for LSF. `qsub` is ambiguous between SGE and PBS/Torque, so in this
+case `options(clustermq.scheduler = "<opt>")` should be set to the correct one.
+
+A user can provide their own template file via `options(clustermq.template =
+"<file>")`, containing arbitrary template values `{{ value | default }}`. These
+values will be filled upon job submission in the following order of priority:
+
+ 1. The argument provided to `Q(..., template=list(key = value))` or
+    `workers(... template=list(key = value))`
+ 2. The value of `getOption("clustermq.defaults")`
+ 3. The default value inside the template
 
 ### LSF
 
@@ -589,8 +609,9 @@ the missing options.
 Set the following options in your _R_ session that will submit jobs:
 
 ```{r eval=FALSE}
-options(clustermq.scheduler = "Torque",
-        clustermq.template = "/path/to/file/below" # if using your own template
+options(
+    clustermq.scheduler = "Torque",
+    clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 
@@ -627,11 +648,12 @@ want to use it, first make sure that `clustermq` works on your server with the
 real scheduler. Only then move on to setting up SSH.
 
 ```{r eval=FALSE}
-options(clustermq.scheduler = "ssh",
-		clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
-        clustermq.ssh.log = "~/ssh_proxy.log",     # log file on your HPC
-        clustermq.ssh.timeout = 30,    # if changing the default connection timeout
-        clustermq.template = "/path/to/file/below" # if using your own template
+options(
+    clustermq.scheduler = "ssh",
+    clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
+    clustermq.ssh.log = "~/ssh_proxy.log",     # log file on your HPC
+    clustermq.ssh.timeout = 30,    # if changing default connection timeout
+    clustermq.template = "/path/to/file/below" # if using your own template
 )
 ```
 

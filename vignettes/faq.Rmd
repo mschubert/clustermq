@@ -33,8 +33,9 @@ suppressPackageStartupMessages(library(clustermq))
 
 To compile this package a fully C++11 compliant compiler is required. This is
 [implicit for CRAN packages](https://www.tidyverse.org/blog/2023/03/cran-checks-compiled-code/)
-since `R=3.6.2` and is hence not listed in _SystemRequirements_. If you
-encounter an error saying that that no matching function call to
+since `R=3.6.2` and is hence not listed in _SystemRequirements_.
+
+If you encounter an error saying that that no matching function call to
 `zmq::message_t::message_t(std::string&)` exists, your compiler does not
 (fully) support this and the automated check failed for some reason.
 
@@ -88,14 +89,21 @@ Execution halted
 ```
 
 the submitted job is indeed unable to establish a network connection with the
-head node. This can happen if your HPC does not allow incoming connections, but
-more likely happens because there are multiple network interfaces, only some of
-which have access to the head node.
+head node. This can happen if your HPC does not allow incoming connections at
+all, but more likely happens because (1) only certain ports are allowed, or (2)
+there are multiple network interfaces, only some of which have access to the
+head node.
 
-You can list the available network interfaces using the `ifconfig` command in
-the terminal. Find the interface that shares a subnetwork with the head node
-and add the [R option](https://mschubert.github.io/clustermq/articles/userguide.html#options) `clustermq.host=<interface>`. If this is
-unclear, contact your system administrators to see which interface to use.
+ 1. If the head node only allows incoming connections on certain ports, set the
+    [R
+    option](https://mschubert.github.io/clustermq/articles/userguide.html#options)
+    `clustermq.ports=<port range>`.
+ 2. You can list the available network interfaces using the `ifconfig` command
+    in the terminal. Find the interface that shares a subnetwork with the head
+    node and add the [R
+    option](https://mschubert.github.io/clustermq/articles/userguide.html#options)
+    `clustermq.host=<interface>`. If this is unclear, contact your system
+    administrators to see which interface to use.
 
 ## SSH not working {#ssh}
 

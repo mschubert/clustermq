@@ -38,12 +38,12 @@ Q_rows(
 
 \item{seed}{A seed to set for each function call}
 
-\item{memory}{Short for template=list(memory=value)}
+\item{memory}{Short for `template=list(memory=value)`}
 
-\item{template}{A named list of values to fill in template}
+\item{template}{A named list of values to fill in the scheduler template}
 
-\item{n_jobs}{The number of LSF jobs to submit; upper limit of jobs
-if job_size is given as well}
+\item{n_jobs}{The number of jobs to submit; upper limit of jobs if job_size
+is given as well}
 
 \item{job_size}{The number of function calls per job}
 
