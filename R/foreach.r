@@ -43,9 +43,8 @@ cmq_foreach = function(obj, expr, envir, data) {
 
     # wrap whatever we call in a function for use with Q(...)
     fun = function(...) NULL
-    formals(fun) = c(stats::setNames(replicate(ncol(args_df), substitute()),
-                                     obj$argnames),
-                     formals(fun))
+    add = stats::setNames(replicate(ncol(args_df), substitute()), obj$argnames)
+    formals(fun) = c(add, formals(fun))
     body(fun) = expr
 
     # scan 'expr' for exports, eval and add objects ref'd in '.export'
@@ -54,9 +53,8 @@ cmq_foreach = function(obj, expr, envir, data) {
     data$export = utils::modifyList(as.list(data$export), globs, keep.null=TRUE)
 
     # make sure packages are loaded on the dopar target
-    if (length(obj$packages) > 0) {
+    if (length(obj$packages) > 0)
         data$pkgs = unique(c(data$pkgs, obj$packages))
-    }
 
     result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
 
