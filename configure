@@ -48,7 +48,8 @@ if [ "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" -eq "0" ]; then
         --disable-curve \
         --disable-curve-keygen \
         --disable-ws \
-        --disable-radix-tree
+        --disable-radix-tree \
+        --without-docs
     make || exit 1
     cd -
   fi
