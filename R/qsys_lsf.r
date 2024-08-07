@@ -21,7 +21,8 @@ LSF = R6::R6Class("LSF",
                                    required=c("master", "job_name", "n_jobs"))
 
             if (verbose)
-                message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_id, ") ...")
+                message("Submitting ", n_jobs, " worker jobs to ", class(self)[1],
+						" (ID: ", private$job_id, ") ...")
 
             status = system("bsub", input=filled, ignore.stdout=TRUE)
             if (status != 0)

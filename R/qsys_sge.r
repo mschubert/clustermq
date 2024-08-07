@@ -21,7 +21,8 @@ SGE = R6::R6Class("SGE",
             filled = fill_template(private$template, opts, required=c("master", "n_jobs"))
 
             if (verbose)
-                message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_name, ") ...")
+                message("Submitting ", n_jobs, " worker jobs to ", class(self)[1],
+						" (ID: ", private$job_id, ") ...")
 
             private$qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
             status = attr(private$qsub_stdout, "status")
