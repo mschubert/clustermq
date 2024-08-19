@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM, PBS/Torque)
-Version: 0.9.4
+Version: 0.9.5
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre', 'cph'),
@@ -42,4 +42,4 @@ Suggests:
     tools
 VignetteBuilder: knitr
 Roxygen: list(r6 = FALSE)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2

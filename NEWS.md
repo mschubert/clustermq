@@ -1,4 +1,4 @@
-# git head
+# clustermq 0.9.5
 
 * Fix a bug where an outdated system `libzmq` led to compilation errors (#327)
 * New option `clustermq.ports` specifies eligible port range (#328) @michaelmayer2
