@@ -240,6 +240,7 @@ we can use `clustermq`:
 # set up the scheduler first, otherwise this will run sequentially
 
 # this accepts same arguments as `Q`
+# the number of jobs is ignored here since we're using the LOCAL scheduler
 clustermq::register_dopar_cmq(n_jobs=2, memory=1024)
 
 # this will be executed as jobs
@@ -250,7 +251,7 @@ As [BiocParallel](https://bioconductor.org/packages/release/bioc/html/BiocParall
 supports `foreach` too, this means we can run all packages that use `BiocParallel`
 on the cluster as well via `DoparParam`.
 
-```{r eval=FALSE}
+```{r}
 library(BiocParallel)
 
 # the number of jobs is ignored here since we're using the LOCAL scheduler
