@@ -13,7 +13,7 @@ summarize_result = function(result, n_errors, n_warnings,
     cond_msgs$errors = cond_msgs$errors[order(as.integer(names(cond_msgs$errors)))]
     cond_msgs$warnings = cond_msgs$warnings[order(as.integer(names(cond_msgs$warnings)))]
     cond_msgs = utils::head(c(cond_msgs$errors, cond_msgs$warnings), 50)
-    detail = paste(cond_msgs, collapse="\n")
+    detail = paste(unlist(cond_msgs), collapse="\n")
 
     if (n_errors > 0) {
         msg = sprintf("%i/%i jobs failed (%i warnings)", n_errors, at, n_warnings)
