@@ -62,7 +62,7 @@ vec_lookup = list(
 #' @keywords internal
 wrap_error = function(call) {
     structure(class = c("worker_error", "condition"),
-              list(message=geterrmessage(), call=call));
+              list(message=geterrmessage(), call=call))
 }
 
 #' Message format for logging
