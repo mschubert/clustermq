@@ -32,6 +32,8 @@ fill_template = function(template, values, required=c()) {
              paste(setdiff(required, keys), collapse=", "))
 
     upd = keys %in% names(values)
+    is_num = sapply(values, is.numeric)
+    values[is_num] = format(values[is_num], scientific=FALSE, trim=TRUE)
     vals[upd] = unlist(values)[keys[upd]]
     if (any(is.na(vals)))
         stop("Template values required but not provided: ",

@@ -27,3 +27,24 @@ test_that("template required key", {
 
     expect_error(fill_template(tmpl, values, required="missing"))
 })
+
+test_that("template filling works with vectors", {
+    tmpl = "{{ var1 }} and {{ var2 }}"
+    values = c(var1=1, var2=2)
+
+    expect_equal(fill_template(tmpl, values), "1 and 2")
+})
+
+test_that("template numbers are not converted to sci format", {
+    tmpl = "this is my {{ template }}"
+    values = list(template = 100000)
+
+    expect_equal(fill_template(tmpl, values), "this is my 100000")
+})
+
+test_that("no sci format when passing vectors", {
+    tmpl = "{{ var1 }} and {{ var2 }}"
+    values = c(var1=1, var2=1e6)
+
+    expect_equal(fill_template(tmpl, values), "1 and 1000000")
+})
