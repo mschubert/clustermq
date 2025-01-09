@@ -123,7 +123,7 @@ public:
             for (auto &str : new_env) {
                 w.env.insert(str);
                 mp.push_back(zmq::message_t(str));
-                mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
+                mp.push_back(zmq::message_t(env[str].data(), env[str].size(), [](void*, void*){}));
             }
         } else {
             std::vector<std::string> proxy_add_env;
@@ -134,7 +134,7 @@ public:
 //                    std::cout << "+from_master " << str << "\n";
                     via_env.insert(str);
                     mp.push_back(zmq::message_t(str));
-                    mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
+                    mp.push_back(zmq::message_t(env[str].data(), env[str].size(), [](void*, void*){}));
                 } else {
 //                    std::cout << "+from_proxy " << str << "\n";
                     proxy_add_env.push_back(str);
