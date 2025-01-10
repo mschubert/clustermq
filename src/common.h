@@ -41,5 +41,6 @@ zmq::message_t r2msg(SEXP data);
 SEXP msg2r(const zmq::message_t &&msg, const bool unserialize);
 wlife_t msg2wlife_t(const zmq::message_t &msg);
 std::string z85_encode_routing_id(const std::string rid);
+std::set<std::string> set_difference(std::set<std::string> &set1, std::set<std::string> &set2);
 
 #endif // _COMMON_H_

@@ -113,32 +113,22 @@ public:
 
     int send(SEXP cmd) {
         auto &w = check_current_worker(wlife_t::active);
-        std::set<std::string> new_env;
-        std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
-                std::inserter(new_env, new_env.end()));
+        auto add_to_worker = set_difference(env_names, w.env);
         auto mp = init_multipart(w, wlife_t::active);
         mp.push_back(r2msg(cmd));
 
         if (w.via.empty()) {
-            for (auto &str : new_env) {
-                w.env.insert(str);
-                mp.push_back(zmq::message_t(str));
-                mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
-            }
+            for (auto &str : add_to_worker)
+                multipart_add_obj(mp, str, w.env);
         } else {
             std::vector<std::string> proxy_add_env;
             auto &via_env = peers[w.via].env;
-            for (auto &str : new_env) {
+            for (auto &str : add_to_worker) {
                 w.env.insert(str);
-                if (via_env.find(str) == via_env.end()) {
-//                    std::cout << "+from_master " << str << "\n";
-                    via_env.insert(str);
-                    mp.push_back(zmq::message_t(str));
-                    mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
-                } else {
-//                    std::cout << "+from_proxy " << str << "\n";
+                if (via_env.find(str) == via_env.end())
+                    multipart_add_obj(mp, str, via_env);
+                else
                     proxy_add_env.push_back(str);
-                }
             }
             mp.push_back(r2msg(Rcpp::wrap(proxy_add_env)));
         }
@@ -183,7 +173,7 @@ public:
     Rcpp::DataFrame list_env() const {
         std::vector<std::string> names;
         names.reserve(env.size());
-        std::vector<int> sizes;
+        std::vector<long> sizes;
         sizes.reserve(env.size());
         for (const auto &kv: env) {
             names.push_back(kv.first);
@@ -285,6 +275,13 @@ private:
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(status));
         return mp;
+    }
+
+    void multipart_add_obj(zmq::multipart_t &mp, std::string str, std::set<std::string> &tracker) {
+        auto &obj = env[str];
+        tracker.insert(str);
+        mp.push_back(zmq::message_t(str));
+        mp.push_back(zmq::message_t(obj.data(), obj.size(), [](void*, void*){}));
     }
 
     int poll(int timeout=-1) {
