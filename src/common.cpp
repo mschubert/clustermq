@@ -57,3 +57,10 @@ std::string z85_encode_routing_id(const std::string rid) {
     zmq_z85_encode(&dest[0], reinterpret_cast<const uint8_t*>(&rid[1]), 4);
     return dest;
 }
+
+std::set<std::string> set_difference(std::set<std::string> &set1, std::set<std::string> &set2) {
+    std::set<std::string> diff;
+    std::set_difference(set1.begin(), set1.end(), set2.begin(), set2.end(),
+            std::inserter(diff, diff.end()));
+    return diff;
+}
