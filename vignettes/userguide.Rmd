@@ -344,7 +344,7 @@ also include events that are not reported back. It can be requested using:
 Q(..., log_worker=TRUE)
 ```
 
-This will create a file called *<cmq_id>-<array_index>.log* in your current
+This will create a file called *&lt;cmq_id&gt;-&lt;array_index&gt;.log* in your current
 working directory, irrespective of which scheduler you use.
 
 You can customize the file name using
