@@ -1,4 +1,4 @@
-# git head
+# clustermq 0.9.6
 
 * Large common data size is now reported correctly (#336)
 * Template filling will no longer convert large numbers to scientific format
