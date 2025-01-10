@@ -173,7 +173,7 @@ public:
     Rcpp::DataFrame list_env() const {
         std::vector<std::string> names;
         names.reserve(env.size());
-        std::vector<int> sizes;
+        std::vector<long> sizes;
         sizes.reserve(env.size());
         for (const auto &kv: env) {
             names.push_back(kv.first);

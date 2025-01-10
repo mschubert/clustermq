@@ -1,5 +1,6 @@
 # git head
 
+* Large common data size is now reported correctly (#336)
 * Common data will no longer be duplicated when sending to workers
 
 # clustermq 0.9.5
