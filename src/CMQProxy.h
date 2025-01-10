@@ -125,7 +125,7 @@ public:
 //            std::cout << "adding from proxy env: (" << add_from_proxy.size() << ")";
             for (auto &name : add_from_proxy) {
                 mp.push_back(zmq::message_t(name));
-                mp.push_back(zmq::message_t(env[name].data(), env[name].size()));
+                mp.push_back(zmq::message_t(env[name].data(), env[name].size(), [](void*, void*){}));
             }
 //            std::cout << "\nMESSAGE SIZE to worker: " << mp.size() << "\n\n";
             mp.send(to_worker);
