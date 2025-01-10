@@ -22,7 +22,7 @@ SGE = R6::R6Class("SGE",
 
             if (verbose)
                 message("Submitting ", n_jobs, " worker jobs to ", class(self)[1],
-						" (ID: ", private$job_id, ") ...")
+                        " as ", sQuote(private$job_id), " ...")
 
             private$qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
             status = attr(private$qsub_stdout, "status")

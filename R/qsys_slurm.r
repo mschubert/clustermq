@@ -22,7 +22,7 @@ SLURM = R6::R6Class("SLURM",
 
             if (verbose)
                 message("Submitting ", n_jobs, " worker jobs to ", class(self)[1],
-						" (ID: ", private$job_id, ") ...")
+                        " as ", sQuote(private$job_id), " ...")
 
             status = system("sbatch", input=filled, ignore.stdout=TRUE)
             if (status != 0)
