@@ -120,25 +120,17 @@ public:
         mp.push_back(r2msg(cmd));
 
         if (w.via.empty()) {
-            for (auto &str : new_env) {
-                w.env.insert(str);
-                mp.push_back(zmq::message_t(str));
-                mp.push_back(zmq::message_t(env[str].data(), env[str].size(), [](void*, void*){}));
-            }
+            for (auto &str : new_env)
+                multipart_add_obj(mp, str, w.env);
         } else {
             std::vector<std::string> proxy_add_env;
             auto &via_env = peers[w.via].env;
             for (auto &str : new_env) {
                 w.env.insert(str);
-                if (via_env.find(str) == via_env.end()) {
-//                    std::cout << "+from_master " << str << "\n";
-                    via_env.insert(str);
-                    mp.push_back(zmq::message_t(str));
-                    mp.push_back(zmq::message_t(env[str].data(), env[str].size(), [](void*, void*){}));
-                } else {
-//                    std::cout << "+from_proxy " << str << "\n";
+                if (via_env.find(str) == via_env.end())
+                    multipart_add_obj(mp, str, via_env);
+                else
                     proxy_add_env.push_back(str);
-                }
             }
             mp.push_back(r2msg(Rcpp::wrap(proxy_add_env)));
         }
@@ -285,6 +277,13 @@ private:
         mp.push_back(zmq::message_t(0));
         mp.push_back(int2msg(status));
         return mp;
+    }
+
+    void multipart_add_obj(zmq::multipart_t &mp, std::string str, std::set<std::string> &tracker) {
+        auto &obj = env[str];
+        tracker.insert(str);
+        mp.push_back(zmq::message_t(str));
+        mp.push_back(zmq::message_t(obj.data(), obj.size(), [](void*, void*){}));
     }
 
     int poll(int timeout=-1) {
