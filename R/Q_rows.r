@@ -56,7 +56,9 @@ Q_rows = function(df, fun, const=list(), export=list(), pkgs=c(), seed=128965,
                           log_worker=log_worker, verbose=verbose)
     workers$env(fun=fun, rettype=rettype, common_seed=seed, const=const)
     workers$pkg(pkgs)
-    do.call(workers$env, export)
+    objs = do.call(workers$env, export)
+    if (!is.null(template$memory) && 2*sum(objs$size)/1024^2 > template$memory)
+        stop("Not enough memory requested to unserialize data on workers")
 
     # heuristic for chunk size
     if (is.na(chunk_size))
