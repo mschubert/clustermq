@@ -113,9 +113,7 @@ public:
 
     int send(SEXP cmd) {
         auto &w = check_current_worker(wlife_t::active);
-        std::set<std::string> new_env;
-        std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
-                std::inserter(new_env, new_env.end()));
+        auto add_to_worker = missing_env_data(w.env);
         auto mp = init_multipart(w, wlife_t::active);
         mp.push_back(r2msg(cmd));
 
@@ -284,6 +282,13 @@ private:
         tracker.insert(str);
         mp.push_back(zmq::message_t(str));
         mp.push_back(zmq::message_t(obj.data(), obj.size(), [](void*, void*){}));
+    }
+
+    std::set<std::string> missing_env_data(std::set<std::string> &env) {
+        std::set<std::string> new_env;
+        std::set_difference(env_names.begin(), env_names.end(), env.begin(), env.end(),
+                std::inserter(new_env, new_env.end()));
+        return new_env;
     }
 
     int poll(int timeout=-1) {
