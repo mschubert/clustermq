@@ -48,3 +48,13 @@ test_that("no sci format when passing vectors", {
 
     expect_equal(fill_template(tmpl, values), "1 and 1000000")
 })
+
+test_that("BiocGenerics changes format dispatch (#337)", {
+    # see: https://github.com/Bioconductor/BiocGenerics/blob/RELEASE_3_20/R/format.R
+    setGeneric("format")
+    format.list = base::format.AsIs
+
+    tmpl = "{{ var1 }} and {{ var2 }}"
+    values = c(var1=1, var2=100)
+    expect_equal(fill_template(tmpl, values), "1 and 100")
+})
