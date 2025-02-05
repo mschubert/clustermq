@@ -207,13 +207,13 @@ If we want to use a package function we need to load it on the worker using the
 
 ```{r}
 f1 = function(x) splitIndices(x, 3)
+# Q(f1, x=5, n_jobs=1)
+# (Error #1) could not find function "splitIndices"
+
 Q(f1, x=3, n_jobs=1, pkgs="parallel")
 
 f2 = function(x) parallel::splitIndices(x, 3)
 Q(f2, x=8, n_jobs=1)
-
-# Q(f1, x=5, n_jobs=1)
-# (Error #1) could not find function "splitIndices"
 ```
 
 ### As parallel `foreach` backend
@@ -227,13 +227,8 @@ library(foreach)
 foreach(i=1:3) %do% sqrt(i)
 ```
 
-it can also perform these operations in parallel using `%dopar%`:
-
-```{r}
-foreach(i=1:3) %dopar% sqrt(i)
-```
-
-The latter allows registering different handlers for parallel execution, where
+It can also perform these operations in parallel using `%dopar%`:
+This operator allows registering different handlers for parallel execution, where
 we can use `clustermq`:
 
 ```{r}
