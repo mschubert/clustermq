@@ -80,9 +80,7 @@ of using `const` and `export` would be:
 # adding a constant argument
 fx = function(x, y) x * 2 + y
 Q(fx, x=1:3, const=list(y=10), n_jobs=1)
-```
 
-```r
 # exporting an object to workers
 fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
@@ -97,9 +95,7 @@ we can run those packages on the cluster as well:
 library(foreach)
 register_dopar_cmq(n_jobs=2, memory=1024) # see `?workers` for arguments
 foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
-```
 
-```r
 library(BiocParallel)
 register(DoparParam()) # after register_dopar_cmq(...)
 bplapply(1:3, sqrt)
