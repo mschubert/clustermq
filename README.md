@@ -10,6 +10,9 @@ This package will allow you to send function calls as jobs on a computing
 cluster with a minimal interface provided by the `Q` function:
 
 ```r
+# install the package if you haven't done so yet
+install.packages('clustermq')
+
 # load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
@@ -31,30 +34,6 @@ Browse the vignettes here:
 * [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html)
 * [Technical Documentation](https://mschubert.github.io/clustermq/articles/technicaldocs.html)
 * [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
-
-Installation
-------------
-
-Install the `clustermq` package in R from CRAN (including the bundled
-[ZeroMQ](https://github.com/zeromq/libzmq) system library):
-
-```r
-install.packages('clustermq')
-```
-
-Alternatively you can use the `remotes` package to install directly from
-Github. Note that this version needs `autoconf`/`automake` and `CMake` for
-compilation:
-
-```r
-# install.packages('remotes')
-remotes::install_github('mschubert/clustermq')
-# remotes::install_github('mschubert/clustermq@develop') # dev version
-```
-
-> [!TIP]
-> For installation problems, see the
-> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
 
 Schedulers
 ----------
