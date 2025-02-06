@@ -15,7 +15,6 @@ Q(
   template = list(),
   n_jobs = NULL,
   job_size = NULL,
-  split_array_by = -1,
   rettype = "list",
   fail_on_error = TRUE,
   workers = NULL,
@@ -47,8 +46,6 @@ Q(
 is given as well}
 
 \item{job_size}{The number of function calls per job}
-
-\item{split_array_by}{The dimension number to split any arrays in `...`; default: last}
 
 \item{rettype}{Return type of function call (vector type or 'list')}
 

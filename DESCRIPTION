@@ -20,7 +20,6 @@ Depends:
 LinkingTo: Rcpp
 Imports:
     methods,
-    narray,
     globals,
     progress,
     R6,

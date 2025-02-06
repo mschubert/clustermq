@@ -11,7 +11,6 @@
 #' @param n_jobs          The number of jobs to submit; upper limit of jobs if job_size
 #'                        is given as well
 #' @param job_size        The number of function calls per job
-#' @param split_array_by  The dimension number to split any arrays in `...`; default: last
 #' @param rettype         Return type of function call (vector type or 'list')
 #' @param fail_on_error   If an error occurs on the workers, continue or fail?
 #' @param workers         Optional instance of QSys representing a worker pool
@@ -38,19 +37,10 @@
 #' }
 Q = function(fun, ..., const=list(), export=list(), pkgs=c(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
-        split_array_by=-1, rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, chunk_size=NA, timeout=Inf, max_calls_worker=Inf,
-        verbose=TRUE) {
+        rettype="list", fail_on_error=TRUE, workers=NULL, log_worker=FALSE,
+        chunk_size=NA, timeout=Inf, max_calls_worker=Inf, verbose=TRUE) {
 
-    split_arrays = function(x) {
-        if (is.array(x)) {
-            .Deprecated("narray package directly")
-            narray::split(x, along=split_array_by)
-        } else
-            x
-    }
-    iter = lapply(list(...), split_arrays)
-    df = check_args(fun, iter, const)
+    df = check_args(fun, list(...), const)
 
     Q_rows(fun = fun,
            df = df,

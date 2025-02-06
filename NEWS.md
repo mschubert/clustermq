@@ -1,3 +1,8 @@
+# git head
+
+* Fix a bug where `BiocGenerics` could break template filling (#337)
+* Long deprecated automatic array splitting in `Q` has been removed
+
 # clustermq 0.9.6
 
 * Large common data size is now reported correctly (#336)
