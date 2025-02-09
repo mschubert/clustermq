@@ -1,7 +1,7 @@
-# git head
+# clustermq 0.9.7
 
 * Fix a bug where `BiocGenerics` could break template filling (#337)
-* Long deprecated automatic array splitting in `Q` has been removed
+* Remove deprecated automatic array splitting in `Q`
 
 # clustermq 0.9.6
 
