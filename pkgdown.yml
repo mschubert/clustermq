@@ -1,8 +1,8 @@
-pandoc: 3.1.11.1
+pandoc: 3.6.2
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   faq: faq.html
   technicaldocs: technicaldocs.html
   userguide: userguide.html
-last_built: 2025-01-13T08:48Z
+last_built: 2025-02-09T13:56Z
