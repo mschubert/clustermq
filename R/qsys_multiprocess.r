@@ -60,5 +60,7 @@ MULTIPROCESS = R6::R6Class("MULTIPROCESS",
             }
             private$is_cleaned_up = TRUE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )

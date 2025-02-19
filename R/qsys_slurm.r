@@ -47,5 +47,7 @@ SLURM = R6::R6Class("SLURM",
             }
             private$is_cleaned_up = TRUE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )

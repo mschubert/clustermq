@@ -52,7 +52,9 @@ SGE = R6::R6Class("SGE",
             }
             private$is_cleaned_up = TRUE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )
 
 PBS = R6::R6Class("PBS",
@@ -64,7 +66,9 @@ PBS = R6::R6Class("PBS",
             private$array_idx = "$PBS_ARRAY_INDEX"
             private$job_id = private$qsub_stdout[1]
         }
-    )
+    ),
+
+    cloneable = FALSE
 )
 
 TORQUE = R6::R6Class("TORQUE",
@@ -75,5 +79,7 @@ TORQUE = R6::R6Class("TORQUE",
             super$initialize(..., template=template)
             private$array_idx = "$PBS_ARRAYID"
         }
-    )
+    ),
+
+    cloneable = FALSE
 )

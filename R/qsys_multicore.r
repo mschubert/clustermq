@@ -67,5 +67,7 @@ MULTICORE = R6::R6Class("MULTICORE",
             }
             private$is_cleaned_up = TRUE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )

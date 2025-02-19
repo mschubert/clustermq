@@ -14,5 +14,7 @@ LOCAL = R6::R6Class("LOCAL",
                 message("Running sequentially ('LOCAL') ...")
             private$is_cleaned_up = TRUE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )

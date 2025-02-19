@@ -48,5 +48,7 @@ LSF = R6::R6Class("LSF",
             }
             private$is_cleaned_up = TRUE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )

@@ -70,5 +70,7 @@ SSH = R6::R6Class("SSH",
 #            }
             private$ssh_proxy_running = FALSE
         }
-    )
+    ),
+
+    cloneable = FALSE
 )
