@@ -1,3 +1,8 @@
+# clustermq 0.9.8
+
+* Suppress R6 clonable message
+* Fix CRAN warning about `cppzmq` deprecated declaration
+
 # clustermq 0.9.7
 
 * Fix a bug where `BiocGenerics` could break template filling (#337)
