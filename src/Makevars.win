@@ -1,17 +1,2 @@
-RWINLIB = ../windows/zeromq
-OLDLIBDIR = lib$(subst gcc,,$(COMPILED_BY))$(R_ARCH)
-PKG_CPPFLAGS = -DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -Icppzmq -I${RWINLIB}/include
-
-PKG_LIBS = \
-	-L$(RWINLIB)/$(OLDLIBDIR) \
-	-L$(RWINLIB)/lib$(R_ARCH) \
-	-L$(RWINLIB)/lib \
-	-lzmq -lsodium -lpthread -liphlpapi -lws2_32
-
-all: clean winlibs
-
-clean:
-	rm -f $(OBJECTS) $(SHLIB)
-
-winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
+PKG_CPPFLAGS = -DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -Icppzmq -I"$(R_TOOLS_SOFT)/include"
+PKG_LIBS = -L"$(R_TOOLS_SOFT)/lib" -lzmq -lsodium -lpthread -liphlpapi -lws2_32
