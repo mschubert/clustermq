@@ -53,7 +53,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install coreutils automake libtool
+          brew install coreutils automake libtool zeromq
 
       - name: Set up local key-based SSH
         if: runner.os != 'Windows' # GHA does not allow empty passphrase on Windows
@@ -93,7 +93,6 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          error-on: '"error"'
           upload-snapshots: true
 
       - name: Print logs if failure
