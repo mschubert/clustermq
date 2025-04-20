@@ -1,2 +1,2 @@
-PKG_CPPFLAGS = -DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -Icppzmq -I"$(R_TOOLS_SOFT)/include"
+PKG_CPPFLAGS = -DZMQ_STATIC -Icppzmq -I"$(R_TOOLS_SOFT)/include"
 PKG_LIBS = -L"$(R_TOOLS_SOFT)/lib" -lzmq -lsodium -lpthread -liphlpapi -lws2_32
