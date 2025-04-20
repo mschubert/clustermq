@@ -33,31 +33,7 @@ rm -f test_cpp11
 if [ "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" -eq "0" ]; then
   PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
   PKG_LIBS="libzmq/src/.libs/libzmq.a"
-
-  cd src/libzmq
-  if [ ! -f Makefile.in ]; then
-    ./autogen.sh || exit 1
-  fi
-
-  if [ ! -f src/.libs/libzmq.a ]; then
-    CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
-        --enable-drafts \
-        --enable-static \
-        --disable-shared \
-        --disable-maintainer-mode \
-        --disable-Werror \
-        --disable-libbsd \
-        --disable-libunwind \
-        --disable-perf \
-        --disable-curve \
-        --disable-curve-keygen \
-        --disable-ws \
-        --disable-radix-tree \
-        --without-docs
-    make || exit 1
-  fi
-  cd -
-
+  ./src/util/build_libzmq.sh
 else
   PKG_CFLAGS="$(pkg-config --cflags libzmq) -fPIC -Icppzmq"
   PKG_LIBS="$(pkg-config --libs libzmq)"
