@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# remove code that causes R-check warnings
+./src/util/patch_libzmq.sh
