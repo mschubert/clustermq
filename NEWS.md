@@ -1,3 +1,8 @@
+# clustermq 0.9.9
+
+* The Windows binary no longer includes the disconnect monitor
+* Fix more CRAN warnings and test timeouts
+
 # clustermq 0.9.8
 
 * Suppress R6 clonable message
