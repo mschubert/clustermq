@@ -25,7 +25,3 @@ if [ ! -f include/zmq_utils.h.orig ]; then
   mv include/zmq_utils.h include/zmq_utils.h.orig
   sed '/^#pragma/s|^|//|' include/zmq_utils.h.orig > include/zmq_utils.h
 fi
-
-if [ ! -f Makefile.in ]; then
-  ./autogen.sh || exit 1
-fi
