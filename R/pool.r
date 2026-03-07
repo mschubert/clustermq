@@ -90,20 +90,20 @@ Pool = R6::R6Class("Pool",
         send_eval = function(cmd, ...) {
             pcall = quote(substitute(cmd))
             cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
-            invisible(private$master$send(cmd))
+            invisible(private$master$send_eval(cmd))
         },
         send = function(cmd, ...) {
             .Deprecated("send_eval")
             pcall = quote(substitute(cmd))
             cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
-            invisible(private$master$send(cmd))
+            invisible(private$master$send_eval(cmd))
         },
         send_shutdown = function() {
             private$master$send_shutdown()
         },
         send_wait = function(wait=50) {
             .Deprecated("send_eval")
-            self$send(Sys.sleep(wait/1000), wait=wait)
+            self$send_eval(Sys.sleep(wait/1000), wait=wait)
         },
 
         recv = function(timeout=-1L) {

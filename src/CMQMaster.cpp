@@ -9,7 +9,7 @@ RCPP_MODULE(cmq_master) {
         .method("listen", &CMQMaster::listen)
         .method("close", &CMQMaster::close)
         .method("recv", &CMQMaster::recv)
-        .method("send", &CMQMaster::send)
+        .method("send_eval", &CMQMaster::send_eval)
         .method("send_shutdown", &CMQMaster::send_shutdown)
         .method("proxy_submit_cmd", &CMQMaster::proxy_submit_cmd)
         .method("add_env", &CMQMaster::add_env)

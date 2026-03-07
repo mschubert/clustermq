@@ -29,7 +29,7 @@ test_that("worker evaluation", {
     w$connect(addr, 500L)
 
     m$recv(500L)
-    m$send(expression(5 * 2))
+    m$send_eval(expression(5 * 2))
     status = w$process_one()
     result = m$recv(500L)
 
@@ -49,14 +49,14 @@ test_that("export variable to worker", {
 
     m$add_env("x", 3)
     m$recv(500L)
-    m$send(expression(5 + x))
+    m$send_eval(expression(5 + x))
     status = w$process_one()
     result = m$recv(500L)
     expect_true(status)
     expect_equal(result, 8)
 
     m$add_env("x", 5)
-    m$send(expression(5 + x))
+    m$send_eval(expression(5 + x))
     status = w$process_one()
     result = m$recv(500L)
     expect_true(status)
@@ -76,7 +76,7 @@ test_that("load package on worker", {
     m$add_pkg("parallel")
 
     m$recv(500L)
-    m$send(expression(splitIndices(1, 1)[[1]]))
+    m$send_eval(expression(splitIndices(1, 1)[[1]]))
     status = w$process_one()
     result = m$recv(500L)
 
@@ -97,7 +97,7 @@ test_that("errors are sent back to master", {
     w$connect(addr, 500L)
 
     m$recv(500L)
-    m$send(expression(stop("errmsg")))
+    m$send_eval(expression(stop("errmsg")))
     status = w$process_one()
     result = m$recv(500L)
 
@@ -119,7 +119,7 @@ test_that("worker R API", {
 
     p = parallel::mcparallel(worker(addr))
     expect_null(m$recv(5000L))
-    m$send(expression(5 + 1))
+    m$send_eval(expression(5 + 1))
     res = m$recv(500L)
     expect_equal(res[[1]], 6)
 
@@ -140,9 +140,9 @@ test_that("communication with two workers", {
     w2 = parallel::mcparallel(worker(addr))
 
     expect_null(m$recv(5000L)) # worker 1 up
-    m$send(expression({ Sys.sleep(0.5); 5 + 2 }))
+    m$send_eval(expression({ Sys.sleep(0.5); 5 + 2 }))
     expect_null(m$recv(500L)) # worker 2 up
-    m$send(expression({ Sys.sleep(0.5); 3 + 1 }))
+    m$send_eval(expression({ Sys.sleep(0.5); 3 + 1 }))
     r1 = m$recv(1000L)
     m$send_shutdown()
     r2 = m$recv(1000L)

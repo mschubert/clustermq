@@ -111,7 +111,7 @@ public:
         return msg2r(std::move(msgs[data_offset]), true);
     }
 
-    int send(SEXP cmd) {
+    int send_eval(SEXP cmd) {
         auto &w = check_current_worker(wlife_t::active);
         auto add_to_worker = set_difference(env_names, w.env);
         auto mp = init_multipart(w, wlife_t::active);
