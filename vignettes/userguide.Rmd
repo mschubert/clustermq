@@ -379,7 +379,7 @@ container.
 
 Examples for such environments or containers are:
 
-* [Bash module](https://modules.sourceforge.net/) environments
+* [Bash module](https://envmodules.io/) environments
 * [Conda](https://docs.conda.io/) environments
 * [Docker](https://www.docker.com/)/[Singularity](https://singularity.lbl.gov/) containers
 

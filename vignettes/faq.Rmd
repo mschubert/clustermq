@@ -32,7 +32,7 @@ suppressPackageStartupMessages(library(clustermq))
 ## Installation errors {#install}
 
 To compile this package a fully C++11 compliant compiler is required. This is
-[implicit for CRAN packages](https://www.tidyverse.org/blog/2023/03/cran-checks-compiled-code/)
+[implicit for CRAN packages](https://tidyverse.org/blog/2023/03/cran-checks-compiled-code/)
 since `R=3.6.2` and is hence not listed in _SystemRequirements_.
 
 If you encounter an error saying that that no matching function call to

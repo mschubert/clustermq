@@ -123,7 +123,7 @@ In short, use `clustermq` if you want:
 * access cluster functions from your local Rstudio via SSH
 * fast processing of many function calls without network storage I/O
 
-Use [`batchtools`](https://github.com/mllg/batchtools) if you:
+Use [`batchtools`](https://github.com/mlr-org/batchtools) if you:
 
 * want to use a mature and well-tested package
 * don't mind that arguments to every call are written to/read from disc
