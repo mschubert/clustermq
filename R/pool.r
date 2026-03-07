@@ -96,7 +96,7 @@ Pool = R6::R6Class("Pool",
             private$master$send_shutdown()
         },
         send_wait = function(wait=50) {
-            private$master$send(Sys.sleep(wait/1000))
+            self$send(Sys.sleep(wait/1000), wait=wait)
         },
 
         recv = function(timeout=-1L) {
