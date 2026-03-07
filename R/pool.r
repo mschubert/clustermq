@@ -87,7 +87,13 @@ Pool = R6::R6Class("Pool",
         },
         ### END pre-0.9 compatibility functions (deprecated)
 
+        send_eval = function(cmd, ...) {
+            pcall = quote(substitute(cmd))
+            cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
+            invisible(private$master$send(cmd))
+        },
         send = function(cmd, ...) {
+            .Deprecated("send_eval")
             pcall = quote(substitute(cmd))
             cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
             invisible(private$master$send(cmd))
@@ -96,6 +102,7 @@ Pool = R6::R6Class("Pool",
             private$master$send_shutdown()
         },
         send_wait = function(wait=50) {
+            .Deprecated("send_eval")
             self$send(Sys.sleep(wait/1000), wait=wait)
         },
 

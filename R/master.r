@@ -94,7 +94,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
         if (submit_index[1] <= n_calls) {
             # if we have work, send it to the worker
             submit_index = submit_index[submit_index <= n_calls]
-            pool$send(work_chunk(chunk, fun=fun, const=const, rettype=rettype,
+            pool$send_eval(work_chunk(chunk, fun=fun, const=const, rettype=rettype,
                 common_seed=common_seed), chunk=chunk(iter, submit_index))
             jobs_running = jobs_running + length(submit_index)
             submit_index = submit_index + chunk_size
@@ -107,7 +107,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
             }
 
         } else if (pool$reusable) {
-            pool$send_wait()
+            pool$send_eval(Sys.sleep(0.05))
         } else { # or else shut it down
             pool$send_shutdown()
         }

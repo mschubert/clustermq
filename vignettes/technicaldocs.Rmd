@@ -96,7 +96,7 @@ We can then send any expression to be evaluated on the worker using the `send`
 method:
 
 ```{r eval=FALSE}
-w$send(expression, ...)
+w$send_eval(expression, ...)
 ```
 
 After the expression (in `...`), any variables that should be passed along with
@@ -125,7 +125,7 @@ to all workers automatically in a greedy fashion.
 ### Main event loop
 
 Putting the above together in an event loop, we get what is essentially
-implemented in `master`. `w$send` invisibly returns an identifier to track
+implemented in `master`. `w$send_eval` invisibly returns an identifier to track
 which call was submitted, and `w$current()` matches the same to `w$recv()`.
 
 ```{r eval=FALSE}
@@ -139,7 +139,7 @@ while (we have new work to send || jobs pending) {
     # handle result
 
     if (more work)
-        call_ref = w$send(expression, ...) # call_ref tracks request identity
+        call_ref = w$send_eval(expression, ...) # call_ref tracks request identity
     else
         w$send_shutdown()
 }
