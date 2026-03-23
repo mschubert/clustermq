@@ -10,8 +10,8 @@
     qsys_default = toupper(getOption('clustermq.scheduler'))
 
     if (length(qsys_default) == 0) {
-        qname = c("SLURM", "LSF", "SGE", "GCS", "OCS", "LOCAL")
-        exec = Sys.which(c("sbatch", "bsub", "qsub", "qsub", "qsub"))
+        qname = c("SLURM", "LSF", "SGE", "LOCAL")
+        exec = Sys.which(c("sbatch", "bsub", "qsub"))
         select = c(which(nchar(exec) > 0), 6)[1]
         qsys_default = qname[select]
     }

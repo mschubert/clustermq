@@ -66,56 +66,31 @@ OCS = R6::R6Class("OCS",
                               log_worker=FALSE, log_file=NULL, verbose=TRUE) {
             super$initialize(addr=addr, master=master, template=template)
 
-            # fill the template with options and required fields
             opts = private$fill_options(n_jobs=n_jobs, ...)
             filled = fill_template(private$template, opts, required=c("master", "n_jobs"))
+            qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
 
-            private$job_name = opts$job_name
-            if (verbose)
-                message("Submitting ", n_jobs, " worker jobs to ", class(self)[1], " as ", sQuote(private$job_name), " ...")
-
-            # submit the job with qsub (stdin-based) and capture the output
-            # on success the output will contain the job id, on failure the error message
-            private$qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
-
-            # check the return code and stop on error
-            status = attr(private$qsub_stdout, "status")
+            status = attr(qsub_stdout, "status")
             if (!is.null(status) && status != 0)
                 private$template_error(class(self)[1], status, filled)
 
-            # try to read the job ID from stdout. On error stop
-            private$job_id <- regmatches(private$qsub_stdout, regexpr("^[0-9]+", private$qsub_stdout))
+            private$job_id = regmatches(qsub_stdout, regexpr("^[0-9]+", qsub_stdout))
             if (length(private$job_id) == 0)
-                private$template_error(class(self)[1], private$qsub_stdout, filled)
+                private$template_error(class(self)[1], qsub_stdout, filled)
 
-            # if we got here, we have a job ID and can proceed
             if (verbose)
-               message("Submitted job has ID ", private$job_id)
+                message("Submitted ", n_jobs, " worker tasks to ", class(self)[1], " as array job ", private$job_id, " ...")
 
             private$master$add_pending_workers(n_jobs)
-            private$is_cleaned_up = FALSE
         },
 
         cleanup = function(success, timeout) {
-            # first call finalize to send qdel ...
-            private$finalize()
-
-            # ... then set the cleaned up flag to avoid sending qdel again
-            private$is_cleaned_up = success
+            system(paste("qdel", private$job_id), ignore.stdout=TRUE, ignore.stderr=TRUE, wait=FALSE)
         }
     ),
 
     private = list(
-        qsub_stdout = NULL,
-        job_name = NULL,
-        job_id = NULL,
-
-        finalize = function(quiet = TRUE) {
-            if (!private$is_cleaned_up) {
-                system(paste("qdel", private$job_id), ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
-            }
-            private$is_cleaned_up = TRUE
-        }
+        job_id   = NULL
     ),
 
     cloneable = FALSE

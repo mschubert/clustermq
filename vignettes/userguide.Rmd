@@ -82,8 +82,8 @@ To set up a scheduler explicitly, see the following links:
 * [SLURM](#slurm) - *should work without setup*
 * [LSF](#lsf) - *should work without setup*
 * [SGE](#sge) - *may require configuration*
-* [GCS](#gcs) - *works without setup*
-* [OCS](#ocs) - *works without setup*
+* [GCS](#gcs) - *needs* `options(clustermq.scheduler="GCS")`
+* [OCS](#ocs) -  *needs* `options(clustermq.scheduler="OCS")`
 * [PBS](#pbs)/[Torque](#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * you can suggest another scheduler by [opening an
   issue](https://github.com/mschubert/clustermq/issues)
@@ -500,48 +500,24 @@ to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
 # Name of the job visible in GCS
-#$ -N {{ job_name }}
-
-# Join error and output file.
-#$ -j y
-
-# Location of the output file
-#$ -o {{ log_file | /dev/null }}
-
-# Start R job in the working directory
-#$ -cwd
-
-# Export the full environment to the R job (e.g if *LD_LIBRARY_PATH* is required).
-# Depending on security settings might require a cluster manager to set
-# ENABLE_SUBMIT_LIB_PATH=1 as *qmaster_param*
-#$ -V
-
-# Spawns workload as tasks of an array job into the scheduler (one job with multiple tasks)
-#$ -t 1-{{ n_jobs }}
-
-# Each array task will allocate one slot in the cluster, if not other specified.
-#$ -pe mytestpe {{ cores | 1 }}
-
-# Per slot the job will get one power core (C) assuming R code is single-threaded, if not other specified.
-#$ -bunit C
-#$ -bamount {{ threads | 1 }}
-
-# Cores on a host are packed (cores on a die or chiplet sharing same NUMA node and caches if possible)
-#$ -bstrategy packed
-#$ -btype host
-
-# The scheduler will do the binding via *HWLOC*.
-# Change to *env* if scheduler should make binding decision but not do the binding itself.
-#$ -binstance set
-
-# Allows to set resource requests like memory (1 GB [in bytes])
-# to set runtime limits (1 hour [in seconds])
-# or to influence scheduler resource selection (job will be executed in all.q queue)
-#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q
-
-# Tag the job so that it can be identified later on (e.g. in a JSV script before
-# submission so the job can get adapted or for filtering later on)
-#$ -ac application=clustermq,hostname={{ master }}
+#$ -terse                        # Show job ID
+#$ -N {{ job_name }}             # Job name
+#$ -j y                          # Combine stdout/stderr into one file
+#$ -o {{ log_file | /dev/null }} # Output file
+#$ -cwd                          # Use cwd as working directory
+#$ -V                            # Export all environment variables to the job
+                                 # Depending on security settings might require a
+                                 # cluster manager to set ENABLE_SUBMIT_LIB_PATH=1 as
+                                 # *qmaster_param* to export *LD_LIBRARY_PATH*
+#$ -t 1-{{ n_jobs }}             # Spawns workload as tasks of an array job
+#$ -pe mytestpe {{ cores | 1 }}  # Allocate one slot per task
+#$ -bunit C                      # Allocate *power core(s)* per slot
+#$ -bamount {{ threads | 1 }}    # Allocate *one* power core per slot
+#$ -bstrategy packed             # *Pack* cores on a host to share NUMA nodes and caches
+#$ -btype host                   # Bind per host
+#$ -binstance set                # Use HWLOC to bind cores
+#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q # Resource requests and limits
+#$ -ac application=clustermq,hostname={{ master }} # Tag the job
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
@@ -580,41 +556,22 @@ To supply your own template, save the contents below with any desired changes
 to a file and have `clustermq.template` point to it.
 
 ```{sh eval=FALSE}
-# Name of the job visible in GCS
-#$ -N {{ job_name }}
-
-# Join error and output file.
-#$ -j y
-
-# Location of the output file
-#$ -o {{ log_file | /dev/null }}
-
-# Start R job in the working directory
-#$ -cwd
-
-# Export the full environment to the R job (e.g if *LD_LIBRARY_PATH* is required).
-# Depending on security settings might require a cluster manager to set
-# ENABLE_SUBMIT_LIB_PATH=1 as *qmaster_param*
-#$ -V
-
-# Spawns workload as tasks of an array job into the scheduler (one job with multiple tasks)
-#$ -t 1-{{ n_jobs }}
-
-# Each array task will allocate one slot in the cluster, if not other specified.
-#$ -pe mytestpe {{ cores | 1 }}
-
-# Per slot the job will get one power core (C) assuming R code is single-threaded, if not other specified.
-#$ -bunit C
-#$ -bamount {{ threads | 1 }}
-
-# Allows to set resource requests like memory (1 GB [in bytes])
-# to set runtime limits (1 hour [in seconds])
-# or to influence scheduler resource selection (job will be executed in all.q queue)
-#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q
-
-# Tag the job so that it can be identified later on (e.g. in a JSV script before
-# submission so the job can get adapted or for filtering later on)
-#$ -ac application=clustermq,hostname={{ master }}
+# Name of the job visible in OCS
+#$ -terse                        # Show job ID
+#$ -N {{ job_name }}             # Job name
+#$ -j y                          # Combine stdout/stderr into one file
+#$ -o {{ log_file | /dev/null }} # Output file
+#$ -cwd                          # Use cwd as working directory
+#$ -V                            # Export all environment variables to the job
+                                 # Depending on security settings might require a
+                                 # cluster manager to set ENABLE_SUBMIT_LIB_PATH=1 as
+                                 # *qmaster_param* to export *LD_LIBRARY_PATH*
+#$ -t 1-{{ n_jobs }}             # Spawns workload as tasks of an array job
+#$ -pe mytestpe {{ cores | 1 }}  # Allocate one slot per task
+#$ -bunit C                      # Allocate *power core(s)* per slot
+#$ -bamount {{ threads | 1 }}    # Allocate *one* power core per slot
+#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q # Resource requests and limits
+#$ -ac application=clustermq,hostname={{ master }} # Tag the job
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
@@ -634,7 +591,6 @@ In this file, `#$-*` defines command-line arguments to the `qsub` program.
 
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
-
 
 ### SGE
 
