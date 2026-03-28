@@ -1,3 +1,8 @@
+# clustermq 0.9.10
+
+* Fix a bug where `Sys.sleep` was evaluated on the master (#340) @wlandau
+* Worker API: rename `send` to `send_eval`, deprecate `send_wait`
+
 # clustermq 0.9.9
 
 * The Windows binary no longer includes the disconnect monitor
