@@ -51,15 +51,7 @@ QSys = R6::R6Class("QSys",
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$addr
-            if (grepl("CMQ_AUTH", private$template)) {
-                # note: auth will be obligatory in the future and this check will
-                #   be removed (i.e., filling will fail if no field in template)
-                values$auth = paste(sample(letters, 5, TRUE), collapse="")
-            } else {
-                values$auth = NULL
-                warning("Add 'CMQ_AUTH={{ auth }}' to template to enable socket authentication",
-                        immediate.=TRUE)
-            }
+            values$auth = paste(sample(letters, 5, TRUE), collapse="")
             if (!"job_name" %in% names(values))
                 values$job_name = paste0("cmq", private$port)
             private$workers_total = values$n_jobs

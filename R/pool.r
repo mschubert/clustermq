@@ -59,34 +59,6 @@ Pool = R6::R6Class("Pool",
                 private$master$add_pkg(elm)
         },
 
-        ### START pre-0.9 compatibility functions (deprecated)
-        set_common_data = function(..., export=list(), pkgs=c(), token="") {
-            .Deprecated("env")
-            do.call(self$env, c(list(...), export))
-            if (length(pkgs) > 0)
-                do.call(self$pkg, as.list(pkgs))
-            private$token = token
-        },
-        send_common_data = function() {
-            .Deprecated("handled implicitly")
-            self$send()
-        },
-        send_shutdown_worker = function() {
-            .Deprecated("send_shutdown")
-            self$send_shutdown()
-        },
-        send_call = function(expr, env=list(), ref=substitute(expr)) {
-            .Deprecated("send")
-            pcall = quote(substitute(expr))
-            do.call(self$send, c(list(cmd=eval(pcall)), env))
-        },
-        receive_data = function() {
-            .Deprecated("recv")
-            rd = self$recv()
-            list(result=rd, warnings=c(), errors=c(), token=private$token)
-        },
-        ### END pre-0.9 compatibility functions (deprecated)
-
         send_eval = function(cmd, ...) {
             pcall = quote(substitute(cmd))
             cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
@@ -145,8 +117,6 @@ Pool = R6::R6Class("Pool",
     ),
 
     private = list(
-        token = NULL, ### pre-0.9 compatibility functions (deprecated)
-
         master = NULL,
         addr = NULL,
         timer = NULL,

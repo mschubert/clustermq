@@ -1,7 +1,10 @@
-# clustermq 0.9.10
+# clustermq 0.10.0
 
+* Add GCS and OCS schedulers (#342) @ernst-bablick
 * Fix a bug where `Sys.sleep` was evaluated on the master (#340) @wlandau
 * Worker API: rename `send` to `send_eval`, deprecate `send_wait`
+* Explicit setting of common data (deprecated in `0.9.0`) is removed
+* Template field `CMQ_AUTH` is now obligatory
 
 # clustermq 0.9.9
 
