@@ -82,6 +82,8 @@ To set up a scheduler explicitly, see the following links:
 * [SLURM](#slurm) - *should work without setup*
 * [LSF](#lsf) - *should work without setup*
 * [SGE](#sge) - *may require configuration*
+* [GCS](#gcs) - *needs* `options(clustermq.scheduler="GCS")`
+* [OCS](#ocs) -  *needs* `options(clustermq.scheduler="OCS")`
 * [PBS](#pbs)/[Torque](#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * you can suggest another scheduler by [opening an
   issue](https://github.com/mschubert/clustermq/issues)
@@ -284,7 +286,7 @@ time after you restart R.
 
 * `clustermq.scheduler` - One of the supported
       [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
-      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"slurm"`, `"pbs"`,
+      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"gcs"`, `"ocs"`, `"slurm"`, `"pbs"`,
       `"Torque"`, or `"ssh"` (default is the HPC scheduler found in `$PATH`,
       otherwise `"LOCAL"`)
 * `clustermq.host` - The name of the node or device for constructing the
@@ -477,6 +479,115 @@ In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
   and add them via `#BSUB-*` (where `*` represents the argument)
 * Do not change the identifiers in curly braces (`{{ ... }}`), as they are used
   to fill in the right variables
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
+
+
+### GCS
+
+Set the following options in your _R_ session that will submit jobs:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "gcs",
+    clustermq.template = "/path/to/file/below" # if using your own template
+)
+```
+
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
+
+```{sh eval=FALSE}
+# Name of the job visible in GCS
+#$ -terse                        # Show job ID
+#$ -N {{ job_name }}             # Job name
+#$ -j y                          # Combine stdout/stderr into one file
+#$ -o {{ log_file | /dev/null }} # Output file
+#$ -cwd                          # Use cwd as working directory
+#$ -V                            # Export all environment variables to the job
+                                 # Depending on security settings might require a
+                                 # cluster manager to set ENABLE_SUBMIT_LIB_PATH=1 as
+                                 # *qmaster_param* to export *LD_LIBRARY_PATH*
+#$ -t 1-{{ n_jobs }}             # Spawns workload as tasks of an array job
+#$ -pe mytestpe {{ cores | 1 }}  # Allocate one slot per task
+#$ -bunit C                      # Allocate *power core(s)* per slot
+#$ -bamount {{ threads | 1 }}    # Allocate *one* power core per slot
+#$ -bstrategy packed             # *Pack* cores on a host to share NUMA nodes and caches
+#$ -btype host                   # Bind per host
+#$ -binstance set                # Use HWLOC to bind cores
+#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q # Resource requests and limits
+#$ -ac application=clustermq,hostname={{ master }} # Tag the job
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#$-*` defines command-line arguments to the `qsub` program.
+
+* Used objects (mytestpe, all.q) in the template example are default objects
+  available after the default installation of GCS. Adapt the template to your
+  local setup if these objects are not available or if you want to use other
+  ones.
+* The mytestpe is limited to 5 slots as default. Increase as appropriate for
+  your cluster and needs.
+* For other options, see the [qsub man page](https://github.com/hpc-gridware/clusterscheduler/blob/master/doc/markdown/man/man1/submit.include.md)
+* Find more detailed documentation on the options in the GCS manuals part of
+  your product installation ($SGE_ROOT/doc/pdf)
+* Do not change the identifiers in curly braces (`{{ ... }}`), as they are
+  used to fill in the right variables.
+
+Once this is done, the package will use your settings and no longer warn you of
+the missing options.
+
+
+### OCS
+
+Set the following options in your _R_ session that will submit jobs:
+
+```{r eval=FALSE}
+options(
+    clustermq.scheduler = "ocs",
+    clustermq.template = "/path/to/file/below" # if using your own template
+)
+```
+
+To supply your own template, save the contents below with any desired changes
+to a file and have `clustermq.template` point to it.
+
+```{sh eval=FALSE}
+# Name of the job visible in OCS
+#$ -terse                        # Show job ID
+#$ -N {{ job_name }}             # Job name
+#$ -j y                          # Combine stdout/stderr into one file
+#$ -o {{ log_file | /dev/null }} # Output file
+#$ -cwd                          # Use cwd as working directory
+#$ -V                            # Export all environment variables to the job
+                                 # Depending on security settings might require a
+                                 # cluster manager to set ENABLE_SUBMIT_LIB_PATH=1 as
+                                 # *qmaster_param* to export *LD_LIBRARY_PATH*
+#$ -t 1-{{ n_jobs }}             # Spawns workload as tasks of an array job
+#$ -pe mytestpe {{ cores | 1 }}  # Allocate one slot per task
+#$ -bunit C                      # Allocate *power core(s)* per slot
+#$ -bamount {{ threads | 1 }}    # Allocate *one* power core per slot
+#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q # Resource requests and limits
+#$ -ac application=clustermq,hostname={{ master }} # Tag the job
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+```
+
+In this file, `#$-*` defines command-line arguments to the `qsub` program.
+
+* Used objects (mytestpe, all.q) in the template example are default objects
+  available after the default installation of GCS. Adapt the template to your
+  local setup if these objects are not available or if you want to use other
+  ones.
+* The mytestpe is limited to 5 slots as default. Increase as appropriate for
+  your cluster and needs.
+* For other options, see the [qsub man page](https://github.com/hpc-gridware/clusterscheduler/blob/master/doc/markdown/man/man1/submit.include.md)
+* Do not change the identifiers in curly braces (`{{ ... }}`), as they are
+  used to fill in the right variables.
 
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.

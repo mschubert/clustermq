@@ -46,6 +46,8 @@ functions for submitting and cleaning up jobs:
   |- Multicore
   |- LSF
   + SGE
+    |- GCS
+    |- OCS
     |- PBS
     |- Torque
   |- etc.

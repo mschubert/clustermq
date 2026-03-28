@@ -51,6 +51,8 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#config
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
 * [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *may require configuration*
+* [GCS](https://mschubert.github.io/clustermq/articles/userguide.html#gcs) - *needs* `options(clustermq.scheduler="GCS")`
+* [OCS](https://mschubert.github.io/clustermq/articles/userguide.html#ocs) - *needs* `options(clustermq.scheduler="OCS")` 
 * [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`

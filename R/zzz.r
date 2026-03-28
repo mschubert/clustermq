@@ -26,8 +26,7 @@
 #' @keywords internal
 .onAttach = function(libname, pkgname) {
     if (is.null(getOption("clustermq.scheduler"))) {
-        packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
-                "defaulting to ", sQuote(qsys_default))
+        packageStartupMessage("* Option 'clustermq.scheduler' not set, ", "defaulting to ", sQuote(qsys_default))
         packageStartupMessage("--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration")
     }
     if (!libzmq_has_draft()) {

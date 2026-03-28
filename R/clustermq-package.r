@@ -1,4 +1,4 @@
-#' Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)
+#' Evaluate Function Calls on HPC Schedulers (LSF, SGE, GCS, OCS, SLURM)
 #'
 #' Provides the \code{Q} function to send arbitrary function calls to
 #' workers on HPC schedulers without relying on network-mounted storage.

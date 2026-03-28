@@ -1,0 +1,37 @@
+# Submit client should only show the job ID of the new job on success
+#$ -terse
+
+# Name of the job visible in OCS
+#$ -N {{ job_name }}
+
+# Join error and output file
+#$ -j y
+
+# Location of the output file
+#$ -o {{ log_file | /dev/null }}
+
+# Start R job in the working directory
+#$ -cwd
+
+# Export the full environment to the R job (e.g if *LD_LIBRARY_PATH* is required)
+# depending on security settings might require a cluster manager to set
+# ENABLE_SUBMIT_LIB_PATH=1 as *qmaster_param*
+#$ -V
+
+# Spawns workload as tasks of an array job into the scheduler (one job with multiple tasks)
+#$ -t 1-{{ n_jobs }}
+
+# Each array task will allocate one slot in the cluster, if not other specified.
+#$ -pe mytestpe {{ cores | 1 }}
+
+# Per slot the job will get one power core (C) assuming R code is single-threaded, if not other specified.
+#$ -bunit C
+#$ -bamount {{ threads | 1 }}
+
+# Allows to set resource requests like memory (default 1 GB in bytes)
+# to set runtime limits (default 1 hour in seconds)
+# or to influence scheduler resource selection (job will be executed in all.q)
+#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ runtime | 3600 }},q=all.q
+
+ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

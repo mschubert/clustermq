@@ -71,7 +71,7 @@ Running 1 calculations (5 objs/19.4 Kb common; 1 calls/chunk) ...
 
 You will see this every time your jobs are queued but not yet started.
 Depending on how busy your HPC is, this may take a long time. You can check the
-queueing status of your jobs in the terminal with _e.g._ `qstat` (SGE), `bjobs`
+queueing status of your jobs in the terminal with _e.g._ `qstat` (SGE, GCS or OCS), `bjobs`
 (LSF), or `sinfo` (SLURM).
 
 If your jobs are already finished, this likely means that the `clustermq`
@@ -201,7 +201,7 @@ Alternatively, you can create a script that uses SSH to execute the scheduler
 on the login node. For this, you will need an SSH client in the container,
 [keys set up for password-less login](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server),
 and create a script to call the scheduler on the login node via ssh (e.g.
-`~/bin/qsub` for SGE/PBS/Torque, `bsub` for LSF and `sbatch` for Slurm):
+`~/bin/qsub` for SGE/GCS/OCS/PBS/Torque, `bsub` for LSF and `sbatch` for Slurm):
 
 ```{sh eval=FALSE}
 #!/bin/bash
