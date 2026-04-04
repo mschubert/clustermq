@@ -38,8 +38,13 @@ work_chunk = function(df, fun, const=list(), rettype="list",
             },
             error = function(e) {
                 emsg = paste0("(Error #", chr_id, ") ", conditionMessage(e))
-                if (!is.na(` seed `))
-                    emsg = paste0(emsg, " [seed: ", ` seed `, "]")
+                if (!is.na(` seed `)) {
+                    cur_state = sample(1:100)
+                    set.seed(` seed `)
+                    prev_state = sample(1:100)
+                    if (! all(cur_state == prev_state))
+                        emsg = paste0(emsg, " [seed: ", ` seed `, "]")
+                }
                 context$errors[[chr_id]] = emsg
                 invokeRestart("muffleStop", emsg)
             }

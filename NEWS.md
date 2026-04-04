@@ -1,6 +1,6 @@
 # git head
 
-* Worker errors now report the random seed used
+* Worker errors now report the random seed if used
 
 # clustermq 0.10.0
 
