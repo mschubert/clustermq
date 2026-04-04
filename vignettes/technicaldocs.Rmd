@@ -135,7 +135,6 @@ w$env(...)
 
 while (we have new work to send || jobs pending) {
     res = w$recv() # the result of the call, or NULL for a new worker
-    w$current()$call_ref # matches answer to request, -1 otherwise
     # handle result
 
     if (more work)

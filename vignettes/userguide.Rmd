@@ -40,8 +40,7 @@ the bundled library:
 #   If your system has `libzmq` installed but you want to enable the worker
 #   crash monitor, set the environment variable below to use the bundled
 #   `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
-
-# Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
+Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 install.packages("clustermq")
 ```
 
@@ -50,8 +49,9 @@ Github. Note that this version needs `autoconf`/`automake` and `CMake` for
 compilation:
 
 ```{r eval=FALSE}
-# Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
-# install.packages('remotes')
+if (!requireNamespace("remotes", quietly=TRUE))
+    install.packages("remotes")
+Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 remotes::install_github("mschubert/clustermq")
 # remotes::install_github("mschubert/clustermq@develop") # dev version
 ```
@@ -82,8 +82,7 @@ To set up a scheduler explicitly, see the following links:
 * [SLURM](#slurm) - *should work without setup*
 * [LSF](#lsf) - *should work without setup*
 * [SGE](#sge) - *may require configuration*
-* [GCS](#gcs) - *needs* `options(clustermq.scheduler="GCS")`
-* [OCS](#ocs) -  *needs* `options(clustermq.scheduler="OCS")`
+* [GCS](#gcs)/[OCS](#ocs) - *needs* `options(clustermq.scheduler="GCS"/"OCS")`
 * [PBS](#pbs)/[Torque](#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * you can suggest another scheduler by [opening an
   issue](https://github.com/mschubert/clustermq/issues)
@@ -285,10 +284,10 @@ be available in your active session, while the latter will be available any
 time after you restart R.
 
 * `clustermq.scheduler` - One of the supported
-      [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
-      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"gcs"`, `"ocs"`, `"slurm"`, `"pbs"`,
-      `"Torque"`, or `"ssh"` (default is the HPC scheduler found in `$PATH`,
-      otherwise `"LOCAL"`)
+      [`clustermq` schedulers](#configuration); options are `"local"`,
+      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"gcs"`, `"ocs"`,
+      `"slurm"`, `"pbs"`, `"torque"`, or `"ssh"` (default is the HPC scheduler
+      found in `$PATH`, otherwise `"local"`)
 * `clustermq.host` - The name of the node or device for constructing the
       `ZeroMQ` host address (default is `Sys.info()["nodename"]`)
 * `clustermq.ports` - A port range used by `clustermq` to initiate connections.

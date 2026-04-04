@@ -10,14 +10,12 @@ This package will allow you to send function calls as jobs on a computing
 cluster with a minimal interface provided by the `Q` function:
 
 ```r
-# install the package if you haven't done so yet
+# install/load the package if you haven't done so yet
 install.packages('clustermq')
-
-# load the library and create a simple function
 library(clustermq)
-fx = function(x) x * 2
 
-# queue the function call on your scheduler
+# queue a function call on your scheduler
+fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
@@ -51,8 +49,7 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#config
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
 * [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *may require configuration*
-* [GCS](https://mschubert.github.io/clustermq/articles/userguide.html#gcs) - *needs* `options(clustermq.scheduler="GCS")`
-* [OCS](https://mschubert.github.io/clustermq/articles/userguide.html#ocs) - *needs* `options(clustermq.scheduler="OCS")` 
+* [GCS](https://mschubert.github.io/clustermq/articles/userguide.html#gcs)/[OCS](https://mschubert.github.io/clustermq/articles/userguide.html#ocs) - *needs* `options(clustermq.scheduler="GCS"/"OCS")`
 * [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
