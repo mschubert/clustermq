@@ -59,7 +59,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
         df$` id ` = seq_along(df[[1]])
 
     if (!is.null(common_seed))
-        df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
+        df$` seed ` = as.integer((df$` id ` + common_seed - 1) %% .Machine$integer.max)
 
     re = stats::setNames(.mapply(fwrap, df, NULL), df$` id `)
     if (rettype != "list")

@@ -1,5 +1,6 @@
 # git head
 
+* Random seed initialization now starts from the supplied seed
 * Worker errors now report the random seed if used
 
 # clustermq 0.10.0
