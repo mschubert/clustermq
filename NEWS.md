@@ -1,3 +1,7 @@
+# git head
+
+* Worker errors now report the random seed used
+
 # clustermq 0.10.0
 
 * Add GCS and OCS schedulers (#342) @ernst-bablick
