@@ -4,7 +4,7 @@
 \name{clustermq-package}
 \alias{clustermq}
 \alias{clustermq-package}
-\title{Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)}
+\title{Evaluate Function Calls on HPC Schedulers (LSF, SGE, GCS, OCS, SLURM)}
 \description{
 Provides the \code{Q} function to send arbitrary function calls to
 workers on HPC schedulers without relying on network-mounted storage.
