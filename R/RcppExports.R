@@ -9,3 +9,7 @@ libzmq_has_draft <- function() {
     .Call('_clustermq_libzmq_has_draft', PACKAGE = 'clustermq')
 }
 
+alloc_non_r_bytes <- function(n_bytes) {
+    .Call('_clustermq_alloc_non_r_bytes', PACKAGE = 'clustermq', n_bytes)
+}
+

@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include "common.h"
+#include "memory.h"
 
 class CMQWorker {
 public:
@@ -27,7 +28,7 @@ public:
             check_send_ready(timeout);
             sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
             sock.send(r2msg(proc_time()), zmq::send_flags::sndmore);
-            sock.send(r2msg(gc()), zmq::send_flags::sndmore);
+            sock.send(r2msg(mem_stats()), zmq::send_flags::sndmore);
             sock.send(r2msg(R_NilValue), zmq::send_flags::none);
         } catch (zmq::error_t const &e) {
             Rcpp::stop(e.what());
@@ -105,7 +106,7 @@ public:
             PROTECT(eval = wrap_error(cmd));
         }
         PROTECT(time = proc_time());
-        PROTECT(mem = gc());
+        PROTECT(mem = mem_stats());
         sock.send(int2msg(wlife_t::active), zmq::send_flags::sndmore);
         sock.send(r2msg(time), zmq::send_flags::sndmore);
         sock.send(r2msg(mem), zmq::send_flags::sndmore);
@@ -122,7 +123,6 @@ private:
     Rcpp::Environment env {1};
     Rcpp::Function load_pkg {"library"};
     Rcpp::Function proc_time {"proc.time"};
-    Rcpp::Function gc {"gc"};
 
     void check_send_ready(int timeout=5000) {
         auto pitems = std::vector<zmq::pollitem_t>(1);

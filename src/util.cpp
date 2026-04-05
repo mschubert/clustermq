@@ -52,3 +52,10 @@ bool libzmq_has_draft() {
     return false;
     #endif
 }
+
+// [[Rcpp::export]]
+Rcpp::XPtr<std::vector<unsigned char>> alloc_non_r_bytes(long n_bytes) {
+    auto buf = new std::vector<unsigned char>(n_bytes, 42);
+    Rcpp::XPtr<std::vector<unsigned char>> p(buf, true);
+    return p;
+}

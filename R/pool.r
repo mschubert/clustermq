@@ -12,7 +12,7 @@ Pool = R6::R6Class("Pool",
         initialize = function(addr=sample(host()), reuse=TRUE) {
             private$master = methods::new(CMQMaster)
             # ZeroMQ allows connecting by node name, but binding must be either
-            # a numerical IP or an interfacet name. This is a bit of a hack to
+            # a numerical IP or an interface name. This is a bit of a hack to
             # seem to allow node-name bindings
             nodename = Sys.info()["nodename"]
             addr = sub(nodename, "*", addr, fixed=TRUE)
@@ -29,11 +29,9 @@ Pool = R6::R6Class("Pool",
         info = function() {
             info = private$master$list_workers()
             times = do.call(rbind, info$time)[,1:3,drop=FALSE]
-            mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
-            do.call(data.frame, c(info[c("worker", "status")],
-                                  current=list(info$worker==info$cur),
-                                  info["calls"], as.data.frame(times),
-                                  list(mem.used=mem("used"), mem.max=mem("max used"))))
+            mem = do.call(rbind, info$mem)
+            do.call(data.frame, c(info[c("worker", "status")], current=list(info$worker==info$cur),
+                                  info["calls"], as.data.frame(times), mem=as.data.frame(mem)))
         },
         current = function() {
             private$master$current()
@@ -87,8 +85,10 @@ Pool = R6::R6Class("Pool",
             success = self$workers$cleanup(success, timeout) # timeout left?
 
             info = self$info()
-            max_mem = max(c(info$mem.max+2e8, 0), na.rm=TRUE) # add 200 Mb
+            max_mem = max(c(0, info$mem.max), na.rm=TRUE)
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
+            if (max_mem_str == "0 bytes")
+                max_mem_str = "NA"
 
             if (nrow(info) > 0) {
                 wt = lapply(info[c("user.self", "sys.self", "elapsed")], mean, na.rm=TRUE)

@@ -129,6 +129,30 @@ test_that("worker R API", {
     m$close(500L)
 })
 
+test_that("worker memory tracks non-R allocations", {
+    skip_on_os("windows")
+    skip_on_cran()
+    skip_if_not(has_connectivity("127.0.0.1"))
+
+    m = methods::new(CMQMaster)
+    addr = m$listen("tcp://127.0.0.1:*")
+    m$add_pending_workers(1L)
+    p = parallel::mcparallel(worker(addr))
+
+    expect_null(m$recv(5000L))
+    before = m$list_workers()$mem[[1]]
+    m$add_env("alloc_non_r_bytes", clustermq:::alloc_non_r_bytes)
+    m$send_eval(expression({alloc_non_r_bytes(100 * 1024^2); gc(); TRUE}))
+    expect_true(m$recv(2000L))
+    after = m$list_workers()$mem[[1]]
+
+    m$send_shutdown()
+    pc = parallel::mccollect(p, wait=TRUE, timeout=0.5)
+    expect_equal(pc[[1]], NULL)
+    expect_equal(unname(after - before)/1024^2, c(0, 100), tolerance=10)
+    m$close(500L)
+})
+
 test_that("communication with two workers", {
     skip_on_os("windows")
     skip_if_not(has_connectivity("127.0.0.1"))

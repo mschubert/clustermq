@@ -2,6 +2,7 @@
 
 * Random seed initialization now starts from the supplied seed
 * Worker errors now report the random seed if used
+* Worker memory is now reported for the process instead of R only
 
 # clustermq 0.10.0
 
