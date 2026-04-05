@@ -1,10 +1,7 @@
-^doc$
-^configure.backup$
 ^Meta$
 ^doc(s)?$
-\.gitignore
+^\.
 backup
-^CHANGES\.md$
 ^Makefile$$
 ^\.travis\.yml$
 ^\.travis-ssh\.sh$
