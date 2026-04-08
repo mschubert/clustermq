@@ -11,6 +11,7 @@ cluster with a minimal interface provided by the `Q` function:
 
 ```r
 # install/load the package if you haven't done so yet
+Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
 install.packages('clustermq')
 library(clustermq)
 

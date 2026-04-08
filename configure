@@ -14,8 +14,13 @@ if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
       echo "* libzmq has DRAFT API -> enabling crash monitor feature"
       CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
     else
-      echo "* libzmq without DRAFT API found -> disabling crash monitor feature"
-      CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
+      if [ -z "$CLUSTERMQ_AUTO_LIBZMQ" ]; then
+        echo "* libzmq without DRAFT API found -> disabling crash monitor feature"
+        CLUSTERMQ_USE_SYSTEM_LIBZMQ=1
+      else
+        echo "* libzmq without DRAFT API found -> using bundled library instead"
+        CLUSTERMQ_USE_SYSTEM_LIBZMQ=0
+      fi
     fi
   else
     echo "* no system libzmq>=4.3.0 found -> using bundled libzmq"
