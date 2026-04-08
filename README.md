@@ -10,12 +10,12 @@ This package will allow you to send function calls as jobs on a computing
 cluster with a minimal interface provided by the `Q` function:
 
 ```r
-# install/load the package if you haven't done so yet
+# install the package if you haven't done so yet
 Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
 install.packages('clustermq')
-library(clustermq)
 
 # queue a function call on your scheduler
+library(clustermq)
 fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
