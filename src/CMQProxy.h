@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include "common.h"
 #include "CMQMaster.h"
-#include "memory.h"
+#include "mem_stats.h"
 
 class CMQProxy {
 public:
