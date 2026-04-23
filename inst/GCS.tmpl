@@ -45,5 +45,5 @@
 # submission so the job can get adapted or for filtering later on)
 #$ -ac application=clustermq
 
-ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+ulimit -v $(( 1024 * {{ memory | 4096 }} - 25 ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

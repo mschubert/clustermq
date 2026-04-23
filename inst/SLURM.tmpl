@@ -6,5 +6,5 @@
 #SBATCH --array=1-{{ n_jobs }}
 #SBATCH --cpus-per-task={{ cores | 1 }}
 
-ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+ulimit -v $(( 1024 * {{ memory | 4096 }} - 25 ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

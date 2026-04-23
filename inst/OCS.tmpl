@@ -33,5 +33,5 @@
 # or to influence scheduler resource selection (job will be executed in all.q)
 #$ -l mem_free={{ memory | 1073741824 }},h_rt={{ runtime | 3600 }},q=all.q
 
-ulimit -v $(( 1024 * {{ memory | 4096 }} ))
+ulimit -v $(( 1024 * {{ memory | 4096 }} - 25 ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
