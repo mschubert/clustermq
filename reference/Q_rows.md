@@ -1,0 +1,122 @@
+# Queue function calls defined by rows in a data.frame
+
+Queue function calls defined by rows in a data.frame
+
+## Usage
+
+``` r
+Q_rows(
+  df,
+  fun,
+  const = list(),
+  export = list(),
+  pkgs = c(),
+  seed = 128965,
+  memory = NULL,
+  template = list(),
+  n_jobs = NULL,
+  job_size = NULL,
+  rettype = "list",
+  fail_on_error = TRUE,
+  workers = NULL,
+  log_worker = FALSE,
+  chunk_size = NA,
+  timeout = Inf,
+  max_calls_worker = Inf,
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- df:
+
+  data.frame with iterated arguments
+
+- fun:
+
+  A function to call
+
+- const:
+
+  A list of constant arguments passed to each function call
+
+- export:
+
+  List of objects to be exported to the worker
+
+- pkgs:
+
+  Character vector of packages to load on the worker
+
+- seed:
+
+  A seed to set for each function call
+
+- memory:
+
+  Short for \`template=list(memory=value)\`
+
+- template:
+
+  A named list of values to fill in the scheduler template
+
+- n_jobs:
+
+  The number of jobs to submit; upper limit of jobs if job_size is given
+  as well
+
+- job_size:
+
+  The number of function calls per job
+
+- rettype:
+
+  Return type of function call (vector type or 'list')
+
+- fail_on_error:
+
+  If an error occurs on the workers, continue or fail?
+
+- workers:
+
+  Optional instance of QSys representing a worker pool
+
+- log_worker:
+
+  Write a log file for each worker
+
+- chunk_size:
+
+  Number of function calls to chunk together defaults to 100 chunks per
+  worker or max. 10 kb per chunk
+
+- timeout:
+
+  Maximum time in seconds to wait for worker (default: Inf)
+
+- max_calls_worker:
+
+  Maxmimum number of chunks that will be sent to one worker
+
+- verbose:
+
+  Print status messages and progress bar (default: TRUE)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Run a simple multiplication for data frame columns x and y on a worker node
+fx = function (x, y) x * y
+df = data.frame(x = 5, y = 10)
+Q_rows(df, fx, job_size = 1)
+# [1] 50
+
+# Q_rows also matches the names of a data frame with the function arguments
+fx = function (x, y) x - y
+df = data.frame(y = 5, x = 10)
+Q_rows(df, fx, job_size = 1)
+# [1] 5
+} # }
+```

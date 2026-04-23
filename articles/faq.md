@@ -1,0 +1,192 @@
+# Frequently asked questions
+
+## Installation errors
+
+To compile this package a fully C++11 compliant compiler is required.
+This is [implicit for CRAN
+packages](https://tidyverse.org/blog/2023/03/cran-checks-compiled-code/)
+since `R=3.6.2` and is hence not listed in *SystemRequirements*.
+
+If you encounter an error saying that that no matching function call to
+`zmq::message_t::message_t(std::string&)` exists, your compiler does not
+(fully) support this and the automated check failed for some reason.
+
+``` sh
+In file included from CMQMaster.cpp:2:0:
+CMQMaster.h: In member function ‘void CMQMaster::proxy_submit_cmd(SEXP, int)’:
+CMQMaster.h:146:40: error: no matching function for call to ‘zmq::message_t::message_t(std::string&)’
+         mp.push_back(zmq::message_t(cur));
+```
+
+This happens for instance for old versions of the `gcc` compiler
+(default on most Linux distributions). You can check your version in the
+terminal using:
+
+``` sh
+# the minimum required gcc version is 5.5 for full C++11 support (3.3 for clang)
+cc --version
+```
+
+In this case, it is *very* likely that your HPC system already has a
+newer compiler installed that you need to add to your `$PATH` or load as
+a module. Once this is set, you can install the package from R *that was
+started in a terminal that has this module/path active*.
+
+## Session gets stuck at “Running calculations”
+
+Your R session may be stuck at something like the following:
+
+``` r
+> clustermq::Q(identity, x=42, n_jobs=1)
+Submitting 1 worker jobs (ID: cmq8480) ...
+Running 1 calculations (5 objs/19.4 Kb common; 1 calls/chunk) ...
+```
+
+You will see this every time your jobs are queued but not yet started.
+Depending on how busy your HPC is, this may take a long time. You can
+check the queueing status of your jobs in the terminal with *e.g.*
+`qstat` (SGE, GCS or OCS), `bjobs` (LSF), or `sinfo` (SLURM).
+
+If your jobs are already finished, this likely means that the
+`clustermq` workers can not connect to the main session. You can confirm
+this by passing
+[`log_worker=TRUE`](https://mschubert.github.io/clustermq/articles/userguide.html#debugging-workers)
+to `Q` and inspect the logs created in your current working directory.
+If they state something like:
+
+``` sh
+> clustermq:::worker("tcp://my.headnode:9091")
+2023-12-11 10:22:58.485529 | Master: tcp://my.headnode:9091
+2023-12-11 10:22:58.488892 | connecting to: tcp://my.headnode:9091:
+Error: Connection failed after 10016 ms
+Execution halted
+```
+
+the submitted job is indeed unable to establish a network connection
+with the head node. This can happen if your HPC does not allow incoming
+connections at all, but more likely happens because (1) only certain
+ports are allowed, or (2) there are multiple network interfaces, only
+some of which have access to the head node.
+
+1.  If the head node only allows incoming connections on certain ports,
+    set the [R
+    option](https://mschubert.github.io/clustermq/articles/userguide.html#options)
+    `clustermq.ports=<port range>`.
+2.  You can list the available network interfaces using the `ifconfig`
+    command in the terminal. Find the interface that shares a subnetwork
+    with the head node and add the [R
+    option](https://mschubert.github.io/clustermq/articles/userguide.html#options)
+    `clustermq.host=<interface>`. If this is unclear, contact your
+    system administrators to see which interface to use.
+
+## SSH not working
+
+Before trying remote schedulers via SSH, make sure that the scheduler
+works when you first connect to the cluster and run a job from there.
+
+If the terminal is stuck at
+
+    Connecting <user@host> via SSH ...
+
+make sure that each step of your SSH connection works by typing the
+following commands in your **local** terminal and make sure that you
+don’t get errors or warnings in each step:
+
+``` sh
+# test your ssh login that you set up in ~/.ssh/config
+# if this fails you have not set up SSH correctly
+ssh <user@host>
+
+# test port forwarding from 54709 remote to 6687 local (ports are random)
+# if the fails you will not be able to use clustermq via SSH
+ssh -R 54709:localhost:6687 <user@host> R --vanilla
+```
+
+If you get an `Command not found: R` error, make sure your `$PATH` is
+set up correctly in your `~/.bash_profile` and/or your `~/.bashrc`
+(depending on your cluster config you might need either). You may also
+need to modify your [SSH
+template](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-template)
+to load R as a module or conda environment.
+
+If you get a SSH warning or error try again with `ssh -v` to enable
+verbose output. If the forward itself works, run the following in your
+local R session (ideally also in command-line R, [not only in
+RStudio](https://github.com/mschubert/clustermq/issues/206)):
+
+``` r
+options(clustermq.scheduler = "ssh",
+        clustermq.ssh.log = "~/ssh_proxy.log")
+Q(identity, x=1, n_jobs=1)
+```
+
+This will create a log file *on the remote server* that will contain any
+errors that might have occurred during `ssh_proxy` startup.
+
+If the `ssh_proxy` startup fails on your local machine with the error
+
+    Remote R process did not respond after 5 seconds. Check your SSH server log.
+
+but the server log does not show any errors, then you can try increasing
+the timeout:
+
+``` r
+options(clustermq.ssh.timeout = 30) # in seconds
+```
+
+This can happen when your SSH startup template includes additional steps
+before starting R, such as activating a module or conda environment, or
+having to confirm the connection via two-factor authentication.
+
+## Running the master inside containers
+
+If your master process is inside a container, accessing the HPC
+scheduler is more difficult. Containers, including singularity and
+docker, isolate the processes inside the container from the host. The
+*R* process will not be able to submit a job because the scheduler
+cannot be found.
+
+Note that the HPC node running the master process must be allowed to
+submit jobs. Not all HPC systems allow compute nodes to submit jobs. If
+that is the case, you may need to run the master process on the login
+node, and discuss the issue with your system administrator.
+
+If your container is binary compatible with the host, you may be able to
+bind in the scheduler executable to the container.
+
+For example, PBS might look something like:
+
+``` sh
+#PBS directives ...
+
+module load singularity
+
+SINGULARITYENV_APPEND_PATH=/opt/pbs/bin
+singularity exec --bind /opt/pbs/bin r_image.sif Rscript master_script.R
+```
+
+A working example of binding SLURM into a CentOS 7 container image from
+a CentOS 7 host is available at
+<https://groups.google.com/a/lbl.gov/d/msg/singularity/syLcsIWWzdo/NZvF2Ud2AAAJ>
+
+Alternatively, you can create a script that uses SSH to execute the
+scheduler on the login node. For this, you will need an SSH client in
+the container, [keys set up for password-less
+login](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server),
+and create a script to call the scheduler on the login node via ssh
+(e.g. `~/bin/qsub` for SGE/GCS/OCS/PBS/Torque, `bsub` for LSF and
+`sbatch` for Slurm):
+
+``` sh
+#!/bin/bash
+ssh -i ~/.ssh/<your key file> ${PBS_O_HOST:-"no_host_not_in_a_pbs_job"} qsub "$@"
+```
+
+Make sure the script is executable, and bind/copy it into the container
+somewhere on `$PATH`. Home directories are bound in by default in
+singularity.
+
+``` sh
+chmod u+x ~/bin/qsub
+SINGULARITYENV_APPEND_PATH=~/bin
+```
