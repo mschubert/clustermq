@@ -36,10 +36,10 @@
 # Change to *env* if scheduler should make binding decision but not do the binding itself.
 #$ -binstance set
 
-# Allows to set resource requests like memory (1 GB [in bytes])
+# Allows to set resource requests like memory (4 GB [in bytes])
 # to set runtime limits (1 hour [in seconds])
 # or to influence scheduler resource selection (job will be executed in all.q queue)
-#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q
+#$ -l mem_free=$(( 1024 * 1024 * {{ memory | 4096 }} )),h_rt={{ walltime | 3600 }},q=all.q
 
 # Tag the job so that it can be identified later on (e.g. in a JSV script before
 # submission so the job can get adapted or for filtering later on)

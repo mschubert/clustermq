@@ -515,7 +515,8 @@ to a file and have `clustermq.template` point to it.
 #$ -bstrategy packed             # *Pack* cores on a host to share NUMA nodes and caches
 #$ -btype host                   # Bind per host
 #$ -binstance set                # Use HWLOC to bind cores
-#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q # Resource requests and limits
+## Resource requests and limits (convert memory from Mb to bytes)
+#$ -l mem_free=$(( 1024 * 1024 * {{ memory | 4096 }} )),h_rt={{ walltime | 3600 }},q=all.q
 #$ -ac application=clustermq,hostname={{ master }} # Tag the job
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
@@ -569,7 +570,8 @@ to a file and have `clustermq.template` point to it.
 #$ -pe mytestpe {{ cores | 1 }}  # Allocate one slot per task
 #$ -bunit C                      # Allocate *power core(s)* per slot
 #$ -bamount {{ threads | 1 }}    # Allocate *one* power core per slot
-#$ -l mem_free={{ memory | 1073741824 }},h_rt={{ walltime | 3600 }},q=all.q # Resource requests and limits
+## Resource requests and limits (convert memory from Mb to bytes)
+#$ -l mem_free=$(( 1024 * 1024 * {{ memory | 4096 }} )),h_rt={{ walltime | 3600 }},q=all.q
 #$ -ac application=clustermq,hostname={{ master }} # Tag the job
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
