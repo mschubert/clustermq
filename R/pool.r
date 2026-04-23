@@ -72,7 +72,6 @@ Pool = R6::R6Class("Pool",
             private$master$send_shutdown()
         },
         send_wait = function(wait=50) {
-            .Deprecated("send_eval")
             self$send_eval(Sys.sleep(wait/1000), wait=wait)
         },
 

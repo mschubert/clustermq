@@ -107,7 +107,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
             }
 
         } else if (pool$reusable) {
-            pool$send_eval(Sys.sleep(0.05))
+            pool$send_wait()
         } else { # or else shut it down
             pool$send_shutdown()
         }
