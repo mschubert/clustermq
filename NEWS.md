@@ -1,17 +1,23 @@
-# git head
-
-* Random seed initialization now starts from the supplied seed
-* Worker errors now report the random seed if used
-* Worker memory is now reported for the process instead of R only
-* Installation: `CLUSTERMQ_AUTO_LIBZMQ=1` will ensure crash monitor is enabled
-
 # clustermq 0.10.0
 
+#### Features
+
 * Add GCS and OCS schedulers (#342) @ernst-bablick
-* Fix a bug where `Sys.sleep` was evaluated on the master (#340) @wlandau
-* Worker API: rename `send` to `send_eval`, deprecate `send_wait`
+* Worker errors now report the random seed if used
+* Worker memory is now reported for the process instead of R only
+* Worker API: rename `send` to `send_eval` to group send-family functions
+* Installation: `CLUSTERMQ_AUTO_LIBZMQ=1` will ensure crash monitor is enabled
+
+#### Bugfix
+
+* Fix a bug where `send_wait` was evaluated on the master (#340) @wlandau
+
+#### Internal
+
 * Explicit setting of common data (deprecated in `0.9.0`) is removed
 * Template field `CMQ_AUTH` is now obligatory
+* Default templates now limit R to 25 Mb less than job limit
+* Random seed initialization now starts from the supplied seed
 
 # clustermq 0.9.9
 

@@ -111,9 +111,9 @@ to test your code on a subset of the data before submitting it to a scheduler.
 
 There are reasons why you might prefer to not to work on the computing cluster
 directly but rather on your local machine instead.
-[RStudio](https://posit.co/products/open-source/rstudio/) is an excellent local
+[RStudio](https://posit.co/products/open-source/rstudio) is an excellent local
 IDE, it's more responsive than and feature-rich than browser-based solutions
-([RStudio server](https://posit.co/products/open-source/rstudio-server/),
+([RStudio server](https://posit.co/products/open-source/rstudio-server),
 [Project Jupyter](https://jupyter.org/)), and it avoids X forwarding issues
 when you want to look at plots you just made.
 
