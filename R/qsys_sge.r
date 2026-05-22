@@ -6,6 +6,7 @@
 #' @keywords internal
 SGE = R6::R6Class("SGE",
     inherit = QSys,
+    cloneable = FALSE,
 
     public = list(
         initialize = function(addr, n_jobs, master, ..., template=getOption("clustermq.template", "SGE"),
@@ -22,13 +23,15 @@ SGE = R6::R6Class("SGE",
 
             if (verbose)
                 message("Submitting ", n_jobs, " worker jobs to ", class(self)[1],
-                        " as ", sQuote(private$job_id), " ...")
+                        " as ", sQuote(private$job_name), " ...")
 
             private$qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
             status = attr(private$qsub_stdout, "status")
             if (!is.null(status) && status != 0)
-                private$template_error("SGE", status, filled)
-            private$job_id = private$job_name
+                private$template_error(class(self)[1], status, filled)
+            private$job_id = private$get_job_id(private$qsub_stdout)
+            if (is.na(private$job_id))
+                private$template_error(class(self)[1], paste(private$qsub_stdout, collapse="\n"), filled)
             private$master$add_pending_workers(n_jobs)
             private$is_cleaned_up = FALSE
         },
@@ -45,6 +48,11 @@ SGE = R6::R6Class("SGE",
         job_id   = NULL,
         array_idx = "$TASK_ID",
 
+        get_job_id = function(qsub_stdout) {
+            job_id = regmatches(qsub_stdout, regexpr("[0-9][^[:space:]]*", qsub_stdout))
+            job_id[nzchar(job_id)][1]
+        },
+
         finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {
                 system(paste("qdel", private$job_id),
@@ -52,48 +60,19 @@ SGE = R6::R6Class("SGE",
             }
             private$is_cleaned_up = TRUE
         }
-    ),
-
-    cloneable = FALSE
+    )
 )
 
 #' Class for Open Cluster Scheduler (OCS)
 OCS = R6::R6Class("OCS",
-    inherit = QSys,
+    inherit = SGE,
+    cloneable = FALSE,
 
     public = list(
-        initialize = function(addr, n_jobs, master, ..., template=getOption("clustermq.template", class(self)[1]),
-                              log_worker=FALSE, log_file=NULL, verbose=TRUE) {
-            super$initialize(addr=addr, master=master, template=template)
-
-            opts = private$fill_options(n_jobs=n_jobs, ...)
-            filled = fill_template(private$template, opts, required=c("master", "n_jobs"))
-            qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
-
-            status = attr(qsub_stdout, "status")
-            if (!is.null(status) && status != 0)
-                private$template_error(class(self)[1], status, filled)
-
-            private$job_id = regmatches(qsub_stdout, regexpr("^[0-9]+", qsub_stdout))
-            if (length(private$job_id) == 0)
-                private$template_error(class(self)[1], qsub_stdout, filled)
-
-            if (verbose)
-                message("Submitted ", n_jobs, " worker tasks to ", class(self)[1], " as array job ", private$job_id, " ...")
-
-            private$master$add_pending_workers(n_jobs)
-        },
-
-        cleanup = function(success, timeout) {
-            system(paste("qdel", private$job_id), ignore.stdout=TRUE, ignore.stderr=TRUE, wait=FALSE)
+        initialize = function(..., template=getOption("clustermq.template", class(self)[1])) {
+            super$initialize(..., template=template)
         }
-    ),
-
-    private = list(
-        job_id   = NULL
-    ),
-
-    cloneable = FALSE
+    )
 )
 
 #' Class for Gridware Cluster Scheduler (GCS)
@@ -107,27 +86,24 @@ GCS = R6::R6Class("GCS",
 
 PBS = R6::R6Class("PBS",
     inherit = SGE,
+    cloneable = FALSE,
 
     public = list(
         initialize = function(..., template=getOption("clustermq.template", "PBS")) {
-            super$initialize(..., template=template)
             private$array_idx = "$PBS_ARRAY_INDEX"
-            private$job_id = private$qsub_stdout[1]
+            super$initialize(..., template=template)
         }
-    ),
-
-    cloneable = FALSE
+    )
 )
 
 TORQUE = R6::R6Class("TORQUE",
-    inherit = PBS,
+    inherit = SGE,
+    cloneable = FALSE,
 
     public = list(
         initialize = function(..., template=getOption("clustermq.template", "TORQUE")) {
-            super$initialize(..., template=template)
             private$array_idx = "$PBS_ARRAYID"
+            super$initialize(..., template=template)
         }
-    ),
-
-    cloneable = FALSE
+    )
 )
