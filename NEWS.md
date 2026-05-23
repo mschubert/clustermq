@@ -2,6 +2,7 @@
 
 * Simplified SGE-derived scheduler code
 * Pending workers are now killed correctly
+* Workers are now killed immediately after errors or Ctrl+C
 
 # clustermq 0.10.0
 

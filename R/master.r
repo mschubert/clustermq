@@ -48,7 +48,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
                 " Mb (set by clustermq.data.warning option)", immediate.=TRUE)
 
     if (!pool$reusable)
-        on.exit(pool$cleanup())
+        on.exit(pool$cleanup(timeout=0L))
 
     if (verbose) {
         message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
@@ -110,6 +110,11 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
         } else { # or else shut it down
             pool$send_shutdown()
         }
+    }
+
+    if (!pool$reusable) {
+        on.exit()
+        pool$cleanup(timeout=5L)
     }
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
