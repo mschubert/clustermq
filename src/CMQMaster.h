@@ -43,7 +43,7 @@ public:
         auto time_ms = std::chrono::milliseconds(timeout);
         auto time_left = time_ms;
         auto start = Time::now();
-        while (time_left.count() > 0) {
+        while (time_left.count() >= 0) {
             if (std::find_if(peers.begin(), peers.end(), [](const std::pair<const std::string, worker_t> &w) { // 'const auto &w' is C++14
                         return w.second.status == wlife_t::active; }) == peers.end()) {
                 if (pending_workers == 0)
