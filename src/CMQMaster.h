@@ -46,7 +46,8 @@ public:
         while (time_left.count() > 0) {
             if (std::find_if(peers.begin(), peers.end(), [](const std::pair<const std::string, worker_t> &w) { // 'const auto &w' is C++14
                         return w.second.status == wlife_t::active; }) == peers.end()) {
-                is_cleaned_up = true;
+                if (pending_workers == 0)
+                    is_cleaned_up = true;
                 break;
             }
 
