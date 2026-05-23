@@ -26,13 +26,12 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
-    submit_index = 1:chunk_size
+    submit_index = seq_len(chunk_size)
     jobs_running = 0
     cond_msgs = list(warnings=list(), errors=list())
     n_errors = 0
     n_warnings = 0
     shutdown = FALSE
-    kill_workers = FALSE
     penv = pool$env(work_chunk=work_chunk)
     obj_size = structure(sum(penv$size), class="object_size")
     obj_size_fmt = format(obj_size, big.mark=",", units="auto")
@@ -61,7 +60,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     }
 
     # main event loop
-    while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
+    while ((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
         msg = pool$recv(timeout)
         if (inherits(msg, "worker_error"))
             stop("Worker Error: ", msg)
