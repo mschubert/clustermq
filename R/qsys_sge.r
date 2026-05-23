@@ -63,25 +63,28 @@ SGE = R6::R6Class("SGE",
     )
 )
 
-#' Class for Open Cluster Scheduler (OCS)
+# Open Cluster Scheduler (OCS)
 OCS = R6::R6Class("OCS",
     inherit = SGE,
     cloneable = FALSE,
 
     public = list(
-        initialize = function(..., template=getOption("clustermq.template", class(self)[1])) {
+        initialize = function(..., template=getOption("clustermq.template", "OCS")) {
             super$initialize(..., template=template)
         }
     )
 )
 
-#' Class for Gridware Cluster Scheduler (GCS)
+# Gridware Cluster Scheduler (GCS)
 GCS = R6::R6Class("GCS",
-    inherit = OCS,
-    cloneable = FALSE
+    inherit = SGE,
+    cloneable = FALSE,
 
-    # no changes needed, but we want to have a separate class for GCS to allow for GCS-specific
-    # templates and enterprise edition options
+    public = list(
+        initialize = function(..., template=getOption("clustermq.template", "GCS")) {
+            super$initialize(..., template=template)
+        }
+    )
 )
 
 PBS = R6::R6Class("PBS",

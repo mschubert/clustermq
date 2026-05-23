@@ -1,3 +1,7 @@
+# git head
+
+* Simplified SGE-derived scheduler code
+
 # clustermq 0.10.0
 
 #### Features
