@@ -1,4 +1,4 @@
-# git head
+# clustermq 0.10.1
 
 * Simplified SGE-derived scheduler code
 * Pending workers are now killed correctly
