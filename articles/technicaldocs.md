@@ -35,6 +35,7 @@ A pool of workers can be created using the
 [`?workers`](../reference/workers.md) for details.
 
 ``` r
+
 # start up a pool of three workers using the default scheduler
 w = workers(n_jobs=3)
 
@@ -59,6 +60,7 @@ R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 On the master’s side, we wait until a worker connects:
 
 ``` r
+
 msg = w$recv() # this will block until a worker is ready
 ```
 
@@ -66,6 +68,7 @@ We can then send any expression to be evaluated on the worker using the
 `send` method:
 
 ``` r
+
 w$send_eval(expression, ...)
 ```
 
@@ -75,6 +78,7 @@ usually does, this command is `work_chunk`, where the `chunk` data is
 added:
 
 ``` r
+
 w$send(clustermq:::work_chunk(chunk, fun, const, rettype, common_seed),
        chunk = chunk(iter, submit_index))
 ```
@@ -85,6 +89,7 @@ We can add any number of objects to a worker environment using the `env`
 method:
 
 ``` r
+
 w$env(object=value, ...)
 ```
 

@@ -7,6 +7,7 @@ detect if [ZeroMQ](https://github.com/zeromq/libzmq) is installed and
 otherwise use the bundled library:
 
 ``` r
+
 # Recommended:
 #   If your system has `libzmq` installed but you want to enable the worker
 #   crash monitor, set the environment variable below to use the bundled
@@ -20,6 +21,7 @@ Github. Note that this version needs `autoconf`/`automake` and `CMake`
 for compilation:
 
 ``` r
+
 if (!requireNamespace("remotes", quietly=TRUE))
     install.packages("remotes")
 Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
@@ -106,6 +108,7 @@ scheduler* can not be `LOCAL` (default if no HPC scheduler found) or
 `SSH` for this to work.
 
 ``` r
+
 # If this is set to 'LOCAL' or 'SSH' you will get the following error:
 #  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys is not allowed’
 options(
@@ -116,6 +119,7 @@ options(
 On your *local machine*, add the following options:
 
 ``` r
+
 options(
     clustermq.scheduler = "ssh",
     clustermq.ssh.host = "user@host", # use your user and host, obviously
@@ -166,6 +170,7 @@ self-sufficient, and there is one argument (`x`) that we iterate
 through:
 
 ``` r
+
 fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 #> Running sequentially ('LOCAL') ...
@@ -182,6 +187,7 @@ Q(fx, x=1:3, n_jobs=1)
 Non-iterated arguments are supported by the `const` argument:
 
 ``` r
+
 fx = function(x, y) x * 2 + y
 Q(fx, x=1:3, const=list(y=10), n_jobs=1)
 #> Running sequentially ('LOCAL') ...
@@ -200,6 +206,7 @@ as arguments (including other functions), they can be exported using the
 `export` argument:
 
 ``` r
+
 fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 #> Running sequentially ('LOCAL') ...
@@ -217,6 +224,7 @@ If we want to use a package function we need to load it on the worker
 using the `pkgs` parameter, or referencing it with `package_name::`:
 
 ``` r
+
 f1 = function(x) splitIndices(x, 3)
 # Q(f1, x=5, n_jobs=1)
 # (Error #1) could not find function "splitIndices"
@@ -254,6 +262,7 @@ provides an interface to perform repeated tasks on different backends.
 While it can perform the function of simple loops using `%do%`:
 
 ``` r
+
 library(foreach)
 foreach(i=1:3) %do% sqrt(i)
 #> [[1]]
@@ -271,6 +280,7 @@ operator allows registering different handlers for parallel execution,
 where we can use `clustermq`:
 
 ``` r
+
 # set up the scheduler first, otherwise this will run sequentially
 
 # this accepts same arguments as `Q`
@@ -296,6 +306,7 @@ supports `foreach` too, this means we can run all packages that use
 `BiocParallel` on the cluster as well via `DoparParam`.
 
 ``` r
+
 library(BiocParallel)
 
 # the number of jobs is ignored here since we're using the LOCAL scheduler
@@ -397,6 +408,7 @@ will also include events that are not reported back. It can be requested
 using:
 
 ``` r
+
 Q(..., log_worker=TRUE)
 ```
 
@@ -466,12 +478,14 @@ This template still needs to be filled, so in the above example you need
 to pass either
 
 ``` r
+
 Q(..., template=list(bashenv="my environment name"))
 ```
 
 or set it via an option:
 
 ``` r
+
 options(
     clustermq.defaults = list(bashenv="my default env")
 )
@@ -502,6 +516,7 @@ submission in the following order of priority:
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "lsf",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -552,6 +567,7 @@ you of the missing options.
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "gcs",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -611,6 +627,7 @@ you of the missing options.
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "ocs",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -665,6 +682,7 @@ you of the missing options.
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "sge",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -708,6 +726,7 @@ you of the missing options.
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "slurm",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -750,6 +769,7 @@ you of the missing options.
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "pbs",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -790,6 +810,7 @@ you of the missing options.
 Set the following options in your *R* session that will submit jobs:
 
 ``` r
+
 options(
     clustermq.scheduler = "Torque",
     clustermq.template = "/path/to/file/below" # if using your own template
@@ -830,6 +851,7 @@ If you want to use it, first make sure that `clustermq` works on your
 server with the real scheduler. Only then move on to setting up SSH.
 
 ``` r
+
 options(
     clustermq.scheduler = "ssh",
     clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config

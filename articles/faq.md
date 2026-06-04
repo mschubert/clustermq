@@ -115,6 +115,7 @@ local R session (ideally also in command-line R, [not only in
 RStudio](https://github.com/mschubert/clustermq/issues/206)):
 
 ``` r
+
 options(clustermq.scheduler = "ssh",
         clustermq.ssh.log = "~/ssh_proxy.log")
 Q(identity, x=1, n_jobs=1)
@@ -131,6 +132,7 @@ but the server log does not show any errors, then you can try increasing
 the timeout:
 
 ``` r
+
 options(clustermq.ssh.timeout = 30) # in seconds
 ```
 

@@ -12,6 +12,7 @@ This package will allow you to send function calls as jobs on a
 computing cluster with a minimal interface provided by the `Q` function:
 
 ``` r
+
 # install the package if you haven't done so yet
 Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
 install.packages('clustermq')
@@ -87,6 +88,7 @@ The documentation for other arguments can be accessed by typing
 [`?Q`](reference/Q.md). Examples of using `const` and `export` would be:
 
 ``` r
+
 # adding a constant argument
 fx = function(x, y) x * 2 + y
 Q(fx, x=1:3, const=list(y=10), n_jobs=1)
@@ -101,6 +103,7 @@ We can also use `clustermq` as a parallel backend in
 [`BiocParallel`](https://bioconductor.org/packages/release/bioc/html/BiocParallel.html):
 
 ``` r
+
 # using foreach
 library(foreach)
 register_dopar_cmq(n_jobs=2, memory=1024) # see `?workers` for arguments

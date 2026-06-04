@@ -5,7 +5,7 @@
 - **Michael Schubert**. Author, maintainer, copyright holder.
   [](https://orcid.org/0000-0002-6862-5221)
 
-- **ZeroMQ authors**. Author, copyright holder.  
+- **ZeroMQ authors**. Author, copyright holder.\
   source files in 'src/libzmq' and 'src/cppzmq'
 
 ## Citation
